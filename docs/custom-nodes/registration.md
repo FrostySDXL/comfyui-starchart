@@ -9,6 +9,12 @@
 - https://docs.comfy.org/custom-nodes/backend/server_overview
 - https://docs.comfy.org/custom-nodes/walkthrough
 
+## Evidence Levels
+
+This page summarizes official behavior documented on docs.comfy.org. V3
+registration patterns are as described in official docs; V1 patterns remain
+common in community code.
+
 ## Overview
 
 Registration is the step that makes ComfyUI discover your node classes.

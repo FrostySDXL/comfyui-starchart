@@ -1,7 +1,7 @@
 # Common Architectures
 
 **Last Updated:** 2026-04-19
-**Primary Source:** https://github.com/ryanontheinside/ComfyUI_ProfilerX
+**Primary Source:** https://docs.comfy.org/custom-nodes/overview
 
 ## Primary Sources
 
@@ -16,6 +16,13 @@ Across ComfyUI extensions, a few architecture families keep recurring.
 They differ mainly in how much they depend on the graph, the frontend,
 and custom server state.
 
+This page uses three evidence levels:
+
+- official behavior — stated in `docs.comfy.org`
+- upstream source behavior — visible in ComfyUI's own source tree
+- community pattern examples — useful repo patterns seen in the ecosystem,
+  but not part of ComfyUI's contract
+
 ## Architecture Families
 
 ### Node suites
@@ -28,6 +35,26 @@ Typical shape:
 - Python node definitions
 - registration layer
 - little or no custom UI
+
+Community pattern examples:
+
+- large suites often split reusable logic into `modules/` or helper files
+  instead of keeping every node in one file
+- mature packs often ship example workflows, docs, or troubleshooting notes
+  beside the nodes so users can understand intended graph composition
+- some packs add bundle/helper nodes that reduce wiring for repeated graph
+  structures
+
+Examples for pattern study only:
+
+- `ltdrdata/ComfyUI-Impact-Pack` shows a large active node suite with
+  modules, docs, example workflows, JS, tests, and compatibility notes
+- `ltdrdata/was-node-suite-comfyui` shows an older large-pack pattern with
+  helper modules, resources, tests, and utility nodes such as bus/cache
+  helpers
+
+Those repos are useful examples of package organization, not authoritative
+definitions of how custom nodes must be structured.
 
 ### UI overlays and menu tools
 
@@ -50,6 +77,19 @@ Typical shape:
 - `@routes.get` or `@routes.post` handlers
 - frontend `fetchApi(...)` calls
 - stable JSON contracts
+
+Community pattern examples:
+
+- tool-facing extensions often add a small extension-owned `/api/...`
+  namespace instead of overloading graph execution routes
+- some integrations use routes for upload/download or metadata lookup, then
+  still rely on the normal prompt execution path for generation
+
+Example for pattern study only:
+
+- `Acly/comfyui-tooling-nodes` adds custom `/api/etn/...` routes for cached
+  image transfer, translation, and model inspection to support external tool
+  integrations
 
 ### Metrics and monitoring dashboards
 
@@ -79,6 +119,21 @@ These combine nodes, frontend UI, routes, storage, and monitoring into a
 larger product-style extension. They are powerful but need stronger
 version discipline and clearer contracts.
 
+Community pattern examples:
+
+- pipe or bundle nodes to collapse repeated multi-input state into one graph
+  value
+- hook-provider nodes that encapsulate reusable execution-time behavior and
+  can be combined declaratively
+- repo-local docs and compatibility notices because these products often
+  depend on specific upstream versions or companion packs
+
+Example for pattern study only:
+
+- `ltdrdata/ComfyUI-Impact-Pack` is a strong example of a hybrid product-like
+  node pack that uses bundle types, hook providers, examples, and explicit
+  compatibility notes
+
 ## Design Tradeoffs
 
 ### Simpler architectures
@@ -103,3 +158,15 @@ experience, but they create more surfaces that must stay compatible:
 - choose route-backed tools for explicit control/data access
 - choose full hybrids only when you genuinely need runtime state,
   storage, and UI together
+
+## Discovery sources vs implementation sources
+
+Some repositories are useful for discovery but should not be treated as
+behavior references:
+
+- `ComfyUI-Workflow/awesome-comfyui`
+- `liusida/top-100-comfyui`
+
+They are helpful for seeing which extension families are common and which
+projects are active, but they do not define official APIs, upstream runtime
+semantics, or required package structure.

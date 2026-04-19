@@ -7,7 +7,12 @@
 
 - https://docs.comfy.org/custom-nodes/backend/manager
 - https://docs.comfy.org/manager/pack-management
-- https://github.com/ltdrdata/ComfyUI-Manager
+- https://github.com/ltdrdata/ComfyUI-Manager (community pattern example)
+
+## Evidence Levels
+
+This page summarizes official behavior from docs.comfy.org. The ComfyUI-Manager
+repository is a community pattern example, not an official ComfyUI project.
 
 ## Overview
 

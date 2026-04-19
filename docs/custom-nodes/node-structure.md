@@ -9,6 +9,12 @@
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
 - https://docs.comfy.org/custom-nodes/backend/datatypes
 
+## Evidence Levels
+
+This page summarizes official behavior documented on docs.comfy.org. Schema
+fields and V3 patterns are as described in official docs; community node packs
+may use older V1 patterns.
+
 ## Overview
 
 In V3, a custom node is a Python class derived from `io.ComfyNode`.

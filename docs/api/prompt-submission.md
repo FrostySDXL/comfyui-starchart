@@ -1,12 +1,19 @@
 # Prompt Submission
 
 **Last Updated:** 2026-04-19
-**Primary Source:** https://github.com/Comfy-Org/ComfyUI/blob/master/server.py
+**Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
 
 ## Primary Sources
 
-- https://github.com/Comfy-Org/ComfyUI/blob/master/server.py
-- https://github.com/Comfy-Org/ComfyUI/blob/master/execution.py
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
+- https://docs.comfy.org/development/comfyui-server/comms_routes
+
+## Evidence Levels
+
+This page describes upstream source behavior visible in the pinned ComfyUI core
+snapshot. Handler logic and validation behavior are derived from source inspection,
+not official docs pages.
 
 ## Overview
 
@@ -16,6 +23,10 @@ sensitive metadata, and enqueues the prompt for asynchronous execution.
 
 Successful submission does not mean the workflow already ran; it means
 the prompt passed validation and was placed on the execution queue.
+
+This page describes native ComfyUI behavior first. Community client
+libraries often wrap this endpoint with higher-level conveniences, but
+those wrapper APIs are not the same thing as ComfyUI's public contract.
 
 ## Request Structure
 
@@ -108,3 +119,53 @@ Once queued, the usual follow-on flow is:
 When `execute_async` begins, it copies the submitted `client_id` into
 `server.client_id`, and most execution lifecycle events are then sent to
 that specific client rather than broadcast globally.
+
+## Community client patterns
+
+The following patterns show up in community libraries and are useful to
+document as client conventions, not as native `/prompt` semantics.
+
+### Workflow export conversion
+
+Some clients accept editor-exported `workflow.json` and convert it to the
+API graph shape before submission.
+
+Pattern-study example:
+
+- `sugarkwork/Comfyui_api_client` advertises automatic conversion from
+  editor workflow format to API format
+
+That conversion is a client convenience layer. `/prompt` itself expects an
+API-valid prompt graph.
+
+### Title-based parameter editing
+
+Some wrappers let callers mutate workflows by node title or class name,
+instead of editing node IDs directly.
+
+Pattern-study examples:
+
+- `sugarkwork/Comfyui_api_client`
+- `comfy-api-simplified`
+
+This is ergonomic for scripting, but it depends on client-side workflow
+inspection and often assumes titles are unique. ComfyUI's `/prompt` route
+does not provide title-based mutation on its own.
+
+### Queue-and-wait helpers
+
+Many clients wrap a larger flow around `POST /prompt`:
+
+1. submit prompt
+2. correlate by `prompt_id` and optional `client_id`
+3. watch the WebSocket and/or poll queue state
+4. read `/history/{prompt_id}` for final outputs
+
+Pattern-study examples:
+
+- `comfy-api-simplified` exposes queue-and-wait helpers
+- `sugarkwork/Comfyui_api_client` exposes generate-style client methods
+
+That orchestration is the common way people consume ComfyUI in practice,
+but it is built on top of `/prompt`, WebSocket events, and history lookup
+rather than replacing them.

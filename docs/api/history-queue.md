@@ -1,12 +1,19 @@
 # History and Queue
 
 **Last Updated:** 2026-04-19
-**Primary Source:** https://github.com/Comfy-Org/ComfyUI/blob/master/server.py
+**Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
 
 ## Primary Sources
 
-- https://github.com/Comfy-Org/ComfyUI/blob/master/server.py
-- https://github.com/Comfy-Org/ComfyUI/blob/master/execution.py
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
+- https://docs.comfy.org/development/comfyui-server/comms_routes
+
+## Evidence Levels
+
+This page describes upstream source behavior visible in the pinned ComfyUI core
+snapshot. Route details and handler behavior are derived from source inspection,
+not official docs pages.
 
 ## Overview
 
@@ -18,6 +25,11 @@ ComfyUI splits live scheduling state from completed execution records:
 In practice, clients often use both. The WebSocket is best for live
 updates, while `/queue` and `/history` are the stable HTTP surfaces for
 polling, reconnect, and post-run inspection.
+
+Many community wrappers build their higher-level "wait for result" logic
+on top of these same surfaces. That wrapper behavior can be useful to
+study, but the native contract here is still the HTTP and WebSocket API
+documented in ComfyUI's source.
 
 ## Queue State
 
@@ -101,3 +113,23 @@ Common client flow after `POST /prompt`:
   fields from `POST /prompt`.
 - History is persistent only within ComfyUI's prompt queue/history
   machinery, not a separate long-term database.
+
+## Community polling patterns
+
+Common wrapper behavior built on top of native routes:
+
+- submit with `POST /prompt`
+- capture `prompt_id`
+- optionally correlate live events with `client_id`
+- poll `GET /queue` until the prompt is no longer running or pending
+- fetch `GET /history/{prompt_id}` to collect outputs
+
+Pattern-study examples:
+
+- `comfy-api-simplified` markets queue-and-wait automation over exported
+  API workflows
+- `sugarkwork/Comfyui_api_client` wraps prompt submission, output lookup,
+  and workflow mutation in a Python client lifecycle
+
+These are good examples of how people consume ComfyUI programmatically in
+practice. They do not add new native queue or history semantics.

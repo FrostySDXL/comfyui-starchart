@@ -23,6 +23,14 @@ patterns. The exact choice depends on where the behavior lives:
 The cleanest extensions keep each concern in its native layer instead of
 forcing everything through one mechanism.
 
+When reading this page, distinguish three layers:
+
+- official behavior — hooks, routes, and messages documented by Comfy
+- upstream source behavior — what current ComfyUI source actually sends or
+  accepts
+- community pattern examples — reusable design ideas from ecosystem repos,
+  but not native contracts
+
 ## Frontend vs Server Tradeoffs
 
 ### Frontend hooks
@@ -102,6 +110,60 @@ Adds custom nodes, frontend JS, and sometimes custom routes. This is the
 most powerful pattern, but also the easiest to make brittle if UI and
 backend assumptions drift.
 
+## Community pattern examples
+
+The following patterns are common in community repos and can improve
+design discussions, but they should not be mistaken for official ComfyUI
+requirements.
+
+### Pipe or bundle nodes
+
+Large node packs often introduce bundle datatypes such as pipe objects to
+collapse common multi-input state into one edge. This can make complex
+graphs easier to read and lets helper nodes edit or unpack that bundle at
+defined points.
+
+Pattern-study example:
+
+- `ltdrdata/ComfyUI-Impact-Pack` uses `BASIC_PIPE`, `DETAILER_PIPE`, and
+  related conversion/edit nodes extensively
+
+This is a useful community pattern for graph ergonomics, not a built-in
+ComfyUI requirement.
+
+### Hook-provider composition
+
+Some advanced node packs model execution tweaks as composable provider or
+hook nodes rather than baking all logic into one sampler/detailer node.
+That keeps graph behavior more inspectable and makes feature combinations
+explicit.
+
+Pattern-study example:
+
+- `ltdrdata/ComfyUI-Impact-Pack` exposes schedule hooks, detailer hooks,
+  and hook-combine nodes
+
+### Tool-facing extension routes
+
+External-tool integrations often add extension-owned HTTP routes for asset
+transfer, metadata lookup, or helper services while still using normal
+ComfyUI prompt execution for the actual generation work.
+
+Pattern-study example:
+
+- `Acly/comfyui-tooling-nodes` adds `/api/etn/...` routes for cached image
+  transfer, model inspection, and translation helpers
+
+These routes are extension contracts, not native ComfyUI endpoints.
+
+### Official examples as workflow pattern references
+
+For worked examples of how real ComfyUI graphs are composed, prefer the
+official `comfyanonymous/ComfyUI_examples` repository before leaning on
+third-party workflow collections. It is still an example source rather
+than a low-level API spec, but it is the strongest example source in this
+set.
+
 ## Practical guidance
 
 - start with the narrowest architecture that solves the problem
@@ -109,3 +171,5 @@ backend assumptions drift.
 - prefer explicit routes over hidden side channels when frontend code
   needs server state
 - treat hybrid extensions as real software systems, not quick patches
+- when borrowing ideas from community repos, label them as community
+  patterns and cross-check them against official docs and upstream source

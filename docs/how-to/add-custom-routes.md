@@ -6,7 +6,12 @@
 ## Primary Sources
 
 - https://docs.comfy.org/development/comfyui-server/comms_routes
-- ComfyUI `server.py`
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
+
+## Evidence Levels
+
+This page primarily describes official behavior documented on docs.comfy.org.
+Route patterns are verified against the pinned ComfyUI core snapshot.
 
 ## Overview
 

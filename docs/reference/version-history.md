@@ -8,6 +8,12 @@
 - https://github.com/Comfy-Org/ComfyUI/releases
 - https://docs.comfy.org/changelog
 
+## Evidence Levels
+
+This page summarizes official changelog and release notes. Version-specific
+claims should be verified against the cited official pages and the pinned
+ComfyUI core snapshot where applicable.
+
 ## Overview
 
 This page is not a full release log. It is a compatibility-focused summary for

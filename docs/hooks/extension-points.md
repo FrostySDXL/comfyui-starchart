@@ -7,8 +7,14 @@
 
 - https://docs.comfy.org/custom-nodes/js/javascript_hooks
 - https://docs.comfy.org/custom-nodes/js/javascript_objects_and_hijacking
-- https://github.com/Comfy-Org/ComfyUI/blob/master/server.py
-- https://github.com/Comfy-Org/ComfyUI/blob/master/execution.py
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
+
+## Evidence Levels
+
+This page mixes official behavior (hooks documented on docs.comfy.org) with
+upstream source behavior (route and manager patterns visible in the pinned
+ComfyUI core snapshot).
 
 ## Overview
 

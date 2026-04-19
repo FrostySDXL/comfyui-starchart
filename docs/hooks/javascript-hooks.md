@@ -7,6 +7,13 @@
 
 - https://docs.comfy.org/custom-nodes/js/javascript_hooks
 - https://docs.comfy.org/custom-nodes/js/javascript_objects_and_hijacking
+- `references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts` (v1.42.11, commit 3dc4061)
+
+## Evidence Levels
+
+This page primarily describes official behavior documented on docs.comfy.org.
+Hook call order and lifecycle details are verified against the pinned official
+frontend snapshot.
 
 ## Overview
 

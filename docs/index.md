@@ -64,5 +64,23 @@ When adding or updating content:
 - update or pin snapshot material in `references/` when exact source state
   matters
 
+Current pinned extraction baseline:
+
+- ComfyUI core `v0.19.3` (`3086026401180c9216bcb6ace442a4e3587d2c66`)
+- official frontend `v1.42.11` (`3dc4061d484d61cb89366de25bf5e2f8a65da4d0`)
+
 If a page and the current upstream source disagree, trust upstream first and
 update this repository accordingly.
+
+## Evidence Levels
+
+Keep the following distinction strict throughout this repo:
+
+- official behavior: stated in `docs.comfy.org`
+- upstream source behavior: visible in cited ComfyUI source files for a specific
+  version or commit
+- community pattern examples: useful ecosystem implementations that are not part
+  of native ComfyUI's contract
+
+Use community repositories for implementation ideas and packaging patterns, not
+as the definition of official ComfyUI behavior.

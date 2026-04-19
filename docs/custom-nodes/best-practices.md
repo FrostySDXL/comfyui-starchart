@@ -18,6 +18,10 @@ to caching, and clear about what they do. The biggest failures in ComfyUI
 node packs usually come from unclear contracts, unnecessary monkey
 patching, and hidden runtime assumptions.
 
+This page prioritizes official docs and registry guidance. Community node
+packs can still be useful pattern-study sources, but their packaging and
+helper conventions are examples, not mandatory ComfyUI rules.
+
 ## Implementation Practices
 
 ### Respect caching and execution semantics
@@ -87,6 +91,35 @@ Registry-facing packages should keep:
 - compatibility notes
 - clear upgrade paths when breaking behavior changes
 
+Community pattern examples:
+
+- large packs such as `ltdrdata/ComfyUI-Impact-Pack` often ship
+  compatibility notices directly in the repo because custom datatypes,
+  helper nodes, and companion packs may depend on specific upstream
+  versions
+- large packs such as `ltdrdata/was-node-suite-comfyui` and
+  `ltdrdata/ComfyUI-Impact-Pack` also tend to ship example workflows or
+  repo-local docs so users can learn the intended graph shapes
+
+Those are useful maintenance patterns, but they are community practice,
+not registry-enforced contracts.
+
+### Use helper abstractions carefully
+
+Community node suites often add helper abstractions such as bus nodes,
+pipe objects, switch nodes, or hook-provider nodes to reduce graph
+complexity.
+
+These can be valuable when:
+
+- the same cluster of inputs appears repeatedly
+- the abstraction has a stable meaning across many graphs
+- unpack/edit nodes keep the abstraction inspectable
+
+They become harmful when they hide too much state or make workflows harder
+to debug. Prefer them as ergonomic wrappers, not as substitutes for clear
+typed contracts.
+
 ## Practical checklist
 
 - choose the narrowest correct datatype
@@ -95,3 +128,5 @@ Registry-facing packages should keep:
 - avoid hidden side effects
 - prefer supported extension hooks over monkey-patching
 - make categories, names, and search behavior understandable to users
+- if you borrow a large-pack convention from a community repo, document it
+  as a community pattern rather than implying it is native ComfyUI behavior

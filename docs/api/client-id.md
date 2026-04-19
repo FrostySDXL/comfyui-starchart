@@ -1,12 +1,16 @@
 # Client ID
 
 **Last Updated:** 2026-04-19
-**Primary Source:** https://github.com/Comfy-Org/ComfyUI/blob/master/server.py
+**Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
 
 ## Primary Sources
 
-- https://github.com/Comfy-Org/ComfyUI/blob/master/server.py
-- https://github.com/Comfy-Org/ComfyUI/blob/master/execution.py
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
+
+## Evidence Levels
+
+This page describes upstream source behavior visible in the pinned ComfyUI core snapshot.
 
 ## Overview
 

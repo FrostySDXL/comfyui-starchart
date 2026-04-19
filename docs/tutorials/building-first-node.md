@@ -9,6 +9,12 @@
 - https://docs.comfy.org/custom-nodes/backend/server_overview
 - https://docs.comfy.org/custom-nodes/overview
 
+## Evidence Levels
+
+This page summarizes official behavior documented on docs.comfy.org. The
+walkthrough describes V1 patterns from the official tutorial; new projects
+should prefer V3 structure.
+
 ## Overview
 
 The official walkthrough starts with a simple V1-style image-selection

@@ -7,8 +7,14 @@
 
 - https://docs.comfy.org/development/comfyui-server/comms_messages
 - https://docs.comfy.org/development/comfyui-server/comms_routes
-- ComfyUI `server.py`
-- ComfyUI `execution.py`
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
+
+## Evidence Levels
+
+This page mixes official behavior (message types documented on docs.comfy.org)
+with upstream source behavior (route and event patterns visible in the pinned
+ComfyUI core snapshot).
 
 ## Overview
 
@@ -54,7 +60,7 @@ For HTTP-side monitoring, the most useful routes are:
 - provide a stable `client_id` if you want execution events targeted to a
   specific frontend session
 - use WebSocket listeners for dashboards and node-level progress views
-- use `/history/{prompt_id}` as the authoritative post-run lookup after
+- use `/history/{prompt_id}` as the reliable post-run lookup after
   reconnect or browser refresh
 - use `/system_stats` for lightweight health panels, not just workflow
   tracking

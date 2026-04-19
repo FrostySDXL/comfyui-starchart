@@ -10,6 +10,12 @@
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
 - https://docs.comfy.org/custom-nodes/walkthrough
 
+## Evidence Levels
+
+This page summarizes official behavior documented on docs.comfy.org. V1 and V3
+patterns are described as they appear in official docs; community implementations
+may differ.
+
 ## Overview
 
 ComfyUI custom nodes extend the platform's client-server model. The

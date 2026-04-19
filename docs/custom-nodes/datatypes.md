@@ -9,6 +9,12 @@
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
 - https://docs.comfy.org/custom-nodes/backend/server_overview
 
+## Evidence Levels
+
+This page summarizes official behavior documented on docs.comfy.org. Tensor
+layouts and type contracts are as described in official docs; runtime behavior
+may vary by version.
+
 ## Overview
 
 ComfyUI datatypes serve two roles at once:

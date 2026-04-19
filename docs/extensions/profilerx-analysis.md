@@ -1,18 +1,18 @@
 # ProfilerX Analysis
 
 **Last Updated:** 2026-04-19
-**Primary Source:** https://github.com/ryanontheinside/ComfyUI_ProfilerX
+**Primary Source:** https://github.com/ryanontheinside/ComfyUI_ProfilerX (community pattern example)
 
 ## Primary Sources
 
-- https://github.com/ryanontheinside/ComfyUI_ProfilerX
-- ProfilerX `README.md`
-- ProfilerX `__init__.py`
-- ProfilerX `handler.py`
-- ProfilerX `routes.py`
-- ProfilerX `web/index.ts`
+- https://github.com/ryanontheinside/ComfyUI_ProfilerX (community pattern example)
+- ProfilerX `README.md`, `__init__.py`, `handler.py`, `routes.py`, `web/index.ts` (community repo)
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640) — upstream source for ComfyUI progress handler and route patterns
 
 ## Overview
+
+This page is a community extension case study, not a description of
+native ComfyUI behavior.
 
 ProfilerX is a high-value reference because it shows a full hybrid extension,
 not just a single hook:

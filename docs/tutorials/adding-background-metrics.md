@@ -1,13 +1,14 @@
 # Adding Background Metrics
 
 **Last Updated:** 2026-04-19
-**Primary Source:** https://github.com/ryanontheinside/ComfyUI_ProfilerX
+**Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_messages
 
 ## Primary Sources
 
-- https://github.com/ryanontheinside/ComfyUI_ProfilerX
+- https://github.com/ryanontheinside/ComfyUI_ProfilerX (community pattern example)
 - https://docs.comfy.org/development/comfyui-server/comms_messages
 - https://docs.comfy.org/development/comfyui-server/comms_routes
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640) — upstream source for built-in routes and message patterns
 
 ## Overview
 
@@ -17,6 +18,10 @@ Background workflow metrics are best implemented as a hybrid extension:
 - persist summaries for later analysis
 - expose stats through routes or messages
 - render them in a lightweight frontend panel
+
+Official Comfy docs and upstream runtime surfaces stay primary here.
+ProfilerX is used as a community pattern example for how one active
+extension implements those ideas in practice.
 
 The current ProfilerX rewrite is especially useful as a reference because
 its active registration path uses ComfyUI's official `ProgressHandler` API and
