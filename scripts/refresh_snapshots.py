@@ -355,6 +355,18 @@ def main():
         print("\nError: at least one of --core-version or --frontend-version is required")
         return 1
 
+    # Pre-flight: verify git is available
+    git_check = subprocess.run(
+        ["git", "--version"],
+        capture_output=True,
+        text=True,
+    )
+    if git_check.returncode != 0:
+        print("Error: git is required but not found on PATH.")
+        print("Install git or ensure it is available before running this script.")
+        return 1
+    print(f"Git version: {git_check.stdout.strip()}")
+
     snapshot_date = date.today().strftime("%Y-%m-%d")
     core_commit = None
     frontend_commit = None

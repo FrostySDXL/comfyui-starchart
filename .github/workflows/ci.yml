@@ -39,15 +39,23 @@ jobs:
       - name: Verify cross-references
         run: python scripts/verify/cross_references.py
 
+      - name: Validate JSON schemas
+        run: python scripts/verify/validate_schema.py
+
       - name: Check for stale content
+        # Non-blocking: stale markers are informational and should not fail CI
         run: python scripts/verify/stale_content.py
         continue-on-error: true
 
       - name: Verify extraction idempotency
+        # Non-blocking: byte-level differences (e.g., timestamps) are expected;
+        # structural differences need manual review but should not block CI
         run: python scripts/verify/extraction_idempotency.py
         continue-on-error: true
 
       - name: Verify upstream pins
+        # Non-blocking: pin failures indicate upstream changes (force-push, tag
+        # moves) that need manual review, not an immediate CI block
         run: python scripts/verify/upstream_pins.py
         continue-on-error: true
 
