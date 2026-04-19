@@ -12,6 +12,12 @@ OUTPUT = REPO_ROOT / "references" / "raw" / "js_hooks.json"
 
 
 class ParseHooksTests(unittest.TestCase):
+    def setUp(self):
+        self.original = OUTPUT.read_text(encoding="utf-8")
+
+    def tearDown(self):
+        OUTPUT.write_text(self.original, encoding="utf-8")
+
     def test_requires_argument(self):
         result = subprocess.run(
             [sys.executable, str(SCRIPT)],
