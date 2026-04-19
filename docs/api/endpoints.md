@@ -6,7 +6,8 @@
 ## Primary Sources
 
 - https://github.com/Comfy-Org/ComfyUI/blob/master/server.py
-- https://docs.comfy.org/docs/development/server/
+- https://docs.comfy.org/development/comfyui-server/comms_routes
+- https://docs.comfy.org/development/comfyui-server/comms_messages
 
 ## Overview
 

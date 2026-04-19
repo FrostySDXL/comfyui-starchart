@@ -1,14 +1,13 @@
 # Node Structure
 
 **Last Updated:** 2026-04-19
-**Primary Source:** local homelabdocs ComfyUI node basics skill
+**Primary Source:** https://docs.comfy.org/custom-nodes/backend/server_overview
 
 ## Primary Sources
 
-- local homelabdocs ComfyUI node basics skill
-- local homelabdocs ComfyUI node datatypes skill
 - https://docs.comfy.org/custom-nodes/backend/server_overview
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
+- https://docs.comfy.org/custom-nodes/backend/datatypes
 
 ## Overview
 

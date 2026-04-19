@@ -1,7 +1,7 @@
 # Common Architectures
 
 **Last Updated:** 2026-04-19
-**Primary Source:** community extension repositories
+**Primary Source:** https://github.com/ryanontheinside/ComfyUI_ProfilerX
 
 ## Primary Sources
 
@@ -60,14 +60,18 @@ Profiler-style tools combine several layers:
 - persistence/history storage
 - frontend dashboard components
 
-The current `ComfyUI_ProfilerX` rewrite is a strong example. Its repo
-tree shows:
+The current `ComfyUI_ProfilerX` rewrite is a strong example. Its active
+registration path shows:
 
-- Python backend files such as `handler.py`, `metrics.py`, `routes.py`,
-  `storage.py`, and `profiler_core.py`
+- Python backend files such as `__init__.py`, `handler.py`, `metrics.py`,
+  `routes.py`, and `storage.py`
 - frontend UI under `web/` with views, tabs, tables, and monitor/popup
   modules
 - explicit REST endpoints for stats and archive management
+
+Like many active extensions, the repo also contains legacy implementation files
+from an older design. That is common in community extensions and is a reminder
+to distinguish active integration paths from historical code.
 
 ### Full hybrid products
 

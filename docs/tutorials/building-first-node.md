@@ -7,7 +7,7 @@
 
 - https://docs.comfy.org/custom-nodes/walkthrough
 - https://docs.comfy.org/custom-nodes/backend/server_overview
-- local homelabdocs ComfyUI node basics skill
+- https://docs.comfy.org/custom-nodes/overview
 
 ## Overview
 

@@ -7,7 +7,7 @@
 
 - https://docs.comfy.org/custom-nodes/backend/datatypes
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
-- local homelabdocs ComfyUI node datatypes skill
+- https://docs.comfy.org/custom-nodes/backend/server_overview
 
 ## Overview
 

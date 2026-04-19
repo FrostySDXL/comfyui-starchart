@@ -1,12 +1,12 @@
 # ComfyUI Knowledge Base
 
 **Last Updated:** 2026-04-19
-**Status:** Phase 1 scaffold
-**ComfyUI Version Pin:** TODO: add commit hash or release tag after first snapshot
+**Status:** Source-backed documentation pass in progress
+**ComfyUI Version Pin:** Track against cited upstream docs pages and release notes until a repo snapshot pin is added
 
 ## Overview
 
-Authoritative, repo-local documentation infrastructure for ComfyUI development topics:
+Authoritative, repo-local documentation for ComfyUI development topics:
 - server API endpoints and WebSocket behavior
 - JavaScript and server-side extension hooks
 - custom node development patterns and datatypes
@@ -36,16 +36,25 @@ python scripts/extract/parse_hooks.py path/to/ComfyUI/web/app.js
 python scripts/generate/md_from_json.py
 ```
 
-## Phase 1 Scope
+## Current Scope
 
-Phase 1 intentionally provides scaffold and infrastructure only:
+This repository now includes source-backed coverage for:
+
+- server API endpoints and WebSocket behavior
+- hooks and extension points
+- custom node development, registration, datatypes, and best practices
+- extension architecture patterns and ProfilerX-style monitoring analysis
+- practical tutorials and how-to pages for common extension tasks
+
+It also still includes supporting infrastructure for future expansion:
+
 - MkDocs site structure
-- placeholder documentation pages
-- sample JSON reference files
-- ad-hoc extraction and generation scripts
-- snapshot and workflow placeholders
+- machine-readable reference files
+- extraction and generation scripts
+- snapshot/reference scaffolding for additional source capture
 
-Actual research-heavy documentation content is future work.
+Some areas remain summary-level and should continue to be refined against exact
+upstream source snapshots.
 
 ## Verification
 
@@ -60,4 +69,4 @@ mkdocs build
 - https://docs.comfy.org/
 - https://github.com/Comfy-Org/ComfyUI
 - https://registry.comfy.org/
-- https://github.com/refrance/ProfilerX
+- https://github.com/ryanontheinside/ComfyUI_ProfilerX

@@ -1,13 +1,13 @@
 # Registration
 
 **Last Updated:** 2026-04-19
-**Primary Source:** local homelabdocs ComfyUI node basics skill
+**Primary Source:** https://docs.comfy.org/custom-nodes/overview
 
 ## Primary Sources
 
-- local homelabdocs ComfyUI node basics skill
 - https://docs.comfy.org/custom-nodes/overview
 - https://docs.comfy.org/custom-nodes/backend/server_overview
+- https://docs.comfy.org/custom-nodes/walkthrough
 
 ## Overview
 

@@ -9,7 +9,7 @@
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
 - https://docs.comfy.org/custom-nodes/js/javascript_hooks
 - https://registry.comfy.org/
-- local homelabdocs ComfyUI node basics skill
+- https://docs.comfy.org/custom-nodes/overview
 
 ## Overview
 

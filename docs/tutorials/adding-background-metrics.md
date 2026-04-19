@@ -19,14 +19,15 @@ Background workflow metrics are best implemented as a hybrid extension:
 - render them in a lightweight frontend panel
 
 The current ProfilerX rewrite is especially useful as a reference because
-its README explicitly says it moved away from monkey-patching and now
-uses ComfyUI's official `ProgressHandler` API.
+its active registration path uses ComfyUI's official `ProgressHandler` API and
+re-registers its handler when ComfyUI resets progress state for a new run.
 
 ## Hook Strategy
 
 ProfilerX's documented strategy is a good model:
 
 - attach a handler through the official `ProgressHandler` path
+- re-inject the handler when the progress registry resets
 - measure per-node timing in start/finish callbacks
 - record RAM and VRAM usage during execution
 - infer cache hits when finish events occur without matching starts
@@ -34,6 +35,10 @@ ProfilerX's documented strategy is a good model:
 
 That design is better than patching random executor internals because it
 tracks runtime behavior through a supported instrumentation surface.
+
+One caveat from the upstream repo: older patch-heavy files still exist beside
+the newer handler-based path. When borrowing patterns, follow the active
+registration flow, not every historical implementation file in the repository.
 
 For a simpler implementation, combine:
 
