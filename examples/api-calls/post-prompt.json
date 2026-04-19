@@ -1,0 +1,32 @@
+{
+  "prompt": {
+    "3": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1,
+        "steps": 20,
+        "cfg": 8,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "denoise": 1,
+        "model": [
+          "4",
+          0
+        ],
+        "positive": [
+          "6",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "latent_image": [
+          "5",
+          0
+        ]
+      }
+    }
+  },
+  "client_id": "replace-with-websocket-client-id"
+}

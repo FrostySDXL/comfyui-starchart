@@ -1,9 +1,35 @@
-# Examples: Minimal Node Template
+# Example: Official Custom Node Walkthrough
 
-**Status:** Planned
+**Status:** Source-backed example
+**Primary Source:** https://docs.comfy.org/custom-nodes/walkthrough
 
-## Planned Content
+## What This Example Is
 
-- copyable V3 node template
-- registration example
-- minimal verification steps
+This directory captures the official custom-node walkthrough example from the
+ComfyUI docs: an `Image Selector` node that chooses one image from a batch.
+
+It is useful as a real starter example because it includes:
+
+- a backend Python node
+- registration mappings
+- a frontend extension example
+- an official workflow JSON that exercises the node
+
+## Files
+
+- `image_selector_node.py` - backend node example derived from the walkthrough
+- `web/js/imageSelector.js` - frontend event-listener example from the walkthrough
+- `workflow.json` - official example workflow JSON from the Comfy docs repo
+
+## Evidence Level
+
+- official behavior: the walkthrough page and linked workflow JSON
+- upstream source behavior: not claimed here beyond what the walkthrough states
+- community behavior: not used in this example
+
+## Usage Notes
+
+- treat this as a documented example, not a full production node pack
+- verify against your installed ComfyUI version before shipping a real package
+- if a local upstream ComfyUI checkout is available later, pin this example to a
+  specific commit in `references/snapshots/`
