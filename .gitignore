@@ -12,3 +12,4 @@ site/
 .DS_Store
 .vscode/
 .idea/
+.cache/

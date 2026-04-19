@@ -5,6 +5,16 @@ on:
     branches: [master, main]
   pull_request:
     branches: [master, main]
+  workflow_dispatch:
+    inputs:
+      core_version:
+        description: "ComfyUI core version tag (e.g., v0.19.4)"
+        required: false
+        type: string
+      frontend_version:
+        description: "ComfyUI frontend version tag (e.g., v1.42.12)"
+        required: false
+        type: string
 
 jobs:
   test:
@@ -30,7 +40,41 @@ jobs:
         run: python scripts/verify/cross_references.py
 
       - name: Check for stale content
-        run: python scripts/verify/stale_content.py || true
+        run: python scripts/verify/stale_content.py
+        continue-on-error: true
 
       - name: Verify extraction idempotency
-        run: python scripts/verify/extraction_idempotency.py || true
+        run: python scripts/verify/extraction_idempotency.py
+        continue-on-error: true
+
+      - name: Verify upstream pins
+        run: python scripts/verify/upstream_pins.py
+        continue-on-error: true
+
+  refresh-snapshots:
+    if: github.event_name == 'workflow_dispatch' && (inputs.core_version != '' || inputs.frontend_version != '')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Configure git for clone operations
+        run: git config --global user.email "ci@comfyui-kb.local" && git config --global user.name "CI Bot"
+
+      - name: Refresh snapshots
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.core_version }}" ]; then
+            ARGS="$ARGS --core-version ${{ inputs.core_version }}"
+          fi
+          if [ -n "${{ inputs.frontend_version }}" ]; then
+            ARGS="$ARGS --frontend-version ${{ inputs.frontend_version }}"
+          fi
+          python scripts/refresh_snapshots.py $ARGS
