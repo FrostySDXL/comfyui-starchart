@@ -14,9 +14,11 @@ OUTPUT = REPO_ROOT / "docs" / "reference" / "server-py-summary.md"
 class MarkdownGenerationTests(unittest.TestCase):
     def setUp(self):
         self.original = INPUT.read_text(encoding="utf-8")
+        self.original_output = OUTPUT.read_text(encoding="utf-8")
 
     def tearDown(self):
         INPUT.write_text(self.original, encoding="utf-8")
+        OUTPUT.write_text(self.original_output, encoding="utf-8")
 
     def test_generates_markdown_summary(self):
         INPUT.write_text(

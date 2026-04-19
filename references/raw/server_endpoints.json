@@ -1,30 +1,432 @@
 {
   "metadata": {
-    "source": "C:\\Users\\Craig\\AppData\\Local\\Temp\\tmp1j7bnipz\\server.py",
+    "source": "references\\snapshots\\2026-04-19\\comfyui-core-v0.19.3\\server.py",
     "extracted_date": "2026-04-19",
-    "version": "1.0.0"
+    "version": "v0.19.3",
+    "commit": "3086026401180c9216bcb6ace442a4e3587d2c66"
   },
   "endpoints": [
     {
+      "route": "/ws",
+      "method": "GET",
+      "description": "WebSocket endpoint for real-time server-client communication. Supports status updates, execution progress, feature flag negotiation, and preview images. Query parameter: clientId (optional) - existing session ID to reuse",
+      "parameters": [
+        {
+          "name": "clientId",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "description": "Existing session ID to reconnect with"
+        }
+      ],
+      "returns": "web.WebSocketResponse - WebSocket connection for bidirectional communication"
+    },
+    {
+      "route": "/",
+      "method": "GET",
+      "description": "Serves the ComfyUI frontend index.html with no-cache headers",
+      "parameters": [],
+      "returns": "web.FileResponse - HTTP 200 with index.html content-type text/html"
+    },
+    {
+      "route": "/embeddings",
+      "method": "GET",
+      "description": "Lists all available embedding filenames (without extensions) from the embeddings folder",
+      "parameters": [],
+      "returns": "web.json_response - HTTP 200 with JSON array of embedding names (strings)"
+    },
+    {
+      "route": "/models",
+      "method": "GET",
+      "description": "Lists all available model type folder names (e.g., checkpoints, Loras, VAEs)",
+      "parameters": [],
+      "returns": "web.json_response - HTTP 200 with JSON array of model type strings"
+    },
+    {
+      "route": "/models/{folder}",
+      "method": "GET",
+      "description": "Lists all model files in a specific model type folder",
+      "parameters": [
+        {
+          "name": "folder",
+          "in": "path",
+          "type": "string",
+          "required": true,
+          "description": "Model type folder name (e.g., 'checkpoints', 'loras')"
+        }
+      ],
+      "returns": "web.json_response - HTTP 200 with JSON array of filenames, or HTTP 404 if folder not found"
+    },
+    {
+      "route": "/extensions",
+      "method": "GET",
+      "description": "Lists all JavaScript extension files from the web root and custom node EXTENSION_WEB_DIRS",
+      "parameters": [],
+      "returns": "web.json_response - HTTP 200 with JSON array of extension paths (strings)"
+    },
+    {
+      "route": "/upload/image",
+      "method": "POST",
+      "description": "Uploads an image file to the input/output/temp directory. Supports subfolder organization and duplicate detection via hash comparison",
+      "parameters": [
+        {
+          "name": "image",
+          "in": "form-data",
+          "type": "file",
+          "required": true,
+          "description": "Image file to upload"
+        },
+        {
+          "name": "type",
+          "in": "form-data",
+          "type": "string",
+          "required": false,
+          "description": "Directory type: 'input', 'output', or 'temp' (default: 'input')"
+        },
+        {
+          "name": "subfolder",
+          "in": "form-data",
+          "type": "string",
+          "required": false,
+          "description": "Subfolder path within the directory type"
+        },
+        {
+          "name": "overwrite",
+          "in": "form-data",
+          "type": "string",
+          "required": false,
+          "description": "If 'true' or '1', overwrite existing file instead of renaming"
+        }
+      ],
+      "returns": "web.json_response - HTTP 200 with {name, subfolder, type, asset?} or HTTP 400 on error"
+    },
+    {
+      "route": "/upload/mask",
+      "method": "POST",
+      "description": "Uploads a mask image and applies it as alpha channel to an existing output image referenced by original_ref",
+      "parameters": [
+        {
+          "name": "image",
+          "in": "form-data",
+          "type": "file",
+          "required": true,
+          "description": "Mask image file to upload"
+        },
+        {
+          "name": "original_ref",
+          "in": "form-data",
+          "type": "string",
+          "required": true,
+          "description": "JSON string with {filename, subfolder?, type?} referencing the output image"
+        },
+        {
+          "name": "type",
+          "in": "form-data",
+          "type": "string",
+          "required": false,
+          "description": "Directory type: 'input', 'output', or 'temp' (default: 'input')"
+        },
+        {
+          "name": "subfolder",
+          "in": "form-data",
+          "type": "string",
+          "required": false,
+          "description": "Subfolder path within the directory type"
+        }
+      ],
+      "returns": "web.json_response - HTTP 200 with {name, subfolder, type, asset?} or HTTP 400/403 on error"
+    },
+    {
+      "route": "/view",
+      "method": "GET",
+      "description": "Views or downloads an image file from input/output directories. Supports preview generation, channel extraction (rgb/a), and asset hash resolution",
+      "parameters": [
+        {
+          "name": "filename",
+          "in": "query",
+          "type": "string",
+          "required": true,
+          "description": "Filename or blake3 asset hash (e.g., 'blake3:...')"
+        },
+        {
+          "name": "type",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "description": "Directory type: 'input' or 'output' (default: 'output')"
+        },
+        {
+          "name": "subfolder",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "description": "Subfolder path"
+        },
+        {
+          "name": "preview",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "description": "Generate preview: 'webp' or 'jpeg' optionally with quality (e.g., 'webp;80')"
+        },
+        {
+          "name": "channel",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "description": "Channel to extract: 'rgba' (default), 'rgb', or 'a' (alpha only)"
+        }
+      ],
+      "returns": "web.Response or web.FileResponse - HTTP 200 with image content, HTTP 400/403/404 on error"
+    },
+    {
+      "route": "/view_metadata/{folder_name}",
+      "method": "GET",
+      "description": "Extracts and returns the __metadata__ from a safetensors file header",
+      "parameters": [
+        {
+          "name": "folder_name",
+          "in": "path",
+          "type": "string",
+          "required": true,
+          "description": "Folder containing the safetensors file"
+        },
+        {
+          "name": "filename",
+          "in": "query",
+          "type": "string",
+          "required": true,
+          "description": "Safetensors filename (must end with .safetensors)"
+        }
+      ],
+      "returns": "web.json_response - HTTP 200 with metadata dict, or HTTP 404 if not found/valid"
+    },
+    {
+      "route": "/system_stats",
+      "method": "GET",
+      "description": "Returns system statistics including OS, RAM, VRAM, Python/PyTorch versions, and ComfyUI version info",
+      "parameters": [],
+      "returns": "web.json_response - HTTP 200 with system stats and device info"
+    },
+    {
+      "route": "/features",
+      "method": "GET",
+      "description": "Returns server-side feature flags for capability negotiation",
+      "parameters": [],
+      "returns": "web.json_response - HTTP 200 with feature flags dictionary"
+    },
+    {
+      "route": "/prompt",
+      "method": "GET",
+      "description": "Returns current prompt queue status information",
+      "parameters": [],
+      "returns": "web.json_response - HTTP 200 with {exec_info: {queue_remaining: int}}"
+    },
+    {
+      "route": "/object_info",
+      "method": "GET",
+      "description": "Returns detailed information about all registered node types including inputs, outputs, categories, and metadata",
+      "parameters": [],
+      "returns": "web.json_response - HTTP 200 with dict mapping node class names to {input, input_order, is_input_list, output, output_is_list, output_name, name, display_name, description, python_module, category, output_node, has_intermediate_output, output_tooltips?, deprecated?, experimental?, dev_only?, api_node?, search_aliases, essentials_category?}"
+    },
+    {
+      "route": "/object_info/{node_class}",
+      "method": "GET",
+      "description": "Returns detailed information about a specific node type",
+      "parameters": [
+        {
+          "name": "node_class",
+          "in": "path",
+          "type": "string",
+          "required": true,
+          "description": "Node class name to retrieve info for"
+        }
+      ],
+      "returns": "web.json_response - HTTP 200 with dict {node_class: {input, output, ...}} or empty dict if not found"
+    },
+    {
+      "route": "/api/jobs",
+      "method": "GET",
+      "description": "List all jobs with filtering, sorting, and pagination. Query parameters: status: Filter by status (comma-separated): pending, in_progress, completed, failed workflow_id: Filter by workflow ID sort_by: Sort field: created_at (default), execution_duration sort_order: Sort direction: asc, desc (default) limit: Max items to return (positive integer) offset: Items to skip (non-negative integer, default 0)",
+      "parameters": [
+        {
+          "name": "status",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "description": "Comma-separated status filter: pending, in_progress, completed, failed"
+        },
+        {
+          "name": "workflow_id",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "description": "Filter by workflow ID"
+        },
+        {
+          "name": "sort_by",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "description": "Sort field: created_at (default) or execution_duration"
+        },
+        {
+          "name": "sort_order",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "description": "Sort direction: asc or desc (default)"
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "type": "integer",
+          "required": false,
+          "description": "Maximum items to return (positive integer)"
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "type": "integer",
+          "required": false,
+          "description": "Items to skip (default: 0)"
+        }
+      ],
+      "returns": "web.json_response - HTTP 200 with {jobs: [...], pagination: {offset, limit, total, has_more}}, or HTTP 400 on invalid params"
+    },
+    {
+      "route": "/api/jobs/{job_id}",
+      "method": "GET",
+      "description": "Get a single job by ID.",
+      "parameters": [
+        {
+          "name": "job_id",
+          "in": "path",
+          "type": "string",
+          "required": true,
+          "description": "Unique job identifier"
+        }
+      ],
+      "returns": "web.json_response - HTTP 200 with job object, HTTP 404 if not found, or HTTP 400 if job_id missing"
+    },
+    {
       "route": "/history",
       "method": "GET",
-      "description": "History listing.",
+      "description": "Returns execution history (completed/failed prompts) with optional pagination",
+      "parameters": [
+        {
+          "name": "max_items",
+          "in": "query",
+          "type": "integer",
+          "required": false,
+          "description": "Maximum number of history items to return"
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "type": "integer",
+          "required": false,
+          "description": "Offset for pagination (default: -1 for all)"
+        }
+      ],
+      "returns": "web.json_response - HTTP 200 with dict mapping prompt IDs to history entries"
+    },
+    {
+      "route": "/history/{prompt_id}",
+      "method": "GET",
+      "description": "Returns history entry for a specific prompt ID",
+      "parameters": [
+        {
+          "name": "prompt_id",
+          "in": "path",
+          "type": "string",
+          "required": true,
+          "description": "Prompt ID to retrieve history for"
+        }
+      ],
+      "returns": "web.json_response - HTTP 200 with {prompt_id: history_entry} or empty dict if not found"
+    },
+    {
+      "route": "/queue",
+      "method": "GET",
+      "description": "Returns current prompt queue status with running and pending items",
       "parameters": [],
-      "returns": "TODO"
+      "returns": "web.json_response - HTTP 200 with queue_running and queue_pending arrays"
     },
     {
       "route": "/prompt",
       "method": "POST",
-      "description": "Socket stream.",
-      "parameters": [],
-      "returns": "TODO"
+      "description": "Submits a new prompt workflow for execution. Validates the prompt graph and adds it to the execution queue",
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "type": "object",
+          "required": true,
+          "description": "Prompt object with workflow definition"
+        }
+      ],
+      "returns": "web.json_response - HTTP 200 with {prompt_id, number, node_errors: {}}, HTTP 400 if prompt invalid or missing"
     },
     {
-      "route": "/ws",
-      "method": "WS",
-      "description": "Socket stream.",
-      "parameters": [],
-      "returns": "TODO"
+      "route": "/queue",
+      "method": "POST",
+      "description": "Manages the prompt queue - can clear all items or delete specific prompt IDs",
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "type": "object",
+          "required": true,
+          "description": "Queue management object"
+        }
+      ],
+      "returns": "web.Response - HTTP 200 on success"
+    },
+    {
+      "route": "/interrupt",
+      "method": "POST",
+      "description": "Interrupts currently running prompt processing. Can target specific prompt_id or do global interrupt",
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "type": "object",
+          "required": false,
+          "description": "Optional object with prompt_id for targeted interrupt"
+        }
+      ],
+      "returns": "web.Response - HTTP 200 on success"
+    },
+    {
+      "route": "/free",
+      "method": "POST",
+      "description": "Sets flags to unload models and/or free VRAM after current prompt completes",
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "type": "object",
+          "required": true,
+          "description": "Object with unload_models and/or free_memory boolean flags"
+        }
+      ],
+      "returns": "web.Response - HTTP 200 on success"
+    },
+    {
+      "route": "/history",
+      "method": "POST",
+      "description": "Manages execution history - can clear all history or delete specific prompt IDs",
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "type": "object",
+          "required": true,
+          "description": "History management object with clear or delete keys"
+        }
+      ],
+      "returns": "web.Response - HTTP 200 on success"
     }
   ]
 }

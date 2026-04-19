@@ -44,6 +44,8 @@ def extract_endpoints(source_text: str) -> list[dict]:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Extract ComfyUI server routes to JSON")
     parser.add_argument("server_path", nargs="?", help="Path to ComfyUI server.py")
+    parser.add_argument("--version", default=None, help="Pinned upstream version or tag")
+    parser.add_argument("--commit", default=None, help="Pinned upstream commit hash")
     args = parser.parse_args()
 
     if not args.server_path:
@@ -58,7 +60,8 @@ def main() -> int:
         "metadata": {
             "source": str(source_path),
             "extracted_date": datetime.now().strftime("%Y-%m-%d"),
-            "version": "1.0.0",
+            "version": args.version or "unversioned",
+            "commit": args.commit,
         },
         "endpoints": endpoints,
     }
