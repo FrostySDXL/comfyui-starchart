@@ -130,14 +130,14 @@ def main() -> int:
 
     source_paths = [Path(path) for path in args.source_paths]
     source_map = {
-        str(source_path): source_path.read_text(encoding="utf-8")
+        str(source_path).replace("\\", "/"): source_path.read_text(encoding="utf-8")
         for source_path in source_paths
     }
     hooks = extract_hooks(source_map)
 
     payload = {
         "metadata": {
-            "sources": [str(path) for path in source_paths],
+            "sources": [str(path).replace("\\", "/") for path in source_paths],
             "extracted_date": datetime.now().strftime("%Y-%m-%d"),
             "version": args.version or "unversioned",
             "commit": args.commit,

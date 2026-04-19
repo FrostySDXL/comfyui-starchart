@@ -58,7 +58,7 @@ def main() -> int:
 
     payload = {
         "metadata": {
-            "source": str(source_path),
+            "source": str(source_path).replace("\\", "/"),
             "extracted_date": datetime.now().strftime("%Y-%m-%d"),
             "version": args.version or "unversioned",
             "commit": args.commit,

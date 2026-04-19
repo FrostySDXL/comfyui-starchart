@@ -1,9 +1,9 @@
 {
   "metadata": {
     "sources": [
-      "references\\snapshots\\2026-04-19\\comfyui-core-v0.19.3\\server.py",
-      "references\\snapshots\\2026-04-19\\comfyui-core-v0.19.3\\comfy_api\\latest\\_io.py",
-      "references\\snapshots\\2026-04-19\\comfyui-core-v0.19.3\\comfy_api\\latest\\_input\\basic_types.py"
+      "references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py",
+      "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
+      "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_input/basic_types.py"
     ],
     "extracted_date": "2026-04-19",
     "version": "v0.19.3",
