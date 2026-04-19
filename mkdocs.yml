@@ -54,6 +54,8 @@ nav:
   - Reference:
       - reference/object-info.md
       - reference/server-py-summary.md
+      - reference/source-evidence-policy.md
+      - reference/version-pin-status.md
       - reference/version-history.md
   - Tutorials:
       - tutorials/building-first-node.md

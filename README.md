@@ -2,11 +2,11 @@
 
 **Last Updated:** 2026-04-19
 **Status:** Source-backed documentation pass in progress
-**ComfyUI Version Pin:** Track against cited upstream docs pages and release notes until a repo snapshot pin is added
+**ComfyUI Version Pin:** Core `v0.19.3` (`3086026401180c9216bcb6ace442a4e3587d2c66`) with official frontend `v1.42.11` (`3dc4061d484d61cb89366de25bf5e2f8a65da4d0`) for pinned snapshots and extracted reference data
 
 ## Overview
 
-Authoritative, repo-local documentation for ComfyUI development topics:
+Source-backed, repo-local reference documentation for ComfyUI development topics:
 - server API endpoints and WebSocket behavior
 - JavaScript and server-side extension hooks
 - custom node development patterns and datatypes
@@ -26,13 +26,27 @@ Authoritative, repo-local documentation for ComfyUI development topics:
 - Snapshots live in `references/snapshots/`
 - Helper scripts live in `scripts/extract/` and `scripts/generate/`
 
+## Evidence Model
+
+Use content in this repository with this trust order:
+
+1. official ComfyUI documentation
+2. upstream ComfyUI source and release notes
+3. this repository's summaries, examples, and extracted references
+4. clearly labeled community pattern examples
+
+This repository is intended to be a reviewable working reference for future OSS
+ComfyUI projects. It should not claim native or official behavior unless that
+behavior is backed by an official docs page or upstream source citation.
+
 ## Quick Start
 
 ```bash
 python -m pip install -r requirements.txt
 mkdocs serve
-python scripts/extract/parse_server.py path/to/ComfyUI/server.py
-python scripts/extract/parse_hooks.py path/to/ComfyUI/web/app.js
+python scripts/extract/parse_server.py path/to/server.py --version v0.19.3 --commit 3086026401180c9216bcb6ace442a4e3587d2c66
+python scripts/extract/parse_hooks.py path/to/app.ts path/to/comfy.ts path/to/litegraphService.ts --version v1.42.11 --commit 3dc4061d484d61cb89366de25bf5e2f8a65da4d0
+python scripts/extract/parse_node_api_schema.py path/to/server.py path/to/_io.py path/to/basic_types.py --version v0.19.3 --commit 3086026401180c9216bcb6ace442a4e3587d2c66
 python scripts/generate/md_from_json.py
 ```
 
@@ -55,6 +69,13 @@ It also still includes supporting infrastructure for future expansion:
 
 Some areas remain summary-level and should continue to be refined against exact
 upstream source snapshots.
+
+## Current Gaps
+
+- extracted endpoint descriptions are present but some routes could benefit from more detailed parameter and response documentation
+- extracted references pin core plus official frontend, not every possible upstream package involved in the full product surface
+- community repositories remain supplementary examples only
+- no automated CI pipeline yet (workflows are planned but not implemented)
 
 ## Verification
 
