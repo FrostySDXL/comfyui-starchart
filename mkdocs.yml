@@ -1,0 +1,77 @@
+site_name: ComfyUI Knowledge Base
+site_description: Source-of-truth scaffold for ComfyUI docs and references
+site_author: FrostySDXL
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - API Reference:
+      - api/endpoints.md
+      - api/websocket.md
+      - api/prompt-submission.md
+      - api/history-queue.md
+      - api/client-id.md
+  - Hooks:
+      - hooks/javascript-hooks.md
+      - hooks/server-hooks.md
+      - hooks/extension-points.md
+  - Custom Nodes:
+      - custom-nodes/development-guide.md
+      - custom-nodes/node-structure.md
+      - custom-nodes/registration.md
+      - custom-nodes/datatypes.md
+      - custom-nodes/best-practices.md
+  - Extensions:
+      - extensions/patterns.md
+      - extensions/profilerx-analysis.md
+      - extensions/common-architectures.md
+  - Reference:
+      - reference/object-info.md
+      - reference/server-py-summary.md
+      - reference/version-history.md
+  - Tutorials:
+      - tutorials/building-first-node.md
+      - tutorials/adding-background-metrics.md
+      - tutorials/extending-server.md
+  - How-To:
+      - how-to/monitor-execution.md
+      - how-to/add-custom-routes.md
+      - how-to/integrate-with-manager.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.details
+  - pymdownx.mark
+  - attr_list
+  - md_in_html
+  - tables

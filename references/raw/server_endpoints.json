@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "source": "C:\\Users\\Craig\\AppData\\Local\\Temp\\tmp3pzv5z7z\\server.py",
+    "extracted_date": "2026-04-19",
+    "version": "1.0.0"
+  },
+  "endpoints": [
+    {
+      "route": "/history",
+      "method": "GET",
+      "description": "History listing.",
+      "parameters": [],
+      "returns": "TODO"
+    },
+    {
+      "route": "/prompt",
+      "method": "POST",
+      "description": "Socket stream.",
+      "parameters": [],
+      "returns": "TODO"
+    },
+    {
+      "route": "/ws",
+      "method": "WS",
+      "description": "Socket stream.",
+      "parameters": [],
+      "returns": "TODO"
+    }
+  ]
+}

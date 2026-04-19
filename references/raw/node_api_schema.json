@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "source": "ComfyUI custom node API patterns",
+    "extracted_date": "2026-04-19",
+    "version": "1.0.0-sample"
+  },
+  "schemas": {
+    "v3_node_schema_fields": {
+      "node_id": "Unique string identifier for the node",
+      "display_name": "Human-readable name shown in UI",
+      "category": "Menu path using slash separators",
+      "inputs": "List of input schema objects",
+      "outputs": "List of output schema objects",
+      "hidden": "Hidden inputs and implicit values"
+    },
+    "input_types": {
+      "io.Image.Input": {
+        "datatype": "IMAGE",
+        "widget": false
+      },
+      "io.String.Input": {
+        "datatype": "STRING",
+        "widget": true,
+        "kwargs": ["multiline", "default"]
+      },
+      "io.Float.Input": {
+        "datatype": "FLOAT",
+        "widget": true,
+        "kwargs": ["default", "min", "max", "step"]
+      },
+      "io.Int.Input": {
+        "datatype": "INT",
+        "widget": true,
+        "kwargs": ["default", "min", "max", "step"]
+      },
+      "io.Bool.Input": {
+        "datatype": "BOOLEAN",
+        "widget": true
+      }
+    },
+    "return_types": {
+      "IMAGE": "Torch tensor representing image data",
+      "LATENT": "Compressed latent representation",
+      "MASK": "Mask tensor",
+      "STRING": "Text string",
+      "NUMBER": "Numeric value",
+      "BOOLEAN": "True or false value"
+    }
+  }
+}
