@@ -47,6 +47,7 @@ nav:
       - custom-nodes/registration.md
       - custom-nodes/datatypes.md
       - custom-nodes/best-practices.md
+      - custom-nodes/v1-to-v3-migration.md
   - Extensions:
       - extensions/patterns.md
       - extensions/profilerx-analysis.md
@@ -61,6 +62,19 @@ nav:
       - tutorials/building-first-node.md
       - tutorials/adding-background-metrics.md
       - tutorials/extending-server.md
+  - Ecosystem:
+      - ecosystem/map.md
+  - Start Here:
+      - start-here/author.md
+      - start-here/extension-developer.md
+      - start-here/service-integration.md
+  - Decision Trees:
+      - decision-trees/api-integration.md
+      - decision-trees/custom-node-architecture.md
+  - Deep Dives:
+      - deep-dives/comfyui-manager.md
+  - Known Limitations:
+      - known-limitations/index.md
   - How-To:
       - how-to/monitor-execution.md
       - how-to/add-custom-routes.md
