@@ -1,6 +1,7 @@
 # Monitor Execution
 
-**Last Updated:** 2026-04-19
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_messages
 
 ## Primary Sources
@@ -10,13 +11,7 @@
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
 
-## Evidence Levels
-
-This page mixes official behavior (message types documented on docs.comfy.org)
-with upstream source behavior (route and event patterns visible in the pinned
-ComfyUI core snapshot).
-
-## Overview
+## Scope
 
 ComfyUI exposes execution state through two complementary channels:
 
@@ -72,3 +67,8 @@ For HTTP-side monitoring, the most useful routes are:
 - `status` is queue-oriented, not a full per-node execution log
 - queue data is sanitized before API return to avoid exposing sensitive
   fields
+
+## Read Next
+
+- [WebSocket](../api/websocket.md)
+- [API Endpoints](../api/endpoints.md)

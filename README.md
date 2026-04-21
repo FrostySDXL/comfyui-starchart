@@ -1,16 +1,38 @@
 # ComfyUI Knowledge Base
 
-**Last Updated:** 2026-04-19
+**Last Updated:** 2026-04-21
 **ComfyUI Version Pin:** Core `v0.19.3` (`3086026401180c9216bcb6ace442a4e3587d2c66`) with official frontend `v1.42.11` (`3dc4061d484d61cb89366de25bf5e2f8a65da4d0`) for pinned snapshots and extracted reference data
 
-## Overview
+## What This Repository Is
 
-Source-backed, repo-local reference documentation for ComfyUI development topics:
+Source-backed, repo-local reference documentation for ComfyUI development work.
+It is not the official ComfyUI documentation and should not be used as a
+substitute for `docs.comfy.org`.
+
+This repository covers:
 - server API endpoints and WebSocket behavior
 - JavaScript and server-side extension hooks
 - custom node development patterns and datatypes
-- extension architecture patterns and ProfilerX-style metrics
+- extension architecture patterns
 - tutorials, how-to guides, and machine-readable reference data
+
+## Evidence Discipline
+
+Apply this trust order when reading any page:
+
+1. official ComfyUI documentation on `docs.comfy.org`
+2. upstream ComfyUI source and release notes
+3. this repository's summaries, examples, and extracted references
+4. clearly labeled community pattern examples
+
+This repository does not claim official or native ComfyUI behavior unless backed
+by an official docs page or a pinned upstream source citation.
+
+For editorial standards and evidence rules, use these files together:
+
+- `docs/reference/source-evidence-policy.md`
+- `docs/reference/writing-style-guide.md`
+- `docs/reference/doc-quality-checklist.md`
 
 ## Documentation Layers
 
@@ -24,19 +46,6 @@ Source-backed, repo-local reference documentation for ComfyUI development topics
 - JSON reference data lives in `references/raw/`
 - Snapshots live in `references/snapshots/`
 - Helper scripts live in `scripts/extract/` and `scripts/generate/`
-
-## Evidence Model
-
-Use content in this repository with this trust order:
-
-1. official ComfyUI documentation
-2. upstream ComfyUI source and release notes
-3. this repository's summaries, examples, and extracted references
-4. clearly labeled community pattern examples
-
-This repository is intended to be a reviewable working reference for future OSS
-ComfyUI projects. It should not claim native or official behavior unless that
-behavior is backed by an official docs page or upstream source citation.
 
 ## Quick Start
 
@@ -59,29 +68,14 @@ python scripts/generate/md_from_json.py
 
 ### Refreshing upstream versions
 
+Replace the example versions below with the actual target versions for the
+refresh you are performing.
+
 ```bash
-python scripts/refresh_snapshots.py --core-version v0.19.4
-python scripts/refresh_snapshots.py --frontend-version v1.42.12
-python scripts/refresh_snapshots.py --core-version v0.19.4 --frontend-version v1.42.12
+python scripts/refresh_snapshots.py --core-version <new-core-version>
+python scripts/refresh_snapshots.py --frontend-version <new-frontend-version>
+python scripts/refresh_snapshots.py --core-version <new-core-version> --frontend-version <new-frontend-version>
 ```
-
-## Current Scope
-
-This repository includes source-backed coverage for:
-
-- server API endpoints and WebSocket behavior
-- hooks and extension points
-- custom node development, registration, datatypes, and best practices
-- extension architecture patterns and ProfilerX-style monitoring analysis
-- practical tutorials and how-to pages for common extension tasks
-
-Supporting infrastructure:
-
-- MkDocs site structure with CI build verification
-- machine-readable reference files with schema validation
-- extraction, generation, and verification scripts
-- snapshot/reference scaffolding for additional source capture
-- automated upstream pin checking (weekly cron)
 
 ## Verification
 
@@ -104,12 +98,6 @@ python scripts/verify/validate_schema.py
 
 - **`.github/workflows/ci.yml`** -- runs on push/PR to main: tests, MkDocs build, cross-references (blocking), schema validation (blocking), stale content (non-blocking), idempotency (non-blocking), upstream pins (non-blocking). Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
 - **`.github/workflows/weekly-pin-check.yml`** -- runs every Monday at 09:00 UTC and on manual dispatch: checks that pinned commits and tags still resolve in upstream repos.
-
-## Current Gaps
-
-- extracted endpoint descriptions are present but some routes could benefit from more detailed parameter and response documentation
-- extracted references pin core plus official frontend, not every possible upstream package involved in the full product surface
-- community repositories remain supplementary examples only
 
 ## External Sources
 

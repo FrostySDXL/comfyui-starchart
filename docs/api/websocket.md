@@ -1,6 +1,7 @@
 # WebSocket
 
-**Last Updated:** 2026-04-19
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
 
 ## Primary Sources
@@ -8,11 +9,7 @@
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
 
-## Evidence Levels
-
-This page describes upstream source behavior visible in the pinned ComfyUI core snapshot. Event types and connection flow are derived from source inspection.
-
-## Overview
+## Scope
 
 ComfyUI uses `GET /ws` as the real-time channel for queue state,
 execution lifecycle messages, UI output updates, and preview images.
@@ -107,3 +104,8 @@ all connected sockets.
 - Treat the WebSocket `sid` and the prompt `client_id` as related but not
   identical concepts: the socket assigns a session ID, while prompt
   submission chooses which client should receive execution events.
+
+## Read Next
+
+- [Prompt Submission](prompt-submission.md)
+- [API Endpoints](endpoints.md)

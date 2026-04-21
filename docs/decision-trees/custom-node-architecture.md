@@ -1,7 +1,7 @@
 # Decision Tree: Custom Node Architecture
 
-**Last Updated:** 2026-04-20
-**Evidence:** Source-backed -- based on ComfyUI docs and upstream source
+**Last Updated:** 2026-04-21
+**Evidence:** Source-backed from pinned snapshots
 
 ## Overview
 
@@ -167,3 +167,8 @@ If your node or node pack will be published:
 - **Putting UI logic in the Python execute method** -- use frontend hooks instead
 - **Using wildcard input types (`*`) when explicit types would work** -- explicit is more cacheable
 - **Baking graph assumptions into node logic** -- nodes should be composable, not assume a specific graph shape
+
+## Read Next
+
+- [Node Structure](../custom-nodes/node-structure.md)
+- [Registration](../custom-nodes/registration.md)

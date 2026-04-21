@@ -1,6 +1,7 @@
 # API Endpoints
 
-**Last Updated:** 2026-04-19
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
 
 ## Primary Sources
@@ -9,11 +10,7 @@
 - https://docs.comfy.org/development/comfyui-server/comms_routes
 - https://docs.comfy.org/development/comfyui-server/comms_messages
 
-## Evidence Levels
-
-This page describes upstream source behavior visible in the pinned ComfyUI core snapshot. Route details and handler behavior are derived from source inspection, not official docs pages.
-
-## Overview
+## Scope
 
 ComfyUI declares its HTTP and WebSocket surface directly in `server.py`
 using `aiohttp` route decorators. The current file defines 25 primary
@@ -128,3 +125,8 @@ and tooling that need to inspect available nodes programmatically.
   `/free`, and `/history` POSTs.
 - Upload and view endpoints perform path and traversal validation in the
   handler before touching files.
+
+## Read Next
+
+- [WebSocket](websocket.md)
+- [Prompt Submission](prompt-submission.md)

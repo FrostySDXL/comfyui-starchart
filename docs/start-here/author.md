@@ -1,7 +1,7 @@
 # Start Here: Custom Node Author
 
-**Last Updated:** 2026-04-20
-**Evidence:** Source-backed guidance based on official docs and upstream source
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 
 ## Who This Path Is For
 
@@ -79,11 +79,7 @@ place the file in `custom_nodes/`. Verify ComfyUI loads it, then build a minimal
 workflow that exercises the node. Before adding complexity, confirm caching
 and rerun behavior work as expected.
 
-## Evidence Levels on This Path
+## Read Next
 
-Content on this path is source-backed:
-
-- official behavior: stated in docs.comfy.org pages
-- upstream source behavior: visible in cited ComfyUI source files
-- community patterns: labeled as such when used (e.g., pipe nodes from
-  Impact-Pack are community patterns, not official ComfyUI contracts)
+- [Custom Node Development Guide](../custom-nodes/development-guide.md)
+- [Node Structure](../custom-nodes/node-structure.md)

@@ -1,6 +1,7 @@
 # Extension Patterns
 
-**Last Updated:** 2026-04-19
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
 
 ## Primary Sources
@@ -10,10 +11,19 @@
 - https://docs.comfy.org/development/comfyui-server/comms_messages
 - https://docs.comfy.org/custom-nodes/overview
 
-## Overview
+## Scope
 
-Most ComfyUI extensions fall into a few repeatable architectural
-patterns. The exact choice depends on where the behavior lives:
+This page documents the most common ComfyUI extension architecture patterns
+and the tradeoffs between them. It covers frontend-only, backend-only,
+route-backed, and hybrid approaches.
+
+When reading this page, distinguish three layers:
+
+- official behavior -- hooks, routes, and messages documented by Comfy
+- upstream source behavior -- what current ComfyUI source actually sends or
+  accepts
+- community pattern examples -- reusable design ideas from ecosystem repos,
+  but not native contracts
 
 - frontend-only UI changes
 - backend-only execution logic
@@ -22,14 +32,6 @@ patterns. The exact choice depends on where the behavior lives:
 
 The cleanest extensions keep each concern in its native layer instead of
 forcing everything through one mechanism.
-
-When reading this page, distinguish three layers:
-
-- official behavior — hooks, routes, and messages documented by Comfy
-- upstream source behavior — what current ComfyUI source actually sends or
-  accepts
-- community pattern examples — reusable design ideas from ecosystem repos,
-  but not native contracts
 
 ## Frontend vs Server Tradeoffs
 
@@ -173,3 +175,8 @@ set.
 - treat hybrid extensions as real software systems, not quick patches
 - when borrowing ideas from community repos, label them as community
   patterns and cross-check them against official docs and upstream source
+
+## Read Next
+
+- [Common Architectures](common-architectures.md)
+- [JavaScript Hooks](../hooks/javascript-hooks.md)

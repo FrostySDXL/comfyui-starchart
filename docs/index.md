@@ -1,86 +1,58 @@
 # ComfyUI Knowledge Base
 
-**Last Updated:** 2026-04-19
-**Primary Source:** https://docs.comfy.org/
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 
-## Primary Sources
+## Scope
 
-- https://docs.comfy.org/
-- https://github.com/Comfy-Org/ComfyUI
+This documentation section covers ComfyUI development topics including API
+endpoints, extension hooks, custom node authoring, and extension architecture.
+It is a source-backed reference, not the official ComfyUI documentation.
+See `docs.comfy.org` for official docs.
 
-## Overview
+## Who This Section Is For
 
-This repository is a source-backed working knowledge base for ComfyUI authors,
-especially people building:
+Choose your starting point based on what you are building:
 
-- custom nodes
-- frontend or server extensions
-- route-backed tools and dashboards
-- reference extractors and generated docs
+| Goal | Start Here |
+|------|-----------|
+| Build custom nodes | [Custom Node Author](start-here/author.md) |
+| Extend ComfyUI (frontend or server) | [Extension Developer](start-here/extension-developer.md) |
+| Integrate ComfyUI into an external service | [Service Integration](start-here/service-integration.md) |
 
-Use it as a local, reviewable layer between scattered upstream sources and your
-own implementation work. The goal is not to mirror all ComfyUI docs, but to
-capture the parts most useful for development and maintenance.
+## Page Structure
 
-## Navigation Map
+This documentation is organized as follows:
 
-- `docs/api/` for HTTP endpoints, WebSocket behavior, prompt submission, queue,
-  and history semantics
-- `docs/hooks/` for JavaScript hooks, server hooks, and extension points
-- `docs/custom-nodes/` for V3-oriented node authoring guidance, registration,
+- **API Reference** (`api/`) -- HTTP endpoints, WebSocket events, prompt
+  submission, queue, and history semantics
+- **Hooks** (`hooks/`) -- JavaScript hooks, server hooks, and extension points
+- **Custom Nodes** (`custom-nodes/`) -- V3-oriented node authoring, registration,
   datatypes, and best practices
-- `docs/extensions/` for higher-level extension architecture patterns and
-  case-study analysis such as ProfilerX
-- `docs/reference/` for compact summaries and version-tracking pages
-- `docs/tutorials/` for task-oriented build guides that combine multiple
+- **Extensions** (`extensions/`) -- Extension architecture patterns and analysis
+- **Reference** (`reference/`) -- Evidence policy, writing style guide, and
+  machine-readable summaries
+- **Tutorials** (`tutorials/`) -- Task-oriented guides that combine multiple
   concepts
-- `docs/how-to/` for focused operational recipes like adding routes or Manager
-  integration
+- **How-To** (`how-to/`) -- Focused operational recipes
+- **Start Here** (`start-here/`) -- Audience-specific reading paths
+- **Decision Trees** (`decision-trees/`) -- Tradeoff guides for architectural choices
+- **Ecosystem** (`ecosystem/`) -- Community tools and patterns
+- **Deep Dives** (`deep-dives/`) -- Detailed analysis of specific tools
 
-If you are new to ComfyUI development, start with:
+## Evidence Policy
 
-1. `custom-nodes/development-guide.md`
-2. `hooks/extension-points.md`
-3. `extensions/patterns.md`
-4. the relevant tutorial or how-to page for your task
+Content in this repo distinguishes:
 
-## Version Pinning
-
-ComfyUI changes quickly, so every page in this knowledge base should be read as
-version-sensitive unless it explicitly says otherwise.
-
-Interpret pages using this order of trust:
-
-1. cited official docs page
-2. cited upstream source file or release notes
-3. this repository's summary of those sources
-
-When adding or updating content:
-
-- prefer official docs and upstream source code as primary sources
-- record the source URL in the page header
-- treat release-specific notes as tied to the current upstream changelog and
-  release history
-- update or pin snapshot material in `references/` when exact source state
-  matters
-
-Current pinned extraction baseline:
-
-- ComfyUI core `v0.19.3` (`3086026401180c9216bcb6ace442a4e3587d2c66`)
-- official frontend `v1.42.11` (`3dc4061d484d61cb89366de25bf5e2f8a65da4d0`)
-
-If a page and the current upstream source disagree, trust upstream first and
-update this repository accordingly.
-
-## Evidence Levels
-
-Keep the following distinction strict throughout this repo:
-
-- official behavior: stated in `docs.comfy.org`
-- upstream source behavior: visible in cited ComfyUI source files for a specific
+- **official ComfyUI behavior** -- stated in `docs.comfy.org`
+- **upstream source behavior** -- from cited ComfyUI source files for a specific
   version or commit
-- community pattern examples: useful ecosystem implementations that are not part
-  of native ComfyUI's contract
+- **community pattern** -- from external repositories, labeled as such
 
-Use community repositories for implementation ideas and packaging patterns, not
-as the definition of official ComfyUI behavior.
+See [Source Evidence Policy](reference/source-evidence-policy.md) for the
+full labeling rules.
+
+## Current Version Pin
+
+ComfyUI core `v0.19.3` and official frontend `v1.42.11`. Content written
+against other versions should note the version it applies to.

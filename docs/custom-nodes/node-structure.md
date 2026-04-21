@@ -1,6 +1,7 @@
 # Node Structure
 
-**Last Updated:** 2026-04-19
+**Evidence:** Official docs-backed from docs.comfy.org
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/server_overview
 
 ## Primary Sources
@@ -9,13 +10,7 @@
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
 - https://docs.comfy.org/custom-nodes/backend/datatypes
 
-## Evidence Levels
-
-This page summarizes official behavior documented on docs.comfy.org. Schema
-fields and V3 patterns are as described in official docs; community node packs
-may use older V1 patterns.
-
-## Overview
+## Scope
 
 In V3, a custom node is a Python class derived from `io.ComfyNode`.
 Instead of scattering configuration across multiple legacy class
@@ -121,3 +116,8 @@ The backend docs describe several advanced patterns:
 
 These are useful, but they increase complexity. Prefer fixed, typed
 inputs unless the node genuinely needs dynamic behavior.
+
+## Read Next
+
+- [Registration](registration.md)
+- [Datatypes](datatypes.md)

@@ -1,6 +1,7 @@
 # Extension Points
 
-**Last Updated:** 2026-04-19
+**Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
 
 ## Primary Sources
@@ -10,13 +11,7 @@
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
 
-## Evidence Levels
-
-This page mixes official behavior (hooks documented on docs.comfy.org) with
-upstream source behavior (route and manager patterns visible in the pinned
-ComfyUI core snapshot).
-
-## Overview
+## Scope
 
 ComfyUI extension work splits across a few distinct surfaces rather than
 one universal plugin API. In practice, you choose between frontend hook
@@ -92,3 +87,9 @@ The official docs repeatedly warn against deep monkey-patching of app or
 prototype internals unless there is no supported hook available.
 Hook-first or route-first designs are more likely to survive upstream UI
 changes.
+
+## Read Next
+
+- [JavaScript Hooks](javascript-hooks.md)
+- [Server Hooks](server-hooks.md)
+- [Extension Patterns](../extensions/patterns.md)

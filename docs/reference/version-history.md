@@ -1,6 +1,7 @@
 # Version History
 
-**Last Updated:** 2026-04-19
+**Evidence:** Official docs-backed from docs.comfy.org
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/changelog
 
 ## Primary Sources
@@ -8,13 +9,7 @@
 - https://github.com/Comfy-Org/ComfyUI/releases
 - https://docs.comfy.org/changelog
 
-## Evidence Levels
-
-This page summarizes official changelog and release notes. Version-specific
-claims should be verified against the cited official pages and the pinned
-ComfyUI core snapshot where applicable.
-
-## Overview
+## Scope
 
 This page is not a full release log. It is a compatibility-focused summary for
 custom node and extension authors who need to track changes that can alter:
@@ -100,3 +95,8 @@ For this knowledge base, treat version-specific guidance as pinned to the cited
 official pages plus whichever upstream commit or release your local ComfyUI
 snapshot matches. If you cannot state the target ComfyUI version, do not make
 strong compatibility claims.
+
+## Read Next
+
+- [Writing Style Guide](writing-style-guide.md)
+- [Source Evidence Policy](source-evidence-policy.md)

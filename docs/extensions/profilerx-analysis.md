@@ -1,15 +1,16 @@
 # ProfilerX Analysis
 
-**Last Updated:** 2026-04-19
-**Primary Source:** https://github.com/ryanontheinside/ComfyUI_ProfilerX (community pattern example)
+**Evidence:** Community pattern study based on pinned external version
+**Last Updated:** 2026-04-21
+**Primary Source:** https://github.com/ryanontheinside/ComfyUI_ProfilerX
 
 ## Primary Sources
 
 - https://github.com/ryanontheinside/ComfyUI_ProfilerX (community pattern example)
 - ProfilerX `README.md`, `__init__.py`, `handler.py`, `routes.py`, `web/index.ts` (community repo)
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640) — upstream source for ComfyUI progress handler and route patterns
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640) -- upstream source for ComfyUI progress handler and route patterns
 
-## Overview
+## Scope
 
 This page is a community extension case study, not a description of
 native ComfyUI behavior.
@@ -88,3 +89,8 @@ Caveats:
   like public APIs
 - profiling extensions should minimize overhead and keep disk writes batched or
   deferred where possible
+
+## Read Next
+
+- [Adding Background Metrics](../tutorials/adding-background-metrics.md)
+- [Extension Patterns](patterns.md)

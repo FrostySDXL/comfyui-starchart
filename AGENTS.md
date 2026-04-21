@@ -14,7 +14,7 @@ Serve locally: `python -m mkdocs serve`
 
 | Task | Read first | Edit | Verify |
 |------|-----------|------|--------|
-| Add/fix docs content | `docs/<topic>/` page | The page + `references/raw/` if citing data | `mkdocs build` |
+| Add/fix docs content | `docs/<topic>/` page + `docs/reference/source-evidence-policy.md` + `docs/reference/writing-style-guide.md` | The page + adjacent linked pages + `references/raw/` if citing data | `python scripts/verify/cross_references.py` + `python -m mkdocs build` |
 | Update extracted references | `references/raw/<file>.json` | Run the matching extractor script | `python scripts/verify/extraction_idempotency.py` |
 | Add a new extractor | Existing extractor in `scripts/extract/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
 | Add a verification script | Existing script in `scripts/verify/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
@@ -36,6 +36,7 @@ Non-goals: official docs replacement, community wiki, package registry.
 - Do not add emojis or emoticons to any file
 - All paths in JSON metadata must use forward slashes (never backslashes)
 - Extractors write JSON; generators write markdown; never hand-edit generated markdown
+- For prose doc edits, follow `docs/reference/source-evidence-policy.md`, `docs/reference/writing-style-guide.md`, and `docs/reference/doc-quality-checklist.md`
 - Run verification before claiming completion
 - Never commit `.cache/` or `site/`
 
@@ -52,7 +53,7 @@ Non-goals: official docs replacement, community wiki, package registry.
 - `scripts/verify/` -- Verification scripts (cross_references, stale_content, extraction_idempotency, upstream_pins, validate_schema)
 - `scripts/refresh_snapshots.py` -- Fetch new upstream versions and re-run pipeline
 - `tests/unit/` -- Unit tests for all scripts
-- `examples/` -- Source-backed example nodes, API calls, and workflows
+- `examples/` -- Hand-authored pattern examples, API calls, and workflows
 - `.github/workflows/` -- CI (`ci.yml`) and weekly pin check (`weekly-pin-check.yml`)
 
 ## 4. Key Commands
@@ -92,6 +93,15 @@ python scripts/refresh_snapshots.py --core-version v0.19.4
 3. Run `md_from_json.py` to regenerate markdown
 4. Run `cross_references.py` and `validate_schema.py` to verify
 
+### Editing prose documentation
+
+1. Read the target page and the closest adjacent pages first
+2. Read `docs/reference/source-evidence-policy.md` before changing evidence labels or trust framing
+3. Read `docs/reference/writing-style-guide.md` before rewriting structure or tone
+4. Use `docs/reference/doc-quality-checklist.md` before calling the edit complete
+5. Run `python scripts/verify/cross_references.py`
+6. Run `python -m mkdocs build`
+
 ### Adding a new verification script
 
 1. Create `scripts/verify/<name>.py` -- exit 0 on pass, exit 1 on fail
@@ -112,6 +122,7 @@ python scripts/refresh_snapshots.py --core-version v0.19.4
 - **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
 - **Stale TODO markers**: The `returns` field in `server_endpoints.json` is `"TODO"` for all endpoints. This is a known gap, not a bug.
 - **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, and `upstream_pins` use `continue-on-error: true` in CI. Only `cross_references` and `validate_schema` block the pipeline.
+- **Examples are not all source-backed**: Treat files under `examples/` as pattern examples unless the page explicitly states they were generated or extracted from pinned upstream sources.
 
 ## 7. Completion Standard
 

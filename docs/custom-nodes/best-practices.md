@@ -1,6 +1,7 @@
 # Best Practices
 
-**Last Updated:** 2026-04-19
+**Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/server_overview
 
 ## Primary Sources
@@ -11,7 +12,7 @@
 - https://registry.comfy.org/
 - https://docs.comfy.org/custom-nodes/overview
 
-## Overview
+## Scope
 
 Good custom nodes are predictable in graphs, easy to validate, friendly
 to caching, and clear about what they do. The biggest failures in ComfyUI
@@ -120,7 +121,7 @@ They become harmful when they hide too much state or make workflows harder
 to debug. Prefer them as ergonomic wrappers, not as substitutes for clear
 typed contracts.
 
-## Practical checklist
+## Key Takeaways
 
 - choose the narrowest correct datatype
 - keep outputs deterministic where possible
@@ -130,3 +131,8 @@ typed contracts.
 - make categories, names, and search behavior understandable to users
 - if you borrow a large-pack convention from a community repo, document it
   as a community pattern rather than implying it is native ComfyUI behavior
+
+## Read Next
+
+- [V1 to V3 Migration](v1-to-v3-migration.md)
+- [Development Guide](development-guide.md)

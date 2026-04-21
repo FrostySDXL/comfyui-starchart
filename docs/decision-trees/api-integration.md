@@ -1,7 +1,7 @@
 # Decision Tree: Choosing an Integration Approach
 
-**Last Updated:** 2026-04-20
-**Evidence:** Source-backed -- based on API docs and upstream source analysis
+**Last Updated:** 2026-04-21
+**Evidence:** Source-backed from pinned snapshots
 
 ## Overview
 
@@ -124,3 +124,8 @@ combining these approaches.
   explicit, narrow interfaces over flexible or wildcard inputs
 - API mode does not support frontend hooks -- if your workflow needs
   frontend JS behavior, you cannot fully automate it via the API
+
+## Read Next
+
+- [API Endpoints](../api/endpoints.md)
+- [Prompt Submission](../api/prompt-submission.md)

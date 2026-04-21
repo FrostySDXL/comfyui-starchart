@@ -1,6 +1,7 @@
 # Adding Background Metrics
 
-**Last Updated:** 2026-04-19
+**Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_messages
 
 ## Primary Sources
@@ -8,9 +9,9 @@
 - https://github.com/ryanontheinside/ComfyUI_ProfilerX (community pattern example)
 - https://docs.comfy.org/development/comfyui-server/comms_messages
 - https://docs.comfy.org/development/comfyui-server/comms_routes
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640) — upstream source for built-in routes and message patterns
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640) -- upstream source for built-in routes and message patterns
 
-## Overview
+## Scope
 
 Background workflow metrics are best implemented as a hybrid extension:
 
@@ -84,3 +85,9 @@ If you are building a smaller metrics extension, use this layering:
 - keep the metrics API read-heavy and simple
 - store historical data in one well-defined local file or archive format
 - separate collection, storage, and UI code so each layer can evolve
+
+## Read Next
+
+- [ProfilerX Analysis](../extensions/profilerx-analysis.md)
+- [Monitor Execution](../how-to/monitor-execution.md)
+- [Server Hooks](../hooks/server-hooks.md)

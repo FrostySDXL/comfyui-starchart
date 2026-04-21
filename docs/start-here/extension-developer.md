@@ -1,7 +1,7 @@
 # Start Here: Extension Developer
 
-**Last Updated:** 2026-04-20
-**Evidence:** Source-backed guidance based on official docs and upstream source
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 
 ## Who This Path Is For
 
@@ -75,10 +75,7 @@ Read [Integrate with Manager](../how-to/integrate-with-manager.md) to understand
 how extension packages get distributed. Frontend extensions that are part of
 a node pack follow the same publication flow as pure node packages.
 
-## Evidence Levels on This Path
+## Read Next
 
-Frontend hooks are documented from upstream source extraction (TypeScript
-files in the official frontend package). Server hooks are documented from
-extracted server.py analysis. Community pattern examples (ProfilerX,
-ComfyUI-Impact-Pack hook providers) are labeled explicitly as community
-patterns, not official ComfyUI contracts.
+- [JavaScript Hooks](../hooks/javascript-hooks.md)
+- [Extension Patterns](../extensions/patterns.md)

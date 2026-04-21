@@ -1,6 +1,7 @@
 # Registration
 
-**Last Updated:** 2026-04-19
+**Evidence:** Official docs-backed from docs.comfy.org
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/overview
 
 ## Primary Sources
@@ -9,13 +10,7 @@
 - https://docs.comfy.org/custom-nodes/backend/server_overview
 - https://docs.comfy.org/custom-nodes/walkthrough
 
-## Evidence Levels
-
-This page summarizes official behavior documented on docs.comfy.org. V3
-registration patterns are as described in official docs; V1 patterns remain
-common in community code.
-
-## Overview
+## Scope
 
 Registration is the step that makes ComfyUI discover your node classes.
 The exact mechanism depends on whether the package is using legacy V1 or
@@ -106,3 +101,8 @@ Stay aware of V1 when:
   implementation detail
 - when documenting community code, identify whether it is V1 or V3 first
   before describing how it registers nodes
+
+## Read Next
+
+- [Node Structure](node-structure.md)
+- [V1 to V3 Migration](v1-to-v3-migration.md)

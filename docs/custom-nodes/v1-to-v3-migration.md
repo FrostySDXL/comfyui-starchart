@@ -1,9 +1,15 @@
 # V1 to V3 Migration Guide
 
-**Last Updated:** 2026-04-20
-**Primary Sources:** https://docs.comfy.org/custom-nodes/overview, https://docs.comfy.org/custom-nodes/backend/migration
+**Evidence:** Official docs-backed from docs.comfy.org
+**Last Updated:** 2026-04-21
+**Primary Source:** https://docs.comfy.org/custom-nodes/backend/migration
 
-## Overview
+## Primary Sources
+
+- https://docs.comfy.org/custom-nodes/overview
+- https://docs.comfy.org/custom-nodes/backend/migration
+
+## Scope
 
 V1 and V3 refer to two custom node authoring models in ComfyUI. V1 is the
 legacy class-attribute model. V3 is the structured schema-and-execute model
@@ -231,8 +237,8 @@ V1 and V3 nodes coexist in the same ComfyUI instance. Registration mechanisms
 differ, but both produce equivalent graph nodes. Node packs with both V1 and
 V3 nodes will work without conflict.
 
-## References
+## Read Next
 
-- Official migration docs: https://docs.comfy.org/custom-nodes/backend/migration
-- V3 node authoring: https://docs.comfy.org/custom-nodes/overview
-- This repo's custom node docs: [Development Guide](../custom-nodes/development-guide.md)
+- [Node Structure](node-structure.md)
+- [Development Guide](development-guide.md)
+- [Registration](registration.md)

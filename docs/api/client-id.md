@@ -1,6 +1,7 @@
 # Client ID
 
-**Last Updated:** 2026-04-19
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
 
 ## Primary Sources
@@ -8,11 +9,7 @@
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
 
-## Evidence Levels
-
-This page describes upstream source behavior visible in the pinned ComfyUI core snapshot.
-
-## Overview
+## Scope
 
 `client_id` is the identifier that ties HTTP prompt submission to the
 WebSocket client that should receive execution updates. It is not the
@@ -80,3 +77,9 @@ targeted.
   disconnected client
 - do not confuse `client_id` with `prompt_id`; use the first for live
   message routing and the second for history lookup
+
+## Read Next
+
+- [History and Queue](history-queue.md)
+- [Prompt Submission](prompt-submission.md)
+- [WebSocket](websocket.md)

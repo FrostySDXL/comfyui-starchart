@@ -1,6 +1,7 @@
 # Custom Node Development Guide
 
-**Last Updated:** 2026-04-19
+**Evidence:** Official docs-backed from docs.comfy.org
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/overview
 
 ## Primary Sources
@@ -10,13 +11,7 @@
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
 - https://docs.comfy.org/custom-nodes/walkthrough
 
-## Evidence Levels
-
-This page summarizes official behavior documented on docs.comfy.org. V1 and V3
-patterns are described as they appear in official docs; community implementations
-may differ.
-
-## Overview
+## Scope
 
 ComfyUI custom nodes extend the platform's client-server model. The
 server side is Python and performs real work such as model execution,
@@ -124,3 +119,8 @@ have a compatibility reason to stay with V1.
   appears to allow, especially with flexible or wildcard inputs
 - custom nodes should expose the narrowest, clearest interface possible
   so caching and graph reasoning stay predictable
+
+## Read Next
+
+- [Node Structure](node-structure.md)
+- [Registration](registration.md)

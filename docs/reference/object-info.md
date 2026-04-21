@@ -1,18 +1,14 @@
 # Object Info
 
-**Last Updated:** 2026-04-19
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
 
 ## Primary Sources
 
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
 
-## Evidence Levels
-
-This page describes upstream source behavior visible in the pinned ComfyUI core
-snapshot. Route behavior and response structure are derived from source inspection.
-
-## Overview
+## Scope
 
 `GET /object_info` is ComfyUI's node discovery endpoint. It returns the
 metadata the frontend and external tooling need to understand which
@@ -94,3 +90,8 @@ schema-aware documentation generators.
 - Because the response is built from live registered nodes, custom nodes
   installed in the current ComfyUI instance appear naturally in the
   output.
+
+## Read Next
+
+- [API Endpoints](../api/endpoints.md)
+- [Prompt Submission](../api/prompt-submission.md)

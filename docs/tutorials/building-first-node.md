@@ -1,6 +1,7 @@
 # Building Your First Node
 
-**Last Updated:** 2026-04-19
+**Evidence:** Official docs-backed from docs.comfy.org
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/walkthrough
 
 ## Primary Sources
@@ -9,13 +10,7 @@
 - https://docs.comfy.org/custom-nodes/backend/server_overview
 - https://docs.comfy.org/custom-nodes/overview
 
-## Evidence Levels
-
-This page summarizes official behavior documented on docs.comfy.org. The
-walkthrough describes V1 patterns from the official tutorial; new projects
-should prefer V3 structure.
-
-## Overview
+## Scope
 
 The official walkthrough starts with a simple V1-style image-selection
 node and gradually adds options and client messaging. It is still a good
@@ -128,3 +123,8 @@ Use the official walkthrough to understand concepts, but build new node
 packages with modern V3 structure when possible. The tutorial is best
 read as a mental model for how a node works, not as the final word on
 today's preferred packaging pattern.
+
+## Read Next
+
+- [Node Structure](../custom-nodes/node-structure.md)
+- [Registration](../custom-nodes/registration.md)

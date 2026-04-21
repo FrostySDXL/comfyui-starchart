@@ -1,6 +1,7 @@
 # Known Limitations
 
-**Status:** Scaffold -- requires active curation from maintainers
+**Evidence:** Scaffold
+**Last Updated:** 2026-04-21
 
 ## Purpose
 

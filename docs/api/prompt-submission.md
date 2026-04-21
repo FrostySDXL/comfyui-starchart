@@ -1,6 +1,7 @@
 # Prompt Submission
 
-**Last Updated:** 2026-04-19
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
 
 ## Primary Sources
@@ -9,13 +10,7 @@
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
 - https://docs.comfy.org/development/comfyui-server/comms_routes
 
-## Evidence Levels
-
-This page describes upstream source behavior visible in the pinned ComfyUI core
-snapshot. Handler logic and validation behavior are derived from source inspection,
-not official docs pages.
-
-## Overview
+## Scope
 
 `POST /prompt` is the main execution entrypoint. The handler accepts a
 workflow payload, validates it, assigns queue priority, extracts
@@ -169,3 +164,8 @@ Pattern-study examples:
 That orchestration is the common way people consume ComfyUI in practice,
 but it is built on top of `/prompt`, WebSocket events, and history lookup
 rather than replacing them.
+
+## Read Next
+
+- [API Endpoints](endpoints.md)
+- [WebSocket](websocket.md)

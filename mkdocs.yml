@@ -56,6 +56,8 @@ nav:
       - reference/object-info.md
       - reference/server-py-summary.md
       - reference/source-evidence-policy.md
+      - reference/writing-style-guide.md
+      - reference/doc-quality-checklist.md
       - reference/version-pin-status.md
       - reference/version-history.md
   - Tutorials:

@@ -1,6 +1,7 @@
 # Datatypes
 
-**Last Updated:** 2026-04-19
+**Evidence:** Official docs-backed from docs.comfy.org
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/datatypes
 
 ## Primary Sources
@@ -9,13 +10,7 @@
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
 - https://docs.comfy.org/custom-nodes/backend/server_overview
 
-## Evidence Levels
-
-This page summarizes official behavior documented on docs.comfy.org. Tensor
-layouts and type contracts are as described in official docs; runtime behavior
-may vary by version.
-
-## Overview
+## Scope
 
 ComfyUI datatypes serve two roles at once:
 
@@ -112,7 +107,7 @@ implementation that accepts `input_types` and performs custom checking.
 These patterns are powerful, but should be treated as advanced features,
 not default design choices.
 
-## Practical advice
+## Key Takeaways
 
 - document tensor layout explicitly when exposing image-like data
 - preserve extra keys when modifying structured objects like `LATENT`
@@ -120,3 +115,8 @@ not default design choices.
   contract
 - prefer custom datatypes for extension-internal object passing rather
   than overloading unrelated built-in types
+
+## Read Next
+
+- [Node Structure](node-structure.md)
+- [Best Practices](best-practices.md)

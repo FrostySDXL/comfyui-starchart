@@ -1,5 +1,11 @@
 # Version Pin Status
 
+> **Operational Note:** This is an operational tracking page that records the
+> repository's current pinned extraction baseline. It is maintained manually and
+> is not subject to the normal `**Evidence:**` labeling policy. It does not make
+> claims about ComfyUI behavior; it records what this repository has pinned for
+> its own reference purposes.
+
 **Last Updated:** 2026-04-19
 **Primary Sources:** https://github.com/Comfy-Org/ComfyUI, https://github.com/Comfy-Org/ComfyUI/releases, https://docs.comfy.org/changelog
 

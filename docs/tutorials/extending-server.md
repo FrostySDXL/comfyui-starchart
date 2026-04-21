@@ -1,6 +1,7 @@
 # Extending the Server
 
-**Last Updated:** 2026-04-19
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_routes
 
 ## Primary Sources
@@ -159,3 +160,8 @@ This is often enough when you only need one or two opinionated user flows.
   build a wrapper server in front of ComfyUI
 - when documenting either approach, label wrapper-specific behavior as a
   community integration pattern rather than native ComfyUI behavior
+
+## Read Next
+
+- [Add Custom Routes](../how-to/add-custom-routes.md)
+- [Server Hooks](../hooks/server-hooks.md)

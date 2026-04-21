@@ -1,6 +1,7 @@
 # Common Architectures
 
-**Last Updated:** 2026-04-19
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/overview
 
 ## Primary Sources
@@ -10,17 +11,16 @@
 - https://docs.comfy.org/custom-nodes/js/javascript_hooks
 - https://docs.comfy.org/development/comfyui-server/comms_routes
 
-## Overview
+## Scope
 
-Across ComfyUI extensions, a few architecture families keep recurring.
-They differ mainly in how much they depend on the graph, the frontend,
-and custom server state.
+This page documents the main extension architecture families observed across
+the ComfyUI ecosystem and the tradeoffs each approach creates.
 
 This page uses three evidence levels:
 
-- official behavior — stated in `docs.comfy.org`
-- upstream source behavior — visible in ComfyUI's own source tree
-- community pattern examples — useful repo patterns seen in the ecosystem,
+- official behavior -- stated in `docs.comfy.org`
+- upstream source behavior -- visible in ComfyUI's own source tree
+- community pattern examples -- useful repo patterns seen in the ecosystem,
   but not part of ComfyUI's contract
 
 ## Architecture Families
@@ -170,3 +170,8 @@ behavior references:
 They are helpful for seeing which extension families are common and which
 projects are active, but they do not define official APIs, upstream runtime
 semantics, or required package structure.
+
+## Read Next
+
+- [Extension Patterns](patterns.md)
+- [ProfilerX Analysis](profilerx-analysis.md)

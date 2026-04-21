@@ -1,7 +1,7 @@
 # Start Here: Service Integration
 
-**Last Updated:** 2026-04-20
-**Evidence:** Source-backed guidance based on official docs and upstream source
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 
 ## Who This Path Is For
 
@@ -101,9 +101,7 @@ See the API docs for full parameter and response documentation.
 - API mode does not support frontend hooks -- if your workflow needs
   frontend JS behavior, you cannot fully automate it via the API
 
-## Evidence Levels on This Path
+## Read Next
 
-API routes are documented from upstream source extraction (server.py).
-WebSocket message types are documented from upstream frontend source
-(litegraphService.ts). Community integration patterns (e.g., ComfyUI-Tooling-Nodes)
-are labeled explicitly as community patterns.
+- [API Endpoints](../api/endpoints.md)
+- [WebSocket](../api/websocket.md)

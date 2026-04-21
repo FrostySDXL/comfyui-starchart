@@ -1,6 +1,7 @@
 # Integrate with Manager
 
-**Last Updated:** 2026-04-19
+**Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/manager
 
 ## Primary Sources
@@ -9,12 +10,7 @@
 - https://docs.comfy.org/manager/pack-management
 - https://github.com/ltdrdata/ComfyUI-Manager (community pattern example)
 
-## Evidence Levels
-
-This page summarizes official behavior from docs.comfy.org. The ComfyUI-Manager
-repository is a community pattern example, not an official ComfyUI project.
-
-## Overview
+## Scope
 
 ComfyUI Manager is the main distribution path most users expect for custom
 node packs. Publishing through the Manager makes installation, upgrades,
@@ -90,3 +86,8 @@ Use this checklist before claiming Manager support:
 If your pack is not yet available in the registry-backed Manager flow, document
 manual installation separately instead of implying the new Manager UI can
 install it directly.
+
+## Read Next
+
+- [ComfyUI Manager Deep Dive](../deep-dives/comfyui-manager.md)
+- [Ecosystem Map](../ecosystem/map.md)

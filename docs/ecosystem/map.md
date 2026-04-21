@@ -1,7 +1,11 @@
 # Ecosystem Map
 
-**Last Updated:** 2026-04-20
-**Evidence:** Community research -- package status labels were manually checked against public package pages on 2026-04-20 and should be re-verified before use
+**Evidence:** Community pattern study
+**Last Updated:** 2026-04-21
+
+Status labels were manually checked against public package pages on 2026-04-20
+and should be re-verified before use. This page is a starting point, not a
+permanent assessment.
 
 ## Overview
 

@@ -1,9 +1,8 @@
 # Deep Dive: ComfyUI-Manager
 
-**Status:** Community Pattern Study
+**Evidence:** Community pattern study based on public GitHub repo
 **Package:** [ltdrdata/ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager)
-**Last Updated:** 2026-04-20
-**Evidence:** Public GitHub repo, docs.comfy.org, community usage patterns
+**Last Updated:** 2026-04-21
 
 ## What This Page Is
 

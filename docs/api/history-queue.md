@@ -1,6 +1,7 @@
 # History and Queue
 
-**Last Updated:** 2026-04-19
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
 
 ## Primary Sources
@@ -9,13 +10,7 @@
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
 - https://docs.comfy.org/development/comfyui-server/comms_routes
 
-## Evidence Levels
-
-This page describes upstream source behavior visible in the pinned ComfyUI core
-snapshot. Route details and handler behavior are derived from source inspection,
-not official docs pages.
-
-## Overview
+## Scope
 
 ComfyUI splits live scheduling state from completed execution records:
 
@@ -133,3 +128,9 @@ Pattern-study examples:
 
 These are good examples of how people consume ComfyUI programmatically in
 practice. They do not add new native queue or history semantics.
+
+## Read Next
+
+- [Client ID](client-id.md)
+- [Prompt Submission](prompt-submission.md)
+- [WebSocket](websocket.md)

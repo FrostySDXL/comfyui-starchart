@@ -1,6 +1,7 @@
 # JavaScript Hooks
 
-**Last Updated:** 2026-04-19
+**Evidence:** Official docs-backed from docs.comfy.org
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
 
 ## Primary Sources
@@ -9,13 +10,7 @@
 - https://docs.comfy.org/custom-nodes/js/javascript_objects_and_hijacking
 - `references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts` (v1.42.11, commit 3dc4061)
 
-## Evidence Levels
-
-This page primarily describes official behavior documented on docs.comfy.org.
-Hook call order and lifecycle details are verified against the pinned official
-frontend snapshot.
-
-## Overview
+## Scope
 
 ComfyUI's JavaScript extension system calls named hooks on every
 registered frontend extension by routing through
@@ -111,3 +106,8 @@ The official docs now warn that direct hijacking or monkey-patching of
 core app methods and prototypes is deprecated and fragile. That pattern
 still appears in older examples, but hook-first approaches are the safer
 default for future compatibility.
+
+## Read Next
+
+- [Server Hooks](server-hooks.md)
+- [Extension Points](extension-points.md)

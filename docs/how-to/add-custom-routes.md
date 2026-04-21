@@ -1,6 +1,7 @@
 # Add Custom Routes
 
-**Last Updated:** 2026-04-19
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_routes
 
 ## Primary Sources
@@ -8,12 +9,7 @@
 - https://docs.comfy.org/development/comfyui-server/comms_routes
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
 
-## Evidence Levels
-
-This page primarily describes official behavior documented on docs.comfy.org.
-Route patterns are verified against the pinned ComfyUI core snapshot.
-
-## Overview
+## Scope
 
 Add a custom route when your extension needs explicit client-to-server
 communication that does not fit naturally into prompt submission,
@@ -79,3 +75,8 @@ function send_message(node_id, message) {
   external tools depend on it
 - if the route exists only for execution-time feedback, consider whether
   a custom WebSocket message would be simpler than a new HTTP endpoint
+
+## Read Next
+
+- [Extending the Server](../tutorials/extending-server.md)
+- [Server Hooks](../hooks/server-hooks.md)

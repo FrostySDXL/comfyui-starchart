@@ -1,6 +1,7 @@
 # Server Hooks
 
-**Last Updated:** 2026-04-19
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-21
 **Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
 
 ## Primary Sources
@@ -8,13 +9,7 @@
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
 
-## Evidence Levels
-
-This page describes upstream source behavior visible in the pinned ComfyUI core
-snapshot. Hook registration and event patterns are derived from source inspection,
-not official docs pages.
-
-## Overview
+## Scope
 
 The current ComfyUI server exposes a small number of meaningful
 server-side hook surfaces directly in Python. The most explicit one is
@@ -99,3 +94,8 @@ tracking.
 - If you need new server behavior, custom routes and manager-owned route
   registration are often a more concrete extension strategy than waiting
   for a dedicated hook.
+
+## Read Next
+
+- [JavaScript Hooks](javascript-hooks.md)
+- [Extension Points](extension-points.md)
