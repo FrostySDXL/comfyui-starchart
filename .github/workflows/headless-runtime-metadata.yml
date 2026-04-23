@@ -18,8 +18,8 @@ jobs:
     timeout-minutes: 30
     env:
       COMFYUI_URL: http://127.0.0.1:8188
-      ARTIFACT_DIR: ${{ runner.temp }}/runtime-metadata
-      COMFYUI_DIR: ${{ runner.temp }}/comfyui-runtime
+      ARTIFACT_DIR: ${{ github.workspace }}/.tmp/runtime-metadata
+      COMFYUI_DIR: ${{ github.workspace }}/.tmp/comfyui-runtime
     steps:
       - uses: actions/checkout@v4
 
