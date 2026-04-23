@@ -35,9 +35,8 @@ def get_extractor_args(json_path: Path) -> tuple[str, list[str]] | None:
         commit = metadata.get("commit", "")
         if not source or not version or not commit:
             return None
-        # Normalize path separators
         source = source.replace("\\", "/")
-        args = [str(REPO_ROOT / source), "--version", version, "--commit", commit]
+        args = [source, "--version", version, "--commit", commit]
         return script, args
 
     elif json_path.name == "js_hooks.json":
@@ -47,9 +46,8 @@ def get_extractor_args(json_path: Path) -> tuple[str, list[str]] | None:
         commit = metadata.get("commit", "")
         if not sources or not version or not commit:
             return None
-        # Normalize path separators
         normalized_sources = [s.replace("\\", "/") for s in sources]
-        args = [str(REPO_ROOT / s) for s in normalized_sources]
+        args = normalized_sources.copy()
         args.extend(["--version", version, "--commit", commit])
         return script, args
 
@@ -60,13 +58,34 @@ def get_extractor_args(json_path: Path) -> tuple[str, list[str]] | None:
         commit = metadata.get("commit", "")
         if not sources or not version or not commit:
             return None
-        # Normalize path separators
         normalized_sources = [s.replace("\\", "/") for s in sources]
-        args = [str(REPO_ROOT / s) for s in normalized_sources]
+        args = normalized_sources.copy()
         args.extend(["--version", version, "--commit", commit])
         return script, args
 
     return None
+
+
+def _normalize_paths(value):
+    if isinstance(value, str):
+        normalized = value.replace("\\", "/")
+        repo_root = str(REPO_ROOT).replace("\\", "/") + "/"
+        if normalized.startswith(repo_root):
+            return normalized[len(repo_root):]
+        return normalized
+    if isinstance(value, list):
+        return [_normalize_paths(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _normalize_paths(item) for key, item in value.items()}
+    return value
+
+
+def _normalize_for_comparison(data: dict) -> dict:
+    normalized = _normalize_paths(data)
+    metadata = dict(normalized.get("metadata", {}))
+    metadata.pop("extracted_date", None)
+    normalized["metadata"] = metadata
+    return normalized
 
 
 def verify_idempotency(json_path: Path) -> list[str]:
@@ -124,29 +143,32 @@ def verify_idempotency(json_path: Path) -> list[str]:
     except json.JSONDecodeError:
         return [f"Output from {script_name} is not valid JSON"]
 
-    # Compare structure
+    current_normalized = _normalize_for_comparison(current_data)
+    new_normalized = _normalize_for_comparison(new_data)
     differences = []
-    if current_data.keys() != new_data.keys():
+
+    if current_normalized == new_normalized:
+        return []
+
+    if current_normalized.keys() != new_normalized.keys():
         differences.append(
-            f"Top-level keys differ: {current_data.keys()} vs {new_data.keys()}"
+            f"Top-level keys differ: {current_normalized.keys()} vs {new_normalized.keys()}"
         )
 
-    # Compare endpoint/hook counts
-    for key in current_data:
+    for key in current_normalized:
         if key == "metadata":
             continue
-        current_len = len(current_data[key]) if isinstance(current_data[key], list) else 0
-        new_len = len(new_data[key]) if isinstance(new_data[key], list) else 0
-        if current_len != new_len:
-            differences.append(
-                f"{key}: count changed from {current_len} to {new_len}"
-            )
+        current_value = current_normalized.get(key)
+        new_value = new_normalized.get(key)
+        if isinstance(current_value, list) and isinstance(new_value, list):
+            if len(current_value) != len(new_value):
+                differences.append(
+                    f"{key}: count changed from {len(current_value)} to {len(new_value)}"
+                )
 
     if not differences:
-        # Content differs but structure matches -- still a difference
         differences.append(
-            f"Content differs after re-running {script_name} "
-            f"(byte-level difference, structure may be identical)"
+            f"Normalized content differs after re-running {script_name}"
         )
 
     return differences

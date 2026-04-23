@@ -76,9 +76,9 @@ class ExtractionIdempotencyTests(unittest.TestCase):
             cwd=str(REPO_ROOT),
             timeout=120,
         )
-        # Exit code 0 or 1 are both valid (1 means differences found)
-        self.assertIn(result.returncode, [0, 1], msg=result.stderr)
+        self.assertEqual(result.returncode, 0, msg=result.stderr or result.stdout)
         self.assertIn("Checking", result.stdout)
+        self.assertIn("All extraction outputs are idempotent.", result.stdout)
 
     def test_extraction_idempotency_imports(self):
         """The extraction_idempotency module should be importable."""
