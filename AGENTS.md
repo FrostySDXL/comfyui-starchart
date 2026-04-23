@@ -120,7 +120,7 @@ python scripts/refresh_snapshots.py --core-version v0.19.4
 
 - **Windows backslashes in JSON**: Extractors run on Windows produce `\` in paths. Always use `.replace("\\", "/")` when writing `str(path)` to JSON metadata.
 - **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
-- **Stale TODO markers**: The `returns` field in `server_endpoints.json` is `"TODO"` for all endpoints. This is a known gap, not a bug.
+- **Structured returns are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`, but some endpoints still show generic summaries when the handler returns a variable rather than a literal dict. The `kind` field is reliable; `fields` and `summary` are best-effort from static analysis.
 - **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, and `upstream_pins` use `continue-on-error: true` in CI. Only `cross_references` and `validate_schema` block the pipeline.
 - **Examples are not all source-backed**: Treat files under `examples/` as pattern examples unless the page explicitly states they were generated or extracted from pinned upstream sources.
 
