@@ -93,5 +93,34 @@ class ExtractionIdempotencyTests(unittest.TestCase):
         self.assertTrue(hasattr(module, "verify_idempotency"))
 
 
+class ValidateSchemaTests(unittest.TestCase):
+    """Test that validate_schema.py runs and reports valid schemas."""
+
+    def test_validate_schema_script_runs(self):
+        """The validate_schema script should run without error on the current repo."""
+        result = subprocess.run(
+            [sys.executable, str(REPO_ROOT / "scripts" / "verify" / "validate_schema.py")],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+        )
+        self.assertEqual(result.returncode, 0, msg=result.stderr or result.stdout)
+        self.assertIn("pass schema validation", result.stdout)
+
+    def test_validate_schema_imports(self):
+        """The validate_schema module should be importable and expose validators."""
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location(
+            "validate_schema",
+            REPO_ROOT / "scripts" / "verify" / "validate_schema.py",
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        self.assertTrue(hasattr(module, "validate_endpoints"))
+        self.assertTrue(hasattr(module, "validate_returns"))
+        self.assertTrue(hasattr(module, "validate_io_types"))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -35,6 +35,8 @@ SCHEMAS = {
         "object_info_fields": (list, True),
         "io_types": (list, True),
         "basic_input_shapes": (dict, True),
+        "typed_input_shapes": (dict, False),
+        "coverage": (dict, False),
     },
 }
 
@@ -62,12 +64,31 @@ METADATA_FIELDS = {
 }
 
 # Endpoint schema: required keys and their types
+# Note: `returns` is required and must be a structured dict.
+# Legacy string values are no longer accepted.
 ENDPOINT_SCHEMA = {
     "route": (str, True),
     "method": (str, True),
     "description": (str, True),
     "parameters": (list, True),
-    "returns": (str, False),
+    "returns": (dict, True),
+}
+
+# Structured return schema for endpoint responses.
+# Legacy string placeholders are rejected; extractors must emit structured dicts.
+RETURN_SCHEMA = {
+    "kind": (str, True),
+    "summary": (str, True),
+    "status_codes": (list, True),
+    "fields": (list, True),
+    "notes": (list, True),
+}
+
+# Field descriptor inside returns.fields
+FIELD_SCHEMA = {
+    "name": (str, True),
+    "type_hint": (str, False),
+    "description": (str, False),
 }
 
 # Hook schema: required keys and their types
@@ -85,6 +106,10 @@ IO_TYPE_SCHEMA = {
     "class_name": (str, True),
     "input_class": ((str, type(None)), True),
     "input_parameters": (list, True),
+    "output_parameters": (list, False),
+    "type_hint": ((str, type(None)), False),
+    "defined_in": (str, False),
+    "is_widget": (bool, False),
 }
 
 
@@ -179,6 +204,61 @@ def _type_label(expected_type) -> str:
     return expected_type.__name__
 
 
+def validate_returns(returns: dict, filename: str, path: str) -> list[str]:
+    """Validate a structured returns dict against RETURN_SCHEMA."""
+    errors = []
+    for key, (expected_type, required) in RETURN_SCHEMA.items():
+        if key not in returns:
+            if required:
+                errors.append(f"{filename}: {path} missing required key '{key}'")
+            continue
+        if not _check_type(returns[key], expected_type):
+            errors.append(
+                f"{filename}: {path}.{key} expected {_type_label(expected_type)}, "
+                f"got {type(returns[key]).__name__}"
+            )
+
+    # Validate status_codes items are integers
+    status_codes = returns.get("status_codes", [])
+    if isinstance(status_codes, list):
+        for j, code in enumerate(status_codes):
+            if not isinstance(code, int):
+                errors.append(
+                    f"{filename}: {path}.status_codes[{j}] expected int, got {type(code).__name__}"
+                )
+
+    # Validate fields items
+    fields = returns.get("fields", [])
+    if isinstance(fields, list):
+        for j, field in enumerate(fields):
+            if not isinstance(field, dict):
+                errors.append(f"{filename}: {path}.fields[{j}] is not a dict")
+                continue
+            for key, (expected_type, required) in FIELD_SCHEMA.items():
+                if key not in field:
+                    if required:
+                        errors.append(
+                            f"{filename}: {path}.fields[{j}] missing required key '{key}'"
+                        )
+                    continue
+                if not _check_type(field[key], expected_type):
+                    errors.append(
+                        f"{filename}: {path}.fields[{j}].{key} expected {_type_label(expected_type)}, "
+                        f"got {type(field[key]).__name__}"
+                    )
+
+    # Validate notes items are strings
+    notes = returns.get("notes", [])
+    if isinstance(notes, list):
+        for j, note in enumerate(notes):
+            if not isinstance(note, str):
+                errors.append(
+                    f"{filename}: {path}.notes[{j}] expected str, got {type(note).__name__}"
+                )
+
+    return errors
+
+
 def validate_endpoints(data: dict, filename: str) -> list[str]:
     """Validate endpoint entries."""
     errors = []
@@ -197,6 +277,12 @@ def validate_endpoints(data: dict, filename: str) -> list[str]:
                     f"{filename}: endpoints[{i}].{key} expected {_type_label(expected_type)}, "
                     f"got {type(ep[key]).__name__}"
                 )
+
+        # Validate structured returns when present and a dict
+        returns = ep.get("returns")
+        if isinstance(returns, dict):
+            errors.extend(validate_returns(returns, filename, f"endpoints[{i}].returns"))
+
     return errors
 
 
