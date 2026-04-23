@@ -1,51 +1,138 @@
 # Known Limitations
 
-**Evidence:** Scaffold
-**Last Updated:** 2026-04-21
+**Evidence:** Official docs-backed from docs.comfy.org and source-backed from pinned snapshots
+**Last Updated:** 2026-04-22
 
-## Purpose
+## Scope
 
-This section documents tribal knowledge about ComfyUI limitations and their
-workarounds. The goal is to capture what lives in Discord threads and archived
-issues so it does not disappear.
+This page is intentionally small. It only keeps limitations that can be
+verified against the repo's pinned ComfyUI snapshots or official docs.
+
+**Tier note:** This page covers ComfyUI official behavior (Tier 1) and curated
+community-reported limitations (Tier 2). See the External Evidence Model
+section of `2026-04-20-expansion-followup-implementation-plan.md` for the tier
+definitions. In the current revision, every listed entry is Tier 1 because no
+additional Tier 2 item met the page's evidence threshold.
 
 ## Curation Policy
 
-This section is a **scaffold that requires active curation**. A limitation
-documented here without validation will become stale and potentially mislead
-readers. Before adding an entry:
+Before adding an entry:
 
-1. **Verify** the limitation exists in the current ComfyUI version
-2. **Confirm** the workaround is effective and does not break other behavior
-3. **Cite** a source: official docs, upstream source, or a maintained community
-   discussion (GitHub issue, Discord with maintainer participation)
-4. **Date** the entry so readers know how fresh the information is
+1. Verify the limitation against the current pinned ComfyUI baseline.
+2. Cite the exact docs.comfy.org page or pinned snapshot file.
+3. State the verified version scope directly.
+4. Prefer omission over a broad or weakly sourced claim.
 
-If you cannot verify a limitation with a source, do not add it. It is better
-to have no entry than a misleading one.
+---
 
-## Categories
+## API and Execution Limitations
 
-### API and Execution Limitations
+### Custom nodes with frontend-only features do not work in API mode
 
-Limitations that affect API-mode use, automation, and server-side behavior.
-No verified entries yet -- see curation policy above.
+**Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks ; https://docs.comfy.org/development/comfyui-server/comms_routes
 
-### Frontend and Editor Limitations
+**Verified in:** docs.comfy.org pages cited above and this repo's pinned core v0.19.3 / frontend v1.42.11 baseline
 
-Limitations that affect the ComfyUI editor, canvas behavior, or frontend
-extensions. No verified entries yet -- see curation policy above.
+**Status:** Behavioral constraint
 
-### Custom Node Limitations
+**Description:** Nodes that rely on the ComfyUI frontend extension system
+(frontend JavaScript hooks, custom UI widgets, WebSocket-based progress
+reporting) cannot provide their UI features in API mode. The ComfyUI
+HTTP API does not serve the frontend, so extension registration does not
+occur.
 
-Limitations that affect custom node authors, V1/V3 compatibility, or
-packaging. No verified entries yet -- see curation policy above.
+**Workaround:** Use the ComfyUI editor rather than API mode for workflows
+that depend on custom frontend extensions. For progress reporting in API
+mode, use the official `progress` WebSocket event and poll `GET /queue` while
+the prompt is running. After completion, use `GET /history/{prompt_id}` to
+fetch stored outputs and metadata.
 
-### Community Package Limitations
+**Last verified:** 2026-04-22
 
-Known issues with popular community packages that are effectively
-unmaintained or have design decisions that cause problems. No verified
-entries yet -- see curation policy above.
+---
+
+### New Manager UI does not support arbitrary git URL installs
+
+**Source:** https://docs.comfy.org/manager/pack-management
+
+**Verified in:** docs.comfy.org Manager new UI documentation
+
+**Status:** Behavioral constraint
+
+**Description:** The official Manager new UI only supports installing node
+packs that are available through the registry-backed flow. The same docs state
+that the new UI does not offer git-based installation.
+
+**Workaround:** Register the package through the supported Manager and registry
+flow if you want it to appear in the new UI. Otherwise document manual install
+steps separately instead of implying users can paste an arbitrary git URL into
+the new Manager interface.
+
+**Last verified:** 2026-04-22
+
+---
+
+### `uninstall.py` is not a guaranteed cleanup path
+
+**Source:** https://docs.comfy.org/custom-nodes/backend/manager
+
+**Verified in:** docs.comfy.org Manager publication documentation
+
+**Status:** Behavioral constraint
+
+**Description:** The official Manager publication docs list `uninstall.py` as
+an optional lifecycle script and explicitly warn that users can delete the
+directory directly. That means authors cannot rely on `uninstall.py` as the
+only cleanup path for critical state.
+
+**Workaround:** Treat `uninstall.py` as best-effort cleanup only. Keep critical
+state inside the package directory when possible, or make cleanup idempotent
+and recoverable if the directory is removed without running the script.
+
+**Last verified:** 2026-04-22
+
+---
+
+### Initial WebSocket `status` only exposes queue count, not full queue lists
+
+**Source:** `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py`
+
+**Verified in:** ComfyUI core v0.19.3 pinned snapshot
+
+**Status:** Behavioral constraint
+
+**Description:** The initial `status` payload sent on `GET /ws` comes from
+`get_queue_info()`. In the pinned server snapshot that structure only carries
+`status.exec_info.queue_remaining` plus the resolved `sid`. It does not include
+the full `queue_running` and `queue_pending` lists.
+
+**Workaround:** Use `GET /queue` when you need the running or pending queue
+entries themselves. Treat the WebSocket `status` snapshot as a lightweight
+queue-count signal.
+
+**Last verified:** 2026-04-22
+
+---
+
+### `executed` is not emitted for every completed node
+
+**Source:** `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py`
+
+**Verified in:** ComfyUI core v0.19.3 pinned snapshot
+
+**Status:** Behavioral constraint
+
+**Description:** In the pinned execution path, ComfyUI only sends an
+`executed` event when a node produced UI output. Nodes that run successfully
+without UI output still execute, but they do not emit this message.
+
+**Workaround:** Use `executing`, `execution_cached`, `execution_success`, and
+history lookup together when you need complete execution tracking. Do not use
+`executed` as a proxy for "every node finished."
+
+**Last verified:** 2026-04-22
+
+---
 
 ## Adding an Entry
 
@@ -54,29 +141,22 @@ When adding an entry, use this template:
 ```markdown
 ### Limitation Title
 
-**Source:** [citation or "unverified -- community report"]
+**Source:** [exact docs.comfy.org page or pinned snapshot path]
 
-**Affected versions:** [version range or "current"]
+**Verified in:** [pinned version or exact doc scope]
+
+**Status:** [open, fixed, or behavioral constraint]
 
 **Description:** [clear description of the limitation]
 
 **Workaround:** [if one exists, with caveats]
+
+**Last verified:** [date]
 ```
 
-## Scope
-
-This section does not cover:
-
-- upstream bugs that are actively being fixed (watch the ComfyUI GitHub issues)
-- personal workflow design choices
-- GPU or hardware-specific issues
-- community package features (those belong in the ecosystem map)
+---
 
 ## Maintenance
 
-This section needs a designated curator who:
-
-- verifies entries periodically against newer ComfyUI versions
-- removes entries when limitations are fixed
-- updates workarounds when they break in newer versions
-- validates new entries before they are added
+Review this page when the repo's ComfyUI version pin changes. Remove entries
+that no longer reproduce or that depend on community-only evidence.
