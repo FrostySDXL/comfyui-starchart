@@ -164,9 +164,35 @@ def refresh_frontend(version: str, snapshot_date: str) -> tuple[str, str]:
     return commit, dest_name
 
 
+def run_runtime_extraction(url: str, version: str, commit: str) -> bool:
+    """Run parse_from_api.py to capture runtime object_info.
+
+    Returns True if successful.
+    """
+    print(f"\n--- Running parse_from_api.py ---")
+    result = _run_cmd(
+        [
+            sys.executable,
+            str(SCRIPTS_EXTRACT_DIR / "parse_from_api.py"),
+            "--url", url,
+            "--version", version,
+            "--commit", commit,
+            "--output", str(REFERENCES_RAW_DIR / "object_info_runtime.json"),
+        ],
+        "runtime object_info extraction",
+        cwd=str(REPO_ROOT),
+    )
+    if result.returncode != 0:
+        print(f"  parse_from_api.py failed")
+        return False
+    print(f"  Runtime object_info captured")
+    return True
+
+
 def run_extractors(core_version: str = None, core_commit: str = None,
                    frontend_version: str = None, frontend_commit: str = None,
-                   snapshot_date: str = None) -> dict:
+                   snapshot_date: str = None,
+                   runtime_object_info_path: str = None) -> dict:
     """Re-run all extractors against the new snapshot files.
 
     Returns a dict with extraction results (counts of endpoints, hooks, etc.).
@@ -238,16 +264,19 @@ def run_extractors(core_version: str = None, core_commit: str = None,
         basic_types_path = core_dir / "comfy_api" / "latest" / "_input" / "basic_types.py"
         if server_path.exists() and io_path.exists() and basic_types_path.exists():
             print(f"\n--- Running parse_node_api_schema.py ---")
+            cmd = [
+                sys.executable,
+                str(SCRIPTS_EXTRACT_DIR / "parse_node_api_schema.py"),
+                str(server_path),
+                str(io_path),
+                str(basic_types_path),
+                "--version", core_version,
+                "--commit", core_commit,
+            ]
+            if runtime_object_info_path:
+                cmd += ["--object-info-runtime-path", runtime_object_info_path]
             result = _run_cmd(
-                [
-                    sys.executable,
-                    str(SCRIPTS_EXTRACT_DIR / "parse_node_api_schema.py"),
-                    str(server_path),
-                    str(io_path),
-                    str(basic_types_path),
-                    "--version", core_version,
-                    "--commit", core_commit,
-                ],
+                cmd,
                 "parse_node_api_schema.py extraction",
                 cwd=str(REPO_ROOT),
             )
@@ -327,7 +356,22 @@ def compute_diff_summary(old_json: dict, new_json: dict, json_name: str) -> list
         if removed_types:
             changes.append(f"  Removed IO types: {sorted(removed_types)}")
 
-        if not added and not removed and not added_types and not removed_types:
+        # Runtime provenance diff
+        old_prov = old_json.get("metadata", {}).get("provenance", {})
+        new_prov = new_json.get("metadata", {}).get("provenance", {})
+        old_mode = old_prov.get("mode", "source-only")
+        new_mode = new_prov.get("mode", "source-only")
+        if old_mode != new_mode:
+            changes.append(f"  Provenance mode changed: {old_mode} -> {new_mode}")
+
+        old_runtime = old_json.get("runtime_object_info", {})
+        new_runtime = new_json.get("runtime_object_info", {})
+        old_count = len(old_runtime) if isinstance(old_runtime, dict) else 0
+        new_count = len(new_runtime) if isinstance(new_runtime, dict) else 0
+        if old_count != new_count:
+            changes.append(f"  Runtime object_info node count: {old_count} -> {new_count}")
+
+        if not added and not removed and not added_types and not removed_types and old_mode == new_mode and old_count == new_count:
             changes.append(f"  No schema changes")
 
     return changes
@@ -348,11 +392,31 @@ def main():
         default=None,
         help="ComfyUI frontend version tag to fetch (e.g., v1.42.12)",
     )
+    parser.add_argument(
+        "--runtime-object-info-url",
+        default=None,
+        help="URL of a running ComfyUI instance to capture runtime object_info",
+    )
+    parser.add_argument(
+        "--runtime-object-info-version",
+        default=None,
+        help="Version tag for the runtime object_info capture",
+    )
+    parser.add_argument(
+        "--runtime-object-info-commit",
+        default=None,
+        help="Commit hash for the runtime object_info capture",
+    )
+    parser.add_argument(
+        "--skip-runtime-merge",
+        action="store_true",
+        help="Skip merging runtime object_info into node_api_schema even if runtime URL is provided",
+    )
     args = parser.parse_args()
 
-    if not args.core_version and not args.frontend_version:
+    if not args.core_version and not args.frontend_version and not args.runtime_object_info_url:
         parser.print_usage()
-        print("\nError: at least one of --core-version or --frontend-version is required")
+        print("\nError: at least one of --core-version, --frontend-version, or --runtime-object-info-url is required")
         return 1
 
     # Pre-flight: verify git is available
@@ -370,6 +434,7 @@ def main():
     snapshot_date = date.today().strftime("%Y-%m-%d")
     core_commit = None
     frontend_commit = None
+    runtime_object_info_path = None
 
     # Save current JSON content for diff comparison
     old_jsons = {}
@@ -387,6 +452,15 @@ def main():
     if args.frontend_version:
         frontend_commit, _ = refresh_frontend(args.frontend_version, snapshot_date)
 
+    # Runtime object_info capture
+    if args.runtime_object_info_url:
+        version = args.runtime_object_info_version or args.core_version or "unversioned"
+        commit = args.runtime_object_info_commit or core_commit or ""
+        if not run_runtime_extraction(args.runtime_object_info_url, version, commit):
+            print("\nRuntime extraction failed.")
+            return 1
+        runtime_object_info_path = str(REFERENCES_RAW_DIR / "object_info_runtime.json")
+
     # Re-run extractors
     extraction_results = run_extractors(
         core_version=args.core_version,
@@ -394,6 +468,7 @@ def main():
         frontend_version=args.frontend_version,
         frontend_commit=frontend_commit,
         snapshot_date=snapshot_date,
+        runtime_object_info_path=None if args.skip_runtime_merge else runtime_object_info_path,
     )
 
     # Re-run markdown generation
@@ -422,6 +497,12 @@ def main():
         print(f"Core version: {args.core_version} (commit: {core_commit})")
     if args.frontend_version:
         print(f"Frontend version: {args.frontend_version} (commit: {frontend_commit})")
+    if args.runtime_object_info_url:
+        print(f"Runtime object_info captured from: {args.runtime_object_info_url}")
+        if args.skip_runtime_merge:
+            print("Runtime merge skipped (--skip-runtime-merge)")
+        else:
+            print("Runtime object_info merged into node_api_schema")
     print("\nReview the changes and commit manually if everything looks correct.")
     return 0
 

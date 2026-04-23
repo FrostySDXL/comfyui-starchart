@@ -70,6 +70,22 @@ class RefreshSnapshotsArgumentTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertIn("--core-version", result.stdout)
         self.assertIn("--frontend-version", result.stdout)
+        self.assertIn("--runtime-object-info-url", result.stdout)
+        self.assertIn("--skip-runtime-merge", result.stdout)
+
+    def test_runtime_url_only_works(self):
+        """Running with only --runtime-object-info-url should not fail argument validation."""
+        import subprocess
+
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT_PATH), "--runtime-object-info-url", "http://127.0.0.1:8188"],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+            timeout=10,
+        )
+        # It will fail at git check or runtime extraction, but not at argument parsing
+        self.assertNotIn("at least one", result.stderr.lower() + result.stdout.lower())
 
 
 class RefreshSnapshotsConstantsTests(unittest.TestCase):
@@ -151,6 +167,40 @@ class RefreshSnapshotsDiffSummaryTests(unittest.TestCase):
         new = {"endpoints": [{"route": "/ws", "method": "GET"}]}
         changes = module.compute_diff_summary(old, new, "server_endpoints.json")
         self.assertTrue(any("No endpoint changes" in c for c in changes))
+
+    def test_schema_diff_detects_provenance_mode_change(self):
+        """compute_diff_summary should detect provenance mode changes."""
+        module = _load_module()
+        old = {"metadata": {"provenance": {"mode": "source-only"}}, "object_info_fields": [], "io_types": []}
+        new = {"metadata": {"provenance": {"mode": "hybrid"}}, "object_info_fields": [], "io_types": []}
+        changes = module.compute_diff_summary(old, new, "node_api_schema.json")
+        self.assertTrue(any("Provenance mode changed" in c for c in changes))
+
+    def test_schema_diff_detects_runtime_node_count_change(self):
+        """compute_diff_summary should detect runtime_object_info size changes."""
+        module = _load_module()
+        old = {"metadata": {}, "object_info_fields": [], "io_types": [], "runtime_object_info": {"A": {}}}
+        new = {"metadata": {}, "object_info_fields": [], "io_types": [], "runtime_object_info": {"A": {}, "B": {}}}
+        changes = module.compute_diff_summary(old, new, "node_api_schema.json")
+        self.assertTrue(any("Runtime object_info node count" in c for c in changes))
+
+    def test_schema_diff_no_changes_with_runtime(self):
+        """compute_diff_summary should report no changes when runtime and schema are stable."""
+        module = _load_module()
+        old = {"metadata": {"provenance": {"mode": "hybrid"}}, "object_info_fields": ["input"], "io_types": [], "runtime_object_info": {"A": {}}}
+        new = {"metadata": {"provenance": {"mode": "hybrid"}}, "object_info_fields": ["input"], "io_types": [], "runtime_object_info": {"A": {}}}
+        changes = module.compute_diff_summary(old, new, "node_api_schema.json")
+        self.assertTrue(any("No schema changes" in c for c in changes))
+
+
+class RefreshSnapshotsRuntimeTests(unittest.TestCase):
+    """Test runtime extraction support."""
+
+    def test_run_runtime_extraction_exists(self):
+        """run_runtime_extraction should be defined and callable."""
+        module = _load_module()
+        self.assertTrue(hasattr(module, "run_runtime_extraction"))
+        self.assertTrue(callable(module.run_runtime_extraction))
 
 
 if __name__ == "__main__":
