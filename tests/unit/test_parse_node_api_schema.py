@@ -254,6 +254,146 @@ class MatchType(ComfyTypeIO):
         io_types = module.extract_io_types(io_sample, "sample/_io.py")
         self.assertEqual(io_types[0]["type_hint"], None)
 
+    def test_hybrid_mode_merges_runtime_snapshot(self):
+        server_sample = '''
+def node_info(node_class):
+    info = {}
+    info['input'] = obj_class.INPUT_TYPES()
+    return info
+'''
+        io_sample = '''
+@comfytype(io_type="BOOLEAN")
+class Boolean(ComfyTypeIO):
+    Type = bool
+    class Input(WidgetInput):
+        def __init__(self, id: str, default: bool=None):
+            pass
+'''
+        basic_types_sample = '''
+ImageInput = torch.Tensor
+"""An image tensor."""
+'''
+        runtime_snapshot = {
+            "metadata": {
+                "url": "http://127.0.0.1:8188",
+                "version": "v0.19.3",
+                "commit": "abc123",
+                "extracted_date": "2026-04-22",
+                "response_sha256": "deadbeef",
+            },
+            "object_info": {
+                "KSampler": {
+                    "input": {},
+                    "output": ["LATENT"],
+                }
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            server_path = tmp_path / "server.py"
+            io_path = tmp_path / "_io.py"
+            basic_types_path = tmp_path / "basic_types.py"
+            runtime_path = tmp_path / "object_info_runtime.json"
+            server_path.write_text(server_sample, encoding="utf-8")
+            io_path.write_text(io_sample, encoding="utf-8")
+            basic_types_path.write_text(basic_types_sample, encoding="utf-8")
+            runtime_path.write_text(json.dumps(runtime_snapshot), encoding="utf-8")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    str(server_path),
+                    str(io_path),
+                    str(basic_types_path),
+                    "--version", "v-test",
+                    "--commit", "abc123",
+                    "--object-info-runtime-path", str(runtime_path),
+                ],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+
+        # Provenance metadata
+        self.assertIn("provenance", data["metadata"])
+        self.assertEqual(data["metadata"]["provenance"]["mode"], "hybrid")
+        self.assertIn("source_sections", data["metadata"]["provenance"])
+        self.assertIn("runtime_sections", data["metadata"]["provenance"])
+        self.assertIn("runtime_object_info", data["metadata"]["provenance"]["runtime_sections"])
+
+        # Runtime data merged
+        self.assertIn("runtime_object_info", data)
+        self.assertEqual(data["runtime_object_info"]["KSampler"]["output"], ["LATENT"])
+
+        # Coverage reflects hybrid mode
+        self.assertTrue(data["coverage"]["runtime_enriched"])
+        self.assertNotIn("runtime /object_info response", data["coverage"]["deferred"])
+
+        # Schema validation passes
+        validate_schema = _load_validate_schema()
+        errors = validate_schema.validate_top_level(
+            data, validate_schema.SCHEMAS["node_api_schema.json"], "node_api_schema.json"
+        )
+        errors.extend(validate_schema.validate_metadata(data, "node_api_schema.json"))
+        errors.extend(validate_schema.validate_io_types(data, "node_api_schema.json"))
+        self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
+
+    def test_source_only_mode_no_runtime_sections(self):
+        server_sample = '''
+def node_info(node_class):
+    info = {}
+    info['input'] = obj_class.INPUT_TYPES()
+    return info
+'''
+        io_sample = '''
+@comfytype(io_type="BOOLEAN")
+class Boolean(ComfyTypeIO):
+    Type = bool
+    class Input(WidgetInput):
+        def __init__(self, id: str, default: bool=None):
+            pass
+'''
+        basic_types_sample = '''
+ImageInput = torch.Tensor
+"""An image tensor."""
+'''
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            server_path = tmp_path / "server.py"
+            io_path = tmp_path / "_io.py"
+            basic_types_path = tmp_path / "basic_types.py"
+            server_path.write_text(server_sample, encoding="utf-8")
+            io_path.write_text(io_sample, encoding="utf-8")
+            basic_types_path.write_text(basic_types_sample, encoding="utf-8")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    str(server_path),
+                    str(io_path),
+                    str(basic_types_path),
+                    "--version", "v-test",
+                    "--commit", "abc123",
+                ],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+
+        self.assertEqual(data["metadata"]["provenance"]["mode"], "source-only")
+        self.assertNotIn("runtime_object_info", data)
+        self.assertFalse(data["coverage"]["runtime_enriched"])
+
 
 if __name__ == "__main__":
     unittest.main()

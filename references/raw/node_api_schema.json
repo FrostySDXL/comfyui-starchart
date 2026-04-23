@@ -7,7 +7,17 @@
     ],
     "extracted_date": "2026-04-23",
     "version": "v0.19.3",
-    "commit": "3086026401180c9216bcb6ace442a4e3587d2c66"
+    "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+    "provenance": {
+      "mode": "source-only",
+      "source_sections": [
+        "object_info_fields",
+        "io_types",
+        "basic_input_shapes",
+        "typed_input_shapes"
+      ],
+      "runtime_sections": []
+    }
   },
   "object_info_fields": [
     "input",
@@ -930,6 +940,7 @@
       "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_input/basic_types.py"
     ],
+    "runtime_enriched": false,
     "deferred": [
       "runtime /object_info response",
       "custom node definitions",

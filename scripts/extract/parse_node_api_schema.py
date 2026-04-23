@@ -305,6 +305,11 @@ def main() -> int:
     )
     parser.add_argument("--version", default=None, help="Pinned upstream version or tag")
     parser.add_argument("--commit", default=None, help="Pinned upstream commit hash")
+    parser.add_argument(
+        "--object-info-runtime-path",
+        default=None,
+        help="Optional path to a runtime object_info snapshot to merge into the schema",
+    )
     args = parser.parse_args()
 
     if not args.server_path or not args.io_path or not args.basic_types_path:
@@ -319,12 +324,37 @@ def main() -> int:
     io_text = io_path.read_text(encoding="utf-8")
     basic_types_text = basic_types_path.read_text(encoding="utf-8")
 
+    runtime_snapshot = None
+    if args.object_info_runtime_path:
+        runtime_path = Path(args.object_info_runtime_path)
+        if runtime_path.exists():
+            runtime_snapshot = json.loads(runtime_path.read_text(encoding="utf-8"))
+        else:
+            print(f"WARNING: runtime snapshot not found at {runtime_path}", file=sys.stderr)
+
+    source_sections = [
+        "object_info_fields",
+        "io_types",
+        "basic_input_shapes",
+        "typed_input_shapes",
+    ]
+    runtime_sections = []
+    if runtime_snapshot:
+        runtime_sections.append("runtime_object_info")
+
+    mode = "hybrid" if runtime_snapshot else "source-only"
+
     payload = {
         "metadata": {
             "sources": [str(p).replace("\\", "/") for p in [server_path, io_path, basic_types_path]],
             "extracted_date": datetime.now().strftime("%Y-%m-%d"),
             "version": args.version or "unversioned",
             "commit": args.commit,
+            "provenance": {
+                "mode": mode,
+                "source_sections": source_sections,
+                "runtime_sections": runtime_sections,
+            },
         },
         "object_info_fields": extract_object_info_fields(server_text),
         "io_types": extract_io_types(io_text, str(io_path)),
@@ -332,6 +362,8 @@ def main() -> int:
         "typed_input_shapes": extract_typed_input_shapes(basic_types_text),
         "coverage": {
             "description": (
+                "Extracted from pinned source files with runtime /object_info enrichment."
+                if runtime_snapshot else
                 "Extracted from pinned source files only. "
                 "Runtime-only data such as per-node INPUT_TYPES schemas and custom node types are deferred to Plan B."
             ),
@@ -340,13 +372,20 @@ def main() -> int:
                 str(io_path).replace("\\", "/"),
                 str(basic_types_path).replace("\\", "/"),
             ],
+            "runtime_enriched": bool(runtime_snapshot),
             "deferred": [
+                "custom node definitions",
+                "per-node INPUT_TYPES schemas",
+            ] if runtime_snapshot else [
                 "runtime /object_info response",
                 "custom node definitions",
                 "per-node INPUT_TYPES schemas",
             ],
         },
     }
+
+    if runtime_snapshot:
+        payload["runtime_object_info"] = runtime_snapshot.get("object_info", {})
 
     OUTPUT_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     print(f"Extracted node API schema to {OUTPUT_PATH}")
