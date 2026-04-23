@@ -1,0 +1,106 @@
+name: Headless Runtime Metadata
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_hybrid_schema:
+        description: "Generate a temporary hybrid node_api_schema artifact"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  headless-runtime-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      COMFYUI_URL: http://127.0.0.1:8188
+      ARTIFACT_DIR: ${{ runner.temp }}/runtime-metadata
+      COMFYUI_DIR: ${{ runner.temp }}/comfyui-runtime
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install repo dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Resolve pinned ComfyUI metadata
+        shell: bash
+        run: |
+          mkdir -p "$ARTIFACT_DIR"
+          python - <<'PY' >> "$GITHUB_ENV"
+          import json
+          from pathlib import Path
+
+          metadata = json.loads(Path("references/raw/node_api_schema.json").read_text(encoding="utf-8"))["metadata"]
+          sources = metadata["sources"]
+
+          def source_path(suffix: str) -> str:
+              for source in sources:
+                  if source.endswith(suffix):
+                      return source
+              raise SystemExit(f"Missing pinned source ending with {suffix}")
+
+          print(f"COMFYUI_VERSION={metadata['version']}")
+          print(f"COMFYUI_COMMIT={metadata['commit']}")
+          print(f"SERVER_SNAPSHOT_PATH={source_path('/server.py')}")
+          print(f"IO_SNAPSHOT_PATH={source_path('/comfy_api/latest/_io.py')}")
+          print(f"BASIC_TYPES_SNAPSHOT_PATH={source_path('/comfy_api/latest/_input/basic_types.py')}")
+          PY
+
+      - name: Clone pinned ComfyUI
+        shell: bash
+        run: |
+          git clone https://github.com/Comfy-Org/ComfyUI.git "$COMFYUI_DIR"
+          git -C "$COMFYUI_DIR" checkout "$COMFYUI_COMMIT"
+
+      - name: Install ComfyUI dependencies
+        shell: bash
+        run: |
+          python -m pip install -r "$COMFYUI_DIR/requirements.txt"
+
+      - name: Launch headless ComfyUI
+        shell: bash
+        run: |
+          python "$COMFYUI_DIR/main.py" --cpu --disable-auto-launch --listen 127.0.0.1 --port 8188 > "$ARTIFACT_DIR/comfyui.log" 2>&1 &
+          echo $! > "$ARTIFACT_DIR/comfyui.pid"
+
+      - name: Wait for runtime readiness
+        run: |
+          python scripts/verify/wait_for_runtime.py --url "$COMFYUI_URL/object_info" --timeout 180 --interval 2 --require-non-empty
+
+      - name: Capture runtime object_info
+        run: |
+          python scripts/extract/parse_from_api.py --url "$COMFYUI_URL" --version "$COMFYUI_VERSION" --commit "$COMFYUI_COMMIT" --output "$ARTIFACT_DIR/object_info_runtime.json"
+
+      - name: Run runtime smoke checks without prompt execution
+        run: |
+          python scripts/verify/runtime_smoke.py --url "$COMFYUI_URL" --skip-prompt
+
+      - name: Generate temporary hybrid schema artifact
+        if: ${{ inputs.run_hybrid_schema }}
+        run: |
+          python scripts/extract/parse_node_api_schema.py "$SERVER_SNAPSHOT_PATH" "$IO_SNAPSHOT_PATH" "$BASIC_TYPES_SNAPSHOT_PATH" --version "$COMFYUI_VERSION" --commit "$COMFYUI_COMMIT" --object-info-runtime-path "$ARTIFACT_DIR/object_info_runtime.json" --output "$ARTIFACT_DIR/node_api_schema_runtime.json"
+
+      - name: Stop ComfyUI
+        if: always()
+        shell: bash
+        run: |
+          if [ -f "$ARTIFACT_DIR/comfyui.pid" ]; then
+            kill "$(cat "$ARTIFACT_DIR/comfyui.pid")" || true
+          fi
+
+      - name: Upload runtime artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-metadata-${{ github.run_id }}
+          path: ${{ env.ARTIFACT_DIR }}
+          if-no-files-found: warn

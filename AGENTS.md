@@ -20,7 +20,7 @@ Serve locally: `python -m mkdocs serve`
 | Add a verification script | Existing script in `scripts/verify/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
 | Refresh upstream version | `scripts/refresh_snapshots.py` | Run with `--core-version` / `--frontend-version` | All verify scripts pass |
 | Runtime extraction | `scripts/extract/parse_from_api.py` | Run with `--url` and `--output` | `validate_schema.py` passes on output |
-| Change CI workflow | `.github/workflows/ci.yml` | Edit YAML | Push and check Actions tab |
+| Change CI workflow | relevant file in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs when operator behavior changes | Inspect YAML carefully, run affected local verification, then check Actions tab after push |
 
 ## 1. Mission
 
@@ -56,6 +56,7 @@ Non-goals: official docs replacement, community wiki, package registry.
 - `tests/unit/` -- Unit tests for all scripts
 - `examples/` -- Hand-authored pattern examples, API calls, and workflows
 - `.github/workflows/` -- CI (`ci.yml`) and weekly pin check (`weekly-pin-check.yml`)
+  - includes opt-in runtime workflows such as `runtime-smoke.yml` and `headless-runtime-metadata.yml`
 
 ## 4. Key Commands
 
@@ -92,6 +93,9 @@ python scripts/refresh_snapshots.py --core-version v0.19.4
 
 # Runtime smoke checks (opt-in; requires live ComfyUI instance)
 python scripts/verify/runtime_smoke.py --url <url>
+
+# Runtime readiness helper (useful for CI-hosted local instances)
+python scripts/verify/wait_for_runtime.py --url <endpoint>
 ```
 
 ## 5. Task Playbooks

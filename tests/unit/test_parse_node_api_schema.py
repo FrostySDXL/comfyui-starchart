@@ -394,6 +394,58 @@ ImageInput = torch.Tensor
         self.assertNotIn("runtime_object_info", data)
         self.assertFalse(data["coverage"]["runtime_enriched"])
 
+    def test_custom_output_path_writes_outside_canonical_reference(self):
+        server_sample = '''
+def node_info(node_class):
+    info = {}
+    info['input'] = obj_class.INPUT_TYPES()
+    return info
+'''
+        io_sample = '''
+@comfytype(io_type="BOOLEAN")
+class Boolean(ComfyTypeIO):
+    Type = bool
+    class Input(WidgetInput):
+        def __init__(self, id: str, default: bool=None):
+            pass
+'''
+        basic_types_sample = '''
+ImageInput = torch.Tensor
+"""An image tensor."""
+'''
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            server_path = tmp_path / "server.py"
+            io_path = tmp_path / "_io.py"
+            basic_types_path = tmp_path / "basic_types.py"
+            output_path = tmp_path / "artifacts" / "node_api_schema_runtime.json"
+            server_path.write_text(server_sample, encoding="utf-8")
+            io_path.write_text(io_sample, encoding="utf-8")
+            basic_types_path.write_text(basic_types_sample, encoding="utf-8")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    str(server_path),
+                    str(io_path),
+                    str(basic_types_path),
+                    "--version", "v-test",
+                    "--commit", "abc123",
+                    "--output", str(output_path),
+                ],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertTrue(output_path.exists())
+            data = json.loads(output_path.read_text(encoding="utf-8"))
+            self.assertEqual(data["metadata"]["version"], "v-test")
+            self.assertIn(str(output_path), result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

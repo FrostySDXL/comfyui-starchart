@@ -310,6 +310,11 @@ def main() -> int:
         default=None,
         help="Optional path to a runtime object_info snapshot to merge into the schema",
     )
+    parser.add_argument(
+        "--output",
+        default=str(OUTPUT_PATH),
+        help="Output JSON path",
+    )
     args = parser.parse_args()
 
     if not args.server_path or not args.io_path or not args.basic_types_path:
@@ -387,8 +392,10 @@ def main() -> int:
     if runtime_snapshot:
         payload["runtime_object_info"] = runtime_snapshot.get("object_info", {})
 
-    OUTPUT_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    print(f"Extracted node API schema to {OUTPUT_PATH}")
+    output_path = Path(args.output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    print(f"Extracted node API schema to {output_path}")
     return 0
 
 

@@ -68,6 +68,11 @@ ordinary CI so that PRs do not depend on GPU availability.
 
 - `.github/workflows/runtime-smoke.yml` -- `workflow_dispatch` only; accepts a
   ComfyUI base URL and runs the smoke script
+- `.github/workflows/headless-runtime-metadata.yml` -- `workflow_dispatch` only;
+  clones the pinned ComfyUI commit into the runner, starts a localhost-only
+  instance, skips `POST /prompt` to avoid a model requirement, captures
+  temporary runtime metadata, and uploads artifacts from the runner temp
+  directory
 
 ### When to use it
 
@@ -77,6 +82,12 @@ Use runtime verification for:
 - validating that example payloads still work against the current ComfyUI
   surface
 - capturing a runtime snapshot for hybrid schema generation
+
+Use `runtime-smoke.yml` when you need to test a specific existing instance,
+including custom nodes or non-default runtime configuration. Use
+`headless-runtime-metadata.yml` when you want CI-hosted proof that the runtime
+metadata path works against a disposable, pinned upstream baseline without
+exposing a local machine.
 
 ### Limits
 
@@ -131,10 +142,15 @@ python scripts/refresh_snapshots.py --core-version v0.19.4 \
 | `references/raw/js_hooks.json` | source | yes | yes |
 | `references/raw/node_api_schema.json` | source + optional runtime | yes | yes |
 | `references/raw/object_info_runtime.json` | runtime only | no | no |
+| workflow artifact `runtime-metadata-<run_id>` | disposable CI runtime | no | no |
 
 `object_info_runtime.json` is a runtime-only capture artifact. It is excluded
 from the public artifact packaging pipeline because its contents depend on the
 specific ComfyUI instance configuration at capture time.
+
+The headless CI workflow follows the same boundary. It writes runtime captures
+and optional hybrid schema output under the runner temp directory and uploads
+them only as workflow artifacts.
 
 ## One-Command Verification
 
