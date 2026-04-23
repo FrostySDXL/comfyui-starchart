@@ -48,6 +48,8 @@ nav:
       - custom-nodes/datatypes.md
       - custom-nodes/best-practices.md
       - custom-nodes/v1-to-v3-migration.md
+      - custom-nodes/v1-to-v3-case-study-pipe.md
+      - custom-nodes/v1-to-v3-case-study-segs.md
   - Extensions:
       - extensions/patterns.md
       - extensions/profilerx-analysis.md
@@ -64,6 +66,8 @@ nav:
       - tutorials/building-first-node.md
       - tutorials/adding-background-metrics.md
       - tutorials/extending-server.md
+      - "API to Workflow: Prompt Lifecycle": "tutorials/api-to-workflow-prompt-lifecycle.md"
+      - "API to Workflow: Execution Events": "tutorials/api-to-workflow-execution-events.md"
   - Ecosystem:
       - ecosystem/map.md
   - Start Here:
@@ -75,6 +79,7 @@ nav:
       - decision-trees/custom-node-architecture.md
   - Deep Dives:
       - deep-dives/comfyui-manager.md
+      - "ComfyUI-Impact-Pack (Community)": "deep-dives/comfyui-impact-pack.md"
   - Known Limitations:
       - known-limitations/index.md
   - How-To:
