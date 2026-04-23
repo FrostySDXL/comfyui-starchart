@@ -1,0 +1,53 @@
+name: Upstream Watch
+
+on:
+  schedule:
+    - cron: "0 10 * * 1"  # Every Monday at 10:00 UTC (one hour after weekly-pin-check)
+  workflow_dispatch:
+
+jobs:
+  upstream-watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Check upstream versions
+        run: |
+          python scripts/check_upstream_versions.py --output-json upstream_summary.json --output-md upstream_summary.md
+
+      - name: Upload summary artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: upstream-summary
+          path: |
+            upstream_summary.json
+            upstream_summary.md
+
+      - name: Create or update tracking issue
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if grep -q '"update_available": true' upstream_summary.json; then
+            TITLE="Upstream refresh available"
+            BODY=$(cat upstream_summary.md)
+            # Search for existing open issue
+            EXISTING=$(gh issue list --label "upstream-watch" --state open --json number --jq '.[0].number')
+            if [ -n "$EXISTING" ]; then
+              gh issue edit "$EXISTING" --body "$BODY"
+              echo "Updated tracking issue #$EXISTING"
+            else
+              gh issue create --title "$TITLE" --body "$BODY" --label "upstream-watch"
+              echo "Created new tracking issue"
+            fi
+          else
+            echo "No updates available"
+          fi
