@@ -218,6 +218,59 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors = module.validate_io_types(data, "node_api_schema.json")
         self.assertTrue(any("io_types[0] missing required key 'class_name'" in e for e in errors))
 
+    def test_valid_object_info_runtime_passes(self):
+        module = self._import_module()
+        data = {
+            "metadata": {
+                "url": "http://127.0.0.1:8188",
+                "extracted_date": "2026-04-22",
+                "version": "v0.19.3",
+                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+                "response_sha256": "abc123",
+            },
+            "object_info": {
+                "KSampler": {
+                    "input": {},
+                    "output": ["LATENT"],
+                }
+            },
+        }
+        errors = module.validate_top_level(data, module.SCHEMAS["object_info_runtime.json"], "object_info_runtime.json")
+        errors.extend(module.validate_metadata(data, "object_info_runtime.json"))
+        errors.extend(module.validate_object_info_runtime(data, "object_info_runtime.json"))
+        self.assertEqual(errors, [])
+
+    def test_malformed_object_info_runtime_missing_url_fails(self):
+        module = self._import_module()
+        data = {
+            "metadata": {
+                "extracted_date": "2026-04-22",
+                "version": "v0.19.3",
+                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+                "response_sha256": "abc123",
+            },
+            "object_info": {},
+        }
+        errors = module.validate_metadata(data, "object_info_runtime.json")
+        self.assertTrue(any("missing required field 'url'" in e for e in errors))
+
+    def test_malformed_object_info_runtime_non_dict_value_fails(self):
+        module = self._import_module()
+        data = {
+            "metadata": {
+                "url": "http://127.0.0.1:8188",
+                "extracted_date": "2026-04-22",
+                "version": "v0.19.3",
+                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+                "response_sha256": "abc123",
+            },
+            "object_info": {
+                "KSampler": "not-a-dict",
+            },
+        }
+        errors = module.validate_object_info_runtime(data, "object_info_runtime.json")
+        self.assertTrue(any("object_info['KSampler'] is not a dict" in e for e in errors))
+
 
 class ValidateSchemaScriptTests(unittest.TestCase):
     """Tests that the validation script runs successfully on the repo."""

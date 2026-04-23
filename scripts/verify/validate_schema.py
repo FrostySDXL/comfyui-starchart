@@ -37,6 +37,12 @@ SCHEMAS = {
         "basic_input_shapes": (dict, True),
         "typed_input_shapes": (dict, False),
         "coverage": (dict, False),
+        "runtime_object_info": (dict, False),
+        "provenance": (dict, False),
+    },
+    "object_info_runtime.json": {
+        "metadata": (dict, True),
+        "object_info": (dict, True),
     },
 }
 
@@ -60,6 +66,13 @@ METADATA_FIELDS = {
         ("extracted_date", str, True),
         ("version", str, True),
         ("commit", str, True),
+    ],
+    "object_info_runtime.json": [
+        ("url", str, True),
+        ("extracted_date", str, True),
+        ("version", str, True),
+        ("commit", str, True),
+        ("response_sha256", str, True),
     ],
 }
 
@@ -184,6 +197,19 @@ def validate_metadata(data: dict, filename: str) -> list[str]:
             if isinstance(s, str) and "\\" in s:
                 errors.append(
                     f"{filename}: metadata.sources contains backslashes; use forward slashes for cross-platform compatibility"
+                )
+
+    # Validate provenance if present
+    provenance = metadata.get("provenance")
+    if isinstance(provenance, dict):
+        if "mode" in provenance and provenance["mode"] not in {"source-only", "hybrid"}:
+            errors.append(
+                f"{filename}: metadata.provenance.mode must be 'source-only' or 'hybrid', got '{provenance['mode']}'"
+            )
+        for key in ("source_sections", "runtime_sections"):
+            if key in provenance and not isinstance(provenance[key], list):
+                errors.append(
+                    f"{filename}: metadata.provenance.{key} expected list, got {type(provenance[key]).__name__}"
                 )
 
     return errors
@@ -328,6 +354,23 @@ def validate_io_types(data: dict, filename: str) -> list[str]:
     return errors
 
 
+def validate_object_info_runtime(data: dict, filename: str) -> list[str]:
+    """Validate runtime object_info snapshot entries."""
+    errors = []
+    object_info = data.get("object_info", {})
+    if not isinstance(object_info, dict):
+        errors.append(f"{filename}: object_info is not a dict")
+        return errors
+
+    for key, value in object_info.items():
+        if not isinstance(key, str):
+            errors.append(f"{filename}: object_info key {key!r} is not a string")
+        if not isinstance(value, dict):
+            errors.append(f"{filename}: object_info['{key}'] is not a dict")
+
+    return errors
+
+
 def main():
     """Run schema validation for all JSON reference files."""
     all_errors = []
@@ -369,6 +412,9 @@ def main():
             all_errors.extend(errors)
         elif json_file.name == "node_api_schema.json":
             errors = validate_io_types(data, json_file.name)
+            all_errors.extend(errors)
+        elif json_file.name == "object_info_runtime.json":
+            errors = validate_object_info_runtime(data, json_file.name)
             all_errors.extend(errors)
 
         if not errors:
