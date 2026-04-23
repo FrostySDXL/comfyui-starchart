@@ -1,14 +1,14 @@
 # Integrate with Manager
 
 **Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-22
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/manager
 
 ## Primary Sources
 
 - https://docs.comfy.org/custom-nodes/backend/manager
 - https://docs.comfy.org/manager/pack-management
-- https://github.com/ltdrdata/ComfyUI-Manager (community pattern example)
+- `https://github.com/ltdrdata/ComfyUI-Manager/tree/491f847bbc286588175695ea43fa4e13cd14a437` (community repo state verified 2026-04-22)
 
 ## Scope
 
@@ -26,6 +26,12 @@ The official author docs say a pack must live in a git repository and be added
 to the Manager list so users can discover it. The newer Manager UI docs also
 make an important compatibility point: the new UI installs packs from the
 registry-backed Manager flow, not arbitrary git URLs.
+
+The pinned community repo verification is used more narrowly here: it confirms
+that the current public Manager repository still exposes the legacy discovery
+list (`custom-node-list.json`) and the expected split between frontend and
+backend code (`js/comfyui-manager.js`, `glob/manager_server.py`,
+`glob/manager_core.py`).
 
 ## Required Metadata
 
@@ -91,3 +97,6 @@ install it directly.
 
 - [ComfyUI Manager Deep Dive](../deep-dives/comfyui-manager.md)
 - [Ecosystem Map](../ecosystem/map.md)
+- Worked example: `examples/custom-nodes/example-5-full-extension-package/` --
+  a complete Manager-ready package with lifecycle scripts, multiple nodes,
+  and frontend extension

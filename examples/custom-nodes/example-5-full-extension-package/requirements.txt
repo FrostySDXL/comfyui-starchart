@@ -1,0 +1,6 @@
+# Python dependencies for the example-5 full extension package.
+# Keep versions loose to reduce dependency conflicts.
+# Only add dependencies that are actually required by your nodes.
+
+# This example is intentionally zero-dependency.
+# Add packages here only when the example nodes actually import them.

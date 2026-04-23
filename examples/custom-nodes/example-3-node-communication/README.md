@@ -23,7 +23,7 @@ is designed to participate in a multi-node pipeline.
 - How batch size flows through INPUT_TYPES and RETURN_TYPES
 - Multi-output patterns (IMAGE, MASK)
 - How to design a node that feeds two downstream nodes
-- Using `PromptServer.send_sync` to emit events during processing
+- Using `PromptServer.instance.send_sync` to emit events during processing
 
 ## Key Patterns
 
@@ -55,15 +55,16 @@ RETURN_NAMES = ("processed_images", "batch_mask", "summary")
 ```python
 PromptServer.instance.send_sync(
     "example.chunker.progress",
-    {"index": i, "total": batch_size, "node_id": self.id},
+    {"index": i + 1, "total": batch_size, "operation": operation},
 )
 ```
 
-A paired frontend extension can listen for this event and display a
-progress bar in the node's UI while processing runs.
+The payload does not include a node ID; the event name carries the context
+(`example.chunker.progress`). A paired frontend extension can listen for
+this event and display a progress bar in the node's UI while processing runs.
 
 ## Evidence Level
 
 - Batch tensor shapes: upstream source behavior (ComfyUI tensor conventions)
 - Multi-output nodes: documented pattern in ComfyUI source
-- PromptServer.send_sync: documented in ComfyUI server hooks and API docs
+- PromptServer.send_sync: source-backed reference from ComfyUI server.py (pinned snapshot)

@@ -1,7 +1,7 @@
 # Decision Tree: Custom Node Architecture
 
-**Last Updated:** 2026-04-21
-**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-04-22
+**Evidence:** Mixed: source-backed (decision framework, V1/V3 patterns) and scaffold (hand-authored code examples, example-only event names)
 
 ## Overview
 
@@ -86,12 +86,13 @@ Emit progress events for long-running batch operations:
 
 ```python
 PromptServer.instance.send_sync(
-    "example.progress",
-    {"index": i, "total": batch_size},
+    "example.chunker.progress",
+    {"index": i + 1, "total": batch_size, "operation": operation},
 )
 ```
 
-Example: `examples/custom-nodes/example-3-node-communication/`
+Example: `examples/custom-nodes/example-3-node-communication/` -- this node
+emits `example.chunker.progress` events during batch iteration.
 
 ### No -- single input, single output
 
@@ -109,8 +110,12 @@ logic clean and push UI behavior to the JS side.
 - [Frontend Extension Patterns](../extensions/patterns.md)
 - [JavaScript Hooks](../hooks/javascript-hooks.md)
 
-Example: the Minimal Node Template (`examples/custom-nodes/minimal-node-template/`)
-includes a frontend extension component alongside the server node.
+Example: `examples/custom-nodes/example-4-progress-ui/` includes a Python
+node that emits custom server-side events (using the custom event name
+`my-progress` -- not an official ComfyUI event) and a paired frontend
+extension that listens for those events and renders visible progress
+feedback. Compare this to example-3, which uses the separate
+`example.chunker.progress` event name for batch processing.
 
 ### No -- standard ComfyUI widgets are sufficient
 
@@ -147,8 +152,8 @@ installed custom node base.
 | Pure pass-through, no config | Simple V1 node |
 | Config widgets needed | V1 with INPUT_TYPES widgets |
 | Multiple operation modes | Dropdown-based mode selection |
-| Batch processing or multi-output | Multi-output V1 with event emission |
-| Custom UI beyond widgets | Node + Frontend Extension |
+| Batch processing or multi-output | Multi-output V1 with event emission (`example.chunker.progress` pattern) |
+| Custom UI beyond widgets | Node + Frontend Extension (custom event + JS listener) |
 | New project, no legacy | V3 node |
 | Existing V1 node | V1 (migrate when updating) |
 

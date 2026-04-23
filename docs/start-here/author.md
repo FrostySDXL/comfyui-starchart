@@ -1,7 +1,7 @@
 # Start Here: Custom Node Author
 
-**Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-21
+**Evidence:** Mixed: source-backed (V1/V3 concepts) and scaffold examples (example ladder)
+**Last Updated:** 2026-04-22
 
 ## Who This Path Is For
 
@@ -57,18 +57,23 @@ the above. Key requirements:
 - registration via ComfyUI-Manager's custom-node-list.json or the official
   registry
 - `requirements.txt` for Python dependencies
-- optional: `install.py`, `enable.py`, `disable.py` lifecycle scripts
+- optional: `install.py`, `enable.py`, `disable.py`, `uninstall.py` lifecycle scripts
 
 ## Example Ladder
 
 For incremental learning, work through these examples in order:
 
-1. `examples/custom-nodes/minimal-node-template/` --
+1. `examples/custom-nodes/minimal-node-template/` (the base
+   example, corresponding to "example-1" in references) --
    single node, server-side only, official walkthrough example
-2. Node with configuration widgets -- INPUT_TYPES with dropdowns and sliders
-3. Node communicating with other nodes -- batch processing, intermediate results
-4. Node with frontend component -- custom widgets and graph events
-5. Complete small extension package -- multiple nodes, lifecycle scripts,
+2. `examples/custom-nodes/example-2-widgets/` --
+   node with configuration widgets -- INPUT_TYPES with dropdowns and sliders
+3. `examples/custom-nodes/example-3-node-communication/` --
+   node communicating with other nodes -- batch processing, intermediate results
+4. `examples/custom-nodes/example-4-progress-ui/` --
+   node with frontend component -- custom server events and visible progress UI
+5. `examples/custom-nodes/example-5-full-extension-package/` --
+   complete small extension package -- multiple nodes, lifecycle scripts,
    Manager-ready structure
 
 ## Common First Steps
