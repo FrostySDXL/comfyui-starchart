@@ -35,7 +35,17 @@ class MarkdownGenerationTests(unittest.TestCase):
                             "method": "POST",
                             "description": "Submit prompt",
                             "parameters": ["prompt"],
-                            "returns": "prompt_id"
+                            "returns": {
+                                "kind": "json",
+                                "summary": "Prompt queued with ID and any node errors.",
+                                "status_codes": [200, 400],
+                                "fields": [
+                                    {"name": "prompt_id"},
+                                    {"name": "number"},
+                                    {"name": "node_errors"},
+                                ],
+                                "notes": ["Returns 400 for validation failures."],
+                            }
                         }
                     ]
                 },
@@ -58,6 +68,9 @@ class MarkdownGenerationTests(unittest.TestCase):
         self.assertIn("# Server.py Summary", rendered)
         self.assertIn("sample server.py", rendered)
         self.assertIn("| POST | /prompt | Submit prompt |", rendered)
+        self.assertIn("| /prompt | json | 200, 400 | Prompt queued with ID and any node errors. |", rendered)
+        self.assertIn("## Structured Return Details", rendered)
+        self.assertIn("| /prompt | prompt_id, number, node_errors | Returns 400 for validation failures. |", rendered)
 
     def test_writes_placeholder_when_no_endpoints_exist(self):
         INPUT.write_text(
