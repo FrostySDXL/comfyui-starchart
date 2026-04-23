@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+"""One-command verification wrapper for maintainers.
+
+Runs the standard verification sequence:
+    1. Unit tests
+    2. cross_references.py
+    3. validate_schema.py
+    4. mkdocs build
+
+Usage:
+    python scripts/verify/run_all.py
+    python scripts/verify/run_all.py --skip-tests
+    python scripts/verify/run_all.py --skip-mkdocs
+
+Exits 0 on success, exits 1 on the first blocking failure.
+"""
+
+import argparse
+import subprocess
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS_VERIFY_DIR = REPO_ROOT / "scripts" / "verify"
+
+
+def run_step(cmd: list[str], description: str, cwd: str | None = None) -> bool:
+    """Run a command and report success or failure."""
+    print(f"\n=== {description} ===")
+    result = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
+    if result.stdout:
+        print(result.stdout)
+    if result.returncode != 0:
+        print(f"FAILED: {description}", file=sys.stderr)
+        if result.stderr:
+            print(result.stderr, file=sys.stderr)
+        return False
+    print(f"OK: {description}")
+    return True
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Run the standard verification sequence."
+    )
+    parser.add_argument("--skip-tests", action="store_true", help="Skip unit tests")
+    parser.add_argument("--skip-mkdocs", action="store_true", help="Skip MkDocs build")
+    args = parser.parse_args()
+
+    steps = []
+
+    if not args.skip_tests:
+        steps.append(
+            (
+                [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+                "Unit tests",
+            )
+        )
+
+    steps.append(
+        (
+            [sys.executable, str(SCRIPTS_VERIFY_DIR / "cross_references.py")],
+            "Cross-reference verification",
+        )
+    )
+
+    steps.append(
+        (
+            [sys.executable, str(SCRIPTS_VERIFY_DIR / "validate_schema.py")],
+            "Schema validation",
+        )
+    )
+
+    if not args.skip_mkdocs:
+        steps.append(
+            (
+                [sys.executable, "-m", "mkdocs", "build"],
+                "MkDocs build",
+            )
+        )
+
+    for cmd, description in steps:
+        if not run_step(cmd, description, cwd=str(REPO_ROOT)):
+            return 1
+
+    print("\n=== All verification steps passed ===")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
