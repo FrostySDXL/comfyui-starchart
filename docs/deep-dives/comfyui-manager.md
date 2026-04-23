@@ -1,164 +1,103 @@
 # Deep Dive: ComfyUI-Manager
 
-**Evidence:** Community pattern study based on public GitHub repo
-**Package:** [ltdrdata/ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager)
-**Last Updated:** 2026-04-21
+**Evidence:** Community pattern study based on pinned external version
+**Package:** [ltdrdata/ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager/tree/491f847bbc286588175695ea43fa4e13cd14a437)
+**Last Updated:** 2026-04-22
 
-## What This Page Is
+## Scope
 
-An annotated study of ComfyUI-Manager's role and architecture as a community
-extension. This is not a source code walkthrough -- it documents what can
-be observed from the outside about how Manager works, so that extension
-developers can learn from its patterns.
+This page is a conservative package-layout study of the public
+`ltdrdata/ComfyUI-Manager` repository at pinned commit
+`491f847bbc286588175695ea43fa4e13cd14a437`, verified on 2026-04-22. It does
+not attempt a route-by-route or lifecycle-by-lifecycle source audit.
 
-For actual Manager integration steps, see [Integrate with Manager](../how-to/integrate-with-manager.md).
+Verified repo signals used here:
+
+- root-level `custom-node-list.json`
+- frontend code at `js/comfyui-manager.js`
+- backend code at `glob/manager_server.py` and `glob/manager_core.py`
+- additional package metadata and API description files at the repo root
+
+For actual Manager integration steps, see
+[Integrate with Manager](../how-to/integrate-with-manager.md).
+For a code-centric companion study of a large community node pack that uses
+Manager-facing packaging patterns, see
+[ComfyUI-Impact-Pack](../deep-dives/comfyui-impact-pack.md).
 
 ## Why Study ComfyUI-Manager
 
-ComfyUI-Manager is the most widely deployed community extension for ComfyUI.
-Studying it teaches:
+ComfyUI-Manager is a useful community reference because its pinned repo layout
+shows how one extension combines:
 
-- how to build a hybrid extension with both frontend and backend components
-- how to design lifecycle management (install, update, disable, remove)
-- how to use custom routes to expose management APIs
-- how to structure a package that is easy to distribute and maintain
+- editor-side JavaScript
+- backend Python modules
+- package-discovery metadata
+- distribution-facing support files
 
-## What ComfyUI-Manager Does
+That makes it a good structural pattern study for authors building tooling
+extensions rather than single execution nodes.
 
-At a high level, Manager provides:
+## What the Pinned Repo Clearly Shows
 
-- **Discovery** -- a curated list of custom node packs (custom-node-list.json)
-  that users can install from the Manager UI
-- **Installation** -- git-clone based installation into `custom_nodes/`
-- **Lifecycle management** -- install.py, uninstall.py, enable.py, disable.py
-  scripts that run at appropriate lifecycle points
-- **Registry integration** -- the new Manager UI flow that uses
-  registry.comfy.org for package metadata and installation
-- **Update checking** -- periodic checks for new releases of installed packs
-- **Missing-node recovery** -- scan workflows and offer to install missing
-  node packs
+### 1. Discovery metadata lives at the package root
 
-## Architectural Layers
+The pinned repo includes `custom-node-list.json` at the root. That is a direct
+signal that Manager still carries legacy discovery-list responsibilities in the
+same repository.
 
-### 1. Frontend Panel
+### 2. Frontend and backend concerns are split
 
-Manager adds a sidebar panel to the ComfyUI editor. This is implemented as
-a frontend extension that:
+The pinned repo includes:
 
-- renders the Manager UI inside ComfyUI's panel system
-- communicates with the backend via custom routes
-- handles user interaction for browsing, installing, and managing packs
+- `js/comfyui-manager.js`
+- `glob/manager_server.py`
+- `glob/manager_core.py`
 
-Source reference: the `web/` directory in the Manager repo contains the
-frontend JavaScript.
+That separation is the clearest architectural lesson in this repo study:
+Manager is not just a frontend panel and not just a backend service. It is a
+hybrid extension package.
 
-### 2. Backend Routes
+### 3. Manager also carries distribution metadata
 
-Manager adds custom routes that the frontend panel calls:
+The pinned root listing includes files such as `openapi.yaml`,
+`extension-node-map.json`, `node_db/`, and other package metadata files. That
+shows Manager has to coordinate UI, backend behavior, and distribution data in
+one package.
 
-- `GET /manager/...` -- fetch package lists, check for updates
-- `POST /manager/...` -- trigger install, update, disable, enable operations
+## Patterns Extension Authors Can Reuse
 
-These routes handle:
+### Hybrid extension architecture
 
-- git operations (clone, pull, checkout)
-- file system operations in `custom_nodes/`
-- running lifecycle scripts
-- returning structured JSON responses to the frontend
+If your extension needs both UI and backend behavior, keep those layers visibly
+separate. Manager's pinned repo layout demonstrates that split clearly.
 
-### 3. Lifecycle Scripts
+### Tooling extensions need package-level structure
 
-Manager's lifecycle scripts live in each managed node pack:
+A management or observability tool usually needs more than node classes alone.
+It may also need:
 
-- `install.py` -- runs after a pack is first cloned; handles dependency
-  installation, asset downloads, or initial setup
-- `uninstall.py` -- runs before a pack is removed; cleanup tasks
-- `enable.py` -- runs when a pack is re-enabled after being disabled
-- `disable.py` -- runs when a pack is disabled; Manager appends `.disabled`
-  to the folder name when disabled
+- frontend entrypoints
+- backend route or service modules
+- metadata files used by the tool itself
 
-These scripts are optional. Manager works without them, but packs that
-provide them offer a better user experience.
+### Keep community observations pinned
 
-### 4. Registry Integration
+Community extension studies drift quickly when they cite an unpinned default
+branch. If you reference Manager behavior from GitHub, pin the exact commit and
+say what you actually verified from that revision.
 
-The newer Manager UI flow uses registry.comfy.org as the package backend:
+## What This Page Does Not Claim
 
-- registry provides package metadata (descriptions, version tags, dependencies)
-- Manager UI installs from the registry, not arbitrary git URLs
-- this is more secure and reliable than git URL installation
+- It does not define official ComfyUI behavior.
+- It does not replace the official Manager docs on `docs.comfy.org`.
+- It does not claim every route or lifecycle detail in Manager was audited here.
 
-The old custom-node-list.json path still works for legacy packs.
-
-## Key Patterns for Extension Developers
-
-### Hybrid Extension Architecture
-
-Manager shows how to combine:
-
-- frontend hooks for UI (`beforeRegisterNodeDef`, `nodeCreated` are NOT used
-  by Manager -- it is purely a management UI, not a node provider)
-- backend routes for management operations
-- lifecycle scripts for package-level setup and teardown
-
-If you are building a tool that manages other packages or adds management
-capabilities to ComfyUI, this is the reference architecture.
-
-### Route-Backed Tool Pattern
-
-Manager's routes (`/manager/...`) expose a structured API that the frontend
-calls. This is the standard pattern for any tool that:
-
-- needs to perform operations outside the graph execution model
-- exposes a UI for controlling those operations
-- returns structured data to the frontend
-
-[Custom Routes](../how-to/add-custom-routes.md) explains how to add your own routes.
-
-### Package Lifecycle Pattern
-
-The `install.py` / `enable.py` / `disable.py` / `uninstall.py` pattern is
-the ComfyUI convention for package lifecycle. If your node pack needs setup
-or teardown:
-
-1. create the scripts in your package root
-2. place them in `custom_nodes/your_package/`
-3. ComfyUI-Manager will call them at the appropriate lifecycle points
-
-Note: users can also manually disable a pack by renaming the directory with
-`.disabled` appended, so your scripts should handle both Manager-driven and
-manual lifecycle events.
-
-## What Manager Is NOT
-
-Understanding Manager's scope helps avoid misusing it:
-
-- Manager is NOT an execution engine -- it does not participate in the
-  ComfyUI graph execution model
-- Manager is NOT a package registry -- it uses registry.comfy.org for
-  the new flow and custom-node-list.json for the legacy flow
-- Manager is NOT required for custom nodes -- nodes work without it, but
-  users expect Manager to be the installation path for new packs
-- Manager does NOT work in API mode -- lifecycle scripts and UI features
-  require the ComfyUI editor to be running
-
-## Maintenance Notes
-
-ComfyUI-Manager is actively maintained by ltdrdata with regular releases.
-The November 2025 release (v8.28) is the latest confirmed at time of writing.
-
-As an extension developer, keep in mind:
-
-- Manager can only manage packages that follow the conventional
-  `NODE_CLASS_MAPPINGS` / `NODE_DISPLAY_NAME_MAPPINGS` registration pattern
-- Packs that use non-standard registration may not work with Manager's
-  install or update features
-- The new registry-backed flow requires your pack to be registered with
-  registry.comfy.org, not just added to custom-node-list.json
+Use the official docs for publication flow, lifecycle hooks, and current user
+installation behavior.
 
 ## References
 
-- Repo: [ltdrdata/ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager)
-- Registry: [registry.comfy.org](https://registry.comfy.org)
+- Pinned repo: [ltdrdata/ComfyUI-Manager @ 491f847](https://github.com/ltdrdata/ComfyUI-Manager/tree/491f847bbc286588175695ea43fa4e13cd14a437)
 - Integration guide: [Integrate with Manager](../how-to/integrate-with-manager.md)
+- Companion study: [ComfyUI-Impact-Pack](../deep-dives/comfyui-impact-pack.md)
 - Related: [Ecosystem Map](../ecosystem/map.md)
