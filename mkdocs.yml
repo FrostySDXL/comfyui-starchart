@@ -62,6 +62,7 @@ nav:
       - reference/doc-quality-checklist.md
       - reference/version-pin-status.md
       - reference/version-history.md
+      - reference/runtime-ci-operations.md
   - Tutorials:
       - tutorials/building-first-node.md
       - tutorials/adding-background-metrics.md

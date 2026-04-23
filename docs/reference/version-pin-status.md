@@ -41,6 +41,14 @@ JSON in `references/raw/` points at those snapshot files.
   TypeScript files
 - `references/raw/node_api_schema.json` is extracted from the pinned core
   `server.py`, `comfy_api/latest/_io.py`, and `basic_types.py`
+- `references/raw/object_info_runtime.json` is an optional runtime-only capture
+  artifact and is not part of the canonical public artifact set
+
+## Automation
+
+- `.github/workflows/weekly-pin-check.yml` verifies pinned commits still resolve
+- `.github/workflows/upstream-watch.yml` detects newer upstream versions and
+  opens tracking issues
 
 ## Remaining Limits
 
@@ -49,6 +57,8 @@ JSON in `references/raw/` points at those snapshot files.
 - this is a pinned reference baseline for the extracted data, not a claim that
   every documentation page in the repo has been fully rewritten to exact pinned
   citations yet
+- runtime-only artifacts reflect the specific ComfyUI instance configuration at
+  capture time and should not be treated as canonical baselines
 
 When exact version behavior matters, prefer the pinned snapshot files first,
 then reconcile against official docs and release notes.

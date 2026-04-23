@@ -80,24 +80,50 @@ python scripts/refresh_snapshots.py --core-version <new-core-version> --frontend
 ## Verification
 
 ```bash
-# Unit tests
-python -m unittest discover -s tests -v
+# One-command wrapper (runs tests, cross-references, schema validation, and mkdocs build)
+python scripts/verify/run_all.py
 
-# Build docs
+# Individual steps
+python -m unittest discover -s tests -v
+python scripts/verify/cross_references.py
+python scripts/verify/validate_schema.py
 python -m mkdocs build
 
-# Verification scripts (all should exit 0 on clean repo)
-python scripts/verify/cross_references.py
+# Additional checks (non-blocking in CI)
 python scripts/verify/stale_content.py
 python scripts/verify/extraction_idempotency.py
 python scripts/verify/upstream_pins.py
-python scripts/verify/validate_schema.py
 ```
 
 ## CI
 
+### CPU-safe workflows (blocking and non-blocking)
+
 - **`.github/workflows/ci.yml`** -- runs on push/PR to main: tests, MkDocs build, cross-references (blocking), schema validation (blocking), stale content (non-blocking), idempotency (non-blocking), upstream pins (non-blocking). Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
 - **`.github/workflows/weekly-pin-check.yml`** -- runs every Monday at 09:00 UTC and on manual dispatch: checks that pinned commits and tags still resolve in upstream repos.
+- **`.github/workflows/upstream-watch.yml`** -- runs every Monday at 10:00 UTC: detects newer upstream versions and creates or updates tracking issues.
+
+### Opt-in runtime workflows
+
+- **`.github/workflows/runtime-smoke.yml`** -- `workflow_dispatch` only: runs lightweight smoke checks against a live ComfyUI instance. Requires a ComfyUI base URL input.
+
+## Runtime Extraction
+
+The repo supports optional runtime capture from a live ComfyUI instance:
+
+```bash
+# Capture runtime object_info
+python scripts/extract/parse_from_api.py --url http://127.0.0.1:8188 --version v0.19.3 --commit <sha> --output references/raw/object_info_runtime.json
+
+# Hybrid refresh (source + runtime)
+python scripts/refresh_snapshots.py --core-version v0.19.4 --runtime-object-info-url http://127.0.0.1:8188
+
+# Runtime smoke checks
+python scripts/verify/runtime_smoke.py --url http://127.0.0.1:8188
+```
+
+Runtime extraction is opt-in and separate from standard CPU-safe verification.
+See `docs/reference/runtime-ci-operations.md` for the full operating model.
 
 ## External Sources
 

@@ -91,7 +91,18 @@ schema-aware documentation generators.
   installed in the current ComfyUI instance appear naturally in the
   output.
 
+## Runtime Enrichment
+
+The object-info reference can be enriched with runtime-captured data. When
+`--object-info-runtime-path` is passed to `parse_node_api_schema.py`, the
+output includes a `runtime_object_info` section with live node definitions from
+a running ComfyUI instance.
+
+See [Runtime and CI Operations](runtime-ci-operations.md) for the hybrid
+evidence model and when to use runtime capture.
+
 ## Read Next
 
 - [API Endpoints](../api/endpoints.md)
 - [Prompt Submission](../api/prompt-submission.md)
+- [Runtime and CI Operations](runtime-ci-operations.md)

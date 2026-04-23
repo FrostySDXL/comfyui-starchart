@@ -19,6 +19,7 @@ Serve locally: `python -m mkdocs serve`
 | Add a new extractor | Existing extractor in `scripts/extract/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
 | Add a verification script | Existing script in `scripts/verify/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
 | Refresh upstream version | `scripts/refresh_snapshots.py` | Run with `--core-version` / `--frontend-version` | All verify scripts pass |
+| Runtime extraction | `scripts/extract/parse_from_api.py` | Run with `--url` and `--output` | `validate_schema.py` passes on output |
 | Change CI workflow | `.github/workflows/ci.yml` | Edit YAML | Push and check Actions tab |
 
 ## 1. Mission
@@ -59,6 +60,9 @@ Non-goals: official docs replacement, community wiki, package registry.
 ## 4. Key Commands
 
 ```bash
+# One-command wrapper
+python scripts/verify/run_all.py
+
 # Tests
 python -m unittest discover -s tests -v
 
@@ -77,11 +81,17 @@ python scripts/extract/parse_server.py <path> --version <v> --commit <sha>
 python scripts/extract/parse_hooks.py <paths...> --version <v> --commit <sha>
 python scripts/extract/parse_node_api_schema.py <server> <io> <types> --version <v> --commit <sha>
 
+# Runtime extractor (opt-in; requires live ComfyUI instance)
+python scripts/extract/parse_from_api.py --url <url> --version <v> --commit <sha> --output references/raw/object_info_runtime.json
+
 # Generator (run after any extractor)
 python scripts/generate/md_from_json.py
 
 # Refresh upstream (clone, extract, generate)
 python scripts/refresh_snapshots.py --core-version v0.19.4
+
+# Runtime smoke checks (opt-in; requires live ComfyUI instance)
+python scripts/verify/runtime_smoke.py --url <url>
 ```
 
 ## 5. Task Playbooks
@@ -90,8 +100,9 @@ python scripts/refresh_snapshots.py --core-version v0.19.4
 
 1. Edit source in `references/snapshots/` or run `refresh_snapshots.py`
 2. Run the matching extractor with `--version` and `--commit` flags
-3. Run `md_from_json.py` to regenerate markdown
-4. Run `cross_references.py` and `validate_schema.py` to verify
+3. Optionally run `parse_from_api.py` with `--url` for runtime enrichment
+4. Run `md_from_json.py` to regenerate markdown
+5. Run `cross_references.py` and `validate_schema.py` to verify
 
 ### Editing prose documentation
 

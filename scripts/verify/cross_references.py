@@ -58,6 +58,12 @@ def extract_source_paths_from_json(data: dict) -> list[str]:
     return paths
 
 
+# Runtime-only artifacts that are not expected to exist on disk in a clean repo.
+RUNTIME_ONLY_PATHS = {
+    "references/raw/object_info_runtime.json",
+}
+
+
 def verify_markdown_references() -> list[tuple[str, str]]:
     """Verify all file path references in markdown docs exist on disk.
 
@@ -69,6 +75,8 @@ def verify_markdown_references() -> list[tuple[str, str]]:
         for ref_path in extract_file_paths_from_markdown(content):
             # Normalize backslashes for Windows
             normalized = ref_path.replace("\\", "/")
+            if normalized in RUNTIME_ONLY_PATHS:
+                continue
             full_path = REPO_ROOT / normalized
             if not full_path.exists():
                 broken.append((str(md_file.relative_to(REPO_ROOT)), ref_path))
