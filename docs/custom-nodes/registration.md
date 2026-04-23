@@ -1,14 +1,13 @@
 # Registration
 
-**Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-04-21
-**Primary Source:** https://docs.comfy.org/custom-nodes/overview
-
-## Primary Sources
+**Evidence:** Mixed: source-backed (io.Schema, execute, NodeOutput from pinned Python snapshot); observed (ComfyExtension + comfy_entrypoint() pattern from pinned frontend TypeScript source and community examples)
+**Last Updated:** 2026-04-22
+**Primary Sources**
 
 - https://docs.comfy.org/custom-nodes/overview
 - https://docs.comfy.org/custom-nodes/backend/server_overview
-- https://docs.comfy.org/custom-nodes/walkthrough
+- `references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts` (ComfyExtension interface)
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py` (io.Schema, io.ComfyNode, NodeOutput)
 
 ## Scope
 
@@ -20,6 +19,14 @@ modern V3 conventions.
 
 In V3, nodes are exposed through a `ComfyExtension` plus a module-level
 `comfy_entrypoint()` function.
+
+**Caveat:** The Python-side `ComfyExtension` class and `comfy_entrypoint()`
+convention are observed from the pinned frontend TypeScript source
+(`ComfyExtension` interface in `comfy.ts`) and from community node examples.
+The Python-side registration entrypoint mechanism has not been directly pinned
+from a Python source file in this repository. The `io.Schema`, `io.ComfyNode`,
+and `io.NodeOutput` classes used in V3 nodes ARE pinned from the Python
+snapshot at `comfy_api/latest/_io.py`.
 
 Typical pattern:
 

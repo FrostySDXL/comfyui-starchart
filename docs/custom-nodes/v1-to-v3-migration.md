@@ -1,13 +1,14 @@
 # V1 to V3 Migration Guide
 
-**Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-04-21
+**Evidence:** Official docs-backed (migration steps); Community pattern studies (case studies)
+**Last Updated:** 2026-04-22
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/migration
 
 ## Primary Sources
 
 - https://docs.comfy.org/custom-nodes/overview
 - https://docs.comfy.org/custom-nodes/backend/migration
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py`
 
 ## Scope
 
@@ -63,59 +64,65 @@ NODE_DISPLAY_NAME_MAPPINGS = {"MyNode": "My Node"}
 
 ## V3 Node Anatomy
 
-A V3 node inherits from `io.ComfyNode` and uses an explicit schema:
+For this repo's documented V3 surface, a V3 node inherits from
+`io.ComfyNode`, declares typed inputs and outputs with `io.Schema`, and uses
+an `execute()` signature whose parameter names match the input IDs.
+
+> **Caveat:** The `ComfyExtension` class and `comfy_entrypoint()` convention
+> shown in the V3 sketches below are not directly pinned from a Python source
+> file. See the caveat in [Registration](registration.md) for the full
+> explanation.
+
+This is the copy-safe migration target used throughout the repo:
 
 ```python
-import comfy
+from comfy_api.latest import ComfyExtension, io
+from typing_extensions import override
 
-class MyNode(comfy.node_base.ComfyNode):
-    @staticmethod
-    def define_schema():
-        return comfy.io.Schema(
-            inputs=[
-                comfy.io.RequiredInput(("IMAGE",), "image"),
-                comfy.io.OptionalInput(("FLOAT",), "strength",
-                    default=1.0, min_value=0.0, max_value=10.0),
-            ],
-            outputs=[
-                comfy.io.RequiredInput(("IMAGE",), "output_image"),
-            ],
-            name="MyNode",
+
+class MyNode(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="MyNode",
             display_name="My Node",
             category="MyNodes",
+            inputs=[
+                io.Image.Input("image"),
+                io.Float.Input("strength", default=1.0, min=0.0, max=10.0),
+            ],
+            outputs=[io.Image.Output("output_image")],
         )
 
-    def execute(self):
-        image = self.get_input("image")
-        strength = self.get_input("strength")
-        result = self.process(image, strength)
-        return comfy.io.NodeOutput(self, "output_image", result)
-```
+    @classmethod
+    def execute(cls, image, strength=1.0):
+        result = image * strength
+        return io.NodeOutput(result)
 
-Registration uses a ComfyExtension entrypoint:
 
-```python
-class MyNodeExtension(comfy.extension.ComfyExtension):
-    @staticmethod
-    def get_nodes():
-        return {"MyNode": MyNode}
+class MyExtension(ComfyExtension):
+    @override
+    async def get_node_list(self) -> list[type[io.ComfyNode]]:
+        return [MyNode]
 
-comfy_entrypoint = MyNodeExtension
+
+async def comfy_entrypoint() -> MyExtension:
+    return MyExtension()
 ```
 
 ## Step-by-Step Migration
 
-### 1. Replace Class Attributes with define_schema
+### 1. Replace Class Attributes with `define_schema()`
 
 V1 class attributes become schema inputs:
 
 | V1 | V3 |
 |----|----|
-| `INPUT_TYPES` required entry | `comfy.io.RequiredInput` |
-| `INPUT_TYPES` optional entry | `comfy.io.OptionalInput` with default |
-| `RETURN_TYPES` | `comfy.io.RequiredInput` in outputs list |
-| `CATEGORY` | `category` field in Schema |
-| `FUNCTION` | rename the method to `execute` |
+| `INPUT_TYPES` required entry | `io.<Type>.Input("...")` |
+| `INPUT_TYPES` optional entry | `io.<Type>.Input("...", default=...)`; add `optional=True` when the socket itself may be disconnected |
+| `RETURN_TYPES` | typed `io.<Type>.Output("...")` object in `outputs` |
+| `CATEGORY` | `category` field in `io.Schema(...)` |
+| `FUNCTION` | fixed `execute()` method name |
 
 ### 2. Change Inheritance
 
@@ -124,13 +131,14 @@ V1 class attributes become schema inputs:
 class MyNode:
 
 # V3
-class MyNode(comfy.node_base.ComfyNode):
+class MyNode(io.ComfyNode):
 ```
 
 ### 3. Move Execution Logic
 
-V1 method name (from FUNCTION) becomes `execute`. Inputs are fetched via
-`self.get_input()`:
+V1 method name (from `FUNCTION`) becomes `execute()`. In the V3 shape this repo
+documents, ComfyUI passes schema inputs to `execute()` as keyword arguments, so
+the method signature should match the input IDs:
 
 ```python
 # V1
@@ -139,17 +147,21 @@ def process(self, image, strength=1.0):
     return (result,)
 
 # V3
-def execute(self):
-    image = self.get_input("image")
-    strength = self.get_input("strength")
+@classmethod
+def execute(cls, image, strength=1.0):
     result = image * strength
-    return comfy.io.NodeOutput(self, "output_image", result)
+    return io.NodeOutput(result)
 ```
 
-Note that V3 returns an `io.NodeOutput` wrapping the result, not a tuple
-directly.
+`_io.py` also shows that raw tuples are normalized into `io.NodeOutput`, but the
+repo's V3 references use `io.NodeOutput(...)` explicitly because it is clearer
+and safer in migration examples.
 
 ### 4. Update Registration
+
+> **Caveat:** The `ComfyExtension` class and `comfy_entrypoint()` convention
+> are not directly pinned from a Python source file. See the caveat in
+> [Registration](registration.md).
 
 ```python
 # V1
@@ -157,19 +169,20 @@ NODE_CLASS_MAPPINGS = {"MyNode": MyNode}
 NODE_DISPLAY_NAME_MAPPINGS = {"MyNode": "My Node"}
 
 # V3
-class MyExtension(comfy.extension.ComfyExtension):
-    @staticmethod
-    def get_nodes():
-        return {"MyNode": MyNode}
+class MyExtension(ComfyExtension):
+    @override
+    async def get_node_list(self) -> list[type[io.ComfyNode]]:
+        return [MyNode]
 
-comfy_entrypoint = MyExtension
+async def comfy_entrypoint() -> MyExtension:
+    return MyExtension()
 ```
 
 ## Common Pitfalls
 
 ### Input Type Specification
 
-V1 uses tuple shorthand that V3 expands explicitly:
+V1 uses tuple shorthand that V3 replaces with typed helpers:
 
 ```python
 # V1 shorthand
@@ -177,8 +190,8 @@ V1 uses tuple shorthand that V3 expands explicitly:
 ("FLOAT", {"default": 1.0})  # type with options dict
 
 # V3 explicit
-comfy.io.RequiredInput(("IMAGE",), "image")
-comfy.io.OptionalInput(("FLOAT",), "strength", default=1.0)
+io.Image.Input("image")
+io.Float.Input("strength", default=1.0)
 ```
 
 ### Return Values
@@ -190,36 +203,35 @@ V1 returns a plain tuple. V3 returns through `io.NodeOutput`:
 return (result,)
 
 # V3
-return comfy.io.NodeOutput(self, "output_image", result)
+return io.NodeOutput(result)
 ```
 
 ### Optional Inputs with No Default
 
 In V1, optional inputs without a default are `None` if not provided.
-In V3, use `OptionalInput` and handle `None` in `execute`:
+In the repo's documented V3 shape, mark the schema input as optional and handle
+`None` in `execute()`:
 
 ```python
-comfy.io.OptionalInput(("IMAGE",), "optional_image")
+io.Image.Input("optional_image", optional=True)
 ```
 
 Then in `execute`:
 
 ```python
-optional_image = self.get_input("optional_image")
-if optional_image is None:
-    # handle missing optional
+def execute(cls, optional_image=None):
+    if optional_image is None:
+        # handle missing optional
 ```
 
-### Widget Types
+### Custom and Flexible Types
 
-V1 uses `*` for wildcard or flexible types. V3 uses explicit type lists:
+For custom datatypes, prefer explicit custom type helpers over hand-written
+tuple strings in migration examples:
 
 ```python
-# V1 wildcard
-("*",)
-
-# V3 equivalent
-("IMAGE", "MASK", "LATENT")
+CustomPipe = io.Custom("DETAILER_PIPE")
+CustomPipe.Input("detailer_pipe", optional=True, force_input=True)
 ```
 
 ## V3 Advantages
@@ -237,8 +249,25 @@ V1 and V3 nodes coexist in the same ComfyUI instance. Registration mechanisms
 differ, but both produce equivalent graph nodes. Node packs with both V1 and
 V3 nodes will work without conflict.
 
+## Real-World Case Studies
+
+Two worked case studies based on current ComfyUI-Impact-Pack source
+demonstrate V1-to-V3 migration in practice:
+
+- [Case Study: Pipe Nodes](v1-to-v3-case-study-pipe.md) -- widget-heavy
+  pipe bundle nodes from Impact-Pack
+- [Case Study: Segs Nodes](v1-to-v3-case-study-segs.md) -- batch-oriented
+  segmentation nodes from Impact-Pack
+
+Both are community case studies (Tier 2 evidence). They document the
+current V1 structure of those files and describe the V3 equivalents
+using standard migration conventions. They are not statements that
+Impact-Pack has migrated those files.
+
 ## Read Next
 
 - [Node Structure](node-structure.md)
 - [Development Guide](development-guide.md)
 - [Registration](registration.md)
+- [Case Study: Pipe Nodes](v1-to-v3-case-study-pipe.md)
+- [Case Study: Segs Nodes](v1-to-v3-case-study-segs.md)

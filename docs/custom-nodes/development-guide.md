@@ -31,7 +31,9 @@ them like any built-in Comfy node.
 
 For current development, V3 is the recommended mental model: declare a
 schema with `io.Schema`, implement execution with `execute`, and expose
-nodes through a `ComfyExtension` entrypoint. V1 still matters for older
+nodes through a `ComfyExtension` entrypoint (observed from the frontend
+extension API in pinned TypeScript source; the Python-side entrypoint
+convention is documented in community examples). V1 still matters for older
 repos and for understanding the large installed base of existing nodes.
 
 ## Development Environment
@@ -100,7 +102,9 @@ V3 nodes inherit from `io.ComfyNode` and typically provide:
 
 - `define_schema()` returning `io.Schema`
 - `execute()` returning `io.NodeOutput(...)`
-- registration through `ComfyExtension` and `comfy_entrypoint()`
+- registration through `ComfyExtension` and `comfy_entrypoint()` (observed from
+  pinned frontend TypeScript source and community examples; see caveats in
+  [Registration](registration.md))
 
 This model is more explicit, more structured, and better aligned with
 newer ComfyUI extension guidance.
