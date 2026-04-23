@@ -33,3 +33,10 @@ It is useful as a real starter example because it includes:
 - verify against your installed ComfyUI version before shipping a real package
 - if a local upstream ComfyUI checkout is available later, pin this example to a
   specific commit in `references/snapshots/`
+
+## Runtime Validation
+
+The opt-in `.github/workflows/runtime-smoke.yml` can exercise the minimal-node
+example against a live ComfyUI instance if the workflow is configured to submit
+the included `workflow.json`. This is not part of CPU-safe CI and must be
+triggered manually with a known ComfyUI URL.

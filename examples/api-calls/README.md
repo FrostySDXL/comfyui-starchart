@@ -19,3 +19,9 @@ meant as practical starter calls for tools that talk to native ComfyUI.
 - upstream source behavior: current `server.py` route implementations
 - official behavior: official docs where available
 - community wrappers: excluded from these examples on purpose
+
+## Runtime Validation
+
+The opt-in `.github/workflows/runtime-smoke.yml` can validate `POST /prompt`
+using `post-prompt.json` against a live ComfyUI instance. This is not part of
+CPU-safe CI and must be triggered manually with a known ComfyUI URL.
