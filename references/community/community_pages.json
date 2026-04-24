@@ -1,0 +1,130 @@
+{
+  "metadata": {
+    "schema_version": "1.0.0",
+    "last_updated": "2026-04-23",
+    "description": "Review metadata for community-facing documentation pages"
+  },
+  "pages": [
+    {
+      "page_path": "docs/ecosystem/map.md",
+      "page_kind": "generated_catalog",
+      "evidence_label": "Community pattern study",
+      "source_type": "community_metadata",
+      "last_verified": "2026-04-22",
+      "needs_review_after": "2026-07-22",
+      "maintenance_tier": "tier_2",
+      "generated_from": "references/community/ecosystem_packages.json",
+      "notes": "Generated from structured metadata; do not hand-edit directly"
+    },
+    {
+      "page_path": "docs/deep-dives/comfyui-manager.md",
+      "page_kind": "hand_authored_study",
+      "evidence_label": "Community pattern study based on pinned external version",
+      "source_type": "pinned_external_repo",
+      "last_verified": "2026-04-22",
+      "needs_review_after": "2026-10-22",
+      "maintenance_tier": "tier_3",
+      "generated_from": null,
+      "notes": "Pinned commit study; update when external repo changes significantly"
+    },
+    {
+      "page_path": "docs/deep-dives/comfyui-impact-pack.md",
+      "page_kind": "hand_authored_study",
+      "evidence_label": "Community pattern study based on pinned external version",
+      "source_type": "pinned_external_repo",
+      "last_verified": "2026-04-22",
+      "needs_review_after": "2026-10-22",
+      "maintenance_tier": "tier_3",
+      "generated_from": null,
+      "notes": "Pinned commit study; update when external repo changes significantly"
+    },
+    {
+      "page_path": "docs/extensions/profilerx-analysis.md",
+      "page_kind": "hand_authored_study",
+      "evidence_label": "Community pattern study based on pinned external version",
+      "source_type": "pinned_external_repo",
+      "last_verified": "2026-04-21",
+      "needs_review_after": "2026-10-21",
+      "maintenance_tier": "tier_3",
+      "generated_from": null,
+      "notes": "Community extension case study; verify upstream repo state before updating"
+    },
+    {
+      "page_path": "docs/custom-nodes/v1-to-v3-case-study-pipe.md",
+      "page_kind": "hand_authored_study",
+      "evidence_label": "Community pattern study based on pinned external version",
+      "source_type": "pinned_external_repo",
+      "last_verified": "2026-04-22",
+      "needs_review_after": "2026-10-22",
+      "maintenance_tier": "tier_3",
+      "generated_from": null,
+      "notes": "Pinned commit study of Impact-Pack pipe.py; update when upstream changes"
+    },
+    {
+      "page_path": "docs/custom-nodes/v1-to-v3-case-study-segs.md",
+      "page_kind": "hand_authored_study",
+      "evidence_label": "Community pattern study based on pinned external version",
+      "source_type": "pinned_external_repo",
+      "last_verified": "2026-04-22",
+      "needs_review_after": "2026-10-22",
+      "maintenance_tier": "tier_3",
+      "generated_from": null,
+      "notes": "Pinned commit study of Impact-Pack segs_nodes.py; update when upstream changes"
+    },
+    {
+      "page_path": "docs/tutorials/adding-background-metrics.md",
+      "page_kind": "hand_authored_tutorial",
+      "evidence_label": "Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version",
+      "source_type": "hybrid",
+      "last_verified": "2026-04-21",
+      "needs_review_after": "2026-07-21",
+      "maintenance_tier": "tier_2",
+      "generated_from": null,
+      "notes": "Hybrid tutorial: official docs primary, ProfilerX used as community example"
+    },
+    {
+      "page_path": "docs/how-to/integrate-with-manager.md",
+      "page_kind": "hand_authored_guide",
+      "evidence_label": "Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version",
+      "source_type": "hybrid",
+      "last_verified": "2026-04-22",
+      "needs_review_after": "2026-07-22",
+      "maintenance_tier": "tier_2",
+      "generated_from": null,
+      "notes": "Hybrid guide: official Manager docs primary, pinned community repo used for narrow verification"
+    },
+    {
+      "page_path": "docs/custom-nodes/best-practices.md",
+      "page_kind": "hand_authored_guide",
+      "evidence_label": "Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version",
+      "source_type": "hybrid",
+      "last_verified": "2026-04-21",
+      "needs_review_after": "2026-07-21",
+      "maintenance_tier": "tier_2",
+      "generated_from": null,
+      "notes": "Hybrid guide: official docs and registry guidance primary, community packs as illustrative examples"
+    },
+    {
+      "page_path": "docs/custom-nodes/v1-to-v3-migration.md",
+      "page_kind": "hand_authored_guide",
+      "evidence_label": "Official docs-backed (migration steps); Community pattern studies (case studies)",
+      "source_type": "hybrid",
+      "last_verified": "2026-04-22",
+      "needs_review_after": "2026-07-22",
+      "maintenance_tier": "tier_2",
+      "generated_from": null,
+      "notes": "Hybrid guide: official migration docs primary, linked case studies are separate community pages"
+    },
+    {
+      "page_path": "docs/reference/community-maintenance-policy.md",
+      "page_kind": "hand_authored_policy",
+      "evidence_label": "Operational guidance",
+      "source_type": "repo_local",
+      "last_verified": "2026-04-23",
+      "needs_review_after": "2026-10-23",
+      "maintenance_tier": "tier_2",
+      "generated_from": null,
+      "notes": "Defines maintenance tiers and review cadence for community content"
+    }
+  ]
+}

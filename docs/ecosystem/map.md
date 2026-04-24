@@ -1,11 +1,12 @@
+<!-- GENERATED FILE: do not edit directly. Edit references/community/ecosystem_packages.json and run python scripts/generate/generate_community_pages.py -->
+
 # Ecosystem Map
 
 **Evidence:** Community pattern study
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-23
 
-Status labels were manually checked against public package pages on 2026-04-20
-and should be re-verified before use. This page is a starting point, not a
-permanent assessment.
+Status labels were manually checked against public package pages and should be
+re-verified before use. This page is a starting point, not a permanent assessment.
 
 ## Overview
 
@@ -44,83 +45,85 @@ Before depending on a community package:
 
 ### ComfyUI-Manager
 
-- **Repo:** [ltdrdata/ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager)
-- **Registry:** [registry.comfy.org](https://registry.comfy.org)
+- **Repo:** [https://github.com/ltdrdata/ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager)
+- **Registry:** [https://registry.comfy.org](https://registry.comfy.org)
 - **Status:** Actively Maintained
-- **Last Release:** November 2025 (v8.28)
-- **Role:** Primary distribution mechanism for custom node packs; also provides
-  custom-node-list.json for discovery and Manager UI for install/update/remove
+- **Last Release:** v8.28
+- **Role:** Primary distribution mechanism for custom node packs; provides custom-node-list.json for discovery and Manager UI for install/update/remove
+- **Notable Patterns:** legacy custom-node-list.json path, registry-backed flow
+- **Used By:** Most ComfyUI users
+- **Last Verified:** 2026-04-22
 
-This is the de facto standard for ComfyUI package distribution. The Manager UI
-has two flows: the legacy custom-node-list.json path and the newer
-registry-backed flow. Both are relevant depending on what packages a user has
-installed.
+## Registry
 
 ### ComfyUI Registry
 
-- **URL:** [registry.comfy.org](https://registry.comfy.org)
-- **Status:** Actively Maintained (official Comfy-org project)
-- **Role:** Official package registry that backs the new Manager UI install
-  experience. Packages registered here surface cleanly in the modern Manager UI.
-  Arbitrary git URL installs are not supported in the new UI for security reasons.
+- **Registry:** [https://registry.comfy.org](https://registry.comfy.org)
+- **Status:** Actively Maintained
+- **Role:** Official package registry that backs the new Manager UI install experience; packages registered here surface cleanly in the modern Manager UI
+- **Notable Patterns:** registry-backed install flow
+- **Used By:** All registry-published packages
+- **Last Verified:** 2026-04-22
 
 ## Node Packs
 
 ### ComfyUI-Impact-Pack
 
-- **Repo:** [ltdrdata/ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack)
+- **Repo:** [https://github.com/ltdrdata/ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack)
 - **Status:** Actively Maintained
-- **Last Release:** November 2025
-- **Role:** Detector, Detailer, Upscaler, Pipe, and hook-provider nodes; the
-  reference implementation of bundle-pipe datatypes in the community
-- **Notable Patterns:** BASIC_PIPE, DETAILER_PIPE, and hook-combine nodes;
-  extensive use of composition patterns for schedule and detailer hooks
-- **Used By:** Large workflows involving image enhancement, face restoration,
-  and inpainting pipelines
+- **Pinned Commit:** `429d0159ad429e64d2b3916e6e7be9c22d025c3c`
+- **Role:** Detector, Detailer, Upscaler, Pipe, and hook-provider nodes; the reference implementation of bundle-pipe datatypes in the community
+- **Notable Patterns:** BASIC_PIPE, DETAILER_PIPE, hook-combine nodes, extensive use of composition patterns for schedule and detailer hooks
+- **Used By:** Large workflows involving image enhancement, face restoration, and inpainting pipelines
+- **Last Verified:** 2026-04-22
 
 ### WAS Node Suite
 
-- **Repo:** [WASasQuatch/was-node-suite-comfyui](https://github.com/WASasquatch/was-node-suite-comfyui)
-- **Registry:** [registry.comfy.org/nodes/was-ns](https://registry.comfy.org/nodes/was-ns)
+- **Repo:** [https://github.com/WASasquatch/was-node-suite-comfyui](https://github.com/WASasquatch/was-node-suite-comfyui)
+- **Registry:** [https://registry.comfy.org/nodes/was-ns](https://registry.comfy.org/nodes/was-ns)
 - **Status:** Actively Maintained
-- **Role:** Over 200 nodes covering image processing, masking, text handling,
-  arithmetic, and video operations
-- **Note:** A replacement pack provided for existing users following retirement of
-  the original author; maintained by the community
+- **Role:** Over 200 nodes covering image processing, masking, text handling, arithmetic, and video operations
+- **Used By:** General ComfyUI users needing utility nodes
+- **Last Verified:** 2026-04-22
+- **Caveats:** A replacement pack provided for existing users following retirement of the original author; maintained by the community
 
 ### Efficiency Nodes
 
-- **Repo:** [jags111/efficiency-nodes-comfyui](https://github.com/jags111/efficiency-nodes-comfyui)
-- **Registry:** [registry.comfy.org/nodes/efficiency-nodes-comfyui](https://registry.comfy.org/nodes/efficiency-nodes-comfyui)
+- **Repo:** [https://github.com/jags111/efficiency-nodes-comfyui](https://github.com/jags111/efficiency-nodes-comfyui)
+- **Registry:** [https://registry.comfy.org/nodes/efficiency-nodes-comfyui](https://registry.comfy.org/nodes/efficiency-nodes-comfyui)
 - **Status:** Actively Maintained
-- **Version:** 2.0
-- **Role:** Streamlined workflow nodes that reduce total node count; useful for
-  simplifying complex graphs
+- **Last Release:** 2.0
+- **Role:** Streamlined workflow nodes that reduce total node count; useful for simplifying complex graphs
+- **Notable Patterns:** workflow simplification patterns
+- **Used By:** Users building large or repetitive workflows
+- **Last Verified:** 2026-04-22
 
 ## Tooling and Utilities
 
 ### ProfilerX
 
-- **Role:** Runtime monitoring extension that listens to execution events and
-  exposes per-node timing metrics through a frontend panel
-- **Pattern:** Hybrid extension combining server hooks, frontend hooks, and
-  custom routes for metrics display
-- **Status:** Community Supported -- referenced as the canonical example of
-  runtime monitoring in the extensions patterns page
+- **Repo:** [https://github.com/ryanontheinside/ComfyUI_ProfilerX](https://github.com/ryanontheinside/ComfyUI_ProfilerX)
+- **Status:** Community Supported
+- **Role:** Runtime monitoring extension that listens to execution events and exposes per-node timing metrics through a frontend panel
+- **Notable Patterns:** hybrid extension combining server hooks, frontend hooks, and custom routes for metrics display
+- **Used By:** Referenced as the canonical example of runtime monitoring in the extensions patterns page
+- **Last Verified:** 2026-04-22
 
 ### ComfyUI-Tooling-Nodes
 
-- **Repo:** [Acly/comfyui-tooling-nodes](https://github.com/Acly/comfyui-tooling-nodes)
-- **Role:** Extension-owned HTTP routes for cached image transfer, model
-  inspection, and translation helpers; `/api/etn/...` routes that serve
-  external tooling while ComfyUI handles generation
-- **Pattern:** Tool-facing extension routes combined with normal ComfyUI prompt
-  execution
+- **Repo:** [https://github.com/Acly/comfyui-tooling-nodes](https://github.com/Acly/comfyui-tooling-nodes)
+- **Status:** Actively Maintained
+- **Role:** Extension-owned HTTP routes for cached image transfer, model inspection, and translation helpers; /api/etn/... routes that serve external tooling while ComfyUI handles generation
+- **Notable Patterns:** tool-facing extension routes combined with normal ComfyUI prompt execution
+- **Used By:** External tooling integrations
+- **Last Verified:** 2026-04-22
 
 ### ComfyUI-CollatUI
 
+- **Status:** Unknown
 - **Role:** Frontend extension for styling and UI improvements
-- **Status:** Unknown -- verify current maintenance before building on this
+- **Last Verified:** 2026-04-22
+- **Caveats:** Verify current maintenance before building on this; insufficient public signal to assess
 
 ## Deep-Dive Candidates
 
@@ -147,3 +150,4 @@ building production dependencies.
 This map is repo-local and not automatically refreshed. When adding a new
 package as a dependency, verify its current status rather than relying on this
 page.
+
