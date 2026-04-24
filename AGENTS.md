@@ -30,6 +30,10 @@ Covers server API endpoints, JS/server hooks, custom node patterns, and
 extension architecture. Content is extracted from pinned upstream source
 snapshots, not written from memory.
 
+The repo also publishes machine-readable JSON artifacts and a manifest for
+tooling authors and integrators. These artifacts are packaged into the built
+site under `docs/artifacts/`.
+
 Non-goals: official docs replacement, community wiki, package registry.
 
 ## 2. Hard Rules
@@ -54,9 +58,10 @@ Non-goals: official docs replacement, community wiki, package registry.
   - `community_pages.json` -- Review metadata for community pages
 - `references/snapshots/` -- Pinned upstream source files organized by date
 - `scripts/extract/` -- Extractors that parse source into JSON
-- `scripts/generate/` -- Generators that render markdown from JSON
+- `scripts/generate/` -- Generators that render markdown from JSON or package artifacts
   - `md_from_json.py` -- Renders reference docs from `references/raw/`
   - `generate_community_pages.py` -- Renders `docs/ecosystem/map.md` from community metadata
+  - `publish_reference_artifacts.py` -- Copies canonical JSON artifacts to `docs/artifacts/` and writes `manifest.json`
 - `scripts/verify/` -- Verification scripts
   - Core blocking checks: `cross_references.py`, `validate_schema.py`, `community_generated_freshness.py`, `community_page_coverage.py`
   - Non-blocking: `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`
@@ -64,7 +69,8 @@ Non-goals: official docs replacement, community wiki, package registry.
 - `scripts/refresh_snapshots.py` -- Fetch new upstream versions and re-run pipeline
 - `tests/unit/` -- Unit tests for all scripts
 - `examples/` -- Hand-authored pattern examples, API calls, and workflows
-- `.github/workflows/` -- CI (`ci.yml`) and weekly pin check (`weekly-pin-check.yml`)
+- `.github/workflows/` -- CI (`ci.yml`), weekly pin check (`weekly-pin-check.yml`),
+  upstream version watch (`upstream-watch.yml`), and docs deployment (`deploy-pages.yml`)
   - includes opt-in runtime workflows such as `runtime-smoke.yml` and `headless-runtime-metadata.yml`
 
 ## 4. Key Commands
@@ -103,6 +109,7 @@ python scripts/extract/parse_from_api.py --url <url> --version <v> --commit <sha
 # Generators
 python scripts/generate/md_from_json.py
 python scripts/generate/generate_community_pages.py
+python scripts/generate/publish_reference_artifacts.py
 
 # Refresh upstream (clone, extract, generate)
 python scripts/refresh_snapshots.py --core-version v0.19.4

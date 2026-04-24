@@ -1,5 +1,5 @@
 site_name: ComfyUI Knowledge Base
-site_description: Source-of-truth scaffold for ComfyUI docs and references
+site_description: Version-pinned, source-extracted, machine-readable developer reference for ComfyUI. Complements docs.comfy.org.
 site_author: FrostySDXL
 
 theme:
@@ -63,6 +63,7 @@ nav:
       - reference/community-maintenance-policy.md
       - reference/version-pin-status.md
       - reference/version-history.md
+      - reference/machine-readable-artifacts.md
       - reference/runtime-ci-operations.md
   - Tutorials:
       - tutorials/building-first-node.md
