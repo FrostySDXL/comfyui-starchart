@@ -12,6 +12,8 @@ You want to integrate ComfyUI with an external service or tool. This includes:
 - using ComfyUI as a generation backend for a frontend application
 - building automation around workflow execution
 
+**Prerequisites:** basic HTTP/WebSocket knowledge and a running ComfyUI instance.
+
 ## Two Integration Surfaces
 
 ### API-First Integration
@@ -94,14 +96,19 @@ See the API docs for full parameter and response documentation.
 
 ## Constraints
 
-- Custom nodes that depend on direct client-server coordination (shared memory,
-  file watches, or non-HTTP IPC) do not work in pure API mode
-- Backend validation can differ from what the frontend allows -- prefer
-  explicit, narrow interfaces over flexible or wildcard inputs
-- API mode does not support frontend hooks -- if your workflow needs
-  frontend JS behavior, you cannot fully automate it via the API
+For integration constraints and limitations, see the
+[Decision Tree: API Integration](../decision-trees/api-integration.md).
+
+## First Practical Step
+
+Make a `POST /prompt` call to your ComfyUI instance with a minimal prompt
+dictionary and your `client_id`. Inspect the `prompt_id` in the response to
+confirm the queue accepted your request. This confirms the API integration
+surface is reachable.
 
 ## Read Next
 
-- [API Endpoints](../api/endpoints.md)
-- [WebSocket](../api/websocket.md)
+- [API Endpoints](../api/endpoints.md) -- complete route reference
+- [WebSocket](../api/websocket.md) -- event stream details
+- [Prompt Submission](../api/prompt-submission.md) -- constructing prompts
+- [Decision Tree: API Integration](../decision-trees/api-integration.md) -- choose integration approach

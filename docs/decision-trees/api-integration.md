@@ -129,3 +129,4 @@ combining these approaches.
 
 - [API Endpoints](../api/endpoints.md)
 - [Prompt Submission](../api/prompt-submission.md)
+- [Start Here: Service Integration](../start-here/service-integration.md)

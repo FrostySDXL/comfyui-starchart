@@ -11,6 +11,8 @@ You want to extend ComfyUI beyond what custom nodes can express. This includes:
 - server-side behavior changes (custom routes, execution hooks)
 - hybrid extensions that combine both
 
+**Prerequisites:** familiarity with JavaScript or Python, depending on which layer you target.
+
 ## Two Extension Layers
 
 ### Frontend Extensions
@@ -75,7 +77,16 @@ Read [Integrate with Manager](../how-to/integrate-with-manager.md) to understand
 how extension packages get distributed. Frontend extensions that are part of
 a node pack follow the same publication flow as pure node packages.
 
+## First Practical Step
+
+Create a `web/extensions/my_extension/` directory with a `my_extension.js` file
+that registers an `app.registerExtension` call adding one `nodeCreated` hook.
+Load ComfyUI, add a node to the graph, and verify your hook logs to the browser
+console.
+
 ## Read Next
 
-- [JavaScript Hooks](../hooks/javascript-hooks.md)
-- [Extension Patterns](../extensions/patterns.md)
+- [JavaScript Hooks](../hooks/javascript-hooks.md) -- core frontend extension API
+- [Server Hooks](../hooks/server-hooks.md) -- execution lifecycle callbacks
+- [Extension Patterns](../extensions/patterns.md) -- architectural tradeoffs
+- [Decision Tree: API Integration](../decision-trees/api-integration.md) -- if you discover you need integration, not extension

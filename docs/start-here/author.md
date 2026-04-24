@@ -11,6 +11,8 @@ You want to build custom nodes for ComfyUI. This could be:
 - a node pack you intend to publish through ComfyUI-Manager
 - internal tooling for a specific use case
 
+**Prerequisites:** basic Python and a working ComfyUI installation.
+
 ## What You Need to Know
 
 ComfyUI custom nodes follow a client-server model:
@@ -38,15 +40,8 @@ server-side Python only.
 
 ## V1 vs V3 Decision
 
-| Factor | V1 | V3 |
-|--------|----|----|
-| Compatibility | Works everywhere | Newer ComfyUI versions |
-| Complexity | Simple class attributes | Structured schema |
-| Flexibility | More implicit | More explicit |
-| Recommended for | Legacy repos, compatibility | New projects |
-
-For new work, target V3 unless you have a specific compatibility reason
-to use V1.
+See the [Decision Tree: Custom Node Architecture](../decision-trees/custom-node-architecture.md)
+for a full branching guide on choosing V1, V3, and node structure patterns.
 
 ## If You Want to Publish Through Manager
 
@@ -76,15 +71,15 @@ For incremental learning, work through these examples in order:
    complete small extension package -- multiple nodes, lifecycle scripts,
    Manager-ready structure
 
-## Common First Steps
+## First Practical Step
 
-Start by locating your `custom_nodes/` directory (or cloning ComfyUI locally).
-Create a Python file with your node class, add the registration mappings, and
-place the file in `custom_nodes/`. Verify ComfyUI loads it, then build a minimal
-workflow that exercises the node. Before adding complexity, confirm caching
-and rerun behavior work as expected.
+Create a single Python file in `custom_nodes/my_first_node.py` with a minimal
+V1 node class, register it with `NODE_CLASS_MAPPINGS`, and restart ComfyUI.
+Confirm the node appears in the Add Node menu before adding inputs or logic.
 
 ## Read Next
 
-- [Custom Node Development Guide](../custom-nodes/development-guide.md)
-- [Node Structure](../custom-nodes/node-structure.md)
+- [Custom Node Development Guide](../custom-nodes/development-guide.md) -- mental model and constraints
+- [Node Structure](../custom-nodes/node-structure.md) -- INPUT_TYPES, RETURN_TYPES, and execution
+- [Decision Tree: Custom Node Architecture](../decision-trees/custom-node-architecture.md) -- choose node type and V1 vs V3
+- [Tutorial: Building Your First Node](../tutorials/building-first-node.md) -- guided walkthrough

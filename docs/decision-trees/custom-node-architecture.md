@@ -136,12 +136,18 @@ class MyNode(comfy.node_base.ComfyNode):
         return comfy.io.Schema(...)
 ```
 
+Next steps: [Custom Node Development Guide](../custom-nodes/development-guide.md) and
+[Node Structure](../custom-nodes/node-structure.md).
+
 See the [V1 to V3 Migration Guide](../custom-nodes/v1-to-v3-migration.md) for details.
 
 ### Existing node, maintaining compatibility, or depending on V1-only packages
 
 Use **V1**. It is not deprecated and remains the dominant pattern in the
 installed custom node base.
+
+Next steps: [Custom Node Development Guide](../custom-nodes/development-guide.md) and
+[Node Structure](../custom-nodes/node-structure.md).
 
 ---
 
@@ -177,3 +183,4 @@ If your node or node pack will be published:
 
 - [Node Structure](../custom-nodes/node-structure.md)
 - [Registration](../custom-nodes/registration.md)
+- [Start Here: Custom Node Author](../start-here/author.md)
