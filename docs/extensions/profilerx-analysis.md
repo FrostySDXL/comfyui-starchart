@@ -1,7 +1,7 @@
 # ProfilerX Analysis
 
 **Evidence:** Community pattern study based on pinned external version
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-24
 **Primary Source:** https://github.com/ryanontheinside/ComfyUI_ProfilerX
 
 ## Primary Sources
@@ -9,6 +9,8 @@
 - https://github.com/ryanontheinside/ComfyUI_ProfilerX (community pattern example)
 - ProfilerX `README.md`, `__init__.py`, `handler.py`, `routes.py`, `web/index.ts` (community repo)
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640) -- upstream source for ComfyUI progress handler and route patterns
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640) -- upstream source for handler registration during execution
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` (v0.19.3, commit 308602640) -- upstream source for the `ProgressHandler` callback contract
 
 ## Scope
 

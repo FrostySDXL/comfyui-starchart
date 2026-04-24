@@ -1,13 +1,14 @@
 # Server Hooks
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-21
-**Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
+**Last Updated:** 2026-04-24
+**Primary Source:** ComfyUI core v0.19.3 `server.py`, `execution.py`, and `comfy_execution/progress.py` (pinned snapshots)
 
 ## Primary Sources
 
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` (v0.19.3, commit 308602640)
 
 ## Scope
 
@@ -57,6 +58,16 @@ add_progress_handler(WebUIProgressHandler(self.server))
 
 That means the default Web UI is wired into execution progress through a
 progress-handler abstraction rather than ad hoc prints or polling alone.
+
+The pinned `comfy_execution/progress.py` snapshot defines the handler contract.
+Custom handlers are registered by name, receive a registry through
+`set_registry(...)`, and are called with these signatures:
+
+- `start_handler(node_id, state, prompt_id)`
+- `update_handler(node_id, value, max_value, state, prompt_id, image=None)`
+- `finish_handler(node_id, state, prompt_id)`
+
+The same file defines `NodeProgressState` with `state`, `value`, and `max`.
 
 ### Lifecycle messages
 

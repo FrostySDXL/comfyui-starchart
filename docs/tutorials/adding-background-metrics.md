@@ -1,7 +1,7 @@
 # Adding Background Metrics
 
 **Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-24
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_messages
 
 ## Primary Sources
@@ -10,6 +10,8 @@
 - https://docs.comfy.org/development/comfyui-server/comms_messages
 - https://docs.comfy.org/development/comfyui-server/comms_routes
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640) -- upstream source for built-in routes and message patterns
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640) -- upstream source for progress-handler registration during execution
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` (v0.19.3, commit 308602640) -- upstream source for the `ProgressHandler` callback contract
 
 ## Scope
 
@@ -25,19 +27,28 @@ ProfilerX is used as a community pattern example for how one active
 extension implements those ideas in practice.
 
 The current ProfilerX rewrite is especially useful as a reference because
-its active registration path uses ComfyUI's official `ProgressHandler` API and
+its active registration path uses ComfyUI's pinned `ProgressHandler` API and
 re-registers its handler when ComfyUI resets progress state for a new run.
 
 ## Hook Strategy
 
 ProfilerX's documented strategy is a good model:
 
-- attach a handler through the official `ProgressHandler` path
+- attach a handler through the pinned `ProgressHandler` path
 - re-inject the handler when the progress registry resets
 - measure per-node timing in start/finish callbacks
 - record RAM and VRAM usage during execution
 - infer cache hits when finish events occur without matching starts
 - aggregate statistics across runs
+
+In the pinned upstream source, the core callback shape is explicit:
+
+- `start_handler(node_id, state, prompt_id)`
+- `finish_handler(node_id, state, prompt_id)`
+
+If an extension needs `class_type` or display-node metadata, it has to derive
+that from the registry or prompt graph rather than expecting extra callback
+arguments.
 
 That design is better than patching random executor internals because it
 tracks runtime behavior through a supported instrumentation surface.
