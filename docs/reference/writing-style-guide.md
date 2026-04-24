@@ -28,6 +28,8 @@ what exists and how it works, not how to use it in a workflow.
 **Example opening:** "The `ChatOnMessage` server hook fires after any incoming
 WebSocket message is parsed and before any per-type handler runs."
 
+**Strong example in this repo:** [`docs/reference/object-info.md`](object-info.md)
+
 ### Tutorial
 
 Guides a reader through a sequence of steps to achieve a defined outcome.
@@ -37,6 +39,8 @@ Tutorials assume the reader is building something and needs instruction.
 
 **Example opening:** "This tutorial walks through registering a custom node class
 that exposes a widget-based parameter to the ComfyUI frontend."
+
+**Strong example in this repo:** [`docs/tutorials/building-first-node.md`](../tutorials/building-first-node.md)
 
 ### Decision Guide
 
@@ -51,6 +55,8 @@ clearly unsuitable.
 choice between direct API calls and the WebSocket transport depends on whether
 you need real-time feedback or simple fire-and-forget requests."
 
+**Strong example in this repo:** [`docs/decision-trees/api-integration.md`](../decision-trees/api-integration.md)
+
 ### Community Pattern Study
 
 Documents a pattern observed in an external repository or ecosystem project.
@@ -64,6 +70,8 @@ with explicit framing that the behavior is external.
 execution graph to collect per-node timing metrics. This page documents its
 analysis approach as a community-observed pattern."
 
+**Strong example in this repo:** [`docs/extensions/profilerx-analysis.md`](../extensions/profilerx-analysis.md)
+
 ### Scaffold
 
 A page that is intentionally incomplete. Scaffolds hold a place for content
@@ -72,8 +80,73 @@ about their incompleteness.
 
 **Tone:** Direct and honest. State what is missing.
 
+**Example opening:** "This page documents the planned V3 node migration
+checklist. It is currently incomplete: the async execution section is not yet
+written."
+
+**Strong example in this repo:** [`docs/reference/version-pin-status.md`](version-pin-status.md)
+
 **Do not over-polish scaffold pages.** Mark them with the Scaffold evidence
 label and keep scope statements honest.
+
+## Page-Type Decision Matrix
+
+| Page type       | Primary purpose                          | Key signal words            |
+|-----------------|------------------------------------------|------------------------------|
+| Reference       | Look up a fact or API surface            | "is", "returns", "contains"  |
+| Tutorial        | Guided steps toward a concrete outcome  | "first", "then", "finally"   |
+| Decision Guide  | Compare options to make a choice         | "vs", "tradeoff", "choose"   |
+| Community Pattern | Document an external project pattern | "observed in", "external"   |
+| Scaffold        | Hold a place for unwritten content       | "TODO", "incomplete"         |
+
+If a page's opening paragraph could plausibly begin with more than one mode's signal words, pick the dominant mode and be consistent. Do not mix modes within a single page.
+
+## Minimum Acceptable Standard by Mode
+
+Each mode has a minimum bar that a page must clear before it is considered complete:
+
+**Reference**
+- Evidence label present and correct
+- At least one concrete API item documented (field, method, hook, endpoint)
+- No purely narrative prose; structure follows API item order
+
+**Tutorial**
+- Steps are numbered and actionable
+- Each step has a clear before/after state or expected output
+- A "What to expect when it works" section or equivalent closing
+
+**Decision Guide**
+- At least two options presented with explicit tradeoffs
+- Explicit "choose X when ..." framing for each option
+- No recommendation unless one option is clearly unsuitable for a stated case
+
+**Community Pattern**
+- Source repository or project named and linked
+- Behavior described with "observed" or "demonstrates" framing, not "ComfyUI does"
+- Explicit limitation statement: "this is external behavior, not native ComfyUI"
+
+**Scaffold**
+- Scope statement honestly describes what is missing
+- No placeholder text that implies coverage the page does not have
+- Scaffold label applied
+
+## Start-Here and Decision-Tree Page Anti-Patterns
+
+These pages serve onboarding and choice guidance respectively. They are high-traffic entry points, so weak versions create outsized confusion.
+
+**Do not do these on start-here pages:**
+- Open with a repo overview instead of audience framing ("This repo contains...")
+- List every doc section instead of recommending a specific sequence
+- End without a concrete "first action" or "read this next" step
+- Repeat the same framing that exists on adjacent decision-tree pages
+
+**Do not do these on decision-tree pages:**
+- Use decision trees as extended tutorials (branching steps are not the same as tutorial steps)
+- End a branch without sending the reader to a concrete page or resource
+- Cover more than three branching decision levels (readers lose track)
+- Present options without stating what conditions favor each choice
+
+**The difference in practice:** start-here pages say "read these pages in this order." Decision-tree pages say "answer these questions to know which page to read next."
 
 ## Paragraph and Sentence Style
 
@@ -158,6 +231,20 @@ label near the top of the page, after the title and scope statement. Use the
 qualified form when a pinned source is available. Use `Operational guidance`
 for repo-local policy, process, and operations pages; do not use it to support
 claims about ComfyUI behavior.
+
+## Author Workflow Summary
+
+When creating or revising a page:
+
+1. **Pick a mode** using the decision matrix above.
+2. **Check the evidence label** -- which level does your content need?
+3. **Write to the mode's style and minimum standard.**
+4. **Apply the correct evidence label** near the top of the page.
+5. **Run the checklist**, starting with Required items.
+6. **Verify:** `python -m mkdocs build` and `python scripts/verify/cross_references.py` both pass.
+7. **For new pages:** prefer `scripts/new_doc.py` or copy from `templates/docs/`.
+
+The checklist and this guide are companions. The guide tells you what to do; the checklist tells you when you are done.
 
 ## What This Guide Does Not Cover
 

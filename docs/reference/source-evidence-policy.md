@@ -89,6 +89,25 @@ raise the trust level of any ComfyUI behavior claim.
 - use the Scaffold label if the page covers material that has not yet been
   researched to the standard the repo requires
 
+## Evidence Edge-Case Examples
+
+These examples show how to apply the evidence rules in ambiguous situations:
+
+**Upstream source disagrees with official docs**
+If `docs.comfy.org` says one behavior and the pinned source shows another, prefer the source and note the discrepancy explicitly. Example: "Source-backed: the pinned server source shows the hook fires on line 847 of `server.py`, which differs from the docs description."
+
+**No official docs and no pinned source for an API item**
+If the item exists in `object_info` or the API schema but has no documentation and no source snapshot yet, use "Source-backed (pinned snapshot)" with the snapshot path, and note the gap explicitly. Do not invent behavior.
+
+**Behavior is inferred from multiple sources, not a single one**
+If the behavior is reconstructed from several source files, use "Source-backed from pinned snapshots" and list each relevant file in the evidence label. Do not flatten to a single citation.
+
+**A community repo demonstrates a pattern the official docs do not cover**
+Use the Community Pattern label. Do not promote it to Source-backed or Official docs-backed without a separate upstream verification step.
+
+**The page covers a ComfyUI feature added after the most recent snapshot pin**
+If a feature is in `master` but not yet in a pinned snapshot, note it: "Source-backed from ComfyUI master (unpinned)" -- do not use the unqualified Source-backed label. Flag for snapshot refresh.
+
 ## Current Status
 
 - official docs are cited across the repo

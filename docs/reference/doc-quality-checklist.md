@@ -8,50 +8,44 @@ each item and confirm it passes or note why it does not apply.
 
 ## Pre-submission Review
 
+Items marked (Required) must pass before a page is merged. (Recommended) items should be addressed but may be deferred with a comment. (Optional) items are best-effort.
+
 ### Page shape and mode
 
-- [ ] Page mode is explicit (Reference, Tutorial, Decision Guide,
-    Community Pattern Study, or Scaffold)
-- [ ] The mode matches the actual content -- not mixed with another mode
-- [ ] The evidence label is present near the top of the page and is correct
-    (Source-backed, Official docs-backed, Community pattern, Scaffold, or
-    Operational guidance)
-- [ ] A scope statement appears in the opening paragraph or two
+- [ ] (Required) Page mode is explicit and matches content
+- [ ] (Required) Evidence label is present near the top of the page and is correct
+- [ ] (Required) A scope statement appears in the opening paragraph or two
 
 ### Prose quality
 
-- [ ] Sentences are short and direct; no long run-on sentences
-- [ ] Active voice is used where applicable
-- [ ] Filler phrases are removed (e.g., "in order to", "it is important to note that")
-- [ ] Wording is concrete, not vague or inflated
-- [ ] The page does not begin with filler or repetition of adjacent docs
+- [ ] (Recommended) Sentences are short and direct; active voice is used where applicable
+- [ ] (Recommended) Filler phrases are removed (e.g., "in order to", "it is important to note that")
+- [ ] (Optional) Wording is concrete, not vague or inflated
+- [ ] (Optional) The page does not begin with filler or repetition of adjacent docs
 
 ### Structure and navigation
 
-- [ ] Section order is intentional and follows the page mode
-- [ ] "Who This Page Is For" appears when the audience is not obvious
-- [ ] Key takeaways or a decision summary appear for decision guides
-- [ ] "Read Next" or "Related Pages" appears at the end with intentional links
-- [ ] Cross-links are navigational, not scattered incidental references
-- [ ] No "see also" style filler that does not add specific value
+- [ ] (Optional) Section order is intentional and follows the page mode
+- [ ] (Recommended) "Who This Page Is For" appears when the audience is not obvious
+- [ ] (Optional) Key takeaways or a decision summary appear for decision guides
+- [ ] (Recommended) "Read Next" or "Related Pages" appears at the end with intentional links
+- [ ] (Optional) Cross-links are navigational, not scattered incidental references
+- [ ] (Optional) No "see also" style filler that does not add specific value
 
 ### Evidence and claims
 
-- [ ] Official vs community claims are clearly separated
-- [ ] Repo-local policy/process pages use `Operational guidance` and do not use
-    that label to imply ComfyUI behavior claims are source-backed
-- [ ] No claim of official ComfyUI behavior without a citation from
-    `docs.comfy.org` or a pinned upstream source
-- [ ] Source citations point to pinned snapshots or official docs where applicable
-- [ ] "TODO" or "incomplete" markers are honest; incomplete pages use the
-    Scaffold label
-- [ ] No words like "authoritative" or "source of truth" without exact backing
+- [ ] (Required) No claim of official ComfyUI behavior without a citation from `docs.comfy.org` or a pinned upstream source
+- [ ] (Recommended) Official vs community claims are clearly separated
+- [ ] (Recommended) Repo-local policy/process pages use `Operational guidance` and do not use that label to imply ComfyUI behavior claims are source-backed
+- [ ] (Optional) Source citations point to pinned snapshots or official docs where applicable
+- [ ] (Optional) "TODO" or "incomplete" markers are honest; incomplete pages use the Scaffold label
+- [ ] (Optional) No words like "authoritative" or "source of truth" without exact backing
 
 ### Build and links
 
-- [ ] `python -m mkdocs build` passes without new errors
-- [ ] All internal cross-references resolve to existing pages
-- [ ] No broken or dangling links
+- [ ] (Required) `python -m mkdocs build` passes without new errors
+- [ ] (Required) All internal cross-references resolve to existing pages
+- [ ] (Recommended) No broken or dangling links
 
 ## When to Use This Checklist
 
