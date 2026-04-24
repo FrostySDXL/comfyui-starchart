@@ -16,6 +16,7 @@ Serve locally: `python -m mkdocs serve`
 |------|-----------|------|--------|
 | Add/fix docs content | `docs/<topic>/` page + `docs/reference/source-evidence-policy.md` + `docs/reference/writing-style-guide.md` | The page + adjacent linked pages + `references/raw/` if citing data | `python scripts/verify/cross_references.py` + `python -m mkdocs build` |
 | Update extracted references | `references/raw/<file>.json` | Run the matching extractor script | `python scripts/verify/extraction_idempotency.py` |
+| Update community catalog | `references/community/ecosystem_packages.json` + `docs/reference/community-maintenance-policy.md` | Edit JSON source; regenerate page | `python scripts/verify/validate_schema.py` + `python scripts/verify/community_metadata.py` + `python scripts/verify/community_staleness.py` + `python scripts/generate/generate_community_pages.py` + `python scripts/verify/community_generated_freshness.py` + `python scripts/verify/community_page_coverage.py` + `python scripts/verify/cross_references.py` + `python -m mkdocs build` |
 | Add a new extractor | Existing extractor in `scripts/extract/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
 | Add a verification script | Existing script in `scripts/verify/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
 | Refresh upstream version | `scripts/refresh_snapshots.py` | Run with `--core-version` / `--frontend-version` | All verify scripts pass |
@@ -44,14 +45,22 @@ Non-goals: official docs replacement, community wiki, package registry.
 ## 3. Repo Map
 
 - `docs/` -- MkDocs source-backed documentation pages
-- `references/raw/` -- JSON reference data (machine-readable)
+- `references/raw/` -- JSON reference data extracted from pinned upstream snapshots
   - `server_endpoints.json` -- API routes from `parse_server.py`
   - `js_hooks.json` -- Frontend hooks from `parse_hooks.py`
   - `node_api_schema.json` -- Node API schema from `parse_node_api_schema.py`
+- `references/community/` -- JSON metadata for community-facing content (editable)
+  - `ecosystem_packages.json` -- Package catalog that drives `docs/ecosystem/map.md`
+  - `community_pages.json` -- Review metadata for community pages
 - `references/snapshots/` -- Pinned upstream source files organized by date
 - `scripts/extract/` -- Extractors that parse source into JSON
-- `scripts/generate/` -- `md_from_json.py` generates markdown from JSON
-- `scripts/verify/` -- Verification scripts (cross_references, stale_content, extraction_idempotency, upstream_pins, validate_schema)
+- `scripts/generate/` -- Generators that render markdown from JSON
+  - `md_from_json.py` -- Renders reference docs from `references/raw/`
+  - `generate_community_pages.py` -- Renders `docs/ecosystem/map.md` from community metadata
+- `scripts/verify/` -- Verification scripts
+  - Core blocking checks: `cross_references.py`, `validate_schema.py`, `community_generated_freshness.py`, `community_page_coverage.py`
+  - Non-blocking: `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`
+  - Community: `community_metadata.py`, `community_staleness.py`
 - `scripts/refresh_snapshots.py` -- Fetch new upstream versions and re-run pipeline
 - `tests/unit/` -- Unit tests for all scripts
 - `examples/` -- Hand-authored pattern examples, API calls, and workflows
@@ -72,10 +81,16 @@ python -m mkdocs build
 
 # Verification scripts (all should exit 0 on clean repo)
 python scripts/verify/cross_references.py
+python scripts/verify/community_generated_freshness.py
+python scripts/verify/community_page_coverage.py
 python scripts/verify/stale_content.py
 python scripts/verify/extraction_idempotency.py
 python scripts/verify/upstream_pins.py
 python scripts/verify/validate_schema.py
+
+# Community verifiers (non-blocking in CI)
+python scripts/verify/community_metadata.py
+python scripts/verify/community_staleness.py
 
 # Extractors (run against snapshot files)
 python scripts/extract/parse_server.py <path> --version <v> --commit <sha>
@@ -85,8 +100,9 @@ python scripts/extract/parse_node_api_schema.py <server> <io> <types> --version 
 # Runtime extractor (opt-in; requires live ComfyUI instance)
 python scripts/extract/parse_from_api.py --url <url> --version <v> --commit <sha> --output references/raw/object_info_runtime.json
 
-# Generator (run after any extractor)
+# Generators
 python scripts/generate/md_from_json.py
+python scripts/generate/generate_community_pages.py
 
 # Refresh upstream (clone, extract, generate)
 python scripts/refresh_snapshots.py --core-version v0.19.4
@@ -117,6 +133,19 @@ python scripts/verify/wait_for_runtime.py --url <endpoint>
 5. Run `python scripts/verify/cross_references.py`
 6. Run `python -m mkdocs build`
 
+### Updating community metadata
+
+1. Edit `references/community/ecosystem_packages.json` for catalog changes
+2. Edit `references/community/community_pages.json` for page review metadata
+3. Run `python scripts/verify/validate_schema.py`
+4. Run `python scripts/verify/community_metadata.py`
+5. Run `python scripts/verify/community_staleness.py`
+6. Run `python scripts/generate/generate_community_pages.py`
+7. Run `python scripts/verify/community_generated_freshness.py`
+8. Run `python scripts/verify/community_page_coverage.py`
+9. Run `python scripts/verify/cross_references.py`
+10. Run `python -m mkdocs build`
+
 ### Adding a new verification script
 
 1. Create `scripts/verify/<name>.py` -- exit 0 on pass, exit 1 on fail
@@ -136,7 +165,8 @@ python scripts/verify/wait_for_runtime.py --url <endpoint>
 - **Windows backslashes in JSON**: Extractors run on Windows produce `\` in paths. Always use `.replace("\\", "/")` when writing `str(path)` to JSON metadata.
 - **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
 - **Structured returns are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`, but some endpoints still show generic summaries when the handler returns a variable rather than a literal dict. The `kind` field is reliable; `fields` and `summary` are best-effort from static analysis.
-- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, and `upstream_pins` use `continue-on-error: true` in CI. Only `cross_references` and `validate_schema` block the pipeline.
+- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, and `community_staleness` use `continue-on-error: true` in CI. `cross_references`, `validate_schema`, `community_generated_freshness`, and `community_page_coverage` block the pipeline.
+- **Generated community pages must not be hand-edited**: `docs/ecosystem/map.md` is generated from `references/community/ecosystem_packages.json`. Edit the JSON and rerun the generator.
 - **Examples are not all source-backed**: Treat files under `examples/` as pattern examples unless the page explicitly states they were generated or extracted from pinned upstream sources.
 
 ## 7. Completion Standard

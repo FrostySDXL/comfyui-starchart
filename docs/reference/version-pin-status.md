@@ -1,12 +1,13 @@
 # Version Pin Status
 
-> **Operational Note:** This is an operational tracking page that records the
-> repository's current pinned extraction baseline. It is maintained manually and
-> is not subject to the normal `**Evidence:**` labeling policy. It does not make
-> claims about ComfyUI behavior; it records what this repository has pinned for
-> its own reference purposes.
+**Evidence:** Scaffold
+**Last Updated:** 2026-04-23
 
-**Last Updated:** 2026-04-19
+> **Operational Note:** This is an operational tracking page that records the
+> repository's current pinned extraction baseline. It is maintained manually.
+> It does not make claims about ComfyUI behavior; it records what this
+> repository has pinned for its own reference purposes.
+
 **Primary Sources:** https://github.com/Comfy-Org/ComfyUI, https://github.com/Comfy-Org/ComfyUI/releases, https://docs.comfy.org/changelog
 
 ## Current State
@@ -43,6 +44,9 @@ JSON in `references/raw/` points at those snapshot files.
   `server.py`, `comfy_api/latest/_io.py`, and `basic_types.py`
 - `references/raw/object_info_runtime.json` is an optional runtime-only capture
   artifact and is not part of the canonical public artifact set
+- `references/community/ecosystem_packages.json` and `community_pages.json`
+  track external community metadata with their own `last_verified` and
+  `needs_review_after` fields, independent of the ComfyUI core/frontend baseline
 
 ## Automation
 

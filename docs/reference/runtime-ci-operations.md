@@ -1,6 +1,6 @@
 # Runtime and CI Operations
 
-**Evidence:** Operational guide
+**Evidence:** Scaffold
 **Last Updated:** 2026-04-23
 
 ## Overview

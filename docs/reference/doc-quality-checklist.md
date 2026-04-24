@@ -1,6 +1,6 @@
 # Doc Quality Checklist
 
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-23
 **Related:** `writing-style-guide.md`, `source-evidence-policy.md`
 
 Use this checklist before marking any documentation page complete. Run through
@@ -14,7 +14,8 @@ each item and confirm it passes or note why it does not apply.
     Community Pattern Study, or Scaffold)
 - [ ] The mode matches the actual content -- not mixed with another mode
 - [ ] The evidence label is present near the top of the page and is correct
-    (Source-backed, Official docs-backed, Community pattern, or Scaffold)
+    (Source-backed, Official docs-backed, Community pattern, Scaffold, or
+    Operational guidance)
 - [ ] A scope statement appears in the opening paragraph or two
 
 ### Prose quality
@@ -37,6 +38,8 @@ each item and confirm it passes or note why it does not apply.
 ### Evidence and claims
 
 - [ ] Official vs community claims are clearly separated
+- [ ] Repo-local policy/process pages use `Operational guidance` and do not use
+    that label to imply ComfyUI behavior claims are source-backed
 - [ ] No claim of official ComfyUI behavior without a citation from
     `docs.comfy.org` or a pinned upstream source
 - [ ] Source citations point to pinned snapshots or official docs where applicable

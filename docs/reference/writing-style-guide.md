@@ -1,6 +1,6 @@
 # Writing Style Guide
 
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-23
 **Related:** `source-evidence-policy.md` for evidence labeling rules
 
 ## Purpose
@@ -155,7 +155,9 @@ scattering them through the text.
 
 Apply evidence labels as defined in `source-evidence-policy.md`. Place the
 label near the top of the page, after the title and scope statement. Use the
-qualified form when a pinned source is available.
+qualified form when a pinned source is available. Use `Operational guidance`
+for repo-local policy, process, and operations pages; do not use it to support
+claims about ComfyUI behavior.
 
 ## What This Guide Does Not Cover
 

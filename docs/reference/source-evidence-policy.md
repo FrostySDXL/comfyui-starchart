@@ -1,6 +1,6 @@
 # Source Evidence Policy
 
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-23
 **Primary Sources:** https://docs.comfy.org/, https://github.com/Comfy-Org/ComfyUI
 
 ## Purpose
@@ -49,6 +49,14 @@ Qualifier (preferred): `Community pattern study based on pinned external version
 Page is intentionally incomplete. Editors should not over-polish scaffold pages
 beyond their intended state. Keep scope statements honest about what is missing.
 
+### Operational guidance
+
+Page defines repo-local policy, process, maintenance workflow, or operating
+rules. Use this label for documentation about how this repository is maintained,
+not for claims about native ComfyUI behavior.
+
+Qualifier (preferred): `Operational guidance`
+
 ## Labeling Rules
 
 ### Official behavior
@@ -65,6 +73,12 @@ the source file path or URL, and pin to a commit when possible.
 Use this label for examples from external repositories such as custom node packs,
 wrapper APIs, dashboards, or monitoring extensions. These examples can show
 useful patterns without defining native ComfyUI behavior.
+
+### Repo-local policy or process
+
+Use `Operational guidance` for repo-local policy, process, and operations pages.
+These pages describe how this repository is maintained and verified. They do not
+raise the trust level of any ComfyUI behavior claim.
 
 ## When Evidence Is Weak or Incomplete
 

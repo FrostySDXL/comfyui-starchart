@@ -60,6 +60,7 @@ nav:
       - reference/source-evidence-policy.md
       - reference/writing-style-guide.md
       - reference/doc-quality-checklist.md
+      - reference/community-maintenance-policy.md
       - reference/version-pin-status.md
       - reference/version-history.md
       - reference/runtime-ci-operations.md

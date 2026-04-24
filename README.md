@@ -1,7 +1,9 @@
 # ComfyUI Knowledge Base
 
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-23
 **ComfyUI Version Pin:** Core `v0.19.3` (`3086026401180c9216bcb6ace442a4e3587d2c66`) with official frontend `v1.42.11` (`3dc4061d484d61cb89366de25bf5e2f8a65da4d0`) for pinned snapshots and extracted reference data
+
+**Evidence:** Scaffold
 
 ## What This Repository Is
 
@@ -44,6 +46,7 @@ For editorial standards and evidence rules, use these files together:
 ### Machine-readable references
 
 - JSON reference data lives in `references/raw/`
+- Community metadata lives in `references/community/`
 - Snapshots live in `references/snapshots/`
 - Helper scripts live in `scripts/extract/` and `scripts/generate/`
 
@@ -66,6 +69,12 @@ python scripts/extract/parse_node_api_schema.py path/to/server.py path/to/_io.py
 python scripts/generate/md_from_json.py
 ```
 
+### Generating community pages
+
+```bash
+python scripts/generate/generate_community_pages.py
+```
+
 ### Refreshing upstream versions
 
 Replace the example versions below with the actual target versions for the
@@ -80,26 +89,32 @@ python scripts/refresh_snapshots.py --core-version <new-core-version> --frontend
 ## Verification
 
 ```bash
-# One-command wrapper (runs tests, cross-references, schema validation, and mkdocs build)
+# One-command wrapper (runs the current CI-blocking local checks)
 python scripts/verify/run_all.py
 
-# Individual steps
+# CI-blocking local checks
 python -m unittest discover -s tests -v
 python scripts/verify/cross_references.py
 python scripts/verify/validate_schema.py
+python scripts/verify/community_generated_freshness.py
+python scripts/verify/community_page_coverage.py
 python -m mkdocs build
 
 # Additional checks (non-blocking in CI)
 python scripts/verify/stale_content.py
 python scripts/verify/extraction_idempotency.py
 python scripts/verify/upstream_pins.py
+
+# Community metadata checks (non-blocking in CI)
+python scripts/verify/community_metadata.py
+python scripts/verify/community_staleness.py
 ```
 
 ## CI
 
 ### CPU-safe workflows (blocking and non-blocking)
 
-- **`.github/workflows/ci.yml`** -- runs on push/PR to main: tests, MkDocs build, cross-references (blocking), schema validation (blocking), stale content (non-blocking), idempotency (non-blocking), upstream pins (non-blocking). Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
+- **`.github/workflows/ci.yml`** -- runs on push/PR to main: tests, MkDocs build, cross-references (blocking), schema validation (blocking), generated community freshness (blocking), community page coverage (blocking), stale content (non-blocking), idempotency (non-blocking), upstream pins (non-blocking), community metadata (non-blocking), and community staleness (non-blocking). Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
 - **`.github/workflows/weekly-pin-check.yml`** -- runs every Monday at 09:00 UTC and on manual dispatch: checks that pinned commits and tags still resolve in upstream repos.
 - **`.github/workflows/upstream-watch.yml`** -- runs every Monday at 10:00 UTC: detects newer upstream versions and creates or updates tracking issues.
 
