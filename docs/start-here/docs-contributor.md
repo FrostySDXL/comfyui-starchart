@@ -13,7 +13,7 @@ This includes:
 - updating extracted references after a snapshot refresh
 - contributing examples or decision guides
 
-**Prerequisites:** you have read `AGENTS.md` and can run the verification scripts.
+**Prerequisites:** you have read `AGENTS.md` / `CONTRIBUTING.md` and can run the verification scripts.
 
 ## How to Pick the Right Page Mode
 

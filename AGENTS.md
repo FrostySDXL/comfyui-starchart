@@ -23,6 +23,19 @@ Serve locally: `python -m mkdocs serve`
 | Runtime extraction | `scripts/extract/parse_from_api.py` | Run with `--url` and `--output` | `validate_schema.py` passes on output |
 | Change CI workflow | relevant file in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs when operator behavior changes | Inspect YAML carefully, run affected local verification, then check Actions tab after push |
 
+## 0.6. Consumer Agent Orientation
+
+If you are helping a user **build with ComfyUI** (not contribute to this repo), start at `docs/index.md` and follow the role table to prevent getting lost or introducing context bloat:
+
+| Goal | File |
+|------|------|
+| Custom nodes | `docs/start-here/author.md` |
+| Extend frontend/server | `docs/start-here/extension-developer.md` |
+| Service integration | `docs/start-here/service-integration.md` |
+| Tools/agents | `docs/start-here/tooling-builder.md` |
+
+Read only the pages listed in that file's reading order. Stop when the question is answered. Do not explore `scripts/`, `references/`, `tests/`, `.github/workflows/`, `docs/reference/`, or `CONTRIBUTING.md`.
+
 ## 1. Mission
 
 Source-backed, repo-local reference documentation for ComfyUI development.
@@ -44,7 +57,6 @@ Non-goals: official docs replacement, community wiki, package registry.
 - Extractors write JSON; generators write markdown; never hand-edit generated markdown
 - For prose doc edits, follow `docs/reference/source-evidence-policy.md`, `docs/reference/writing-style-guide.md`, and `docs/reference/doc-quality-checklist.md`
 - Run verification before claiming completion
-- Never commit `.cache/` or `site/`
 
 ## 3. Repo Map
 

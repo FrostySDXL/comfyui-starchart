@@ -1,64 +1,318 @@
 # Contributing
 
-## Setup
+Thank you for contributing to the ComfyUI Knowledge Base. This guide covers everything you need to make changes safely and get them merged.
+
+If you are new to documentation contributions, also read
+[`docs/start-here/docs-contributor.md`](docs/start-here/docs-contributor.md)
+for a gentler introduction to page modes and editorial standards.
+
+---
+
+## Quickstart
 
 ```bash
 python -m pip install -r requirements.txt
+python -m unittest discover -s tests -v
+python -m mkdocs build
 ```
 
-## Repo Conventions
+Serve locally: `python -m mkdocs serve`
 
-- Keep Phase 1 pages as scaffolds unless you are intentionally replacing placeholders with researched content.
-- Update both human docs and machine-readable references when behavior changes.
-- Prefer small, verifiable changes.
-- Do not add emojis or emoticons to docs.
+The one-command wrapper for local verification:
 
-## Verification Commands
+```bash
+python scripts/verify/run_all.py
+```
 
-Run the narrowest relevant checks first, then broader checks before completion:
+`run_all.py` already includes the test suite and MkDocs build, so you do not need to
+run those separately if you use the wrapper.
+
+---
+
+## What This Repository Is
+
+This is a source-backed, version-pinned reference documentation project for
+ComfyUI development. We extract facts from pinned upstream source snapshots,
+not from memory. The repo publishes both human-readable documentation and
+machine-readable JSON artifacts.
+
+**Goals:** stable API reference, custom node patterns, extension architecture
+guides, and tooling artifacts.
+
+**Non-goals:** official docs replacement, community wiki, package registry.
+
+---
+
+## Repository Map
+
+| Path | What lives here | Can you edit it by hand? |
+|------|-----------------|--------------------------|
+| `docs/` | MkDocs pages (reference, tutorials, decision guides) | **Yes** -- this is the main human contribution surface |
+| `examples/` | Hand-authored pattern examples, API calls, workflows | **Yes** |
+| `references/raw/` | Extracted JSON from upstream snapshots (endpoints, hooks, schemas) | **No** -- edit upstream snapshots in `references/snapshots/`, then re-run extractors |
+| `references/community/` | Human-editable metadata for community pages and ecosystem packages | **Yes** -- edit JSON directly, then regenerate downstream artifacts |
+| `references/snapshots/` | Pinned upstream source files organized by date | **No** -- these are vendored upstream source. Update them with `scripts/refresh_snapshots.py`, not by hand. |
+| `scripts/extract/` | Scripts that parse source into JSON | **Yes** -- if you are adding or fixing an extractor |
+| `scripts/generate/` | Scripts that render markdown from JSON | **Yes** -- if you are adding or fixing a generator |
+| `scripts/verify/` | Validation scripts (blocking and non-blocking) | **Yes** -- if you are adding or fixing a verifier |
+| `tests/unit/` | Unit tests for scripts | **Yes** -- every new script needs tests |
+| `docs/artifacts/` | Published JSON artifacts and manifest | **No** -- produced by `scripts/generate/publish_reference_artifacts.py` |
+| `docs/ecosystem/map.md` | Generated community ecosystem page | **No** -- edit `references/community/ecosystem_packages.json`, then regenerate |
+| `.github/workflows/` | CI and deployment automation | **Yes** -- but test locally first |
+
+
+## Decision Tree: What Should I Do?
+
+| I want to... | Start by reading... | Edit these files... | Run these checks... |
+|--------------|---------------------|---------------------|---------------------|
+| Fix or add a docs page | The target page + `docs/reference/source-evidence-policy.md` + `docs/reference/writing-style-guide.md` | `docs/<topic>/<page>.md`; use `templates/docs/` or `scripts/new_doc.py` | `python scripts/verify/cross_references.py` + `python -m mkdocs build` |
+| Update the community catalog | `references/community/ecosystem_packages.json` + `docs/reference/community-maintenance-policy.md` | The JSON source file | `validate_schema.py`, `community_metadata.py`, `community_staleness.py`, `generate_community_pages.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `cross_references.py`, `mkdocs build` |
+| Update extracted references after a snapshot refresh | Matching extractor in `scripts/extract/` + snapshot files in `references/snapshots/<date>/` | Run the extractor script | `python scripts/verify/extraction_idempotency.py` + `validate_schema.py` |
+| Add a new extractor | An existing extractor in `scripts/extract/` + its test in `tests/unit/` | New script + new test | `python -m unittest discover -s tests -v` |
+| Add a verification script | An existing verifier in `scripts/verify/` + its test in `tests/unit/` | New script + new test + add to `.github/workflows/ci.yml` if needed | `python -m unittest discover -s tests -v` |
+| Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Run the script with `--core-version` and/or `--frontend-version` | All verify scripts (`run_all.py`) |
+| Change CI behavior | Relevant workflow in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs | Local verification first, then inspect the Actions tab after push |
+
+
+## Task Playbooks
+
+### Editing Prose Documentation
+
+1. **Read the target page** and the pages it links to or from.
+2. **Read the policy files** before changing evidence labels, tone, or structure:
+   - `docs/reference/source-evidence-policy.md`
+   - `docs/reference/writing-style-guide.md`
+   - `docs/reference/doc-quality-checklist.md`
+3. **Edit the page.** Keep claims tied to sources from `references/snapshots/` or
+   `docs.comfy.org`. Do not write from memory.
+4. **For new pages**, copy the matching template from `templates/docs/` (choose from `scaffold`, `tutorial`, `reference`, `decision-guide`, or `community-pattern`) or run:
+   ```bash
+   python scripts/new_doc.py --output docs/how-to/my-topic.md --mode tutorial --title "My Topic"
+   ```
+5. **Verify locally:**
+   ```bash
+   python scripts/verify/cross_references.py
+   python -m mkdocs build
+   ```
+6. **Review your diff** before committing. Ensure you did not accidentally edit
+   generated files.
+
+### Updating the Community Catalog
+
+The ecosystem map at `docs/ecosystem/map.md` is generated. Do not edit it by hand.
+
+1. Edit `references/community/ecosystem_packages.json` for catalog entries.
+2. Edit `references/community/community_pages.json` for page review metadata.
+3. Run the verification and generation pipeline in order:
+   ```bash
+   python scripts/verify/validate_schema.py
+   python scripts/verify/community_metadata.py
+   python scripts/verify/community_staleness.py
+   python scripts/generate/generate_community_pages.py
+   python scripts/verify/community_generated_freshness.py
+   python scripts/verify/community_page_coverage.py
+   python scripts/verify/cross_references.py
+   python -m mkdocs build
+   ```
+   Each step validates a different layer: schema correctness, metadata rules,
+   staleness, regeneration, freshness, coverage, cross-links, and final build.
+
+### Updating Extracted References
+
+1. Place or update upstream source files in `references/snapshots/<date>/`.
+   Alternatively, run:
+   ```bash
+   python scripts/refresh_snapshots.py --core-version <version>
+   ```
+2. Run the matching extractor with `--version` and `--commit` flags:
+   ```bash
+   python scripts/extract/parse_server.py <path> --version <v> --commit <sha>
+   python scripts/extract/parse_hooks.py <paths...> --version <v> --commit <sha>
+   python scripts/extract/parse_node_api_schema.py <server> <io> <types> --version <v> --commit <sha>
+   ```
+3. Optionally enrich with runtime data from a live ComfyUI instance:
+   ```bash
+   python scripts/extract/parse_from_api.py --url <url> --version <v> --commit <sha> --output references/raw/object_info_runtime.json
+   ```
+4. Regenerate markdown:
+   ```bash
+   python scripts/generate/md_from_json.py
+   ```
+5. Verify:
+   ```bash
+   python scripts/verify/cross_references.py
+   python scripts/verify/validate_schema.py
+   python scripts/verify/extraction_idempotency.py
+   ```
+
+### Adding a New Verification Script
+
+1. Create `scripts/verify/<name>.py`.
+   - Exit `0` on pass, exit `1` on fail.
+   - Print human-readable error messages.
+2. Add tests in `tests/unit/test_<name>.py`.
+   - Include at minimum: import check, smoke test, edge cases.
+3. Add the script to `.github/workflows/ci.yml` if it should run in CI.
+4. Run the full test suite:
+   ```bash
+   python -m unittest discover -s tests -v
+   ```
+
+### Adding a New Extractor
+
+1. Create `scripts/extract/<name>.py`.
+   - Read source from `references/snapshots/`.
+   - Write JSON to `references/raw/`.
+   - Include `--version` and `--commit` flags in output metadata.
+   - Normalize all paths to forward slashes in JSON output.
+2. Add tests in `tests/unit/`.
+3. Add a generator in `scripts/generate/` if markdown output is needed.
+4. Run tests and verify the pipeline end-to-end.
+
+---
+
+## Generated vs Hand-Authored Boundaries
+
+Understanding this boundary prevents accidentally editing files that will be overwritten later.
+
+- **Hand-authored:** Pages under `docs/`, files under `examples/`, and editorial reference files.
+- **Generated:** `docs/ecosystem/map.md` is produced by `scripts/generate/generate_community_pages.py` from `references/community/ecosystem_packages.json`.
+- **Extracted:** JSON files under `references/raw/` are produced by `scripts/extract/` from `references/snapshots/`.
+- **Published:** Files under `docs/artifacts/` are produced by `scripts/generate/publish_reference_artifacts.py`.
+
+If a file is generated or extracted, change its source and rerun the pipeline rather than editing the output directly.
+
+---
+
+## Conventions
+
+- **Source citations required:** Do not claim official ComfyUI behavior without a citation from `references/snapshots/` or `docs.comfy.org`.
+- **No emojis or emoticons** in any file.
+- **Forward slashes only** in JSON metadata paths. If you run extractors on Windows, ensure paths are normalized.
+- **Run verification before opening a PR.** Do not rely on CI to catch issues you could have found locally.
+- **Prefer small, verifiable changes.** Large diffs are harder to review and more likely to introduce errors.
+
+---
+
+## Verification Commands Reference
+
+Run the narrowest relevant checks first, then broader checks before completion.
+
+### Essential (run these for almost every change)
 
 ```bash
 python scripts/verify/cross_references.py
 python -m mkdocs build
-python -m unittest discover -s tests
+python -m unittest discover -s tests -v
 ```
 
-If you change extraction or generation scripts, include the exact command and output in your handoff or PR notes.
+### Community catalog changes
 
-## Documentation Rules
+```bash
+python scripts/verify/validate_schema.py
+python scripts/verify/community_metadata.py
+python scripts/verify/community_staleness.py
+python scripts/generate/generate_community_pages.py
+python scripts/verify/community_generated_freshness.py
+python scripts/verify/community_page_coverage.py
+python scripts/verify/cross_references.py
+python -m mkdocs build
+```
 
-- Every content page should keep explicit primary sources.
-- Replace placeholder text only when backed by source material.
-- Keep generated artifacts aligned with their source JSON.
+### Full local verification
 
-## Editorial Standards
+```bash
+python scripts/verify/run_all.py
+```
 
-If you are new to contributing docs, start with
-[`docs/start-here/docs-contributor.md`](docs/start-here/docs-contributor.md).
+### Individual verifiers
 
-Before submitting a documentation change, review it against:
+Scripts marked **[BLOCKING]** will fail CI and prevent merge. Scripts marked
+**[non-blocking]** run in CI but do not stop the pipeline.
 
-1. **`docs/reference/source-evidence-policy.md`** -- confirms the page carries the
-   correct evidence label and that claims are appropriately sourced.
-2. **`docs/reference/writing-style-guide.md`** -- confirms the page mode, tone,
-   section naming, and cross-linking follow repo conventions.
+```bash
+python scripts/verify/cross_references.py              # [BLOCKING]
+python scripts/verify/validate_schema.py               # [BLOCKING]
+python scripts/verify/community_generated_freshness.py # [BLOCKING]
+python scripts/verify/community_page_coverage.py       # [BLOCKING]
+python scripts/verify/stale_content.py                 # [non-blocking]
+python scripts/verify/extraction_idempotency.py        # [non-blocking]
+python scripts/verify/upstream_pins.py                 # [non-blocking]
+python scripts/verify/community_metadata.py            # [non-blocking]
+python scripts/verify/community_staleness.py           # [non-blocking]
+```
 
-Use the checklist at `docs/reference/doc-quality-checklist.md` as a pre-commit
-review step for doc-only changes.
+### Generators
 
-When creating a new page, copy the matching template from `templates/docs/`
-or run `scripts/new_doc.py`.
+```bash
+python scripts/generate/md_from_json.py
+python scripts/generate/generate_community_pages.py
+python scripts/generate/publish_reference_artifacts.py
+```
 
-## Doc Review Checklist
+### Runtime testing (optional)
 
-Before opening a PR that touches documentation, confirm:
+If you have a live ComfyUI instance available, you can optionally validate
+against a real server:
 
-1. **Page mode is correct** -- the page reads as one of: Reference, Tutorial,
-   Decision Guide, Community Pattern Study, or Scaffold (see
-   `docs/reference/writing-style-guide.md`)
-2. **Evidence label is present and correct** -- the `**Evidence:**` line at the
-   top of the page matches the actual source quality (see
-   `docs/reference/source-evidence-policy.md`)
-3. **Cross-links are intentional** -- links go to existing pages; "Read Next"
-   blocks contain a small number of deliberate next-step links
-4. **Docs build passes** -- `python -m mkdocs build` completes without errors
+```bash
+python scripts/verify/runtime_smoke.py --url http://127.0.0.1:8188
+python scripts/verify/wait_for_runtime.py --url http://127.0.0.1:8188/object_info
+```
+
+These are not required for most contributions, but are useful when adding or
+modifying runtime extractors.
+
+### When verification fails
+
+- **`validate_schema.py` fails:** The error message usually names the exact file
+  and field that is invalid. Fix the source JSON, not any generated output.
+- **`cross_references.py` fails:** It lists broken internal links. Check that the
+  target page exists and that the path uses forward slashes.
+- **`community_generated_freshness.py` fails:** You edited a community JSON file
+  but forgot to rerun `generate_community_pages.py` before verifying.
+- **`extraction_idempotency.py` fails:** See the Common Pitfalls note on
+  idempotency drift.
+
+Always fix the root cause rather than bypassing the check.
+
+---
+
+## Common Pitfalls
+
+- **Editing generated markdown directly:** `docs/ecosystem/map.md` looks like a normal markdown file, but it is produced by a generator. Always edit `references/community/ecosystem_packages.json` and rerun the generator instead.
+- **Windows backslashes in JSON:** If you author or run extractors on Windows, paths written with `str(path)` will contain backslashes. Always normalize with `.replace("\\", "/")` before writing JSON metadata.
+- **Forgetting to regenerate after JSON changes:** If you edit `references/raw/` or `references/community/` JSON files, rerun the matching generator before running `cross_references.py` or `mkdocs build`.
+- **Misunderstanding CI blocking behavior:** `cross_references.py`, `validate_schema.py`, `community_generated_freshness.py`, and `community_page_coverage.py` will block CI and prevent merge. `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py` run in CI but do not block the pipeline.
+- **Writing from memory:** Claims about ComfyUI behavior must be traceable to a pinned snapshot or official docs. If you cannot find a source, mark the claim accordingly or leave it out.
+- **Skipping unit tests for script changes:** If you change any script under `scripts/`, add or update the matching test under `tests/unit/` and run the full test suite.
+- **Misreading extraction idempotency failures:** The idempotency checker may report byte-level differences because extractors write timestamps (`extracted_date`). These are expected. Structural differences in the JSON are the real concern.
+
+---
+
+## Pull Request Checklist
+
+Before opening a PR, confirm the following:
+
+- [ ] **The change is scoped:** one logical change per PR (docs fix, catalog update, new script, etc.)
+- [ ] **Generated files were not hand-edited:** verify with `git diff --name-only` that you are not modifying generated outputs without changing their sources
+- [ ] **Verification passes:** the relevant checks from the Decision Tree above exit `0`
+- [ ] **Tests pass:** `python -m unittest discover -s tests -v` exits cleanly (required for script changes; recommended for docs changes)
+- [ ] **Docs build:** `python -m mkdocs build` completes without errors
+- [ ] **Evidence labels are correct:** docs pages have the right evidence label per `source-evidence-policy.md`
+- [ ] **Style matches conventions:** page mode, tone, and structure follow `writing-style-guide.md`
+- [ ] **Cross-links are intentional:** links resolve to real pages; "Read Next" blocks contain deliberate next steps
+
+For script or extractor changes, also include:
+- [ ] **The exact command you ran** and its output in the PR description
+- [ ] **A test** covering the new behavior in `tests/unit/`
+
+---
+
+## Getting Help
+
+- Read `docs/start-here/docs-contributor.md` for an introduction to editorial standards.
+- Read `docs/reference/writing-style-guide.md` for page modes and tone.
+- Read `docs/reference/source-evidence-policy.md` for trust hierarchy and evidence labeling.
+- Read `docs/reference/doc-quality-checklist.md` for a pre-submit review step.
+- Review `AGENTS.md` for the full operational reference (machine-oriented, but comprehensive).
