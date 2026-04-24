@@ -5,7 +5,9 @@ Runs the standard verification sequence:
     1. Unit tests
     2. cross_references.py
     3. validate_schema.py
-    4. mkdocs build
+    4. community_generated_freshness.py
+    5. community_page_coverage.py
+    6. mkdocs build
 
 Usage:
     python scripts/verify/run_all.py
@@ -68,6 +70,20 @@ def main() -> int:
         (
             [sys.executable, str(SCRIPTS_VERIFY_DIR / "validate_schema.py")],
             "Schema validation",
+        )
+    )
+
+    steps.append(
+        (
+            [sys.executable, str(SCRIPTS_VERIFY_DIR / "community_generated_freshness.py")],
+            "Generated community page freshness",
+        )
+    )
+
+    steps.append(
+        (
+            [sys.executable, str(SCRIPTS_VERIFY_DIR / "community_page_coverage.py")],
+            "Community page coverage",
         )
     )
 

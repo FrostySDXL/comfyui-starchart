@@ -271,6 +271,270 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors = module.validate_object_info_runtime(data, "object_info_runtime.json")
         self.assertTrue(any("object_info['KSampler'] is not a dict" in e for e in errors))
 
+    def test_valid_ecosystem_packages_pass(self):
+        module = self._import_module()
+        data = {
+            "metadata": {
+                "schema_version": "1.0.0",
+                "last_updated": "2026-04-23",
+                "description": "Test packages",
+            },
+            "packages": [
+                {
+                    "slug": "test-pack",
+                    "name": "Test Pack",
+                    "repo_url": "https://github.com/example/test",
+                    "registry_url": None,
+                    "category": "node_pack",
+                    "status": "Actively Maintained",
+                    "role_summary": "A test package",
+                    "notable_patterns": ["pattern_a"],
+                    "used_by": "Testers",
+                    "source_type": "community_observation",
+                    "evidence_urls": ["https://github.com/example/test"],
+                    "pinned_external_version": None,
+                    "pinned_commit": None,
+                    "last_verified": "2026-04-22",
+                    "needs_review_after": "2026-07-22",
+                    "maintenance_tier": "tier_2",
+                    "caveats": None,
+                }
+            ],
+        }
+        errors = module.validate_top_level(data, module.COMMUNITY_SCHEMAS["ecosystem_packages.json"], "ecosystem_packages.json")
+        errors.extend(module.validate_community_metadata(data, "ecosystem_packages.json"))
+        errors.extend(module.validate_packages(data, "ecosystem_packages.json"))
+        self.assertEqual(errors, [])
+
+    def test_malformed_package_missing_required_key_fails(self):
+        module = self._import_module()
+        data = {
+            "metadata": {
+                "schema_version": "1.0.0",
+                "last_updated": "2026-04-23",
+                "description": "Test packages",
+            },
+            "packages": [
+                {
+                    "slug": "test-pack",
+                    "name": "Test Pack",
+                }
+            ],
+        }
+        errors = module.validate_packages(data, "ecosystem_packages.json")
+        self.assertTrue(any("missing required key 'category'" in e for e in errors))
+
+    def test_package_category_enum_is_enforced(self):
+        module = self._import_module()
+        data = {
+            "packages": [
+                {
+                    "slug": "test-pack",
+                    "name": "Test Pack",
+                    "repo_url": None,
+                    "registry_url": None,
+                    "category": "wrong",
+                    "status": "Actively Maintained",
+                    "role_summary": "A test package",
+                    "notable_patterns": [],
+                    "used_by": None,
+                    "source_type": "community_observation",
+                    "evidence_urls": ["https://example.com/test-pack"],
+                    "pinned_external_version": None,
+                    "pinned_commit": None,
+                    "last_verified": "2026-04-22",
+                    "needs_review_after": "2026-07-22",
+                    "maintenance_tier": "tier_2",
+                    "caveats": None,
+                }
+            ]
+        }
+        errors = module.validate_packages(data, "ecosystem_packages.json")
+        self.assertTrue(any("invalid category 'wrong'" in e for e in errors))
+
+    def test_duplicate_package_slug_is_rejected(self):
+        module = self._import_module()
+        data = {
+            "packages": [
+                {
+                    "slug": "duplicate-pack",
+                    "name": "Test Pack A",
+                    "repo_url": None,
+                    "registry_url": None,
+                    "category": "node_pack",
+                    "status": "Actively Maintained",
+                    "role_summary": "A test package",
+                    "notable_patterns": [],
+                    "used_by": None,
+                    "source_type": "community_observation",
+                    "evidence_urls": ["https://example.com/a"],
+                    "pinned_external_version": None,
+                    "pinned_commit": None,
+                    "last_verified": "2026-04-22",
+                    "needs_review_after": "2026-07-22",
+                    "maintenance_tier": "tier_2",
+                    "caveats": None,
+                },
+                {
+                    "slug": "duplicate-pack",
+                    "name": "Test Pack B",
+                    "repo_url": None,
+                    "registry_url": None,
+                    "category": "tooling",
+                    "status": "Community Supported",
+                    "role_summary": "Another test package",
+                    "notable_patterns": [],
+                    "used_by": None,
+                    "source_type": "community_observation",
+                    "evidence_urls": ["https://example.com/b"],
+                    "pinned_external_version": None,
+                    "pinned_commit": None,
+                    "last_verified": "2026-04-22",
+                    "needs_review_after": "2026-07-22",
+                    "maintenance_tier": "tier_2",
+                    "caveats": None,
+                },
+            ]
+        }
+        errors = module.validate_packages(data, "ecosystem_packages.json")
+        self.assertTrue(any("duplicate slug 'duplicate-pack'" in e for e in errors))
+
+    def test_valid_community_pages_pass(self):
+        module = self._import_module()
+        data = {
+            "metadata": {
+                "schema_version": "1.0.0",
+                "last_updated": "2026-04-23",
+                "description": "Test pages",
+            },
+            "pages": [
+                {
+                    "page_path": "docs/ecosystem/map.md",
+                    "page_kind": "generated_catalog",
+                    "evidence_label": "Community pattern study",
+                    "source_type": "community_metadata",
+                    "last_verified": "2026-04-22",
+                    "needs_review_after": "2026-07-22",
+                    "maintenance_tier": "tier_2",
+                    "generated_from": "references/community/ecosystem_packages.json",
+                    "notes": "Generated page",
+                }
+            ],
+        }
+        errors = module.validate_top_level(data, module.COMMUNITY_SCHEMAS["community_pages.json"], "community_pages.json")
+        errors.extend(module.validate_community_metadata(data, "community_pages.json"))
+        errors.extend(module.validate_pages(data, "community_pages.json"))
+        self.assertEqual(errors, [])
+
+    def test_malformed_page_missing_required_key_fails(self):
+        module = self._import_module()
+        data = {
+            "metadata": {
+                "schema_version": "1.0.0",
+                "last_updated": "2026-04-23",
+                "description": "Test pages",
+            },
+            "pages": [
+                {
+                    "page_path": "docs/test.md",
+                    "page_kind": "hand_authored",
+                }
+            ],
+        }
+        errors = module.validate_pages(data, "community_pages.json")
+        self.assertTrue(any("missing required key 'evidence_label'" in e for e in errors))
+
+    def test_page_kind_enum_is_enforced(self):
+        module = self._import_module()
+        data = {
+            "pages": [
+                {
+                    "page_path": "docs/test.md",
+                    "page_kind": "wrong",
+                    "evidence_label": "Operational guidance",
+                    "source_type": "repo_local",
+                    "last_verified": "2026-04-23",
+                    "needs_review_after": "2026-10-23",
+                    "maintenance_tier": "tier_2",
+                    "generated_from": None,
+                    "notes": None,
+                }
+            ]
+        }
+        errors = module.validate_pages(data, "community_pages.json")
+        self.assertTrue(any("invalid page_kind 'wrong'" in e for e in errors))
+
+    def test_duplicate_page_path_is_rejected(self):
+        module = self._import_module()
+        data = {
+            "pages": [
+                {
+                    "page_path": "docs/test.md",
+                    "page_kind": "hand_authored_policy",
+                    "evidence_label": "Operational guidance",
+                    "source_type": "repo_local",
+                    "last_verified": "2026-04-23",
+                    "needs_review_after": "2026-10-23",
+                    "maintenance_tier": "tier_2",
+                    "generated_from": None,
+                    "notes": None,
+                },
+                {
+                    "page_path": "docs/test.md",
+                    "page_kind": "hand_authored_guide",
+                    "evidence_label": "Community pattern study",
+                    "source_type": "hybrid",
+                    "last_verified": "2026-04-23",
+                    "needs_review_after": "2026-10-23",
+                    "maintenance_tier": "tier_2",
+                    "generated_from": None,
+                    "notes": None,
+                },
+            ]
+        }
+        errors = module.validate_pages(data, "community_pages.json")
+        self.assertTrue(any("duplicate page_path 'docs/test.md'" in e for e in errors))
+
+    def test_page_path_with_backslashes_is_rejected(self):
+        module = self._import_module()
+        data = {
+            "pages": [
+                {
+                    "page_path": "docs\\reference\\community-maintenance-policy.md",
+                    "page_kind": "hand_authored_policy",
+                    "evidence_label": "Operational guidance",
+                    "source_type": "repo_local",
+                    "last_verified": "2026-04-23",
+                    "needs_review_after": "2026-10-23",
+                    "maintenance_tier": "tier_2",
+                    "generated_from": None,
+                    "notes": None,
+                }
+            ]
+        }
+        errors = module.validate_pages(data, "community_pages.json")
+        self.assertTrue(any("page_path uses backslashes" in e for e in errors))
+
+    def test_generated_from_with_backslashes_is_rejected(self):
+        module = self._import_module()
+        data = {
+            "pages": [
+                {
+                    "page_path": "docs/ecosystem/map.md",
+                    "page_kind": "generated_catalog",
+                    "evidence_label": "Community pattern study",
+                    "source_type": "community_metadata",
+                    "last_verified": "2026-04-22",
+                    "needs_review_after": "2026-07-22",
+                    "maintenance_tier": "tier_2",
+                    "generated_from": "references\\community\\ecosystem_packages.json",
+                    "notes": "Generated page",
+                }
+            ]
+        }
+        errors = module.validate_pages(data, "community_pages.json")
+        self.assertTrue(any("generated_from uses backslashes" in e for e in errors))
+
 
 class ValidateSchemaScriptTests(unittest.TestCase):
     """Tests that the validation script runs successfully on the repo."""

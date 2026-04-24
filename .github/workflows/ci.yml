@@ -42,6 +42,12 @@ jobs:
       - name: Validate JSON schemas
         run: python scripts/verify/validate_schema.py
 
+      - name: Verify generated community pages are fresh
+        run: python scripts/verify/community_generated_freshness.py
+
+      - name: Verify community page coverage
+        run: python scripts/verify/community_page_coverage.py
+
       - name: Check for stale content
         # Non-blocking: stale markers are informational and should not fail CI
         run: python scripts/verify/stale_content.py
@@ -57,6 +63,16 @@ jobs:
         # Non-blocking: pin failures indicate upstream changes (force-push, tag
         # moves) that need manual review, not an immediate CI block
         run: python scripts/verify/upstream_pins.py
+        continue-on-error: true
+
+      - name: Check community metadata
+        # Non-blocking: community metadata rules are still stabilizing
+        run: python scripts/verify/community_metadata.py
+        continue-on-error: true
+
+      - name: Check community staleness
+        # Non-blocking: freshness windows are informational until metadata is fully populated
+        run: python scripts/verify/community_staleness.py
         continue-on-error: true
 
   refresh-snapshots:

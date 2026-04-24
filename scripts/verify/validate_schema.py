@@ -17,6 +17,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
+REFERENCES_COMMUNITY_DIR = REPO_ROOT / "references" / "community"
 
 # Schema definitions for each JSON reference file.
 # Each schema is a dict of {key: (type, required)} where type is a Python type
@@ -43,6 +44,18 @@ SCHEMAS = {
     "object_info_runtime.json": {
         "metadata": (dict, True),
         "object_info": (dict, True),
+    },
+}
+
+# Community schema definitions
+COMMUNITY_SCHEMAS = {
+    "ecosystem_packages.json": {
+        "metadata": (dict, True),
+        "packages": (list, True),
+    },
+    "community_pages.json": {
+        "metadata": (dict, True),
+        "pages": (list, True),
     },
 }
 
@@ -74,6 +87,87 @@ METADATA_FIELDS = {
         ("commit", str, True),
         ("response_sha256", str, True),
     ],
+}
+
+COMMUNITY_METADATA_FIELDS = {
+    "ecosystem_packages.json": [
+        ("schema_version", str, True),
+        ("last_updated", str, True),
+        ("description", str, True),
+    ],
+    "community_pages.json": [
+        ("schema_version", str, True),
+        ("last_updated", str, True),
+        ("description", str, True),
+    ],
+}
+
+# Package entry schema
+PACKAGE_SCHEMA = {
+    "slug": (str, True),
+    "name": (str, True),
+    "repo_url": ((str, type(None)), False),
+    "registry_url": ((str, type(None)), False),
+    "category": (str, True),
+    "status": (str, True),
+    "role_summary": (str, True),
+    "notable_patterns": (list, False),
+    "used_by": ((str, type(None)), False),
+    "source_type": (str, True),
+    "evidence_urls": (list, True),
+    "pinned_external_version": ((str, type(None)), False),
+    "pinned_commit": ((str, type(None)), False),
+    "last_verified": (str, True),
+    "needs_review_after": (str, True),
+    "maintenance_tier": (str, True),
+    "caveats": ((str, type(None)), False),
+}
+
+# Page entry schema
+PAGE_SCHEMA = {
+    "page_path": (str, True),
+    "page_kind": (str, True),
+    "evidence_label": (str, True),
+    "source_type": (str, True),
+    "last_verified": (str, True),
+    "needs_review_after": (str, True),
+    "maintenance_tier": (str, True),
+    "generated_from": ((str, type(None)), False),
+    "notes": ((str, type(None)), False),
+}
+
+ALLOWED_PACKAGE_CATEGORIES = {
+    "package_manager",
+    "registry",
+    "node_pack",
+    "tooling",
+}
+
+ALLOWED_PACKAGE_STATUSES = {
+    "Actively Maintained",
+    "Community Supported",
+    "Likely Unmaintained",
+    "Unknown",
+}
+
+ALLOWED_PACKAGE_SOURCE_TYPES = {
+    "official_project",
+    "community_observation",
+}
+
+ALLOWED_PAGE_KINDS = {
+    "generated_catalog",
+    "hand_authored_study",
+    "hand_authored_tutorial",
+    "hand_authored_guide",
+    "hand_authored_policy",
+}
+
+ALLOWED_PAGE_SOURCE_TYPES = {
+    "community_metadata",
+    "pinned_external_repo",
+    "hybrid",
+    "repo_local",
 }
 
 # Endpoint schema: required keys and their types
@@ -371,58 +465,214 @@ def validate_object_info_runtime(data: dict, filename: str) -> list[str]:
     return errors
 
 
+def validate_community_metadata(data: dict, filename: str) -> list[str]:
+    """Validate community metadata fields."""
+    errors = []
+    metadata = data.get("metadata")
+    if metadata is None:
+        return errors
+
+    fields = COMMUNITY_METADATA_FIELDS.get(filename, [])
+    for field_name, expected_type, required in fields:
+        if field_name not in metadata:
+            if required:
+                errors.append(f"{filename}: metadata missing required field '{field_name}'")
+            continue
+        value = metadata[field_name]
+        if not isinstance(value, expected_type):
+            errors.append(
+                f"{filename}: metadata.{field_name} expected {expected_type.__name__}, "
+                f"got {type(value).__name__}"
+            )
+
+    return errors
+
+
+def validate_packages(data: dict, filename: str) -> list[str]:
+    """Validate ecosystem package entries."""
+    errors = []
+    packages = data.get("packages", [])
+    seen_slugs = set()
+    for i, package in enumerate(packages):
+        if not isinstance(package, dict):
+            errors.append(f"{filename}: packages[{i}] is not a dict")
+            continue
+        for key, (expected_type, required) in PACKAGE_SCHEMA.items():
+            if key not in package:
+                if required:
+                    errors.append(f"{filename}: packages[{i}] missing required key '{key}'")
+                continue
+            if not _check_type(package[key], expected_type):
+                errors.append(
+                    f"{filename}: packages[{i}].{key} expected {_type_label(expected_type)}, "
+                    f"got {type(package[key]).__name__}"
+                )
+
+        # Validate notable_patterns items are strings
+        notable_patterns = package.get("notable_patterns", [])
+        if isinstance(notable_patterns, list):
+            for j, pattern in enumerate(notable_patterns):
+                if not isinstance(pattern, str):
+                    errors.append(
+                        f"{filename}: packages[{i}].notable_patterns[{j}] expected str, "
+                        f"got {type(pattern).__name__}"
+                    )
+
+        # Validate evidence_urls items are strings
+        evidence_urls = package.get("evidence_urls", [])
+        if isinstance(evidence_urls, list):
+            for j, url in enumerate(evidence_urls):
+                if not isinstance(url, str):
+                    errors.append(
+                        f"{filename}: packages[{i}].evidence_urls[{j}] expected str, "
+                        f"got {type(url).__name__}"
+                    )
+
+        slug = package.get("slug")
+        if isinstance(slug, str):
+            if slug in seen_slugs:
+                errors.append(f"{filename}: duplicate slug '{slug}'")
+            else:
+                seen_slugs.add(slug)
+
+        category = package.get("category")
+        if isinstance(category, str) and category not in ALLOWED_PACKAGE_CATEGORIES:
+            errors.append(f"{filename}: packages[{i}] has invalid category '{category}'")
+
+        status = package.get("status")
+        if isinstance(status, str) and status not in ALLOWED_PACKAGE_STATUSES:
+            errors.append(f"{filename}: packages[{i}] has invalid status '{status}'")
+
+        source_type = package.get("source_type")
+        if isinstance(source_type, str) and source_type not in ALLOWED_PACKAGE_SOURCE_TYPES:
+            errors.append(
+                f"{filename}: packages[{i}] has invalid source_type '{source_type}'"
+            )
+
+    return errors
+
+
+def validate_pages(data: dict, filename: str) -> list[str]:
+    """Validate community page entries."""
+    errors = []
+    pages = data.get("pages", [])
+    seen_paths = set()
+    for i, page in enumerate(pages):
+        if not isinstance(page, dict):
+            errors.append(f"{filename}: pages[{i}] is not a dict")
+            continue
+        for key, (expected_type, required) in PAGE_SCHEMA.items():
+            if key not in page:
+                if required:
+                    errors.append(f"{filename}: pages[{i}] missing required key '{key}'")
+                continue
+            if not _check_type(page[key], expected_type):
+                errors.append(
+                    f"{filename}: pages[{i}].{key} expected {_type_label(expected_type)}, "
+                    f"got {type(page[key]).__name__}"
+                )
+
+        page_path = page.get("page_path")
+        if isinstance(page_path, str):
+            if "\\" in page_path:
+                errors.append(
+                    f"{filename}: pages[{i}].page_path uses backslashes; use forward slashes for cross-platform compatibility"
+                )
+            if page_path in seen_paths:
+                errors.append(f"{filename}: duplicate page_path '{page_path}'")
+            else:
+                seen_paths.add(page_path)
+
+        generated_from = page.get("generated_from")
+        if isinstance(generated_from, str) and "\\" in generated_from:
+            errors.append(
+                f"{filename}: pages[{i}].generated_from uses backslashes; use forward slashes for cross-platform compatibility"
+            )
+
+        page_kind = page.get("page_kind")
+        if isinstance(page_kind, str) and page_kind not in ALLOWED_PAGE_KINDS:
+            errors.append(f"{filename}: pages[{i}] has invalid page_kind '{page_kind}'")
+
+        source_type = page.get("source_type")
+        if isinstance(source_type, str) and source_type not in ALLOWED_PAGE_SOURCE_TYPES:
+            errors.append(
+                f"{filename}: pages[{i}] has invalid source_type '{source_type}'"
+            )
+
+    return errors
+
+
+def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
+    """Validate a single JSON file and append errors to all_errors."""
+    print(f"Validating {json_file.name}...")
+
+    try:
+        data = json.loads(json_file.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        all_errors.append(f"{json_file.name}: invalid JSON: {e}")
+        return
+
+    if not isinstance(data, dict):
+        all_errors.append(f"{json_file.name}: top-level value is not a dict")
+        return
+
+    errors = []
+
+    # Validate top-level schema
+    schema = SCHEMAS.get(json_file.name) or COMMUNITY_SCHEMAS.get(json_file.name)
+    if schema:
+        errors = validate_top_level(data, schema, json_file.name)
+        all_errors.extend(errors)
+
+    # Validate metadata
+    if json_file.name in COMMUNITY_SCHEMAS:
+        errors = validate_community_metadata(data, json_file.name)
+        all_errors.extend(errors)
+    else:
+        errors = validate_metadata(data, json_file.name)
+        all_errors.extend(errors)
+
+    # Validate entries based on file type
+    if json_file.name == "server_endpoints.json":
+        errors = validate_endpoints(data, json_file.name)
+        all_errors.extend(errors)
+    elif json_file.name == "js_hooks.json":
+        errors = validate_hooks(data, json_file.name)
+        all_errors.extend(errors)
+    elif json_file.name == "node_api_schema.json":
+        errors = validate_io_types(data, json_file.name)
+        all_errors.extend(errors)
+    elif json_file.name == "object_info_runtime.json":
+        errors = validate_object_info_runtime(data, json_file.name)
+        all_errors.extend(errors)
+    elif json_file.name == "ecosystem_packages.json":
+        errors = validate_packages(data, json_file.name)
+        all_errors.extend(errors)
+    elif json_file.name == "community_pages.json":
+        errors = validate_pages(data, json_file.name)
+        all_errors.extend(errors)
+
+    if not errors:
+        print(f"  OK: schema valid")
+
+
 def main():
     """Run schema validation for all JSON reference files."""
     all_errors = []
     json_files = sorted(REFERENCES_RAW_DIR.glob("*.json"))
+    community_files = sorted(REFERENCES_COMMUNITY_DIR.glob("*.json"))
+    all_json_files = json_files + community_files
 
-    if not json_files:
+    if not all_json_files:
         print("No JSON reference files found.")
         return 1
 
-    for json_file in json_files:
-        print(f"Validating {json_file.name}...")
-
-        try:
-            data = json.loads(json_file.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError) as e:
-            all_errors.append(f"{json_file.name}: invalid JSON: {e}")
-            continue
-
-        if not isinstance(data, dict):
-            all_errors.append(f"{json_file.name}: top-level value is not a dict")
-            continue
-
-        # Validate top-level schema
-        schema = SCHEMAS.get(json_file.name)
-        if schema:
-            errors = validate_top_level(data, schema, json_file.name)
-            all_errors.extend(errors)
-
-        # Validate metadata
-        errors = validate_metadata(data, json_file.name)
-        all_errors.extend(errors)
-
-        # Validate entries based on file type
-        if json_file.name == "server_endpoints.json":
-            errors = validate_endpoints(data, json_file.name)
-            all_errors.extend(errors)
-        elif json_file.name == "js_hooks.json":
-            errors = validate_hooks(data, json_file.name)
-            all_errors.extend(errors)
-        elif json_file.name == "node_api_schema.json":
-            errors = validate_io_types(data, json_file.name)
-            all_errors.extend(errors)
-        elif json_file.name == "object_info_runtime.json":
-            errors = validate_object_info_runtime(data, json_file.name)
-            all_errors.extend(errors)
-
-        if not errors:
-            print(f"  OK: schema valid")
+    for json_file in all_json_files:
+        _validate_json_file(json_file, all_errors)
 
     print()
     if not all_errors:
-        print(f"All {len(json_files)} JSON file(s) pass schema validation.")
+        print(f"All {len(all_json_files)} JSON file(s) pass schema validation.")
         return 0
     else:
         print(f"Found {len(all_errors)} schema violation(s):")
