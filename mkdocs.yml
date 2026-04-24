@@ -76,6 +76,8 @@ nav:
       - start-here/author.md
       - start-here/extension-developer.md
       - start-here/service-integration.md
+      - start-here/docs-contributor.md
+      - start-here/tooling-builder.md
   - Decision Trees:
       - decision-trees/api-integration.md
       - decision-trees/custom-node-architecture.md

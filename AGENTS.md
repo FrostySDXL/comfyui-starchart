@@ -14,7 +14,7 @@ Serve locally: `python -m mkdocs serve`
 
 | Task | Read first | Edit | Verify |
 |------|-----------|------|--------|
-| Add/fix docs content | `docs/<topic>/` page + `docs/reference/source-evidence-policy.md` + `docs/reference/writing-style-guide.md` | The page + adjacent linked pages + `references/raw/` if citing data | `python scripts/verify/cross_references.py` + `python -m mkdocs build` |
+| Add/fix docs content | `docs/<topic>/` page + `docs/reference/source-evidence-policy.md` + `docs/reference/writing-style-guide.md` | The page + adjacent linked pages + `references/raw/` if citing data; copy from `templates/docs/` or use `scripts/new_doc.py` for new pages | `python scripts/verify/cross_references.py` + `python -m mkdocs build` |
 | Update extracted references | `references/raw/<file>.json` | Run the matching extractor script | `python scripts/verify/extraction_idempotency.py` |
 | Update community catalog | `references/community/ecosystem_packages.json` + `docs/reference/community-maintenance-policy.md` | Edit JSON source; regenerate page | `python scripts/verify/validate_schema.py` + `python scripts/verify/community_metadata.py` + `python scripts/verify/community_staleness.py` + `python scripts/generate/generate_community_pages.py` + `python scripts/verify/community_generated_freshness.py` + `python scripts/verify/community_page_coverage.py` + `python scripts/verify/cross_references.py` + `python -m mkdocs build` |
 | Add a new extractor | Existing extractor in `scripts/extract/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
@@ -130,8 +130,9 @@ python scripts/verify/wait_for_runtime.py --url <endpoint>
 2. Read `docs/reference/source-evidence-policy.md` before changing evidence labels or trust framing
 3. Read `docs/reference/writing-style-guide.md` before rewriting structure or tone
 4. Use `docs/reference/doc-quality-checklist.md` before calling the edit complete
-5. Run `python scripts/verify/cross_references.py`
-6. Run `python -m mkdocs build`
+5. For new pages, copy from `templates/docs/` or use `scripts/new_doc.py`
+6. Run `python scripts/verify/cross_references.py`
+7. Run `python -m mkdocs build`
 
 ### Updating community metadata
 

@@ -19,6 +19,8 @@ Choose your starting point based on what you are building:
 | Build custom nodes | [Custom Node Author](start-here/author.md) |
 | Extend ComfyUI (frontend or server) | [Extension Developer](start-here/extension-developer.md) |
 | Integrate ComfyUI into an external service | [Service Integration](start-here/service-integration.md) |
+| Contribute documentation | [Docs Contributor](start-here/docs-contributor.md) |
+| Build tools or agents against ComfyUI | [Tooling Builder](start-here/tooling-builder.md) |
 
 ## Page Structure
 
@@ -56,3 +58,10 @@ full labeling rules.
 
 ComfyUI core `v0.19.3` and official frontend `v1.42.11`. Content written
 against other versions should note the version it applies to.
+
+## Read Next
+
+- [Start Here: Custom Node Author](start-here/author.md)
+- [Start Here: Extension Developer](start-here/extension-developer.md)
+- [Start Here: Service Integration](start-here/service-integration.md)
+- [Source Evidence Policy](reference/source-evidence-policy.md)

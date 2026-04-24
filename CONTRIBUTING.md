@@ -18,8 +18,9 @@ python -m pip install -r requirements.txt
 Run the narrowest relevant checks first, then broader checks before completion:
 
 ```bash
+python scripts/verify/cross_references.py
+python -m mkdocs build
 python -m unittest discover -s tests
-mkdocs build
 ```
 
 If you change extraction or generation scripts, include the exact command and output in your handoff or PR notes.
@@ -32,6 +33,9 @@ If you change extraction or generation scripts, include the exact command and ou
 
 ## Editorial Standards
 
+If you are new to contributing docs, start with
+[`docs/start-here/docs-contributor.md`](docs/start-here/docs-contributor.md).
+
 Before submitting a documentation change, review it against:
 
 1. **`docs/reference/source-evidence-policy.md`** -- confirms the page carries the
@@ -41,6 +45,9 @@ Before submitting a documentation change, review it against:
 
 Use the checklist at `docs/reference/doc-quality-checklist.md` as a pre-commit
 review step for doc-only changes.
+
+When creating a new page, copy the matching template from `templates/docs/`
+or run `scripts/new_doc.py`.
 
 ## Doc Review Checklist
 

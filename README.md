@@ -42,6 +42,15 @@ For editorial standards and evidence rules, use these files together:
 
 - Source lives in `docs/`
 - Preview locally with `mkdocs serve`
+- New pages should start from `templates/docs/` or use `scripts/new_doc.py`
+
+### Where to Start
+
+- Building custom nodes: [`docs/start-here/author.md`](docs/start-here/author.md)
+- Extending ComfyUI: [`docs/start-here/extension-developer.md`](docs/start-here/extension-developer.md)
+- Integrating ComfyUI into a service: [`docs/start-here/service-integration.md`](docs/start-here/service-integration.md)
+- Contributing documentation: [`docs/start-here/docs-contributor.md`](docs/start-here/docs-contributor.md)
+- Building tools or agents: [`docs/start-here/tooling-builder.md`](docs/start-here/tooling-builder.md)
 
 ### Machine-readable references
 
