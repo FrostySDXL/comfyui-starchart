@@ -1,7 +1,7 @@
 # Version History
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-24
 **Primary Source:** https://docs.comfy.org/changelog
 
 ## Primary Sources
@@ -95,6 +95,12 @@ For this knowledge base, treat version-specific guidance as pinned to the cited
 official pages plus whichever upstream commit or release your local ComfyUI
 snapshot matches. If you cannot state the target ComfyUI version, do not make
 strong compatibility claims.
+
+The repository's machine-readable artifacts are extracted from a pinned baseline
+and published with versioned copies. When you need exact API or schema behavior
+for a specific ComfyUI version, prefer the pinned artifacts over broad release
+notes. See [Machine-Readable Artifacts](machine-readable-artifacts.md) for the
+manifest and stable URLs.
 
 ## Read Next
 

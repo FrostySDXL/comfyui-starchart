@@ -25,3 +25,9 @@ meant as practical starter calls for tools that talk to native ComfyUI.
 The opt-in `.github/workflows/runtime-smoke.yml` can validate `POST /prompt`
 using `post-prompt.json` against a live ComfyUI instance. This is not part of
 CPU-safe CI and must be triggered manually with a known ComfyUI URL.
+
+## Artifact Connection
+
+The route shapes in these examples align with the pinned endpoint metadata in
+`server_endpoints.json`. See [Machine-Readable Artifacts](../../docs/reference/machine-readable-artifacts.md)
+for the published artifact and manifest URLs.

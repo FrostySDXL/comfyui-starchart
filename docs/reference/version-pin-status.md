@@ -1,7 +1,7 @@
 # Version Pin Status
 
 **Evidence:** Scaffold
-**Last Updated:** 2026-04-23
+**Last Updated:** 2026-04-24
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.
@@ -47,6 +47,11 @@ JSON in `references/raw/` points at those snapshot files.
 - `references/community/ecosystem_packages.json` and `community_pages.json`
   track external community metadata with their own `last_verified` and
   `needs_review_after` fields, independent of the ComfyUI core/frontend baseline
+
+These artifacts are also published as static files under `docs/artifacts/`,
+with current copies and versioned copies keyed to the pinned baseline. See
+[Machine-Readable Artifacts](machine-readable-artifacts.md) for the manifest
+and consumption details.
 
 ## Automation
 

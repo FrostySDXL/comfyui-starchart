@@ -1,14 +1,18 @@
 # ComfyUI Knowledge Base
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-24
 
 ## Scope
 
 This documentation section covers ComfyUI development topics including API
 endpoints, extension hooks, custom node authoring, and extension architecture.
-It is a source-backed reference, not the official ComfyUI documentation.
-See `docs.comfy.org` for official docs.
+It is a source-backed, version-pinned reference, not the official ComfyUI
+documentation. See [docs.comfy.org](https://docs.comfy.org/) for official docs.
+
+The repository also publishes machine-readable JSON artifacts extracted from
+pinned upstream snapshots. See [Machine-Readable Artifacts](reference/machine-readable-artifacts.md)
+for a catalog of available artifacts, stable URLs, and consumption guidance.
 
 ## Who This Section Is For
 
@@ -58,6 +62,13 @@ full labeling rules.
 
 ComfyUI core `v0.19.3` and official frontend `v1.42.11`. Content written
 against other versions should note the version it applies to.
+
+## Scope Boundaries
+
+- [docs.comfy.org](https://docs.comfy.org/) is the official human reference for ComfyUI.
+- This repo is a pinned, machine-readable companion for developers and tooling authors.
+- For end-user tutorials and workflow guides, see community resources such as
+  [comfyui-wiki.com](https://comfyui-wiki.com/).
 
 ## Read Next
 
