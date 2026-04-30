@@ -25,9 +25,15 @@ class MarkdownGenerationTests(unittest.TestCase):
             json.dumps(
                 {
                     "metadata": {
-                        "source": "sample server.py",
+                        "sources": ["sample server.py", "extra/source.py"],
                         "extracted_date": "2026-04-19",
                         "version": "test"
+                    },
+                    "coverage": {
+                        "description": "contract",
+                        "guaranteed_fields": [],
+                        "best_effort_fields": [],
+                        "deferred": []
                     },
                     "endpoints": [
                         {
@@ -67,6 +73,7 @@ class MarkdownGenerationTests(unittest.TestCase):
         rendered = OUTPUT.read_text(encoding="utf-8")
         self.assertIn("# Server.py Summary", rendered)
         self.assertIn("sample server.py", rendered)
+        self.assertIn("extra/source.py", rendered)
         self.assertIn("| POST | /prompt | Submit prompt |", rendered)
         self.assertIn("| /prompt | json | 200, 400 | Prompt queued with ID and any node errors. |", rendered)
         self.assertIn("## Structured Return Details", rendered)
@@ -77,9 +84,15 @@ class MarkdownGenerationTests(unittest.TestCase):
             json.dumps(
                 {
                     "metadata": {
-                        "source": "sample server.py",
+                        "sources": ["sample server.py"],
                         "extracted_date": "2026-04-19",
                         "version": "test"
+                    },
+                    "coverage": {
+                        "description": "contract",
+                        "guaranteed_fields": [],
+                        "best_effort_fields": [],
+                        "deferred": []
                     },
                     "endpoints": []
                 },

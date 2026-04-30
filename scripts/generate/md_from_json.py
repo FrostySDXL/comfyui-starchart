@@ -32,6 +32,15 @@ def _format_notes(notes: list[str]) -> str:
     return " ".join(note.strip() for note in notes if note.strip()) or "-"
 
 
+def _format_sources(sources: object) -> str:
+    if isinstance(sources, list):
+        cleaned = [str(source) for source in sources if str(source).strip()]
+        return ", ".join(cleaned) if cleaned else "unknown"
+    if isinstance(sources, str) and sources.strip():
+        return sources
+    return "unknown"
+
+
 def build_markdown(data: dict) -> str:
     metadata = data.get("metadata", {})
     endpoints = data.get("endpoints", [])
@@ -40,7 +49,7 @@ def build_markdown(data: dict) -> str:
         "# Server.py Summary",
         "",
         f"**Last Synced:** {metadata.get('extracted_date', 'unknown')}",
-        f"**Source:** {metadata.get('source', 'unknown')}",
+        f"**Source:** {_format_sources(metadata.get('sources'))}",
         "",
         "## Overview",
         "",

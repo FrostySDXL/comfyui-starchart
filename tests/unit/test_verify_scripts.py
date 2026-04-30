@@ -67,6 +67,17 @@ class StaleContentTests(unittest.TestCase):
 class ExtractionIdempotencyTests(unittest.TestCase):
     """Test that extraction_idempotency.py runs correctly."""
 
+    def _load_module(self):
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location(
+            "extraction_idempotency",
+            REPO_ROOT / "scripts" / "verify" / "extraction_idempotency.py",
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
     def test_extraction_idempotency_script_runs(self):
         """The extraction idempotency script should run without crashing."""
         result = subprocess.run(
@@ -82,15 +93,45 @@ class ExtractionIdempotencyTests(unittest.TestCase):
 
     def test_extraction_idempotency_imports(self):
         """The extraction_idempotency module should be importable."""
-        import importlib.util
-
-        spec = importlib.util.spec_from_file_location(
-            "extraction_idempotency",
-            REPO_ROOT / "scripts" / "verify" / "extraction_idempotency.py",
-        )
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        module = self._load_module()
         self.assertTrue(hasattr(module, "verify_idempotency"))
+
+    def test_get_extractor_args_uses_server_sources_list(self):
+        module = self._load_module()
+        import json
+        import tempfile
+
+        payload = {
+            "metadata": {
+                "sources": ["references/snapshots/server.py"],
+                "version": "v0.19.3",
+                "commit": "abc123",
+                "extracted_date": "2026-04-29",
+            },
+            "coverage": {
+                "description": "contract",
+                "guaranteed_fields": [],
+                "best_effort_fields": [],
+                "deferred": [],
+            },
+            "endpoints": [],
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            json_path = Path(tmpdir) / "server_endpoints.json"
+            json_path.write_text(json.dumps(payload), encoding="utf-8")
+            script_name, args = module.get_extractor_args(json_path)
+
+        self.assertEqual(script_name, "parse_server.py")
+        self.assertEqual(
+            args,
+            [
+                "references/snapshots/server.py",
+                "--version",
+                "v0.19.3",
+                "--commit",
+                "abc123",
+            ],
+        )
 
 
 class ValidateSchemaTests(unittest.TestCase):

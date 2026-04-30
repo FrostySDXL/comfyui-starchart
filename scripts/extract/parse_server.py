@@ -11,6 +11,27 @@ DECORATOR_RE = re.compile(r'@routes\.(route|get|post|ws)\(\s*["\']([^"\']+)["\']
 DOCSTRING_RE = re.compile(r'\s*[rubfRUBF]*(["\']{3})(.*?)\1', re.DOTALL)
 STATUS_RE = re.compile(r'status\s*=\s*(\d+)')
 
+ENDPOINT_COVERAGE = {
+    "description": "Static extraction of ComfyUI HTTP and WebSocket endpoint structure.",
+    "guaranteed_fields": [
+        "endpoints[].route",
+        "endpoints[].method",
+        "endpoints[].returns.kind",
+        "endpoints[].returns.status_codes",
+    ],
+    "best_effort_fields": [
+        "endpoints[].description",
+        "endpoints[].parameters",
+        "endpoints[].returns.summary",
+        "endpoints[].returns.fields",
+    ],
+    "deferred": [
+        "parameter typing",
+        "richer error contracts",
+        "full response-body fidelity for variable-return branches",
+    ],
+}
+
 
 def _find_decorator_matches(lines: list[str]) -> list[tuple[int, re.Match]]:
     matches = []
@@ -331,11 +352,12 @@ def main() -> int:
 
     payload = {
         "metadata": {
-            "source": str(source_path).replace("\\", "/"),
+            "sources": [str(source_path).replace("\\", "/")],
             "extracted_date": datetime.now().strftime("%Y-%m-%d"),
             "version": args.version or "unversioned",
             "commit": args.commit,
         },
+        "coverage": ENDPOINT_COVERAGE,
         "endpoints": endpoints,
     }
 

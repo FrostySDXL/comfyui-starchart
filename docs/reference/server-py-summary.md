@@ -1,6 +1,6 @@
 # Server.py Summary
 
-**Last Synced:** 2026-04-23
+**Last Synced:** 2026-04-29
 **Source:** references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py
 
 ## Overview

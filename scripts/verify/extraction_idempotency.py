@@ -30,12 +30,12 @@ def get_extractor_args(json_path: Path) -> tuple[str, list[str]] | None:
 
     if json_path.name == "server_endpoints.json":
         script = "parse_server.py"
-        source = metadata.get("source", "")
+        sources = metadata.get("sources", [])
         version = metadata.get("version", "")
         commit = metadata.get("commit", "")
-        if not source or not version or not commit:
+        if not sources or not version or not commit:
             return None
-        source = source.replace("\\", "/")
+        source = sources[0].replace("\\", "/")
         args = [source, "--version", version, "--commit", commit]
         return script, args
 

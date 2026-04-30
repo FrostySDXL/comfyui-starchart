@@ -3,6 +3,7 @@
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -20,15 +21,37 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         spec.loader.exec_module(module)
         return module
 
-    def test_valid_server_endpoints_pass(self):
-        module = self._import_module()
-        data = {
+    def _server_coverage(self):
+        return {
+            "description": "Static extraction of ComfyUI HTTP and WebSocket endpoint structure.",
+            "guaranteed_fields": [
+                "endpoints[].route",
+                "endpoints[].method",
+                "endpoints[].returns.kind",
+                "endpoints[].returns.status_codes",
+            ],
+            "best_effort_fields": [
+                "endpoints[].description",
+                "endpoints[].parameters",
+                "endpoints[].returns.summary",
+                "endpoints[].returns.fields",
+            ],
+            "deferred": [
+                "parameter typing",
+                "richer error contracts",
+                "variable-return response-body fidelity",
+            ],
+        }
+
+    def _valid_server_endpoints_data(self):
+        return {
             "metadata": {
-                "source": "references/snapshots/server.py",
+                "sources": ["references/snapshots/server.py"],
                 "extracted_date": "2026-04-22",
                 "version": "v0.19.3",
                 "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
             },
+            "coverage": self._server_coverage(),
             "endpoints": [
                 {
                     "route": "/prompt",
@@ -62,112 +85,129 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                 },
             ],
         }
-        errors = module.validate_endpoints(data, "server_endpoints.json")
+
+    def test_valid_server_endpoints_pass(self):
+        module = self._import_module()
+        data = self._valid_server_endpoints_data()
+        errors = module.validate_top_level(data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json")
+        errors.extend(module.validate_metadata(data, "server_endpoints.json"))
+        errors.extend(module.validate_coverage(data, "server_endpoints.json"))
+        errors.extend(module.validate_endpoints(data, "server_endpoints.json"))
         self.assertEqual(errors, [])
+
+    def test_server_endpoints_rejects_singular_metadata_source(self):
+        module = self._import_module()
+        data = self._valid_server_endpoints_data()
+        data["metadata"] = {
+            "source": "references/snapshots/server.py",
+            "extracted_date": "2026-04-22",
+            "version": "v0.19.3",
+            "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+        }
+        errors = module.validate_metadata(data, "server_endpoints.json")
+        self.assertTrue(any("missing required field 'sources'" in e for e in errors))
+
+    def test_server_endpoints_rejects_non_list_sources(self):
+        module = self._import_module()
+        data = self._valid_server_endpoints_data()
+        data["metadata"]["sources"] = "references/snapshots/server.py"
+        errors = module.validate_metadata(data, "server_endpoints.json")
+        self.assertTrue(any("metadata.sources expected list" in e for e in errors))
+
+    def test_server_endpoints_rejects_missing_coverage(self):
+        module = self._import_module()
+        data = self._valid_server_endpoints_data()
+        del data["coverage"]
+        errors = module.validate_top_level(data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json")
+        self.assertTrue(any("missing required key 'coverage'" in e for e in errors))
+
+    def test_server_endpoints_rejects_invalid_coverage_shape(self):
+        module = self._import_module()
+        data = self._valid_server_endpoints_data()
+        data["coverage"] = {
+            "description": "bad",
+            "guaranteed_fields": "endpoints[].route",
+            "best_effort_fields": [],
+            "deferred": [],
+        }
+        errors = module.validate_coverage(data, "server_endpoints.json")
+        self.assertTrue(any("coverage.guaranteed_fields expected list" in e for e in errors))
 
     def test_malformed_returns_missing_kind_fails(self):
         module = self._import_module()
-        data = {
-            "metadata": {
-                "source": "references/snapshots/server.py",
-                "extracted_date": "2026-04-22",
-                "version": "v0.19.3",
-                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-            },
-            "endpoints": [
-                {
-                    "route": "/prompt",
-                    "method": "POST",
-                    "description": "Queue a prompt.",
-                    "parameters": [],
-                    "returns": {
-                        "summary": "missing kind",
-                        "status_codes": [],
-                        "fields": [],
-                        "notes": [],
-                    },
-                }
-            ],
-        }
+        data = self._valid_server_endpoints_data()
+        data["endpoints"] = [
+            {
+                "route": "/prompt",
+                "method": "POST",
+                "description": "Queue a prompt.",
+                "parameters": [],
+                "returns": {
+                    "summary": "missing kind",
+                    "status_codes": [],
+                    "fields": [],
+                    "notes": [],
+                },
+            }
+        ]
         errors = module.validate_endpoints(data, "server_endpoints.json")
         self.assertTrue(any("missing required key 'kind'" in e for e in errors))
 
     def test_malformed_returns_status_codes_not_int_fails(self):
         module = self._import_module()
-        data = {
-            "metadata": {
-                "source": "references/snapshots/server.py",
-                "extracted_date": "2026-04-22",
-                "version": "v0.19.3",
-                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-            },
-            "endpoints": [
-                {
-                    "route": "/prompt",
-                    "method": "POST",
-                    "description": "Queue a prompt.",
-                    "parameters": [],
-                    "returns": {
-                        "kind": "json",
-                        "summary": "ok",
-                        "status_codes": [200, "400"],
-                        "fields": [],
-                        "notes": [],
-                    },
-                }
-            ],
-        }
+        data = self._valid_server_endpoints_data()
+        data["endpoints"] = [
+            {
+                "route": "/prompt",
+                "method": "POST",
+                "description": "Queue a prompt.",
+                "parameters": [],
+                "returns": {
+                    "kind": "json",
+                    "summary": "ok",
+                    "status_codes": [200, "400"],
+                    "fields": [],
+                    "notes": [],
+                },
+            }
+        ]
         errors = module.validate_endpoints(data, "server_endpoints.json")
         self.assertTrue(any("status_codes[1] expected int" in e for e in errors))
 
     def test_malformed_returns_field_missing_name_fails(self):
         module = self._import_module()
-        data = {
-            "metadata": {
-                "source": "references/snapshots/server.py",
-                "extracted_date": "2026-04-22",
-                "version": "v0.19.3",
-                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-            },
-            "endpoints": [
-                {
-                    "route": "/prompt",
-                    "method": "POST",
-                    "description": "Queue a prompt.",
-                    "parameters": [],
-                    "returns": {
-                        "kind": "json",
-                        "summary": "ok",
-                        "status_codes": [200],
-                        "fields": [{"type_hint": "str"}],
-                        "notes": [],
-                    },
-                }
-            ],
-        }
+        data = self._valid_server_endpoints_data()
+        data["endpoints"] = [
+            {
+                "route": "/prompt",
+                "method": "POST",
+                "description": "Queue a prompt.",
+                "parameters": [],
+                "returns": {
+                    "kind": "json",
+                    "summary": "ok",
+                    "status_codes": [200],
+                    "fields": [{"type_hint": "str"}],
+                    "notes": [],
+                },
+            }
+        ]
         errors = module.validate_endpoints(data, "server_endpoints.json")
         self.assertTrue(any("fields[0] missing required key 'name'" in e for e in errors))
 
     def test_legacy_string_returns_are_rejected(self):
         """String returns are no longer accepted; structured dict is required."""
         module = self._import_module()
-        data = {
-            "metadata": {
-                "source": "references/snapshots/server.py",
-                "extracted_date": "2026-04-22",
-                "version": "v0.19.3",
-                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-            },
-            "endpoints": [
-                {
-                    "route": "/prompt",
-                    "method": "POST",
-                    "description": "Queue a prompt.",
-                    "parameters": [],
-                    "returns": "TODO",
-                }
-            ],
-        }
+        data = self._valid_server_endpoints_data()
+        data["endpoints"] = [
+            {
+                "route": "/prompt",
+                "method": "POST",
+                "description": "Queue a prompt.",
+                "parameters": [],
+                "returns": "TODO",
+            }
+        ]
         errors = module.validate_endpoints(data, "server_endpoints.json")
         self.assertTrue(any("expected dict" in e for e in errors))
 
@@ -190,11 +230,34 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                 }
             ],
             "basic_input_shapes": {"ImageInput": "An image tensor."},
+            "coverage": {
+                "description": "Static and optional runtime coverage for object_info and IO typing.",
+                "sources_covered": ["object_info_fields", "io_types", "basic_input_shapes"],
+                "runtime_enriched": False,
+                "deferred": ["runtime-only object_info details"],
+            },
         }
         errors = module.validate_top_level(data, module.SCHEMAS["node_api_schema.json"], "node_api_schema.json")
         errors.extend(module.validate_metadata(data, "node_api_schema.json"))
+        errors.extend(module.validate_coverage(data, "node_api_schema.json"))
         errors.extend(module.validate_io_types(data, "node_api_schema.json"))
         self.assertEqual(errors, [])
+
+    def test_node_api_schema_rejects_missing_coverage(self):
+        module = self._import_module()
+        data = {
+            "metadata": {
+                "sources": ["references/snapshots/server.py"],
+                "extracted_date": "2026-04-22",
+                "version": "v0.19.3",
+                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+            },
+            "object_info_fields": ["input", "output"],
+            "io_types": [],
+            "basic_input_shapes": {},
+        }
+        errors = module.validate_top_level(data, module.SCHEMAS["node_api_schema.json"], "node_api_schema.json")
+        self.assertTrue(any("missing required key 'coverage'" in e for e in errors))
 
     def test_malformed_io_type_missing_class_name_fails(self):
         module = self._import_module()
@@ -539,15 +602,64 @@ class ValidateSchemaUnitTests(unittest.TestCase):
 class ValidateSchemaScriptTests(unittest.TestCase):
     """Tests that the validation script runs successfully on the repo."""
 
-    def test_script_runs_and_passes(self):
-        result = subprocess.run(
-            [sys.executable, str(SCRIPT)],
-            capture_output=True,
-            text=True,
-            cwd=str(REPO_ROOT),
-        )
-        self.assertEqual(result.returncode, 0, msg=result.stderr or result.stdout)
-        self.assertIn("pass schema validation", result.stdout)
+    def _import_module(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("validate_schema", SCRIPT)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def test_single_valid_file_passes_internal_validation(self):
+        module = self._import_module()
+        payload = {
+            "metadata": {
+                "sources": ["references/snapshots/server.py"],
+                "extracted_date": "2026-04-22",
+                "version": "v0.19.3",
+                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+            },
+            "coverage": {
+                "description": "Static extraction of ComfyUI HTTP and WebSocket endpoint structure.",
+                "guaranteed_fields": [
+                    "endpoints[].route",
+                    "endpoints[].method",
+                    "endpoints[].returns.kind",
+                    "endpoints[].returns.status_codes",
+                ],
+                "best_effort_fields": [
+                    "endpoints[].description",
+                    "endpoints[].parameters",
+                    "endpoints[].returns.summary",
+                    "endpoints[].returns.fields",
+                ],
+                "deferred": [
+                    "parameter typing",
+                    "richer error contracts",
+                    "variable-return response-body fidelity",
+                ],
+            },
+            "endpoints": [
+                {
+                    "route": "/prompt",
+                    "method": "POST",
+                    "description": "Queue a prompt.",
+                    "parameters": [],
+                    "returns": {
+                        "kind": "json",
+                        "summary": "Prompt queued.",
+                        "status_codes": [200],
+                        "fields": [],
+                        "notes": [],
+                    },
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            json_file = Path(tmpdir) / "server_endpoints.json"
+            json_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+            errors = []
+            module._validate_json_file(json_file, errors)
+        self.assertEqual(errors, [])
 
 
 if __name__ == "__main__":

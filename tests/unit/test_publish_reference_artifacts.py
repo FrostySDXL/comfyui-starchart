@@ -31,7 +31,7 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
                     "version": "v0.19.3",
                     "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
                     "extracted_date": "2026-04-23",
-                    "source": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py",
+                    "sources": ["references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py"],
                 },
                 "endpoints": [],
             },
@@ -135,12 +135,12 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
         module = self._import_module()
         artifacts = self._sample_artifacts()
         manifest = module.build_manifest(artifacts, "test-key")
-        # server_endpoints uses singular "source"
+        self.assertIsInstance(manifest["artifacts"]["server_endpoints.json"]["sources"], list)
         self.assertEqual(
             manifest["artifacts"]["server_endpoints.json"]["sources"],
-            "references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py",
+            ["references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py"],
         )
-        # js_hooks uses plural "sources"
+        self.assertIsInstance(manifest["artifacts"]["js_hooks.json"]["sources"], list)
         self.assertEqual(
             manifest["artifacts"]["js_hooks.json"]["sources"],
             ["references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"],
@@ -153,6 +153,11 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
         self.assertEqual(rel, "artifacts/current/server_endpoints.json")
         self.assertNotIn("\\", rel)
         self.assertFalse(rel.startswith("/"))
+
+    def test_generator_no_longer_uses_singular_source_fallback(self):
+        text = SCRIPT.read_text(encoding="utf-8")
+        self.assertNotIn('meta.get("source")', text)
+        self.assertNotIn('meta["source"]', text)
 
 
 class PublishReferenceArtifactsScriptTests(unittest.TestCase):
@@ -176,7 +181,7 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
                         "version": "v0.19.3",
                         "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
                         "extracted_date": "2026-04-23",
-                        "source": "snapshots/server.py",
+                        "sources": ["snapshots/server.py"],
                     },
                     "endpoints": [],
                 },
@@ -234,6 +239,9 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
             self.assertIn("server_endpoints.json", manifest["artifacts"])
             self.assertIn("current_url", manifest["artifacts"]["server_endpoints.json"])
             self.assertIn("versioned_url", manifest["artifacts"]["server_endpoints.json"])
+            self.assertTrue(
+                all(isinstance(entry.get("sources", []), list) for entry in manifest["artifacts"].values())
+            )
 
     def test_script_fails_when_artifact_missing(self):
         with tempfile.TemporaryDirectory() as tmpdir:

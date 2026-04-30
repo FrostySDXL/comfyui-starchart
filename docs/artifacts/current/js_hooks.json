@@ -5,9 +5,25 @@
       "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/services/litegraphService.ts"
     ],
-    "extracted_date": "2026-04-19",
+    "extracted_date": "2026-04-29",
     "version": "v1.42.11",
     "commit": "3dc4061d484d61cb89366de25bf5e2f8a65da4d0"
+  },
+  "coverage": {
+    "description": "Static extraction of documented and observed ComfyUI frontend extension hooks.",
+    "guaranteed_fields": [
+      "hooks[].name",
+      "hooks[].type",
+      "hooks[].invoked_in"
+    ],
+    "best_effort_fields": [
+      "hooks[].description",
+      "hooks[].defined_in"
+    ],
+    "deferred": [
+      "unresolved hook definitions",
+      "hooks referenced without nearby typed declarations"
+    ]
   },
   "hooks": [
     {

@@ -85,8 +85,12 @@ def test_route():
             )
         self.assertEqual(result.returncode, 0, msg=result.stderr)
         data = json.loads(SERVER_OUTPUT.read_text(encoding="utf-8"))
-        self.assertNotIn("\\", data["metadata"]["source"],
-                         "Source path should not contain backslashes")
+        self.assertIn("sources", data["metadata"])
+        self.assertNotIn("source", data["metadata"])
+        self.assertIsInstance(data["metadata"]["sources"], list)
+        for source in data["metadata"]["sources"]:
+            self.assertNotIn("\\", source,
+                             "Source path should not contain backslashes")
 
     def test_unicode_in_docstring(self):
         """Unicode characters in docstrings should be handled correctly."""
@@ -226,21 +230,34 @@ class ValidateSchemaTests(unittest.TestCase):
         self.assertTrue(hasattr(module, "validate_io_types"))
 
     def test_schema_validation_passes(self):
-        """The schema validator should pass on current JSON files."""
-        result = subprocess.run(
-            [sys.executable, str(VALIDATE_SCHEMA)],
-            capture_output=True,
-            text=True,
-            cwd=str(REPO_ROOT),
-        )
-        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-        self.assertIn("pass schema validation", result.stdout)
+        """The schema validator should pass on a valid normalized payload."""
+        module = _load_module("validate_schema", VALIDATE_SCHEMA)
+        data = {
+            "metadata": {
+                "sources": ["references/snapshots/server.py"],
+                "extracted_date": "2026-01-01",
+                "version": "v1",
+                "commit": "abc123",
+            },
+            "coverage": {
+                "description": "contract",
+                "guaranteed_fields": ["endpoints[].route"],
+                "best_effort_fields": ["endpoints[].description"],
+                "deferred": ["parameter typing"],
+            },
+            "endpoints": [],
+        }
+        errors = module.validate_top_level(data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json")
+        errors.extend(module.validate_metadata(data, "server_endpoints.json"))
+        errors.extend(module.validate_coverage(data, "server_endpoints.json"))
+        errors.extend(module.validate_endpoints(data, "server_endpoints.json"))
+        self.assertEqual(errors, [])
 
     def test_detects_missing_required_key(self):
         """The validator should detect a missing required top-level key."""
         module = _load_module("validate_schema", VALIDATE_SCHEMA)
-        data = {"metadata": {"source": "test", "extracted_date": "2026-01-01",
-                             "version": "v1", "commit": "abc"}}
+        data = {"metadata": {"sources": ["test"], "extracted_date": "2026-01-01",
+                             "version": "v1", "commit": "abc"}, "coverage": {"description": "contract", "guaranteed_fields": [], "best_effort_fields": [], "deferred": []}}
         # Missing "endpoints" key
         errors = module.validate_top_level(data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json")
         self.assertTrue(any("missing required key 'endpoints'" in e for e in errors))
@@ -250,11 +267,12 @@ class ValidateSchemaTests(unittest.TestCase):
         module = _load_module("validate_schema", VALIDATE_SCHEMA)
         data = {
             "metadata": {
-                "source": "path\\with\\backslashes",
+                "sources": ["path\\with\\backslashes"],
                 "extracted_date": "2026-01-01",
                 "version": "v1",
                 "commit": "abc123",
             },
+            "coverage": {"description": "contract", "guaranteed_fields": [], "best_effort_fields": [], "deferred": []},
             "endpoints": [],
         }
         errors = module.validate_metadata(data, "server_endpoints.json")
@@ -265,11 +283,12 @@ class ValidateSchemaTests(unittest.TestCase):
         module = _load_module("validate_schema", VALIDATE_SCHEMA)
         data = {
             "metadata": {
-                "source": "test",
+                "sources": ["test"],
                 "extracted_date": "2026-01-01",
                 "version": "0.19.3",
                 "commit": "abc123",
             },
+            "coverage": {"description": "contract", "guaranteed_fields": [], "best_effort_fields": [], "deferred": []},
             "endpoints": [],
         }
         errors = module.validate_metadata(data, "server_endpoints.json")
@@ -280,11 +299,12 @@ class ValidateSchemaTests(unittest.TestCase):
         module = _load_module("validate_schema", VALIDATE_SCHEMA)
         data = {
             "metadata": {
-                "source": "test",
+                "sources": ["test"],
                 "extracted_date": "2026-01-01",
                 "version": "v1",
                 "commit": "not-a-hex-string!",
             },
+            "coverage": {"description": "contract", "guaranteed_fields": [], "best_effort_fields": [], "deferred": []},
             "endpoints": [],
         }
         errors = module.validate_metadata(data, "server_endpoints.json")

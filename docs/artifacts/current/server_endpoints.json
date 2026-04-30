@@ -1,9 +1,31 @@
 {
   "metadata": {
-    "source": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py",
-    "extracted_date": "2026-04-23",
+    "sources": [
+      "references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py"
+    ],
+    "extracted_date": "2026-04-29",
     "version": "v0.19.3",
     "commit": "3086026401180c9216bcb6ace442a4e3587d2c66"
+  },
+  "coverage": {
+    "description": "Static extraction of ComfyUI HTTP and WebSocket endpoint structure.",
+    "guaranteed_fields": [
+      "endpoints[].route",
+      "endpoints[].method",
+      "endpoints[].returns.kind",
+      "endpoints[].returns.status_codes"
+    ],
+    "best_effort_fields": [
+      "endpoints[].description",
+      "endpoints[].parameters",
+      "endpoints[].returns.summary",
+      "endpoints[].returns.fields"
+    ],
+    "deferred": [
+      "parameter typing",
+      "richer error contracts",
+      "full response-body fidelity for variable-return branches"
+    ]
   },
   "endpoints": [
     {

@@ -11,6 +11,23 @@ INVOKE_RE = re.compile(r'invokeExtensions(?:Async)?\(\s*["\']([^"\']+)["\']')
 HOOK_NAME_RE = re.compile(r'^\s*([A-Za-z0-9_]+)\?\(')
 KNOWN_HOOKS = ["beforeRegisterNodeDef", "nodeCreated", "init", "setup"]
 
+HOOK_COVERAGE = {
+    "description": "Static extraction of documented and observed ComfyUI frontend extension hooks.",
+    "guaranteed_fields": [
+        "hooks[].name",
+        "hooks[].type",
+        "hooks[].invoked_in",
+    ],
+    "best_effort_fields": [
+        "hooks[].description",
+        "hooks[].defined_in",
+    ],
+    "deferred": [
+        "unresolved hook definitions",
+        "hooks referenced without nearby typed declarations",
+    ],
+}
+
 
 def clean_comment(block: str) -> str:
     lines = []
@@ -142,6 +159,7 @@ def main() -> int:
             "version": args.version or "unversioned",
             "commit": args.commit,
         },
+        "coverage": HOOK_COVERAGE,
         "hooks": hooks,
     }
 

@@ -25,10 +25,12 @@ REFERENCES_COMMUNITY_DIR = REPO_ROOT / "references" / "community"
 SCHEMAS = {
     "server_endpoints.json": {
         "metadata": (dict, True),
+        "coverage": (dict, True),
         "endpoints": (list, True),
     },
     "js_hooks.json": {
         "metadata": (dict, True),
+        "coverage": (dict, True),
         "hooks": (list, True),
     },
     "node_api_schema.json": {
@@ -37,7 +39,7 @@ SCHEMAS = {
         "io_types": (list, True),
         "basic_input_shapes": (dict, True),
         "typed_input_shapes": (dict, False),
-        "coverage": (dict, False),
+        "coverage": (dict, True),
         "runtime_object_info": (dict, False),
         "provenance": (dict, False),
     },
@@ -63,7 +65,7 @@ COMMUNITY_SCHEMAS = {
 # (field_name, type, required)
 METADATA_FIELDS = {
     "server_endpoints.json": [
-        ("source", str, True),
+        ("sources", list, True),
         ("extracted_date", str, True),
         ("version", str, True),
         ("commit", str, True),
@@ -198,6 +200,20 @@ FIELD_SCHEMA = {
     "description": (str, False),
 }
 
+COVERAGE_SCHEMA = {
+    "description": (str, True),
+    "guaranteed_fields": (list, True),
+    "best_effort_fields": (list, True),
+    "deferred": (list, True),
+}
+
+NODE_API_COVERAGE_SCHEMA = {
+    "description": (str, True),
+    "sources_covered": (list, True),
+    "runtime_enriched": (bool, True),
+    "deferred": (list, True),
+}
+
 # Hook schema: required keys and their types
 HOOK_SCHEMA = {
     "name": (str, True),
@@ -265,6 +281,12 @@ def validate_metadata(data: dict, filename: str) -> list[str]:
                 f"got {type(value).__name__}"
             )
 
+    if filename in {"server_endpoints.json", "js_hooks.json", "node_api_schema.json"}:
+        if "source" in metadata:
+            errors.append(
+                f"{filename}: metadata.source is not allowed; use metadata.sources list"
+            )
+
     # Check that version starts with 'v'
     version = metadata.get("version", "")
     if version and version != "unversioned" and not version.startswith("v"):
@@ -280,15 +302,15 @@ def validate_metadata(data: dict, filename: str) -> list[str]:
         )
 
     # Check that source/sources use forward slashes
-    source = metadata.get("source", "")
-    if source and "\\" in source:
-        errors.append(
-            f"{filename}: metadata.source uses backslashes; use forward slashes for cross-platform compatibility"
-        )
     sources = metadata.get("sources", [])
     if isinstance(sources, list):
-        for s in sources:
-            if isinstance(s, str) and "\\" in s:
+        for i, s in enumerate(sources):
+            if not isinstance(s, str):
+                errors.append(
+                    f"{filename}: metadata.sources[{i}] expected str, got {type(s).__name__}"
+                )
+                continue
+            if "\\" in s:
                 errors.append(
                     f"{filename}: metadata.sources contains backslashes; use forward slashes for cross-platform compatibility"
                 )
@@ -305,6 +327,56 @@ def validate_metadata(data: dict, filename: str) -> list[str]:
                 errors.append(
                     f"{filename}: metadata.provenance.{key} expected list, got {type(provenance[key]).__name__}"
                 )
+
+    return errors
+
+
+def validate_coverage(data: dict, filename: str) -> list[str]:
+    """Validate coverage blocks for canonical artifacts."""
+    if filename not in {
+        "server_endpoints.json",
+        "js_hooks.json",
+        "node_api_schema.json",
+    }:
+        return []
+
+    errors = []
+    coverage = data.get("coverage")
+    if coverage is None:
+        return errors
+    if not isinstance(coverage, dict):
+        return [f"{filename}: coverage expected dict, got {type(coverage).__name__}"]
+
+    schema = (
+        NODE_API_COVERAGE_SCHEMA
+        if filename == "node_api_schema.json"
+        else COVERAGE_SCHEMA
+    )
+    for key, (expected_type, required) in schema.items():
+        if key not in coverage:
+            if required:
+                errors.append(f"{filename}: coverage missing required key '{key}'")
+            continue
+        if not _check_type(coverage[key], expected_type):
+            errors.append(
+                f"{filename}: coverage.{key} expected {_type_label(expected_type)}, "
+                f"got {type(coverage[key]).__name__}"
+            )
+
+    expected_keys = set(schema.keys())
+    actual_keys = set(coverage.keys())
+    unexpected = actual_keys - expected_keys
+    if unexpected:
+        errors.append(f"{filename}: unexpected coverage keys: {sorted(unexpected)}")
+
+    for list_key in ("guaranteed_fields", "best_effort_fields", "deferred", "sources_covered"):
+        value = coverage.get(list_key)
+        if isinstance(value, list):
+            for i, item in enumerate(value):
+                if not isinstance(item, str):
+                    errors.append(
+                        f"{filename}: coverage.{list_key}[{i}] expected str, got {type(item).__name__}"
+                    )
 
     return errors
 
@@ -630,6 +702,10 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
         all_errors.extend(errors)
     else:
         errors = validate_metadata(data, json_file.name)
+        all_errors.extend(errors)
+
+    if json_file.name in {"server_endpoints.json", "js_hooks.json", "node_api_schema.json"}:
+        errors = validate_coverage(data, json_file.name)
         all_errors.extend(errors)
 
     # Validate entries based on file type

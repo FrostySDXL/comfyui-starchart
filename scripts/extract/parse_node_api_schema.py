@@ -370,7 +370,7 @@ def main() -> int:
                 "Extracted from pinned source files with runtime /object_info enrichment."
                 if runtime_snapshot else
                 "Extracted from pinned source files only. "
-                "Runtime-only data such as per-node INPUT_TYPES schemas and custom node types are deferred to Plan B."
+                "Runtime-only data such as per-node INPUT_TYPES schemas and custom node types are deferred beyond pinned-snapshot extraction."
             ),
             "sources_covered": [
                 str(server_path).replace("\\", "/"),

@@ -62,7 +62,7 @@ def socket():
             server_path.write_text(sample, encoding="utf-8")
 
             result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path)],
+                [sys.executable, str(SCRIPT), str(server_path), "--version", "v0.0.1", "--commit", "abc123"],
                 capture_output=True,
                 text=True,
                 cwd=REPO_ROOT,
@@ -73,13 +73,24 @@ def socket():
 
         data = json.loads(OUTPUT.read_text(encoding="utf-8"))
         self.assertEqual(len(data["endpoints"]), 3)
+        self.assertIn("sources", data["metadata"])
+        self.assertIsInstance(data["metadata"]["sources"], list)
+        self.assertNotIn("source", data["metadata"])
+        self.assertIn("coverage", data)
+        self.assertIn("description", data["coverage"])
+        self.assertIn("guaranteed_fields", data["coverage"])
+        self.assertIn("best_effort_fields", data["coverage"])
+        self.assertIn("deferred", data["coverage"])
         self.assertEqual(data["endpoints"][0]["method"], "GET")
         self.assertEqual(data["endpoints"][0]["route"], "/history")
         self.assertEqual(data["endpoints"][0]["description"], "History listing.")
 
         # Verify output passes schema validation
         validate_schema = _load_validate_schema()
-        errors = validate_schema.validate_endpoints(data, "server_endpoints.json")
+        errors = validate_schema.validate_top_level(data, validate_schema.SCHEMAS["server_endpoints.json"], "server_endpoints.json")
+        errors.extend(validate_schema.validate_metadata(data, "server_endpoints.json"))
+        errors.extend(validate_schema.validate_coverage(data, "server_endpoints.json"))
+        errors.extend(validate_schema.validate_endpoints(data, "server_endpoints.json"))
         self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
 
         # Assert richer contract: each endpoint has expected keys

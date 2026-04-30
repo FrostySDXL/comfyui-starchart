@@ -121,7 +121,7 @@ def build_manifest(artifacts: dict[str, dict], version_key: str) -> dict:
             "version": meta.get("version", "unknown"),
             "commit": meta.get("commit", "unknown"),
             "extracted_date": meta.get("extracted_date", "unknown"),
-            "sources": meta.get("source") or meta.get("sources") or [],
+            "sources": meta.get("sources") or [],
         }
 
     return manifest
