@@ -9,7 +9,6 @@ import importlib.util
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "extract" / "parse_node_api_schema.py"
-OUTPUT = REPO_ROOT / "references" / "raw" / "node_api_schema.json"
 
 
 def _load_validate_schema():
@@ -23,12 +22,6 @@ def _load_validate_schema():
 
 
 class ParseNodeApiSchemaTests(unittest.TestCase):
-    def setUp(self):
-        self.original = OUTPUT.read_text(encoding="utf-8")
-
-    def tearDown(self):
-        OUTPUT.write_text(self.original, encoding="utf-8")
-
     def test_requires_arguments(self):
         result = subprocess.run(
             [sys.executable, str(SCRIPT)],
@@ -122,6 +115,7 @@ class AudioInput(TypedDict):
             server_path = tmp_path / "server.py"
             io_path = tmp_path / "_io.py"
             basic_types_path = tmp_path / "basic_types.py"
+            out_path = tmp_path / "node_api_schema.json"
             server_path.write_text(server_sample, encoding="utf-8")
             io_path.write_text(io_sample, encoding="utf-8")
             basic_types_path.write_text(basic_types_sample, encoding="utf-8")
@@ -137,82 +131,84 @@ class AudioInput(TypedDict):
                     "v-test",
                     "--commit",
                     "abc123",
+                    "--output",
+                    str(out_path),
                 ],
                 capture_output=True,
                 text=True,
                 cwd=REPO_ROOT,
             )
 
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        self.assertIn("Extracted node API schema", result.stdout)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertIn("Extracted node API schema", result.stdout)
 
-        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
-        self.assertEqual(data["metadata"]["version"], "v-test")
-        self.assertEqual(data["metadata"]["commit"], "abc123")
-        self.assertIn("input", data["object_info_fields"])
-        self.assertIn("display_name", data["object_info_fields"])
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            self.assertEqual(data["metadata"]["version"], "v-test")
+            self.assertEqual(data["metadata"]["commit"], "abc123")
+            self.assertIn("input", data["object_info_fields"])
+            self.assertIn("display_name", data["object_info_fields"])
 
-        io_types = {entry["io_type"]: entry for entry in data["io_types"]}
-        self.assertIn("BOOLEAN", io_types)
-        self.assertEqual(io_types["BOOLEAN"]["input_class"], "WidgetInput")
-        self.assertIn("default", io_types["BOOLEAN"]["input_parameters"])
-        self.assertEqual(io_types["BOOLEAN"]["input_parameter_details"][0]["name"], "default")
-        self.assertEqual(io_types["BOOLEAN"]["input_parameter_details"][0]["type_hint"], "bool")
-        self.assertEqual(io_types["BOOLEAN"]["type_hint"], "bool")
-        self.assertTrue(io_types["BOOLEAN"]["is_widget"])
-        self.assertEqual(io_types["BOOLEAN"]["defined_in"], str(io_path).replace("\\", "/"))
+            io_types = {entry["io_type"]: entry for entry in data["io_types"]}
+            self.assertIn("BOOLEAN", io_types)
+            self.assertEqual(io_types["BOOLEAN"]["input_class"], "WidgetInput")
+            self.assertIn("default", io_types["BOOLEAN"]["input_parameters"])
+            self.assertEqual(io_types["BOOLEAN"]["input_parameter_details"][0]["name"], "default")
+            self.assertEqual(io_types["BOOLEAN"]["input_parameter_details"][0]["type_hint"], "bool")
+            self.assertEqual(io_types["BOOLEAN"]["type_hint"], "bool")
+            self.assertTrue(io_types["BOOLEAN"]["is_widget"])
+            self.assertEqual(io_types["BOOLEAN"]["defined_in"], str(io_path).replace("\\", "/"))
 
-        self.assertEqual(io_types["STRING"]["type_hint"], "str")
-        self.assertEqual(io_types["STRING"]["output_parameters"], ["display_name", "tooltip", "is_output_list"])
-        self.assertEqual(io_types["LOAD_3D_ANIMATION"]["type_hint"], "Model3DDict")
-        self.assertEqual(io_types["POINT"]["type_hint"], "Any")
-        self.assertEqual(io_types["HISTOGRAM"]["input_class"], None)
-        self.assertEqual(io_types["HISTOGRAM"]["input_parameters"], [])
+            self.assertEqual(io_types["STRING"]["type_hint"], "str")
+            self.assertEqual(io_types["STRING"]["output_parameters"], ["display_name", "tooltip", "is_output_list"])
+            self.assertEqual(io_types["LOAD_3D_ANIMATION"]["type_hint"], "Model3DDict")
+            self.assertEqual(io_types["POINT"]["type_hint"], "Any")
+            self.assertEqual(io_types["HISTOGRAM"]["input_class"], None)
+            self.assertEqual(io_types["HISTOGRAM"]["input_parameters"], [])
 
-        self.assertEqual(data["basic_input_shapes"]["ImageInput"], "An image in format [B, H, W, C]")
+            self.assertEqual(data["basic_input_shapes"]["ImageInput"], "An image in format [B, H, W, C]")
 
-        # Verify typed_input_shapes extraction
-        self.assertIn("AudioInput", data["typed_input_shapes"])
-        self.assertEqual(data["typed_input_shapes"]["AudioInput"]["description"], "TypedDict representing audio input.")
-        self.assertEqual(data["typed_input_shapes"]["AudioInput"]["defined_in"], str(basic_types_path).replace("\\", "/"))
-        self.assertIn("waveform", data["typed_input_shapes"]["AudioInput"]["fields"])
-        self.assertEqual(data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["type"], "torch.Tensor")
-        self.assertIn("Tensor in format [B, C, T].", data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["description"])
-        self.assertEqual(
-            data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["traceability"]["strategy"],
-            "typed_dict_field",
-        )
+            # Verify typed_input_shapes extraction
+            self.assertIn("AudioInput", data["typed_input_shapes"])
+            self.assertEqual(data["typed_input_shapes"]["AudioInput"]["description"], "TypedDict representing audio input.")
+            self.assertEqual(data["typed_input_shapes"]["AudioInput"]["defined_in"], str(basic_types_path).replace("\\", "/"))
+            self.assertIn("waveform", data["typed_input_shapes"]["AudioInput"]["fields"])
+            self.assertEqual(data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["type"], "torch.Tensor")
+            self.assertIn("Tensor in format [B, C, T].", data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["description"])
+            self.assertEqual(
+                data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["traceability"]["strategy"],
+                "typed_dict_field",
+            )
 
-        # Verify coverage metadata
-        self.assertIn("coverage", data)
-        self.assertIn("description", data["coverage"])
-        self.assertIn("deferred", data["coverage"])
+            # Verify coverage metadata
+            self.assertIn("coverage", data)
+            self.assertIn("description", data["coverage"])
+            self.assertIn("deferred", data["coverage"])
 
-        # Verify output passes schema validation
-        validate_schema = _load_validate_schema()
-        errors = validate_schema.validate_top_level(
-            data, validate_schema.SCHEMAS["node_api_schema.json"], "node_api_schema.json"
-        )
-        errors.extend(validate_schema.validate_metadata(data, "node_api_schema.json"))
-        errors.extend(validate_schema.validate_io_types(data, "node_api_schema.json"))
-        errors.extend(validate_schema.validate_typed_input_shapes(data, "node_api_schema.json"))
-        self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
+            # Verify output passes schema validation
+            validate_schema = _load_validate_schema()
+            errors = validate_schema.validate_top_level(
+                data, validate_schema.SCHEMAS["node_api_schema.json"], "node_api_schema.json"
+            )
+            errors.extend(validate_schema.validate_metadata(data, "node_api_schema.json"))
+            errors.extend(validate_schema.validate_io_types(data, "node_api_schema.json"))
+            errors.extend(validate_schema.validate_typed_input_shapes(data, "node_api_schema.json"))
+            self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
 
-        # Assert richer contract shape beyond top-level file existence
-        self.assertIn("metadata", data)
-        self.assertIn("object_info_fields", data)
-        self.assertIn("io_types", data)
-        self.assertIn("basic_input_shapes", data)
-        self.assertIn("typed_input_shapes", data)
-        for entry in data["io_types"]:
-            self.assertIn("io_type", entry)
-            self.assertIn("class_name", entry)
-            self.assertIn("input_class", entry)
-            self.assertIn("input_parameters", entry)
-            self.assertIn("input_parameter_details", entry)
-            self.assertIn("type_hint", entry)
-            self.assertIn("is_widget", entry)
-            self.assertIn("defined_in", entry)
+            # Assert richer contract shape beyond top-level file existence
+            self.assertIn("metadata", data)
+            self.assertIn("object_info_fields", data)
+            self.assertIn("io_types", data)
+            self.assertIn("basic_input_shapes", data)
+            self.assertIn("typed_input_shapes", data)
+            for entry in data["io_types"]:
+                self.assertIn("io_type", entry)
+                self.assertIn("class_name", entry)
+                self.assertIn("input_class", entry)
+                self.assertIn("input_parameters", entry)
+                self.assertIn("input_parameter_details", entry)
+                self.assertIn("type_hint", entry)
+                self.assertIn("is_widget", entry)
+                self.assertIn("defined_in", entry)
 
     def test_bracket_aware_parameter_parsing(self):
         """Parameters with nested generic types like Dict[str, List[float]] should not produce bogus names."""
@@ -317,6 +313,7 @@ ImageInput = torch.Tensor
             io_path = tmp_path / "_io.py"
             basic_types_path = tmp_path / "basic_types.py"
             runtime_path = tmp_path / "object_info_runtime.json"
+            out_path = tmp_path / "node_api_schema.json"
             server_path.write_text(server_sample, encoding="utf-8")
             io_path.write_text(io_sample, encoding="utf-8")
             basic_types_path.write_text(basic_types_sample, encoding="utf-8")
@@ -332,39 +329,40 @@ ImageInput = torch.Tensor
                     "--version", "v-test",
                     "--commit", "abc123",
                     "--object-info-runtime-path", str(runtime_path),
+                    "--output", str(out_path),
                 ],
                 capture_output=True,
                 text=True,
                 cwd=REPO_ROOT,
             )
 
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
 
-        # Provenance metadata
-        self.assertIn("provenance", data["metadata"])
-        self.assertEqual(data["metadata"]["provenance"]["mode"], "hybrid")
-        self.assertIn("source_sections", data["metadata"]["provenance"])
-        self.assertIn("runtime_sections", data["metadata"]["provenance"])
-        self.assertIn("runtime_object_info", data["metadata"]["provenance"]["runtime_sections"])
+            # Provenance metadata
+            self.assertIn("provenance", data["metadata"])
+            self.assertEqual(data["metadata"]["provenance"]["mode"], "hybrid")
+            self.assertIn("source_sections", data["metadata"]["provenance"])
+            self.assertIn("runtime_sections", data["metadata"]["provenance"])
+            self.assertIn("runtime_object_info", data["metadata"]["provenance"]["runtime_sections"])
 
-        # Runtime data merged
-        self.assertIn("runtime_object_info", data)
-        self.assertEqual(data["runtime_object_info"]["KSampler"]["output"], ["LATENT"])
+            # Runtime data merged
+            self.assertIn("runtime_object_info", data)
+            self.assertEqual(data["runtime_object_info"]["KSampler"]["output"], ["LATENT"])
 
-        # Coverage reflects hybrid mode
-        self.assertTrue(data["coverage"]["runtime_enriched"])
-        self.assertNotIn("runtime /object_info response", data["coverage"]["deferred"])
+            # Coverage reflects hybrid mode
+            self.assertTrue(data["coverage"]["runtime_enriched"])
+            self.assertNotIn("runtime /object_info response", data["coverage"]["deferred"])
 
-        # Schema validation passes
-        validate_schema = _load_validate_schema()
-        errors = validate_schema.validate_top_level(
-            data, validate_schema.SCHEMAS["node_api_schema.json"], "node_api_schema.json"
-        )
-        errors.extend(validate_schema.validate_metadata(data, "node_api_schema.json"))
-        errors.extend(validate_schema.validate_io_types(data, "node_api_schema.json"))
-        errors.extend(validate_schema.validate_typed_input_shapes(data, "node_api_schema.json"))
-        self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
+            # Schema validation passes
+            validate_schema = _load_validate_schema()
+            errors = validate_schema.validate_top_level(
+                data, validate_schema.SCHEMAS["node_api_schema.json"], "node_api_schema.json"
+            )
+            errors.extend(validate_schema.validate_metadata(data, "node_api_schema.json"))
+            errors.extend(validate_schema.validate_io_types(data, "node_api_schema.json"))
+            errors.extend(validate_schema.validate_typed_input_shapes(data, "node_api_schema.json"))
+            self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
 
     def test_source_only_mode_no_runtime_sections(self):
         server_sample = '''
@@ -391,6 +389,7 @@ ImageInput = torch.Tensor
             server_path = tmp_path / "server.py"
             io_path = tmp_path / "_io.py"
             basic_types_path = tmp_path / "basic_types.py"
+            out_path = tmp_path / "node_api_schema.json"
             server_path.write_text(server_sample, encoding="utf-8")
             io_path.write_text(io_sample, encoding="utf-8")
             basic_types_path.write_text(basic_types_sample, encoding="utf-8")
@@ -404,18 +403,19 @@ ImageInput = torch.Tensor
                     str(basic_types_path),
                     "--version", "v-test",
                     "--commit", "abc123",
+                    "--output", str(out_path),
                 ],
                 capture_output=True,
                 text=True,
                 cwd=REPO_ROOT,
             )
 
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
 
-        self.assertEqual(data["metadata"]["provenance"]["mode"], "source-only")
-        self.assertNotIn("runtime_object_info", data)
-        self.assertFalse(data["coverage"]["runtime_enriched"])
+            self.assertEqual(data["metadata"]["provenance"]["mode"], "source-only")
+            self.assertNotIn("runtime_object_info", data)
+            self.assertFalse(data["coverage"]["runtime_enriched"])
 
     def test_hybrid_mode_with_runtime_snapshot_missing_object_info_stays_bounded(self):
         server_sample = '''
@@ -450,6 +450,7 @@ ImageInput = torch.Tensor
             io_path = tmp_path / "_io.py"
             basic_types_path = tmp_path / "basic_types.py"
             runtime_path = tmp_path / "object_info_runtime.json"
+            out_path = tmp_path / "node_api_schema.json"
             server_path.write_text(server_sample, encoding="utf-8")
             io_path.write_text(io_sample, encoding="utf-8")
             basic_types_path.write_text(basic_types_sample, encoding="utf-8")
@@ -463,17 +464,18 @@ ImageInput = torch.Tensor
                     str(io_path),
                     str(basic_types_path),
                     "--object-info-runtime-path", str(runtime_path),
+                    "--output", str(out_path),
                 ],
                 capture_output=True,
                 text=True,
                 cwd=REPO_ROOT,
             )
 
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
-        self.assertEqual(data["metadata"]["provenance"]["mode"], "hybrid")
-        self.assertTrue(data["coverage"]["runtime_enriched"])
-        self.assertEqual(data["runtime_object_info"], {})
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            self.assertEqual(data["metadata"]["provenance"]["mode"], "hybrid")
+            self.assertTrue(data["coverage"]["runtime_enriched"])
+            self.assertEqual(data["runtime_object_info"], {})
 
     def test_custom_output_path_writes_outside_canonical_reference(self):
         server_sample = '''

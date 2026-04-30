@@ -13,9 +13,6 @@ PARSE_SERVER = REPO_ROOT / "scripts" / "extract" / "parse_server.py"
 PARSE_HOOKS = REPO_ROOT / "scripts" / "extract" / "parse_hooks.py"
 PARSE_NODE_API = REPO_ROOT / "scripts" / "extract" / "parse_node_api_schema.py"
 VALIDATE_SCHEMA = REPO_ROOT / "scripts" / "verify" / "validate_schema.py"
-SERVER_OUTPUT = REPO_ROOT / "references" / "raw" / "server_endpoints.json"
-HOOKS_OUTPUT = REPO_ROOT / "references" / "raw" / "js_hooks.json"
-NODE_API_OUTPUT = REPO_ROOT / "references" / "raw" / "node_api_schema.json"
 
 
 def _load_module(name, path):
@@ -29,25 +26,20 @@ def _load_module(name, path):
 class ParseServerEdgeCases(unittest.TestCase):
     """Edge case tests for parse_server.py."""
 
-    def setUp(self):
-        self.original = SERVER_OUTPUT.read_text(encoding="utf-8")
-
-    def tearDown(self):
-        SERVER_OUTPUT.write_text(self.original, encoding="utf-8")
-
     def test_empty_file_produces_zero_endpoints(self):
         """An empty source file should produce zero endpoints."""
         with tempfile.TemporaryDirectory() as tmp:
             server_path = Path(tmp) / "server.py"
+            out_path = Path(tmp) / "server_endpoints.json"
             server_path.write_text("", encoding="utf-8")
             result = subprocess.run(
-                [sys.executable, str(PARSE_SERVER), str(server_path)],
+                [sys.executable, str(PARSE_SERVER), str(server_path), "--output", str(out_path)],
                 capture_output=True,
                 text=True,
                 cwd=str(REPO_ROOT),
             )
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        self.assertIn("Extracted 0 endpoints", result.stdout)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertIn("Extracted 0 endpoints", result.stdout)
 
     def test_decorators_without_docstrings(self):
         """Routes with decorators but no docstrings should still be extracted."""
@@ -58,39 +50,41 @@ def test_route():
 '''
         with tempfile.TemporaryDirectory() as tmp:
             server_path = Path(tmp) / "server.py"
+            out_path = Path(tmp) / "server_endpoints.json"
             server_path.write_text(sample, encoding="utf-8")
             result = subprocess.run(
-                [sys.executable, str(PARSE_SERVER), str(server_path)],
+                [sys.executable, str(PARSE_SERVER), str(server_path), "--output", str(out_path)],
                 capture_output=True,
                 text=True,
                 cwd=str(REPO_ROOT),
             )
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        data = json.loads(SERVER_OUTPUT.read_text(encoding="utf-8"))
-        self.assertEqual(len(data["endpoints"]), 1)
-        self.assertEqual(data["endpoints"][0]["route"], "/test")
-        self.assertEqual(data["endpoints"][0]["description"], "")
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            self.assertEqual(len(data["endpoints"]), 1)
+            self.assertEqual(data["endpoints"][0]["route"], "/test")
+            self.assertEqual(data["endpoints"][0]["description"], "")
 
     def test_path_normalization_in_metadata(self):
         """Source paths in metadata should use forward slashes."""
         with tempfile.TemporaryDirectory() as tmp:
             server_path = Path(tmp) / "server.py"
+            out_path = Path(tmp) / "server_endpoints.json"
             server_path.write_text("@routes.get('/health')\ndef health(): pass", encoding="utf-8")
             result = subprocess.run(
                 [sys.executable, str(PARSE_SERVER), str(server_path),
-                 "--version", "v0.0.1", "--commit", "abc123"],
+                 "--version", "v0.0.1", "--commit", "abc123", "--output", str(out_path)],
                 capture_output=True,
                 text=True,
                 cwd=str(REPO_ROOT),
             )
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        data = json.loads(SERVER_OUTPUT.read_text(encoding="utf-8"))
-        self.assertIn("sources", data["metadata"])
-        self.assertNotIn("source", data["metadata"])
-        self.assertIsInstance(data["metadata"]["sources"], list)
-        for source in data["metadata"]["sources"]:
-            self.assertNotIn("\\", source,
-                             "Source path should not contain backslashes")
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            self.assertIn("sources", data["metadata"])
+            self.assertNotIn("source", data["metadata"])
+            self.assertIsInstance(data["metadata"]["sources"], list)
+            for source in data["metadata"]["sources"]:
+                self.assertNotIn("\\", source,
+                                 "Source path should not contain backslashes")
 
     def test_unicode_in_docstring(self):
         """Unicode characters in docstrings should be handled correctly."""
@@ -102,16 +96,17 @@ def status():
 '''
         with tempfile.TemporaryDirectory() as tmp:
             server_path = Path(tmp) / "server.py"
+            out_path = Path(tmp) / "server_endpoints.json"
             server_path.write_text(sample, encoding="utf-8")
             result = subprocess.run(
-                [sys.executable, str(PARSE_SERVER), str(server_path)],
+                [sys.executable, str(PARSE_SERVER), str(server_path), "--output", str(out_path)],
                 capture_output=True,
                 text=True,
                 cwd=str(REPO_ROOT),
             )
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        data = json.loads(SERVER_OUTPUT.read_text(encoding="utf-8"))
-        self.assertEqual(len(data["endpoints"]), 1)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            self.assertEqual(len(data["endpoints"]), 1)
 
     def test_variable_payload_without_literal_assignment_stays_conservative(self):
         """Unknown variable-backed payloads should not invent response fields."""
@@ -123,64 +118,61 @@ def legacy_route():
 '''
         with tempfile.TemporaryDirectory() as tmp:
             server_path = Path(tmp) / "server.py"
+            out_path = Path(tmp) / "server_endpoints.json"
             server_path.write_text(sample, encoding="utf-8")
             result = subprocess.run(
-                [sys.executable, str(PARSE_SERVER), str(server_path)],
+                [sys.executable, str(PARSE_SERVER), str(server_path), "--output", str(out_path)],
                 capture_output=True,
                 text=True,
                 cwd=str(REPO_ROOT),
             )
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        data = json.loads(SERVER_OUTPUT.read_text(encoding="utf-8"))
-        returns = data["endpoints"][0]["returns"]
-        self.assertEqual(returns["kind"], "json")
-        self.assertEqual(returns["fields"], [])
-        self.assertEqual(returns["summary"], "JSON response.")
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            returns = data["endpoints"][0]["returns"]
+            self.assertEqual(returns["kind"], "json")
+            self.assertEqual(returns["fields"], [])
+            self.assertEqual(returns["summary"], "JSON response.")
 
 
 class ParseHooksEdgeCases(unittest.TestCase):
     """Edge case tests for parse_hooks.py."""
 
-    def setUp(self):
-        self.original = HOOKS_OUTPUT.read_text(encoding="utf-8")
-
-    def tearDown(self):
-        HOOKS_OUTPUT.write_text(self.original, encoding="utf-8")
-
     def test_empty_file_produces_known_hooks(self):
         """An empty source file should still find known hooks via regex search."""
         with tempfile.TemporaryDirectory() as tmp:
             app_path = Path(tmp) / "app.ts"
+            out_path = Path(tmp) / "js_hooks.json"
             app_path.write_text("", encoding="utf-8")
             result = subprocess.run(
                 [sys.executable, str(PARSE_HOOKS), str(app_path),
-                 "--version", "v0.0.1", "--commit", "abc123"],
+                 "--version", "v0.0.1", "--commit", "abc123", "--output", str(out_path)],
                 capture_output=True,
                 text=True,
                 cwd=str(REPO_ROOT),
             )
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        data = json.loads(HOOKS_OUTPUT.read_text(encoding="utf-8"))
-        # Empty file should produce 0 hooks (no invocations, no typed hooks, no known hook matches)
-        self.assertEqual(len(data["hooks"]), 0)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            # Empty file should produce 0 hooks (no invocations, no typed hooks, no known hook matches)
+            self.assertEqual(len(data["hooks"]), 0)
 
     def test_path_normalization_in_metadata(self):
         """Source paths in metadata should use forward slashes."""
         with tempfile.TemporaryDirectory() as tmp:
             app_path = Path(tmp) / "app.ts"
+            out_path = Path(tmp) / "js_hooks.json"
             app_path.write_text("invokeExtensions('setup')", encoding="utf-8")
             result = subprocess.run(
                 [sys.executable, str(PARSE_HOOKS), str(app_path),
-                 "--version", "v0.0.1", "--commit", "abc123"],
+                 "--version", "v0.0.1", "--commit", "abc123", "--output", str(out_path)],
                 capture_output=True,
                 text=True,
                 cwd=str(REPO_ROOT),
             )
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        data = json.loads(HOOKS_OUTPUT.read_text(encoding="utf-8"))
-        for source in data["metadata"]["sources"]:
-            self.assertNotIn("\\", source,
-                             "Source paths should not contain backslashes")
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            for source in data["metadata"]["sources"]:
+                self.assertNotIn("\\", source,
+                                 "Source paths should not contain backslashes")
 
     def test_known_hook_names_in_comments_do_not_seed_entries(self):
         """Fallback seeding should ignore comment-only mentions of known hook names."""
@@ -191,26 +183,21 @@ const note = "nodeCreated is mentioned as plain text";
 '''
         with tempfile.TemporaryDirectory() as tmp:
             app_path = Path(tmp) / "app.ts"
+            out_path = Path(tmp) / "js_hooks.json"
             app_path.write_text(sample, encoding="utf-8")
             result = subprocess.run(
-                [sys.executable, str(PARSE_HOOKS), str(app_path)],
+                [sys.executable, str(PARSE_HOOKS), str(app_path), "--output", str(out_path)],
                 capture_output=True,
                 text=True,
                 cwd=str(REPO_ROOT),
             )
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        data = json.loads(HOOKS_OUTPUT.read_text(encoding="utf-8"))
-        self.assertEqual(data["hooks"], [])
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            self.assertEqual(data["hooks"], [])
 
 
 class ParseNodeApiSchemaEdgeCases(unittest.TestCase):
     """Edge case tests for parse_node_api_schema.py."""
-
-    def setUp(self):
-        self.original = NODE_API_OUTPUT.read_text(encoding="utf-8")
-
-    def tearDown(self):
-        NODE_API_OUTPUT.write_text(self.original, encoding="utf-8")
 
     def test_empty_files_produce_empty_results(self):
         """Empty source files should produce empty lists/dicts."""
@@ -219,22 +206,24 @@ class ParseNodeApiSchemaEdgeCases(unittest.TestCase):
             server_path = tmp_path / "server.py"
             io_path = tmp_path / "_io.py"
             basic_types_path = tmp_path / "basic_types.py"
+            out_path = tmp_path / "node_api_schema.json"
             server_path.write_text("", encoding="utf-8")
             io_path.write_text("", encoding="utf-8")
             basic_types_path.write_text("", encoding="utf-8")
             result = subprocess.run(
                 [sys.executable, str(PARSE_NODE_API),
                  str(server_path), str(io_path), str(basic_types_path),
-                 "--version", "v0.0.1", "--commit", "abc123"],
+                 "--version", "v0.0.1", "--commit", "abc123",
+                 "--output", str(out_path)],
                 capture_output=True,
                 text=True,
                 cwd=str(REPO_ROOT),
             )
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        data = json.loads(NODE_API_OUTPUT.read_text(encoding="utf-8"))
-        self.assertEqual(len(data["object_info_fields"]), 0)
-        self.assertEqual(len(data["io_types"]), 0)
-        self.assertEqual(len(data["basic_input_shapes"]), 0)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            self.assertEqual(len(data["object_info_fields"]), 0)
+            self.assertEqual(len(data["io_types"]), 0)
+            self.assertEqual(len(data["basic_input_shapes"]), 0)
 
     def test_path_normalization_in_metadata(self):
         """Source paths in metadata should use forward slashes."""
@@ -243,22 +232,24 @@ class ParseNodeApiSchemaEdgeCases(unittest.TestCase):
             server_path = tmp_path / "server.py"
             io_path = tmp_path / "_io.py"
             basic_types_path = tmp_path / "basic_types.py"
+            out_path = tmp_path / "node_api_schema.json"
             server_path.write_text("", encoding="utf-8")
             io_path.write_text("", encoding="utf-8")
             basic_types_path.write_text("", encoding="utf-8")
             result = subprocess.run(
                 [sys.executable, str(PARSE_NODE_API),
                  str(server_path), str(io_path), str(basic_types_path),
-                 "--version", "v0.0.1", "--commit", "abc123"],
+                 "--version", "v0.0.1", "--commit", "abc123",
+                 "--output", str(out_path)],
                 capture_output=True,
                 text=True,
                 cwd=str(REPO_ROOT),
             )
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        data = json.loads(NODE_API_OUTPUT.read_text(encoding="utf-8"))
-        for source in data["metadata"]["sources"]:
-            self.assertNotIn("\\", source,
-                             "Source paths should not contain backslashes")
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            for source in data["metadata"]["sources"]:
+                self.assertNotIn("\\", source,
+                                 "Source paths should not contain backslashes")
 
     def test_missing_runtime_snapshot_warns_without_name_error(self):
         """Missing runtime snapshot should warn predictably and stay source-only."""
@@ -268,23 +259,25 @@ class ParseNodeApiSchemaEdgeCases(unittest.TestCase):
             io_path = tmp_path / "_io.py"
             basic_types_path = tmp_path / "basic_types.py"
             missing_runtime_path = tmp_path / "missing_runtime.json"
+            out_path = tmp_path / "node_api_schema.json"
             server_path.write_text("", encoding="utf-8")
             io_path.write_text("", encoding="utf-8")
             basic_types_path.write_text("", encoding="utf-8")
             result = subprocess.run(
                 [sys.executable, str(PARSE_NODE_API),
                  str(server_path), str(io_path), str(basic_types_path),
-                 "--object-info-runtime-path", str(missing_runtime_path)],
+                 "--object-info-runtime-path", str(missing_runtime_path),
+                 "--output", str(out_path)],
                 capture_output=True,
                 text=True,
                 cwd=str(REPO_ROOT),
             )
-        self.assertEqual(result.returncode, 0, msg=result.stderr)
-        self.assertIn("WARNING: runtime snapshot not found", result.stderr)
-        self.assertNotIn("NameError", result.stderr)
-        data = json.loads(NODE_API_OUTPUT.read_text(encoding="utf-8"))
-        self.assertEqual(data["metadata"]["provenance"]["mode"], "source-only")
-        self.assertFalse(data["coverage"]["runtime_enriched"])
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertIn("WARNING: runtime snapshot not found", result.stderr)
+            self.assertNotIn("NameError", result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            self.assertEqual(data["metadata"]["provenance"]["mode"], "source-only")
+            self.assertFalse(data["coverage"]["runtime_enriched"])
 
 
 class ValidateSchemaTests(unittest.TestCase):

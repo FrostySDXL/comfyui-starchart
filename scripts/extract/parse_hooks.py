@@ -260,6 +260,7 @@ def main() -> int:
     parser.add_argument("source_paths", nargs="*", help="Paths to pinned frontend source files")
     parser.add_argument("--version", default=None, help="Pinned upstream version or tag")
     parser.add_argument("--commit", default=None, help="Pinned upstream commit hash")
+    parser.add_argument("--output", default=str(OUTPUT_PATH), help="Output JSON path")
     args = parser.parse_args()
 
     if not args.source_paths:
@@ -284,8 +285,10 @@ def main() -> int:
         "hooks": hooks,
     }
 
-    OUTPUT_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    print(f"Extracted {len(hooks)} hooks to {OUTPUT_PATH}")
+    output_path = Path(args.output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    print(f"Extracted {len(hooks)} hooks to {output_path}")
     return 0
 
 

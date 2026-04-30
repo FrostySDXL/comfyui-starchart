@@ -1,10 +1,11 @@
+import argparse
 import json
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-INPUT_PATH = REPO_ROOT / "references" / "raw" / "server_endpoints.json"
-OUTPUT_PATH = REPO_ROOT / "docs" / "reference" / "server-py-summary.md"
+DEFAULT_INPUT = REPO_ROOT / "references" / "raw" / "server_endpoints.json"
+DEFAULT_OUTPUT = REPO_ROOT / "docs" / "reference" / "server-py-summary.md"
 
 
 def _format_returns(returns: dict) -> str:
@@ -156,8 +157,16 @@ def build_markdown(data: dict) -> str:
 
 
 def main() -> int:
-    data = json.loads(INPUT_PATH.read_text(encoding="utf-8"))
-    OUTPUT_PATH.write_text(build_markdown(data), encoding="utf-8")
+    parser = argparse.ArgumentParser(description="Generate markdown reference pages from extracted JSON")
+    parser.add_argument("--input", default=str(DEFAULT_INPUT), help="Input JSON path")
+    parser.add_argument("--output", default=str(DEFAULT_OUTPUT), help="Output markdown path")
+    args = parser.parse_args()
+
+    input_path = Path(args.input)
+    output_path = Path(args.output)
+    data = json.loads(input_path.read_text(encoding="utf-8"))
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(build_markdown(data), encoding="utf-8")
     print("Generated reference pages from JSON")
     return 0
 
