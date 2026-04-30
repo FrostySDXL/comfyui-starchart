@@ -16,6 +16,12 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.common.path_normalization import has_backslashes
+
+
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 REFERENCES_COMMUNITY_DIR = REPO_ROOT / "references" / "community"
 
@@ -310,7 +316,7 @@ def validate_metadata(data: dict, filename: str) -> list[str]:
                     f"{filename}: metadata.sources[{i}] expected str, got {type(s).__name__}"
                 )
                 continue
-            if "\\" in s:
+            if has_backslashes(s):
                 errors.append(
                     f"{filename}: metadata.sources contains backslashes; use forward slashes for cross-platform compatibility"
                 )

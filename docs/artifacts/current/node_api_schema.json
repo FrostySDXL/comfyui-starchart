@@ -5,7 +5,7 @@
       "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_input/basic_types.py"
     ],
-    "extracted_date": "2026-04-23",
+    "extracted_date": "2026-04-29",
     "version": "v0.19.3",
     "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
     "provenance": {
@@ -934,7 +934,7 @@
     }
   },
   "coverage": {
-    "description": "Extracted from pinned source files only. Runtime-only data such as per-node INPUT_TYPES schemas and custom node types are deferred to Plan B.",
+    "description": "Extracted from pinned source files only. Runtime-only data such as per-node INPUT_TYPES schemas and custom node types are deferred beyond pinned-snapshot extraction.",
     "sources_covered": [
       "references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py",
       "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",

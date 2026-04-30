@@ -20,6 +20,12 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.common.path_normalization import normalize_repo_path
+
+
 DOCS_DIR = REPO_ROOT / "docs"
 COMMUNITY_PAGES_JSON = REPO_ROOT / "references" / "community" / "community_pages.json"
 
@@ -61,7 +67,7 @@ def find_community_labeled_pages(docs_dir: Path) -> set[str]:
     for md_file in sorted(docs_dir.rglob("*.md")):
         content = md_file.read_text(encoding="utf-8")
         if has_community_evidence_label(content):
-            rel_path = str(md_file.relative_to(REPO_ROOT)).replace("\\", "/")
+            rel_path = normalize_repo_path(md_file.relative_to(REPO_ROOT))
             labeled.add(rel_path)
     return labeled
 

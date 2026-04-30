@@ -16,6 +16,12 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.common.path_normalization import normalize_repo_path, normalize_repo_relative_path
+
+
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 SCRIPTS_EXTRACT_DIR = REPO_ROOT / "scripts" / "extract"
 
@@ -35,7 +41,7 @@ def get_extractor_args(json_path: Path) -> tuple[str, list[str]] | None:
         commit = metadata.get("commit", "")
         if not sources or not version or not commit:
             return None
-        source = sources[0].replace("\\", "/")
+        source = normalize_repo_path(sources[0])
         args = [source, "--version", version, "--commit", commit]
         return script, args
 
@@ -46,7 +52,7 @@ def get_extractor_args(json_path: Path) -> tuple[str, list[str]] | None:
         commit = metadata.get("commit", "")
         if not sources or not version or not commit:
             return None
-        normalized_sources = [s.replace("\\", "/") for s in sources]
+        normalized_sources = [normalize_repo_path(s) for s in sources]
         args = normalized_sources.copy()
         args.extend(["--version", version, "--commit", commit])
         return script, args
@@ -58,7 +64,7 @@ def get_extractor_args(json_path: Path) -> tuple[str, list[str]] | None:
         commit = metadata.get("commit", "")
         if not sources or not version or not commit:
             return None
-        normalized_sources = [s.replace("\\", "/") for s in sources]
+        normalized_sources = [normalize_repo_path(s) for s in sources]
         args = normalized_sources.copy()
         args.extend(["--version", version, "--commit", commit])
         return script, args
@@ -68,11 +74,7 @@ def get_extractor_args(json_path: Path) -> tuple[str, list[str]] | None:
 
 def _normalize_paths(value):
     if isinstance(value, str):
-        normalized = value.replace("\\", "/")
-        repo_root = str(REPO_ROOT).replace("\\", "/") + "/"
-        if normalized.startswith(repo_root):
-            return normalized[len(repo_root):]
-        return normalized
+        return normalize_repo_relative_path(value, REPO_ROOT)
     if isinstance(value, list):
         return [_normalize_paths(item) for item in value]
     if isinstance(value, dict):

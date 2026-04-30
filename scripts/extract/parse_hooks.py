@@ -1,11 +1,18 @@
 import argparse
 import json
 import re
+import sys
 from datetime import datetime
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.common.path_normalization import normalize_repo_path
+
+
 OUTPUT_PATH = REPO_ROOT / "references" / "raw" / "js_hooks.json"
 INVOKE_RE = re.compile(r'invokeExtensions(?:Async)?\(\s*["\']([^"\']+)["\']')
 HOOK_NAME_RE = re.compile(r'^\s*([A-Za-z0-9_]+)\?\(')
@@ -27,6 +34,14 @@ HOOK_COVERAGE = {
         "hooks referenced without nearby typed declarations",
     ],
 }
+
+
+def _looks_like_known_hook_implementation(source_text: str, hook_name: str) -> bool:
+    patterns = [
+        rf'\b(?:async\s+)?{re.escape(hook_name)}\s*\(',
+        rf'\b{re.escape(hook_name)}\s*:',
+    ]
+    return any(re.search(pattern, source_text) for pattern in patterns)
 
 
 def clean_comment(block: str) -> str:
@@ -119,7 +134,7 @@ def extract_hooks(source_map: dict[str, str]) -> list[dict]:
                 entry["invoked_in"].append(source_path)
 
         for name in KNOWN_HOOKS:
-            if re.search(rf'\b{name}\b', source_text):
+            if _looks_like_known_hook_implementation(source_text, name):
                 discovered.setdefault(
                     name,
                     {
@@ -147,14 +162,14 @@ def main() -> int:
 
     source_paths = [Path(path) for path in args.source_paths]
     source_map = {
-        str(source_path).replace("\\", "/"): source_path.read_text(encoding="utf-8")
+        normalize_repo_path(source_path): source_path.read_text(encoding="utf-8")
         for source_path in source_paths
     }
     hooks = extract_hooks(source_map)
 
     payload = {
         "metadata": {
-            "sources": [str(path).replace("\\", "/") for path in source_paths],
+            "sources": [normalize_repo_path(path) for path in source_paths],
             "extracted_date": datetime.now().strftime("%Y-%m-%d"),
             "version": args.version or "unversioned",
             "commit": args.commit,

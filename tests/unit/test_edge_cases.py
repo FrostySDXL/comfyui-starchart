@@ -113,6 +113,30 @@ def status():
         data = json.loads(SERVER_OUTPUT.read_text(encoding="utf-8"))
         self.assertEqual(len(data["endpoints"]), 1)
 
+    def test_variable_payload_without_literal_assignment_stays_conservative(self):
+        """Unknown variable-backed payloads should not invent response fields."""
+        sample = '''
+@routes.get("/legacy")
+def legacy_route():
+    response = build_response()
+    return web.json_response(response)
+'''
+        with tempfile.TemporaryDirectory() as tmp:
+            server_path = Path(tmp) / "server.py"
+            server_path.write_text(sample, encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(PARSE_SERVER), str(server_path)],
+                capture_output=True,
+                text=True,
+                cwd=str(REPO_ROOT),
+            )
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        data = json.loads(SERVER_OUTPUT.read_text(encoding="utf-8"))
+        returns = data["endpoints"][0]["returns"]
+        self.assertEqual(returns["kind"], "json")
+        self.assertEqual(returns["fields"], [])
+        self.assertEqual(returns["summary"], "JSON response.")
+
 
 class ParseHooksEdgeCases(unittest.TestCase):
     """Edge case tests for parse_hooks.py."""
@@ -157,6 +181,26 @@ class ParseHooksEdgeCases(unittest.TestCase):
         for source in data["metadata"]["sources"]:
             self.assertNotIn("\\", source,
                              "Source paths should not contain backslashes")
+
+    def test_known_hook_names_in_comments_do_not_seed_entries(self):
+        """Fallback seeding should ignore comment-only mentions of known hook names."""
+        sample = '''
+// init should not create a hook entry here
+// setup should not create a hook entry here either
+const note = "nodeCreated is mentioned as plain text";
+'''
+        with tempfile.TemporaryDirectory() as tmp:
+            app_path = Path(tmp) / "app.ts"
+            app_path.write_text(sample, encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(PARSE_HOOKS), str(app_path)],
+                capture_output=True,
+                text=True,
+                cwd=str(REPO_ROOT),
+            )
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        data = json.loads(HOOKS_OUTPUT.read_text(encoding="utf-8"))
+        self.assertEqual(data["hooks"], [])
 
 
 class ParseNodeApiSchemaEdgeCases(unittest.TestCase):
@@ -215,6 +259,32 @@ class ParseNodeApiSchemaEdgeCases(unittest.TestCase):
         for source in data["metadata"]["sources"]:
             self.assertNotIn("\\", source,
                              "Source paths should not contain backslashes")
+
+    def test_missing_runtime_snapshot_warns_without_name_error(self):
+        """Missing runtime snapshot should warn predictably and stay source-only."""
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            server_path = tmp_path / "server.py"
+            io_path = tmp_path / "_io.py"
+            basic_types_path = tmp_path / "basic_types.py"
+            missing_runtime_path = tmp_path / "missing_runtime.json"
+            server_path.write_text("", encoding="utf-8")
+            io_path.write_text("", encoding="utf-8")
+            basic_types_path.write_text("", encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(PARSE_NODE_API),
+                 str(server_path), str(io_path), str(basic_types_path),
+                 "--object-info-runtime-path", str(missing_runtime_path)],
+                capture_output=True,
+                text=True,
+                cwd=str(REPO_ROOT),
+            )
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        self.assertIn("WARNING: runtime snapshot not found", result.stderr)
+        self.assertNotIn("NameError", result.stderr)
+        data = json.loads(NODE_API_OUTPUT.read_text(encoding="utf-8"))
+        self.assertEqual(data["metadata"]["provenance"]["mode"], "source-only")
+        self.assertFalse(data["coverage"]["runtime_enriched"])
 
 
 class ValidateSchemaTests(unittest.TestCase):

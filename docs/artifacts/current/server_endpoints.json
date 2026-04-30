@@ -115,13 +115,10 @@
         "kind": "json",
         "summary": "JSON response.",
         "status_codes": [
-          200,
-          400
+          200
         ],
         "fields": [],
-        "notes": [
-          "Returns 400 for validation failures or bad requests."
-        ]
+        "notes": []
       }
     },
     {
@@ -131,12 +128,25 @@
       "parameters": [],
       "returns": {
         "kind": "json",
-        "summary": "JSON response.",
+        "summary": "JSON object with fields: name, subfolder, type, asset.",
         "status_codes": [
           200,
           400
         ],
-        "fields": [],
+        "fields": [
+          {
+            "name": "name"
+          },
+          {
+            "name": "subfolder"
+          },
+          {
+            "name": "type"
+          },
+          {
+            "name": "asset"
+          }
+        ],
         "notes": [
           "Returns 400 for validation failures or bad requests."
         ]
@@ -149,12 +159,25 @@
       "parameters": [],
       "returns": {
         "kind": "json",
-        "summary": "JSON response.",
+        "summary": "JSON object with fields: name, subfolder, type, asset.",
         "status_codes": [
           200,
           400
         ],
-        "fields": [],
+        "fields": [
+          {
+            "name": "name"
+          },
+          {
+            "name": "subfolder"
+          },
+          {
+            "name": "type"
+          },
+          {
+            "name": "asset"
+          }
+        ],
         "notes": [
           "Returns 400 for validation failures or bad requests."
         ]
@@ -200,11 +223,72 @@
       "parameters": [],
       "returns": {
         "kind": "json",
-        "summary": "JSON response.",
+        "summary": "JSON object with fields: system, os, ram_total, ram_free, comfyui_version, required_frontend_version, installed_templates_version, required_templates_version, python_version, pytorch_version, embedded_python, argv, devices, name, type, index, vram_total, vram_free, torch_vram_total, torch_vram_free.",
         "status_codes": [
           200
         ],
-        "fields": [],
+        "fields": [
+          {
+            "name": "system"
+          },
+          {
+            "name": "os"
+          },
+          {
+            "name": "ram_total"
+          },
+          {
+            "name": "ram_free"
+          },
+          {
+            "name": "comfyui_version"
+          },
+          {
+            "name": "required_frontend_version"
+          },
+          {
+            "name": "installed_templates_version"
+          },
+          {
+            "name": "required_templates_version"
+          },
+          {
+            "name": "python_version"
+          },
+          {
+            "name": "pytorch_version"
+          },
+          {
+            "name": "embedded_python"
+          },
+          {
+            "name": "argv"
+          },
+          {
+            "name": "devices"
+          },
+          {
+            "name": "name"
+          },
+          {
+            "name": "type"
+          },
+          {
+            "name": "index"
+          },
+          {
+            "name": "vram_total"
+          },
+          {
+            "name": "vram_free"
+          },
+          {
+            "name": "torch_vram_total"
+          },
+          {
+            "name": "torch_vram_free"
+          }
+        ],
         "notes": []
       }
     },
@@ -362,11 +446,18 @@
       "parameters": [],
       "returns": {
         "kind": "json",
-        "summary": "JSON response.",
+        "summary": "JSON object with fields: queue_running, queue_pending.",
         "status_codes": [
           200
         ],
-        "fields": [],
+        "fields": [
+          {
+            "name": "queue_running"
+          },
+          {
+            "name": "queue_pending"
+          }
+        ],
         "notes": []
       }
     },
@@ -377,12 +468,22 @@
       "parameters": [],
       "returns": {
         "kind": "json",
-        "summary": "JSON response.",
+        "summary": "JSON object with fields: prompt_id, number, node_errors.",
         "status_codes": [
           200,
           400
         ],
-        "fields": [],
+        "fields": [
+          {
+            "name": "prompt_id"
+          },
+          {
+            "name": "number"
+          },
+          {
+            "name": "node_errors"
+          }
+        ],
         "notes": [
           "Returns 400 for validation failures or bad requests."
         ]

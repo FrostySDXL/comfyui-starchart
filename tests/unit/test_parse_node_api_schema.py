@@ -394,6 +394,64 @@ ImageInput = torch.Tensor
         self.assertNotIn("runtime_object_info", data)
         self.assertFalse(data["coverage"]["runtime_enriched"])
 
+    def test_hybrid_mode_with_runtime_snapshot_missing_object_info_stays_bounded(self):
+        server_sample = '''
+def node_info(node_class):
+    info = {}
+    info['input'] = obj_class.INPUT_TYPES()
+    return info
+'''
+        io_sample = '''
+@comfytype(io_type="BOOLEAN")
+class Boolean(ComfyTypeIO):
+    Type = bool
+'''
+        basic_types_sample = '''
+ImageInput = torch.Tensor
+"""An image tensor."""
+'''
+        runtime_snapshot = {
+            "metadata": {
+                "url": "http://127.0.0.1:8188",
+                "version": "v0.19.3",
+                "commit": "abc123",
+                "extracted_date": "2026-04-22",
+                "response_sha256": "deadbeef",
+            },
+            "unexpected": {"value": True},
+        }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            server_path = tmp_path / "server.py"
+            io_path = tmp_path / "_io.py"
+            basic_types_path = tmp_path / "basic_types.py"
+            runtime_path = tmp_path / "object_info_runtime.json"
+            server_path.write_text(server_sample, encoding="utf-8")
+            io_path.write_text(io_sample, encoding="utf-8")
+            basic_types_path.write_text(basic_types_sample, encoding="utf-8")
+            runtime_path.write_text(json.dumps(runtime_snapshot), encoding="utf-8")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    str(server_path),
+                    str(io_path),
+                    str(basic_types_path),
+                    "--object-info-runtime-path", str(runtime_path),
+                ],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+        self.assertEqual(data["metadata"]["provenance"]["mode"], "hybrid")
+        self.assertTrue(data["coverage"]["runtime_enriched"])
+        self.assertEqual(data["runtime_object_info"], {})
+
     def test_custom_output_path_writes_outside_canonical_reference(self):
         server_sample = '''
 def node_info(node_class):

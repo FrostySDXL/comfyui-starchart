@@ -13,6 +13,12 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.common.path_normalization import normalize_repo_path
+
+
 DOCS_DIR = REPO_ROOT / "docs"
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 REFERENCES_SNAPSHOTS_DIR = REPO_ROOT / "references" / "snapshots"
@@ -74,7 +80,7 @@ def verify_markdown_references() -> list[tuple[str, str]]:
         content = md_file.read_text(encoding="utf-8")
         for ref_path in extract_file_paths_from_markdown(content):
             # Normalize backslashes for Windows
-            normalized = ref_path.replace("\\", "/")
+            normalized = normalize_repo_path(ref_path)
             if normalized in RUNTIME_ONLY_PATHS:
                 continue
             full_path = REPO_ROOT / normalized
@@ -96,7 +102,7 @@ def verify_json_source_references() -> list[tuple[str, str]]:
             continue
         for source_path in extract_source_paths_from_json(data):
             # Normalize backslashes for Windows
-            normalized = source_path.replace("\\", "/")
+            normalized = normalize_repo_path(source_path)
             full_path = REPO_ROOT / normalized
             if not full_path.exists():
                 broken.append((str(json_file.relative_to(REPO_ROOT)), source_path))

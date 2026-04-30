@@ -355,6 +355,69 @@ def create_resource(request):
         # The success response has no explicit status, so it defaults to 200
         self.assertIn(200, data["endpoints"][0]["returns"]["status_codes"])
 
+    def test_json_response_variable_payload_and_augmented_fields(self):
+        """Variable-backed dict payloads should expose literal and augmented keys."""
+        sample = '''
+@routes.post("/upload/image")
+async def upload_image(request):
+    resp = {"name": "file.png", "subfolder": "", "type": "input"}
+    if request.query.get("asset"):
+        resp["asset"] = {"id": "123"}
+    return web.json_response(resp)
+'''
+
+        with tempfile.TemporaryDirectory() as tmp:
+            server_path = Path(tmp) / "server.py"
+            server_path.write_text(sample, encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(server_path)],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+        fields = {f["name"] for f in data["endpoints"][0]["returns"]["fields"]}
+        self.assertEqual(fields, {"name", "subfolder", "type", "asset"})
+        self.assertEqual(
+            data["endpoints"][0]["returns"]["summary"],
+            "JSON object with fields: name, subfolder, type, asset.",
+        )
+
+    def test_sibling_helper_definitions_do_not_contaminate_route(self):
+        """Top-level helpers after a route should not leak fields into that route."""
+        sample = '''
+@routes.get("/extensions")
+def get_extensions(request):
+    extensions = ["/a.js"]
+    return web.json_response(extensions)
+
+def image_upload(post):
+    resp = {"name": "file.png", "subfolder": "", "type": "input"}
+    resp["asset"] = {"id": "123"}
+    return web.json_response(resp)
+'''
+
+        with tempfile.TemporaryDirectory() as tmp:
+            server_path = Path(tmp) / "server.py"
+            server_path.write_text(sample, encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(server_path)],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+        returns = data["endpoints"][0]["returns"]
+        self.assertEqual(returns["kind"], "json")
+        self.assertEqual(returns["fields"], [])
+        self.assertEqual(returns["status_codes"], [200])
+
 
 if __name__ == "__main__":
     unittest.main()

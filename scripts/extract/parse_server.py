@@ -1,11 +1,18 @@
 import argparse
 import json
 import re
+import sys
 from datetime import datetime
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.common.path_normalization import normalize_repo_path
+
+
 OUTPUT_PATH = REPO_ROOT / "references" / "raw" / "server_endpoints.json"
 DECORATOR_RE = re.compile(r'@routes\.(route|get|post|ws)\(\s*["\']([^"\']+)["\']')
 DOCSTRING_RE = re.compile(r'\s*[rubfRUBF]*(["\']{3})(.*?)\1', re.DOTALL)
@@ -95,6 +102,9 @@ def _extract_main_body(block: str) -> str:
         line_indent = len(line) - len(line.lstrip())
         stripped = line.lstrip()
 
+        if (stripped.startswith('def ') or stripped.startswith('async def ')) and line_indent <= handler_indent:
+            break
+
         if stripped.startswith('def ') or stripped.startswith('async def '):
             if line_indent >= body_indent:
                 skip_depth += 1
@@ -134,15 +144,15 @@ def _extract_status_codes(block: str) -> list[int]:
     return sorted(codes)
 
 
-def _find_all_json_response_args(block: str) -> list[tuple[str, str]]:
-    """Find all web.json_response(...) calls and return (arg_text, after_text) pairs."""
+def _find_all_json_response_args(block: str) -> list[tuple[str, int]]:
+    """Find all web.json_response(...) calls and return (arg_text, call_index) pairs."""
     args = []
     start = 0
     while True:
-        pos = block.find('web.json_response(', start)
-        if pos == -1:
+        call_index = block.find('web.json_response(', start)
+        if call_index == -1:
             break
-        pos += len('web.json_response(')
+        pos = call_index + len('web.json_response(')
         depth = 1
         idx = pos
         while idx < len(block) and depth > 0:
@@ -160,10 +170,69 @@ def _find_all_json_response_args(block: str) -> list[tuple[str, str]]:
                     idx += 1
             idx += 1
         arg_text = block[pos:idx - 1]
-        after_text = block[idx:idx + 20]
-        args.append((arg_text, after_text))
+        args.append((arg_text, call_index))
         start = idx
     return args
+
+
+def _extract_dict_literal_from_assignment(block: str, variable_name: str, cutoff: int) -> str:
+    prefix = block[:cutoff]
+    pattern = re.compile(rf'\b{re.escape(variable_name)}\s*=\s*\{{')
+    matches = list(pattern.finditer(prefix))
+    if not matches:
+        return ""
+
+    brace_start = matches[-1].end() - 1
+    depth = 0
+    idx = brace_start
+    while idx < len(prefix):
+        char = prefix[idx]
+        if char == '{':
+            depth += 1
+        elif char == '}':
+            depth -= 1
+            if depth == 0:
+                return prefix[brace_start:idx + 1]
+        elif char in '"\'':
+            quote = char
+            idx += 1
+            while idx < len(prefix) and prefix[idx] != quote:
+                if prefix[idx] == '\\':
+                    idx += 1
+                idx += 1
+        idx += 1
+    return ""
+
+
+def _extract_augmented_dict_fields(block: str, variable_name: str, cutoff: int) -> list[dict]:
+    fields = []
+    seen = set()
+    pattern = re.compile(rf'{re.escape(variable_name)}\["([^"\\]+)"\]\s*=|{re.escape(variable_name)}\[\'([^\'\\]+)\'\]\s*=')
+    for match in pattern.finditer(block[:cutoff]):
+        name = match.group(1) or match.group(2)
+        if name and name not in seen:
+            seen.add(name)
+            fields.append({"name": name})
+    return fields
+
+
+def _extract_json_fields_from_arg(block: str, arg_text: str, call_index: int) -> list[dict]:
+    stripped = arg_text.strip()
+    direct_fields = _extract_json_fields(stripped)
+    if direct_fields:
+        return direct_fields
+
+    if re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', stripped):
+        dict_literal = _extract_dict_literal_from_assignment(block, stripped, call_index)
+        fields = _extract_json_fields(dict_literal)
+        seen = {field['name'] for field in fields}
+        for field in _extract_augmented_dict_fields(block, stripped, call_index):
+            if field['name'] not in seen:
+                seen.add(field['name'])
+                fields.append(field)
+        return fields
+
+    return []
 
 
 def _infer_json_response(block: str) -> dict:
@@ -173,19 +242,26 @@ def _infer_json_response(block: str) -> dict:
     # Prefer calls whose argument does not contain an error status (4xx).
     best_arg = ""
     best_count = -1
-    for arg, _after in calls:
+    for arg, _call_index in calls:
         if 'status=4' in arg:
             continue
-        count = len(_extract_json_fields(arg))
+        count = len(_extract_json_fields_from_arg(block, arg, _call_index))
         if count > best_count:
             best_count = count
             best_arg = arg
+            best_call_index = _call_index
+
+    if 'best_call_index' not in locals():
+        best_call_index = -1
 
     # If every call looks like an error response, fall back to the one with the most fields.
     if not best_arg and calls:
-        best_arg = max(calls, key=lambda c: len(_extract_json_fields(c[0])))[0]
+        best_arg, best_call_index = max(
+            calls,
+            key=lambda c: len(_extract_json_fields_from_arg(block, c[0], c[1])),
+        )
 
-    fields = _extract_json_fields(best_arg)
+    fields = _extract_json_fields_from_arg(block, best_arg, best_call_index)
     notes = []
 
     # Determine effective status codes based on the selected call.
@@ -352,7 +428,7 @@ def main() -> int:
 
     payload = {
         "metadata": {
-            "sources": [str(source_path).replace("\\", "/")],
+            "sources": [normalize_repo_path(source_path)],
             "extracted_date": datetime.now().strftime("%Y-%m-%d"),
             "version": args.version or "unversioned",
             "commit": args.commit,

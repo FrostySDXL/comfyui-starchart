@@ -1,11 +1,18 @@
 import argparse
 import json
 import re
+import sys
 from datetime import datetime
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.common.path_normalization import normalize_repo_path
+
+
 OUTPUT_PATH = REPO_ROOT / "references" / "raw" / "node_api_schema.json"
 
 OBJECT_INFO_FIELD_RE = re.compile(r"info\['([^']+)'\]")
@@ -219,7 +226,7 @@ def extract_io_types(io_text: str, io_path: str) -> list[dict]:
                 "input_parameters": input_params,
                 "output_parameters": output_params,
                 "type_hint": type_hint,
-                "defined_in": io_path.replace("\\", "/"),
+                "defined_in": normalize_repo_path(io_path),
                 "is_widget": is_widget,
             }
         )
@@ -351,7 +358,7 @@ def main() -> int:
 
     payload = {
         "metadata": {
-            "sources": [str(p).replace("\\", "/") for p in [server_path, io_path, basic_types_path]],
+            "sources": [normalize_repo_path(p) for p in [server_path, io_path, basic_types_path]],
             "extracted_date": datetime.now().strftime("%Y-%m-%d"),
             "version": args.version or "unversioned",
             "commit": args.commit,
@@ -373,9 +380,9 @@ def main() -> int:
                 "Runtime-only data such as per-node INPUT_TYPES schemas and custom node types are deferred beyond pinned-snapshot extraction."
             ),
             "sources_covered": [
-                str(server_path).replace("\\", "/"),
-                str(io_path).replace("\\", "/"),
-                str(basic_types_path).replace("\\", "/"),
+                normalize_repo_path(server_path),
+                normalize_repo_path(io_path),
+                normalize_repo_path(basic_types_path),
             ],
             "runtime_enriched": bool(runtime_snapshot),
             "deferred": [
