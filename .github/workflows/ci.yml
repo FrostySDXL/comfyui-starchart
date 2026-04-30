@@ -8,11 +8,11 @@ on:
   workflow_dispatch:
     inputs:
       core_version:
-        description: "ComfyUI core version tag (e.g., v0.19.4)"
+        description: "ComfyUI core version tag (e.g., v0.20.1)"
         required: false
         type: string
       frontend_version:
-        description: "ComfyUI frontend version tag (e.g., v1.42.12)"
+        description: "ComfyUI frontend version tag (e.g., v1.44.13)"
         required: false
         type: string
 

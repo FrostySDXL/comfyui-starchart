@@ -130,12 +130,12 @@ Adds:
 
 ```bash
 # Source-only refresh
-python scripts/refresh_snapshots.py --core-version v0.19.4
+python scripts/refresh_snapshots.py --core-version v0.20.1
 
 # Hybrid refresh with runtime capture
-python scripts/refresh_snapshots.py --core-version v0.19.4 \
+python scripts/refresh_snapshots.py --core-version v0.20.1 \
   --runtime-object-info-url http://127.0.0.1:8188 \
-  --runtime-object-info-version v0.19.4
+  --runtime-object-info-version v0.20.1
 ```
 
 ## Artifact Boundaries

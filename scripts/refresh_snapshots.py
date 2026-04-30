@@ -6,9 +6,9 @@ files into the snapshots directory, re-runs all extractors, and regenerates
 markdown. Does NOT auto-commit -- leaves that for the human to review.
 
 Usage:
-    python scripts/refresh_snapshots.py --core-version v0.19.4
-    python scripts/refresh_snapshots.py --frontend-version v1.42.12
-    python scripts/refresh_snapshots.py --core-version v0.19.4 --frontend-version v1.42.12
+    python scripts/refresh_snapshots.py --core-version v0.20.1
+    python scripts/refresh_snapshots.py --frontend-version v1.44.13
+    python scripts/refresh_snapshots.py --core-version v0.20.1 --frontend-version v1.44.13
 
 Exits 0 if successful, exit 1 if any step fails.
 """
@@ -385,12 +385,12 @@ def main():
     parser.add_argument(
         "--core-version",
         default=None,
-        help="ComfyUI core version tag to fetch (e.g., v0.19.4)",
+        help="ComfyUI core version tag to fetch (e.g., v0.20.1)",
     )
     parser.add_argument(
         "--frontend-version",
         default=None,
-        help="ComfyUI frontend version tag to fetch (e.g., v1.42.12)",
+        help="ComfyUI frontend version tag to fetch (e.g., v1.44.13)",
     )
     parser.add_argument(
         "--runtime-object-info-url",

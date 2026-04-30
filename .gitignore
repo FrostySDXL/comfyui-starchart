@@ -16,3 +16,4 @@ site/
 archived/
 site/
 .tmp_runtime_verify/
+.env
