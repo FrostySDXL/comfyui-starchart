@@ -6,6 +6,9 @@ If you are new to documentation contributions, also read
 [`docs/start-here/docs-contributor.md`](docs/start-here/docs-contributor.md)
 for a gentler introduction to page modes and editorial standards.
 
+`CONTRIBUTING.md` is the authoritative repo-local guide for maintainer-grade
+workflows that are not fully duplicated in the published docs site.
+
 ---
 
 ## Quickstart

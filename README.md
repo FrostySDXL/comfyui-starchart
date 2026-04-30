@@ -1,21 +1,21 @@
 # ComfyUI Knowledge Base
 
-**Last Updated:** 2026-04-24
+**Last Updated:** 2026-04-29
 **ComfyUI Version Pin:** Core `v0.19.3` (`3086026401180c9216bcb6ace442a4e3587d2c66`) with official frontend `v1.42.11` (`3dc4061d484d61cb89366de25bf5e2f8a65da4d0`) for pinned snapshots and extracted reference data
 
 **Evidence:** Scaffold
 
 ## What This Repository Is
 
-This repository is a version-pinned, source-extracted, machine-readable developer
-reference for ComfyUI. It is not the official ComfyUI documentation; authoritative
+This repository is a version-pinned, source-extracted companion reference for
+ComfyUI developers. It is not the official ComfyUI documentation; authoritative
 human reference remains at [docs.comfy.org](https://docs.comfy.org/).
 
-The repo publishes extracted JSON artifacts alongside a self-hostable MkDocs site.
-It is designed for extension developers, tooling authors, and integrators who need
-a stable, cited baseline for ComfyUI API surfaces, hooks, and node schema behavior.
-Because everything is pinned to exact upstream commits, the reference baseline is
-reproducible and forkable.
+The repo publishes extracted JSON artifacts alongside a self-hostable MkDocs
+site. It is designed for extension developers, tooling authors, and integrators
+who need a stable, cited baseline for selected ComfyUI API surfaces, hooks, and
+node schema behavior. Because everything is pinned to exact upstream commits,
+the reference baseline is reproducible and forkable.
 
 This repository covers:
 - server API endpoints and WebSocket behavior
@@ -66,7 +66,8 @@ For editorial standards and evidence rules, use these files together:
 - Helper scripts live in `scripts/extract/` and `scripts/generate/`
 - Published artifact copies and manifest live in `docs/artifacts/`
 - See [Machine-Readable Artifacts](docs/reference/machine-readable-artifacts.md) for
-  consumption details and conceptual examples for tooling authors
+  the canonical published artifact set, bounded guarantees, and conceptual
+  examples for tooling authors
 
 ## Quick Start
 
@@ -171,13 +172,16 @@ python scripts/verify/runtime_smoke.py --url http://127.0.0.1:8188
 ```
 
 Runtime extraction is opt-in and separate from standard CPU-safe verification.
-See `docs/reference/runtime-ci-operations.md` for the full operating model.
+Runtime-only `object_info` capture is not part of the canonical published
+artifact surface. See `docs/reference/runtime-ci-operations.md` for the full
+operating model.
 
 ## Scope Boundaries
 
 - [docs.comfy.org](https://docs.comfy.org/) is the official human reference for ComfyUI.
-- This repository is a pinned, machine-readable companion reference. It does not
-  aim to replace official docs or cover end-user tutorials.
+- This repository is a pinned companion reference with bounded machine-readable
+  guarantees. It does not aim to replace official docs or cover end-user
+  tutorials.
 - Workflow and tutorial-oriented readers may prefer community resources such as
   [comfyui-wiki.com](https://comfyui-wiki.com/) for non-developer guides.
 

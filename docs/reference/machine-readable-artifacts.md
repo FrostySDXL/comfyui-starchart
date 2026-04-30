@@ -1,13 +1,17 @@
 # Machine-Readable Artifacts
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-04-24
+**Last Updated:** 2026-04-29
 
 ## Scope
 
 This page documents the machine-readable JSON artifacts this repository publishes.
 It covers what artifacts exist, what they contain, and how tooling authors can
 consume them from the static site or from the repo directly.
+
+The published contract is intentionally bounded. These artifacts are a pinned
+companion reference for tooling and analysis, not a full OpenAPI-grade or fully
+typed description of every ComfyUI behavior.
 
 ## Who This Page Is For
 
@@ -29,14 +33,32 @@ snapshots. All paths below are site-relative to the built documentation.
 Each artifact also has a versioned copy under `artifacts/versions/<key>/`, where
 the key includes the pinned core version, frontend version, and extraction date.
 
+## Contract Tiers
+
+Read each artifact through these tiers:
+
+- **Guaranteed structure**: fields explicitly listed in each artifact's
+  `coverage.guaranteed_fields` block.
+- **Best-effort fields**: inferred or descriptive fields listed in
+  `coverage.best_effort_fields`.
+- **Deferred areas**: fidelity gaps listed in `coverage.deferred` that are not
+  promised by the current contract.
+
+Tooling can depend on guaranteed structure. Treat best-effort fields as useful
+helpers, not strict contracts.
+
 ### server_endpoints.json
 
-Contains HTTP routes, methods, parameters, and inferred return shapes from the
-pinned ComfyUI server source. Useful for:
+Contains HTTP routes, methods, return kinds, and limited inferred response
+details from the pinned ComfyUI server source. Useful for:
 
-- generating typed API client stubs
-- building route documentation or OpenAPI-like descriptions
+- building route inventories, request scaffolding, or bounded client helpers
+- checking that route and response-kind coverage matches the pinned baseline
 - verifying that a ComfyUI instance exposes the expected surface
+
+Guaranteed fields follow the artifact's `coverage.guaranteed_fields` block.
+Return summaries, parameters, and response fields remain best-effort static
+analysis rather than full semantic contracts.
 
 ### js_hooks.json
 
@@ -48,6 +70,10 @@ they are defined and invoked in the pinned frontend source. Useful for:
   pinned version
 - tracking frontend integration point changes across versions
 
+This artifact is more structured than the endpoint artifact, but descriptive and
+provenance-style fields such as `description` and `defined_in` should still be
+treated according to the artifact's `coverage` block.
+
 ### node_api_schema.json
 
 Contains object info fields, I/O types, and basic input shapes from the pinned
@@ -56,6 +82,10 @@ core source. Useful for:
 - validating node surface assumptions before running a workflow
 - building datatype-aware tooling or linting
 - comparing schema behavior across ComfyUI versions
+
+This is the strongest pinned-source-derived schema contract in the published
+artifact set. It still does not make runtime-only custom-node state canonical by
+default.
 
 ## Repo Sources vs Published Copies
 
@@ -97,16 +127,18 @@ When upstream snapshots are refreshed, running the packaging script generates a
 new version key and new versioned copies. The `current/` copies are overwritten,
 but the versioned copies are preserved until explicitly removed.
 
-## Usage Examples
+## Bounded Usage Examples
 
 These examples show how tooling authors can consume the published artifacts.
-They are conceptual and lightweight, not a full SDK.
+They are conceptual and lightweight. They demonstrate bounded consumption
+patterns, not full SDK or OpenAPI generation guarantees.
 
-### Generating a typed API client from endpoint metadata
+### Building a route inventory from endpoint metadata
 
-Read `server_endpoints.json` and map each entry to a typed function signature.
-The `route`, `method`, `parameters`, and `returns` fields provide enough structure
-for OpenAPI-like generation or strongly-typed client stubs.
+Read `server_endpoints.json` and map each entry to a lightweight request helper
+or audit report. The guaranteed route, method, and return-kind fields are stable
+enough for bounded tooling even when deeper parameter or response semantics are
+best-effort.
 
 ```python
 import json, urllib.request
@@ -156,7 +188,10 @@ assert node_type in schema.get("object_info", {}), f"{node_type} not in schema"
 The repository can also produce `object_info_runtime.json` via live ComfyUI
 capture. This file is explicitly excluded from the published artifact surface.
 It reflects the specific runtime configuration of the instance it was captured
-from and is not a reproducible baseline.
+from and is not a reproducible baseline. Use it only when your workflow depends
+on live installed-node state or hybrid enrichment. See
+[Runtime and CI Operations](runtime-ci-operations.md) and
+[Object Info](object-info.md).
 
 ## Caveats
 
@@ -165,6 +200,10 @@ from and is not a reproducible baseline.
   expose.
 - Return shape inference is best-effort static analysis. Some endpoints return
   variable structures that cannot be captured precisely without runtime data.
+- `server_endpoints.json` is suitable for route/method scaffolding and response
+  kind checks, not as a complete OpenAPI replacement.
+- `js_hooks.json` includes useful descriptive metadata, but some hook
+  descriptions and provenance details remain best-effort.
 - The `node_api_schema.json` artifact covers built-in types and common patterns.
   Custom node packs may introduce types that do not appear in the pinned snapshot.
 - For authoritative human reference, use [docs.comfy.org](https://docs.comfy.org/).
@@ -174,6 +213,8 @@ from and is not a reproducible baseline.
 ## Read Next
 
 - [Version Pin Status](version-pin-status.md)
+- [Runtime and CI Operations](runtime-ci-operations.md)
+- [Start Here: Tooling Builder](../start-here/tooling-builder.md)
 - [Source Evidence Policy](source-evidence-policy.md)
 - [API Reference: Endpoints](../api/endpoints.md)
 - [Hooks: JavaScript Hooks](../hooks/javascript-hooks.md)

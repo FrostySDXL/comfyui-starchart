@@ -47,6 +47,9 @@ The repo also publishes machine-readable JSON artifacts and a manifest for
 tooling authors and integrators. These artifacts are packaged into the built
 site under `docs/artifacts/`.
 
+Consumer-facing docs describe the published artifact surface, while repo-local
+maintainer workflows intentionally remain in `AGENTS.md` and `CONTRIBUTING.md`.
+
 Non-goals: official docs replacement, community wiki, package registry.
 
 ## 2. Hard Rules

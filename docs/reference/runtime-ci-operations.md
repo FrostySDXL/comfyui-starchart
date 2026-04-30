@@ -1,7 +1,7 @@
 # Runtime and CI Operations
 
 **Evidence:** Scaffold
-**Last Updated:** 2026-04-23
+**Last Updated:** 2026-04-29
 
 ## Overview
 
@@ -83,6 +83,10 @@ Use runtime verification for:
   surface
 - capturing a runtime snapshot for hybrid schema generation
 
+Do not treat runtime capture as the default onboarding path for tooling authors.
+Start with the canonical published artifacts first, and use runtime capture only
+when the tool genuinely depends on live installed-node state.
+
 Use `runtime-smoke.yml` when you need to test a specific existing instance,
 including custom nodes or non-default runtime configuration. Use
 `headless-runtime-metadata.yml` when you want CI-hosted proof that the runtime
@@ -148,6 +152,9 @@ python scripts/refresh_snapshots.py --core-version v0.19.4 \
 from the public artifact packaging pipeline because its contents depend on the
 specific ComfyUI instance configuration at capture time.
 
+The canonical published artifact surface is documented in
+[Machine-Readable Artifacts](machine-readable-artifacts.md).
+
 The headless CI workflow follows the same boundary. It writes runtime captures
 and optional hybrid schema output under the runner temp directory and uploads
 them only as workflow artifacts.
@@ -176,3 +183,4 @@ order. It exits non-zero on the first blocking failure.
 
 - [Version Pin Status](version-pin-status.md)
 - [Object Info](object-info.md)
+- [Machine-Readable Artifacts](machine-readable-artifacts.md)

@@ -1,7 +1,7 @@
 # Start Here: Docs Contributor
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-04-24
+**Last Updated:** 2026-04-29
 
 ## Who This Path Is For
 
@@ -14,6 +14,14 @@ This includes:
 - contributing examples or decision guides
 
 **Prerequisites:** you have read `AGENTS.md` / `CONTRIBUTING.md` and can run the verification scripts.
+
+## Published Docs vs Repo-Local Workflow Material
+
+Use the built documentation for editorial standards, reader-facing structure,
+and the published artifact story. Move into the repo-local `CONTRIBUTING.md`
+and `AGENTS.md` files when you need maintainer-grade workflow details such as
+extractor maintenance, regeneration steps, or repo operations that are not fully
+duplicated in the built site.
 
 ## How to Pick the Right Page Mode
 

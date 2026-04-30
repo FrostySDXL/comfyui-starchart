@@ -1,7 +1,7 @@
 # Object Info
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-29
 **Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
 
 ## Primary Sources
@@ -98,6 +98,11 @@ The object-info reference can be enriched with runtime-captured data. When
 output includes a `runtime_object_info` section with live node definitions from
 a running ComfyUI instance.
 
+That runtime section is optional enrichment to `node_api_schema.json`. It is not
+a canonical published artifact by itself, and it should not replace the default
+published artifact surface described in
+[Machine-Readable Artifacts](machine-readable-artifacts.md).
+
 See [Runtime and CI Operations](runtime-ci-operations.md) for the hybrid
 evidence model and when to use runtime capture.
 
@@ -105,4 +110,5 @@ evidence model and when to use runtime capture.
 
 - [API Endpoints](../api/endpoints.md)
 - [Prompt Submission](../api/prompt-submission.md)
+- [Machine-Readable Artifacts](machine-readable-artifacts.md)
 - [Runtime and CI Operations](runtime-ci-operations.md)

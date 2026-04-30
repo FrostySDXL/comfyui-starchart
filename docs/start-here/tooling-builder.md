@@ -1,7 +1,7 @@
 # Start Here: Tooling Builder
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-04-24
+**Last Updated:** 2026-04-29
 
 ## Who This Path Is For
 
@@ -19,9 +19,11 @@ programmatically. This includes:
 
 | Artifact | Location | Use for |
 |----------|----------|---------|
-| Node metadata | [`references/raw/object_info_runtime.json`](../reference/object-info.md) | Discover inputs, outputs, and types for any node |
+| Canonical published artifacts | [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) | Start with the published JSON contract, manifest, and bounded guarantees |
 | HTTP API routes | [`docs/api/endpoints.md`](../api/endpoints.md) | Submit prompts, poll history, manage queue |
 | WebSocket events | [`docs/api/websocket.md`](../api/websocket.md) | Real-time execution progress and completion |
+| Node schema reference | [Object Info](../reference/object-info.md) | Understand source-backed node metadata and optional runtime enrichment |
+| Runtime-only capture | [Runtime and CI Operations](../reference/runtime-ci-operations.md) | Use `object_info_runtime.json` only for live-instance or hybrid workflows |
 | Server hooks | [`docs/hooks/server-hooks.md`](../hooks/server-hooks.md) | Understand server-side extension points |
 | JavaScript hooks | [`docs/hooks/javascript-hooks.md`](../hooks/javascript-hooks.md) | Understand frontend extension points |
 | Worked examples | `examples/` | Concrete API calls and extension patterns |
@@ -40,23 +42,30 @@ extension routes only after confirming the data you need is unavailable.
 
 ## Machine-Readable vs Prose-Only Artifacts
 
-- **Machine-readable:** JSON files under `references/raw/`, snapshot files under
+- **Machine-readable:** the three canonical published JSON artifacts documented in
+  [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md), the
+  repo-local copies under `references/raw/`, snapshot files under
   `references/snapshots/`, code in `examples/`, and API endpoint documentation.
 - **Prose-only:** decision guides, tutorials, deep dives, and community pattern
   studies. These explain intent and tradeoffs but are not structured for parsing.
 
-Build tooling against machine-readable artifacts. Use prose pages for context
-and design decisions.
+Build tooling against the canonical published artifacts first. Move to runtime
+capture only when your tool depends on the live installed-node state of a real
+ComfyUI instance. Use prose pages for context and design decisions.
 
 ## First Practical Step
 
-Retrieve the `object_info` data from your ComfyUI instance. Parse one node's
-`input` and `output` definitions from the response and print them. This
-confirms the node metadata artifact is accessible and parseable.
+Read [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md),
+fetch `artifacts/manifest.json`, and inspect the three canonical published JSON
+artifacts. If your tool later needs installed custom-node state, add the
+runtime-only `object_info` capture path from
+[Runtime and CI Operations](../reference/runtime-ci-operations.md).
 
 ## Read Next
 
+- [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md)
 - [API Endpoints](../api/endpoints.md)
-- [Object Info](../reference/object-info.md)
 - [WebSocket Events](../api/websocket.md)
+- [Object Info](../reference/object-info.md)
+- [Runtime and CI Operations](../reference/runtime-ci-operations.md)
 - [Decision Tree: API Integration](../decision-trees/api-integration.md)
