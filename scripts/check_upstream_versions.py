@@ -18,8 +18,8 @@ from urllib.request import Request, urlopen
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 
-CORE_TAGS_URL = "https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=1"
-FRONTEND_TAGS_URL = "https://api.github.com/repos/Comfy-Org/ComfyUI_Frontend/tags?per_page=1"
+CORE_TAGS_URL = "https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=100"
+FRONTEND_TAGS_URL = "https://api.github.com/repos/Comfy-Org/ComfyUI_Frontend/tags?per_page=100"
 
 
 def _fetch_json(url: str, timeout: int = 30) -> list | dict:
@@ -51,11 +51,31 @@ def _read_pinned_version(json_path: Path) -> dict | None:
     }
 
 
+def _parse_version_tag(tag_name: str) -> tuple[int, ...] | None:
+    """Parse tags like v1.44.13 into comparable integer tuples."""
+    if not isinstance(tag_name, str) or not tag_name.startswith("v"):
+        return None
+    parts = tag_name[1:].split(".")
+    if not parts or any(not part.isdigit() for part in parts):
+        return None
+    return tuple(int(part) for part in parts)
+
+
 def _latest_tag_from_github(tags_url: str) -> str | None:
     """Fetch the latest tag name from GitHub API tags endpoint."""
     data = _fetch_json(tags_url)
     if isinstance(data, list) and data:
-        return data[0].get("name")
+        latest_name = None
+        latest_version = None
+        for entry in data:
+            name = entry.get("name")
+            version = _parse_version_tag(name)
+            if version is None:
+                continue
+            if latest_version is None or version > latest_version:
+                latest_name = name
+                latest_version = version
+        return latest_name
     return None
 
 

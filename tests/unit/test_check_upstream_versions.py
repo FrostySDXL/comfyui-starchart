@@ -60,6 +60,19 @@ class CheckUpstreamVersionsUnitTests(unittest.TestCase):
             result = module._latest_tag_from_github("https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=1")
         self.assertIsNone(result)
 
+    def test_latest_tag_from_github_picks_highest_semver_tag(self):
+        module = _load_module()
+        fake_response = [
+            {"name": "main"},
+            {"name": "v0.19.3"},
+            {"name": "v0.20.1"},
+            {"name": "nightly"},
+            {"name": "v0.20.0"},
+        ]
+        with patch.object(module, "_fetch_json", return_value=fake_response):
+            result = module._latest_tag_from_github("https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=1")
+        self.assertEqual(result, "v0.20.1")
+
     def test_build_summary_update_available(self):
         module = _load_module()
         summary = module._build_summary(
