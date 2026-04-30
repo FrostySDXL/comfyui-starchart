@@ -57,7 +57,18 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                     "route": "/prompt",
                     "method": "POST",
                     "description": "Queue a prompt.",
-                    "parameters": [],
+                    "parameters": [
+                        {
+                            "name": "client_id",
+                            "location": "query",
+                            "required": False,
+                            "default": "",
+                            "traceability": {
+                                "source_type": "source-backed",
+                                "strategy": "request.rel_url.query.get",
+                            },
+                        }
+                    ],
                     "returns": {
                         "kind": "json",
                         "summary": "Prompt queued with ID and any node errors.",
@@ -68,6 +79,10 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                             {"name": "node_errors", "type_hint": "dict"},
                         ],
                         "notes": ["Returns 400 for validation failures."],
+                        "traceability": {
+                            "source_type": "source-backed",
+                            "strategy": "web.json_response",
+                        },
                     },
                 },
                 {
@@ -227,9 +242,35 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                     "class_name": "Boolean",
                     "input_class": "WidgetInput",
                     "input_parameters": ["default"],
+                    "input_parameter_details": [
+                        {
+                            "name": "default",
+                            "location": "input_signature",
+                            "default": None,
+                            "traceability": {
+                                "source_type": "source-backed",
+                                "strategy": "python_signature",
+                            },
+                        }
+                    ],
                 }
             ],
             "basic_input_shapes": {"ImageInput": "An image tensor."},
+            "typed_input_shapes": {
+                "AudioInput": {
+                    "description": "TypedDict representing audio input.",
+                    "defined_in": "references/snapshots/basic_types.py",
+                    "fields": {
+                        "waveform": {
+                            "type": "torch.Tensor",
+                            "traceability": {
+                                "source_type": "source-backed",
+                                "strategy": "typed_dict_field",
+                            },
+                        }
+                    },
+                }
+            },
             "coverage": {
                 "description": "Static and optional runtime coverage for object_info and IO typing.",
                 "sources_covered": ["object_info_fields", "io_types", "basic_input_shapes"],
@@ -241,7 +282,84 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors.extend(module.validate_metadata(data, "node_api_schema.json"))
         errors.extend(module.validate_coverage(data, "node_api_schema.json"))
         errors.extend(module.validate_io_types(data, "node_api_schema.json"))
+        errors.extend(module.validate_typed_input_shapes(data, "node_api_schema.json"))
         self.assertEqual(errors, [])
+
+    def test_endpoint_parameter_rejects_invalid_allowed_values(self):
+        module = self._import_module()
+        data = self._valid_server_endpoints_data()
+        data["endpoints"][0]["parameters"][0]["allowed_values"] = [{"bad": True}]
+        errors = module.validate_endpoints(data, "server_endpoints.json")
+        self.assertTrue(any("allowed_values[0] expected primitive" in e for e in errors))
+
+    def test_hook_enrichment_fields_validate(self):
+        module = self._import_module()
+        data = {
+            "metadata": {
+                "sources": ["references/snapshots/comfy.ts"],
+                "extracted_date": "2026-04-29",
+                "version": "v1.42.11",
+                "commit": "abc123",
+            },
+            "coverage": {
+                "description": "Static extraction of hooks.",
+                "guaranteed_fields": ["hooks[].name"],
+                "best_effort_fields": ["hooks[].description"],
+                "deferred": ["runtime-only hook behavior"],
+            },
+            "hooks": [
+                {
+                    "name": "setup",
+                    "type": "app_lifecycle",
+                    "description": "Setup hook.",
+                    "defined_in": "references/snapshots/comfy.ts",
+                    "invoked_in": ["references/snapshots/app.ts"],
+                    "signature": "setup?(app: ComfyApp): Promise<void> | void",
+                    "arguments": [{"name": "app", "type_hint": "ComfyApp"}],
+                    "return_type": "Promise<void> | void",
+                    "invocation_style": ["async"],
+                    "traceability": {
+                        "source_type": "source-backed",
+                        "strategy": "typed_definition",
+                    },
+                }
+            ],
+        }
+        errors = module.validate_top_level(data, module.SCHEMAS["js_hooks.json"], "js_hooks.json")
+        errors.extend(module.validate_metadata(data, "js_hooks.json"))
+        errors.extend(module.validate_coverage(data, "js_hooks.json"))
+        errors.extend(module.validate_hooks(data, "js_hooks.json"))
+        self.assertEqual(errors, [])
+
+    def test_typed_input_shapes_rejects_missing_field_type(self):
+        module = self._import_module()
+        data = {
+            "metadata": {
+                "sources": ["references/snapshots/server.py"],
+                "extracted_date": "2026-04-22",
+                "version": "v0.19.3",
+                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+            },
+            "object_info_fields": [],
+            "io_types": [],
+            "basic_input_shapes": {},
+            "typed_input_shapes": {
+                "AudioInput": {
+                    "description": "audio",
+                    "fields": {
+                        "waveform": {}
+                    },
+                }
+            },
+            "coverage": {
+                "description": "Static and optional runtime coverage for object_info and IO typing.",
+                "sources_covered": ["object_info_fields"],
+                "runtime_enriched": False,
+                "deferred": [],
+            },
+        }
+        errors = module.validate_typed_input_shapes(data, "node_api_schema.json")
+        self.assertTrue(any("missing required key 'type'" in e for e in errors))
 
     def test_node_api_schema_rejects_missing_coverage(self):
         module = self._import_module()

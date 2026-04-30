@@ -142,6 +142,60 @@ setup?(app: ComfyApp): Promise<void> | void
         entry = next(hook for hook in data["hooks"] if hook["name"] == "setup")
         self.assertEqual(entry["description"], "Allows additional setup.")
 
+    def test_typed_hook_signature_and_invocation_style_are_enriched(self):
+        typed_sample = '''
+/**
+ * Allows additional setup.
+ */
+setup?(app: ComfyApp): Promise<void> | void
+
+/**
+ * Called before nodes are registered.
+ */
+beforeRegisterNodeDef?(
+  nodeType: typeof LGraphNode,
+  nodeData: ComfyNodeDef,
+  app: ComfyApp
+): Promise<void> | void
+'''
+        invocation_sample = '''
+invokeExtensionsAsync("setup")
+invokeExtensionsAsync("beforeRegisterNodeDef", nodeType, nodeData, app)
+'''
+
+        with tempfile.TemporaryDirectory() as tmp:
+            typed_path = Path(tmp) / "comfy.ts"
+            app_path = Path(tmp) / "app.ts"
+            typed_path.write_text(typed_sample, encoding="utf-8")
+            app_path.write_text(invocation_sample, encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(typed_path), str(app_path)],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+        setup = next(hook for hook in data["hooks"] if hook["name"] == "setup")
+        before_register = next(hook for hook in data["hooks"] if hook["name"] == "beforeRegisterNodeDef")
+
+        self.assertEqual(setup["signature"], "setup?(app: ComfyApp): Promise<void> | void")
+        self.assertEqual(setup["arguments"], [{"name": "app", "type_hint": "ComfyApp"}])
+        self.assertEqual(setup["return_type"], "Promise<void> | void")
+        self.assertEqual(setup["invocation_style"], ["async"])
+        self.assertEqual(setup["traceability"]["strategy"], "typed_definition")
+
+        self.assertEqual(
+            before_register["arguments"],
+            [
+                {"name": "nodeType", "type_hint": "typeof LGraphNode"},
+                {"name": "nodeData", "type_hint": "ComfyNodeDef"},
+                {"name": "app", "type_hint": "ComfyApp"},
+            ],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

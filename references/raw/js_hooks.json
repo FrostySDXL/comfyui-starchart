@@ -18,7 +18,11 @@
     ],
     "best_effort_fields": [
       "hooks[].description",
-      "hooks[].defined_in"
+      "hooks[].defined_in",
+      "hooks[].signature",
+      "hooks[].arguments",
+      "hooks[].return_type",
+      "hooks[].invocation_style"
     ],
     "deferred": [
       "unresolved hook definitions",
@@ -33,7 +37,26 @@
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"
-      ]
+      ],
+      "signature": "addCustomNodeDefs?( defs: Record<string, ComfyNodeDef>, app: ComfyApp ): Promise<void> | void",
+      "arguments": [
+        {
+          "name": "defs",
+          "type_hint": "Record<string, ComfyNodeDef>"
+        },
+        {
+          "name": "app",
+          "type_hint": "ComfyApp"
+        }
+      ],
+      "return_type": "Promise<void> | void",
+      "invocation_style": [
+        "async"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "afterConfigureGraph",
@@ -42,7 +65,26 @@
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"
-      ]
+      ],
+      "signature": "afterConfigureGraph?( missingNodeTypes: MissingNodeType[], app: ComfyApp ): Promise<void> | void",
+      "arguments": [
+        {
+          "name": "missingNodeTypes",
+          "type_hint": "MissingNodeType[]"
+        },
+        {
+          "name": "app",
+          "type_hint": "ComfyApp"
+        }
+      ],
+      "return_type": "Promise<void> | void",
+      "invocation_style": [
+        "async"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "beforeConfigureGraph",
@@ -51,7 +93,30 @@
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"
-      ]
+      ],
+      "signature": "beforeConfigureGraph?( graphData: ComfyWorkflowJSON, missingNodeTypes: MissingNodeType[], app: ComfyApp ): Promise<void> | void",
+      "arguments": [
+        {
+          "name": "graphData",
+          "type_hint": "ComfyWorkflowJSON"
+        },
+        {
+          "name": "missingNodeTypes",
+          "type_hint": "MissingNodeType[]"
+        },
+        {
+          "name": "app",
+          "type_hint": "ComfyApp"
+        }
+      ],
+      "return_type": "Promise<void> | void",
+      "invocation_style": [
+        "async"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "beforeRegisterNodeDef",
@@ -60,7 +125,30 @@
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/services/litegraphService.ts"
-      ]
+      ],
+      "signature": "beforeRegisterNodeDef?( nodeType: typeof LGraphNode, nodeData: ComfyNodeDef, app: ComfyApp ): Promise<void> | void",
+      "arguments": [
+        {
+          "name": "nodeType",
+          "type_hint": "typeof LGraphNode"
+        },
+        {
+          "name": "nodeData",
+          "type_hint": "ComfyNodeDef"
+        },
+        {
+          "name": "app",
+          "type_hint": "ComfyApp"
+        }
+      ],
+      "return_type": "Promise<void> | void",
+      "invocation_style": [
+        "async"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "beforeRegisterVueAppNodeDefs",
@@ -69,7 +157,26 @@
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"
-      ]
+      ],
+      "signature": "beforeRegisterVueAppNodeDefs?(defs: ComfyNodeDef[], app: ComfyApp): void",
+      "arguments": [
+        {
+          "name": "defs",
+          "type_hint": "ComfyNodeDef[]"
+        },
+        {
+          "name": "app",
+          "type_hint": "ComfyApp"
+        }
+      ],
+      "return_type": "void",
+      "invocation_style": [
+        "sync"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "getCanvasMenuItems",
@@ -78,14 +185,42 @@
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"
-      ]
+      ],
+      "signature": "getCanvasMenuItems?(canvas: LGraphCanvas): (IContextMenuValue | null)[]",
+      "arguments": [
+        {
+          "name": "canvas",
+          "type_hint": "LGraphCanvas"
+        }
+      ],
+      "return_type": "(IContextMenuValue | null)[]",
+      "invocation_style": [
+        "sync"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "getCustomWidgets",
       "type": "extension_api_method",
       "description": "Allows the extension to add custom widgets",
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
-      "invoked_in": []
+      "invoked_in": [],
+      "signature": "getCustomWidgets?(app: ComfyApp): Promise<Widgets> | Widgets",
+      "arguments": [
+        {
+          "name": "app",
+          "type_hint": "ComfyApp"
+        }
+      ],
+      "return_type": "Promise<Widgets> | Widgets",
+      "invocation_style": [],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "getNodeMenuItems",
@@ -94,14 +229,42 @@
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"
-      ]
+      ],
+      "signature": "getNodeMenuItems?(node: LGraphNode): (IContextMenuValue | null)[]",
+      "arguments": [
+        {
+          "name": "node",
+          "type_hint": "LGraphNode"
+        }
+      ],
+      "return_type": "(IContextMenuValue | null)[]",
+      "invocation_style": [
+        "sync"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "getSelectionToolboxCommands",
       "type": "menu_extension",
       "description": "Allows the extension to add additional commands to the selection toolbox",
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
-      "invoked_in": []
+      "invoked_in": [],
+      "signature": "getSelectionToolboxCommands?(selectedItem: Positionable): string[]",
+      "arguments": [
+        {
+          "name": "selectedItem",
+          "type_hint": "Positionable"
+        }
+      ],
+      "return_type": "string[]",
+      "invocation_style": [],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "init",
@@ -110,7 +273,22 @@
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"
-      ]
+      ],
+      "signature": "init?(app: ComfyApp): Promise<void> | void",
+      "arguments": [
+        {
+          "name": "app",
+          "type_hint": "ComfyApp"
+        }
+      ],
+      "return_type": "Promise<void> | void",
+      "invocation_style": [
+        "async"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "loadedGraphNode",
@@ -119,7 +297,26 @@
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"
-      ]
+      ],
+      "signature": "loadedGraphNode?(node: LGraphNode, app: ComfyApp): void",
+      "arguments": [
+        {
+          "name": "node",
+          "type_hint": "LGraphNode"
+        },
+        {
+          "name": "app",
+          "type_hint": "ComfyApp"
+        }
+      ],
+      "return_type": "void",
+      "invocation_style": [
+        "sync"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "nodeCreated",
@@ -128,28 +325,80 @@
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/services/litegraphService.ts"
-      ]
+      ],
+      "signature": "nodeCreated?(node: LGraphNode, app: ComfyApp): void",
+      "arguments": [
+        {
+          "name": "node",
+          "type_hint": "LGraphNode"
+        },
+        {
+          "name": "app",
+          "type_hint": "ComfyApp"
+        }
+      ],
+      "return_type": "void",
+      "invocation_style": [
+        "async"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "onAuthTokenRefreshed",
       "type": "extension_api_method",
       "description": "Fired whenever the auth token is refreshed. This is an experimental API and may be changed or removed in the future.",
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
-      "invoked_in": []
+      "invoked_in": [],
+      "signature": "onAuthTokenRefreshed?(): Promise<void> | void",
+      "arguments": [],
+      "return_type": "Promise<void> | void",
+      "invocation_style": [],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "onAuthUserLogout",
       "type": "extension_api_method",
       "description": "Fired when user logs out. This is an experimental API and may be changed or removed in the future.",
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
-      "invoked_in": []
+      "invoked_in": [],
+      "signature": "onAuthUserLogout?(): Promise<void> | void",
+      "arguments": [],
+      "return_type": "Promise<void> | void",
+      "invocation_style": [],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "onAuthUserResolved",
       "type": "extension_api_method",
       "description": "Fired whenever authentication resolves, providing the anonymized user id.. Extensions can register at any time and will receive the latest value immediately. This is an experimental API and may be changed or removed in the future.",
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
-      "invoked_in": []
+      "invoked_in": [],
+      "signature": "onAuthUserResolved?(user: AuthUserInfo, app: ComfyApp): Promise<void> | void",
+      "arguments": [
+        {
+          "name": "user",
+          "type_hint": "AuthUserInfo"
+        },
+        {
+          "name": "app",
+          "type_hint": "ComfyApp"
+        }
+      ],
+      "return_type": "Promise<void> | void",
+      "invocation_style": [],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "onNodeOutputsUpdated",
@@ -158,7 +407,17 @@
       "defined_in": null,
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"
-      ]
+      ],
+      "signature": null,
+      "arguments": [],
+      "return_type": null,
+      "invocation_style": [
+        "sync"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "invocation_only"
+      }
     },
     {
       "name": "refreshComboInNodes",
@@ -167,7 +426,17 @@
       "defined_in": null,
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"
-      ]
+      ],
+      "signature": null,
+      "arguments": [],
+      "return_type": null,
+      "invocation_style": [
+        "async"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "invocation_only"
+      }
     },
     {
       "name": "registerCustomNodes",
@@ -176,7 +445,22 @@
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"
-      ]
+      ],
+      "signature": "registerCustomNodes?(app: ComfyApp): Promise<void> | void",
+      "arguments": [
+        {
+          "name": "app",
+          "type_hint": "ComfyApp"
+        }
+      ],
+      "return_type": "Promise<void> | void",
+      "invocation_style": [
+        "async"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     },
     {
       "name": "setup",
@@ -185,7 +469,22 @@
       "defined_in": "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
       "invoked_in": [
         "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"
-      ]
+      ],
+      "signature": "setup?(app: ComfyApp): Promise<void> | void",
+      "arguments": [
+        {
+          "name": "app",
+          "type_hint": "ComfyApp"
+        }
+      ],
+      "return_type": "Promise<void> | void",
+      "invocation_style": [
+        "async"
+      ],
+      "traceability": {
+        "source_type": "source-backed",
+        "strategy": "typed_definition"
+      }
     }
   ]
 }

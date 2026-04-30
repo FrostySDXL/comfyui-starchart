@@ -1,0 +1,49 @@
+{
+  "comparison": {
+    "old": "references/raw",
+    "new": "references/raw"
+  },
+  "notes": [
+    "Deterministic artifact-to-artifact comparison only.",
+    "Does not claim runtime truth or semantic compatibility beyond the compared JSON baselines."
+  ],
+  "artifacts": {
+    "server_endpoints": {
+      "old_count": 25,
+      "new_count": 25,
+      "added": [],
+      "removed": [],
+      "changed": []
+    },
+    "js_hooks": {
+      "old_count": 19,
+      "new_count": 19,
+      "added": [],
+      "removed": [],
+      "changed": []
+    },
+    "node_api_schema": {
+      "object_info_fields": {
+        "old_count": 20,
+        "new_count": 20,
+        "added": [],
+        "removed": [],
+        "changed": []
+      },
+      "io_types": {
+        "old_count": 68,
+        "new_count": 68,
+        "added": [],
+        "removed": [],
+        "changed": []
+      },
+      "typed_input_shapes": {
+        "old_count": 2,
+        "new_count": 2,
+        "added": [],
+        "removed": [],
+        "changed": []
+      }
+    }
+  }
+}

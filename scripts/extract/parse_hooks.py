@@ -14,7 +14,7 @@ from scripts.common.path_normalization import normalize_repo_path
 
 
 OUTPUT_PATH = REPO_ROOT / "references" / "raw" / "js_hooks.json"
-INVOKE_RE = re.compile(r'invokeExtensions(?:Async)?\(\s*["\']([^"\']+)["\']')
+INVOKE_RE = re.compile(r'invokeExtensions(Async)?\(\s*["\']([^"\']+)["\']')
 HOOK_NAME_RE = re.compile(r'^\s*([A-Za-z0-9_]+)\?\(')
 KNOWN_HOOKS = ["beforeRegisterNodeDef", "nodeCreated", "init", "setup"]
 
@@ -28,12 +28,79 @@ HOOK_COVERAGE = {
     "best_effort_fields": [
         "hooks[].description",
         "hooks[].defined_in",
+        "hooks[].signature",
+        "hooks[].arguments",
+        "hooks[].return_type",
+        "hooks[].invocation_style",
     ],
     "deferred": [
         "unresolved hook definitions",
         "hooks referenced without nearby typed declarations",
     ],
 }
+
+
+def _split_signature_arguments(signature_text: str) -> list[str]:
+    items = []
+    current = []
+    depth = 0
+    for char in signature_text:
+        if char == "," and depth == 0:
+            item = "".join(current).strip()
+            if item:
+                items.append(item)
+            current = []
+            continue
+        if char in "([{<":
+            depth += 1
+        elif char in ")]}>" and depth > 0:
+            depth -= 1
+        current.append(char)
+    item = "".join(current).strip()
+    if item:
+        items.append(item)
+    return items
+
+
+def _parse_hook_arguments(signature_text: str) -> list[dict]:
+    arguments = []
+    for item in _split_signature_arguments(signature_text):
+        name, _, type_hint = item.partition(":")
+        argument = {"name": name.strip()}
+        if type_hint.strip():
+            argument["type_hint"] = type_hint.strip()
+        arguments.append(argument)
+    return arguments
+
+
+def _extract_typed_signature(lines: list[str], start_index: int) -> tuple[dict | None, int]:
+    signature_lines = []
+    index = start_index
+    paren_depth = 0
+    while index < len(lines):
+        candidate = lines[index]
+        stripped = candidate.strip()
+        if not stripped or stripped.startswith("//"):
+            if signature_lines:
+                break
+            index += 1
+            continue
+        signature_lines.append(stripped)
+        paren_depth += candidate.count("(") - candidate.count(")")
+        combined = " ".join(signature_lines)
+        if paren_depth <= 0 and "?" in combined and "):" in combined:
+            match = re.match(r'^([A-Za-z0-9_]+)\?\((.*)\)\s*:\s*(.+)$', combined)
+            if match:
+                name, argument_text, return_type = match.groups()
+                return {
+                    "name": name,
+                    "signature": combined,
+                    "arguments": _parse_hook_arguments(argument_text.strip()),
+                    "return_type": return_type.strip(),
+                }, index + 1
+            break
+        index += 1
+    return None, start_index
 
 
 def _looks_like_known_hook_implementation(source_text: str, hook_name: str) -> bool:
@@ -69,8 +136,8 @@ def classify_hook(name: str) -> str:
     return "extension_api_method"
 
 
-def extract_typed_hooks(source_text: str) -> list[tuple[str, str]]:
-    hooks: list[tuple[str, str]] = []
+def extract_typed_hooks(source_text: str) -> list[dict]:
+    hooks: list[dict] = []
     lines = source_text.splitlines()
     index = 0
 
@@ -94,7 +161,15 @@ def extract_typed_hooks(source_text: str) -> list[tuple[str, str]]:
                     continue
                 match = HOOK_NAME_RE.match(candidate)
                 if match:
-                    hooks.append((match.group(1), clean_comment("\n".join(comment_lines))))
+                    signature_data, next_index = _extract_typed_signature(lines, index)
+                    if signature_data:
+                        hooks.append(
+                            {
+                                **signature_data,
+                                "description": clean_comment("\n".join(comment_lines)),
+                            }
+                        )
+                        index = next_index
                 break
             continue
         index += 1
@@ -106,20 +181,29 @@ def extract_hooks(source_map: dict[str, str]) -> list[dict]:
     discovered: dict[str, dict] = {}
 
     for source_path, source_text in source_map.items():
-        for name, description in extract_typed_hooks(source_text):
+        for hook_data in extract_typed_hooks(source_text):
+            name = hook_data["name"]
             discovered.setdefault(
                 name,
                 {
                     "name": name,
                     "type": classify_hook(name),
-                    "description": description,
+                    "description": hook_data.get("description", ""),
                     "defined_in": source_path,
                     "invoked_in": [],
+                    "signature": hook_data.get("signature"),
+                    "arguments": hook_data.get("arguments", []),
+                    "return_type": hook_data.get("return_type"),
+                    "invocation_style": [],
+                    "traceability": {
+                        "source_type": "source-backed",
+                        "strategy": "typed_definition",
+                    },
                 },
             )
 
     for source_path, source_text in source_map.items():
-        for name in INVOKE_RE.findall(source_text):
+        for async_suffix, name in INVOKE_RE.findall(source_text):
             entry = discovered.setdefault(
                 name,
                 {
@@ -128,10 +212,21 @@ def extract_hooks(source_map: dict[str, str]) -> list[dict]:
                     "description": "",
                     "defined_in": None,
                     "invoked_in": [],
+                    "signature": None,
+                    "arguments": [],
+                    "return_type": None,
+                    "invocation_style": [],
+                    "traceability": {
+                        "source_type": "source-backed",
+                        "strategy": "invocation_only",
+                    },
                 },
             )
             if source_path not in entry["invoked_in"]:
                 entry["invoked_in"].append(source_path)
+            style = "async" if async_suffix else "sync"
+            if style not in entry["invocation_style"]:
+                entry["invocation_style"].append(style)
 
         for name in KNOWN_HOOKS:
             if _looks_like_known_hook_implementation(source_text, name):
@@ -143,8 +238,19 @@ def extract_hooks(source_map: dict[str, str]) -> list[dict]:
                         "description": "",
                         "defined_in": None,
                         "invoked_in": [],
+                        "signature": None,
+                        "arguments": [],
+                        "return_type": None,
+                        "invocation_style": [],
+                        "traceability": {
+                            "source_type": "best-effort",
+                            "strategy": "known_hook_fallback",
+                        },
                     },
                 )
+
+    for hook in discovered.values():
+        hook["invocation_style"] = sorted(hook.get("invocation_style", []))
 
     return [discovered[name] for name in sorted(discovered)]
 

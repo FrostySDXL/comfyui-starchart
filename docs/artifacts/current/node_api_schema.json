@@ -61,6 +61,116 @@
         "advanced"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "lazy",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "default",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "label_on",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "label_off",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "socketless",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "force_input",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "extra_dict",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          }
+        },
+        {
+          "name": "raw_link",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "advanced",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "bool",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": true
@@ -87,6 +197,143 @@
         "advanced"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "lazy",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "default",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "int"
+        },
+        {
+          "name": "min",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "int"
+        },
+        {
+          "name": "max",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "int"
+        },
+        {
+          "name": "step",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "int"
+        },
+        {
+          "name": "control_after_generate",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool | ControlAfterGenerate"
+        },
+        {
+          "name": "display_mode",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "NumberDisplay"
+        },
+        {
+          "name": "socketless",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "force_input",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "extra_dict",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          }
+        },
+        {
+          "name": "raw_link",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "advanced",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "int",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": true
@@ -114,6 +361,152 @@
         "advanced"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "lazy",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "default",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "float"
+        },
+        {
+          "name": "min",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "float"
+        },
+        {
+          "name": "max",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "float"
+        },
+        {
+          "name": "step",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "float"
+        },
+        {
+          "name": "round",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "float"
+        },
+        {
+          "name": "display_mode",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "NumberDisplay"
+        },
+        {
+          "name": "gradient_stops",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "list[dict]"
+        },
+        {
+          "name": "socketless",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "force_input",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "extra_dict",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          }
+        },
+        {
+          "name": "raw_link",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "advanced",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "float",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": true
@@ -138,6 +531,125 @@
         "advanced"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "lazy",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "multiline",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "placeholder",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "default",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "dynamic_prompts",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "socketless",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "force_input",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "extra_dict",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          }
+        },
+        {
+          "name": "raw_link",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "advanced",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "str",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": true
@@ -168,6 +680,171 @@
         "tooltip",
         "is_output_list"
       ],
+      "input_parameter_details": [
+        {
+          "name": "options",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "list[str] | list[int] | type[Enum]"
+        },
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "lazy",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "default",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str | int | Enum"
+        },
+        {
+          "name": "control_after_generate",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool | ControlAfterGenerate"
+        },
+        {
+          "name": "upload",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "UploadType"
+        },
+        {
+          "name": "image_folder",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "FolderType"
+        },
+        {
+          "name": "remote",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "RemoteOptions"
+        },
+        {
+          "name": "socketless",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "extra_dict",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          }
+        },
+        {
+          "name": "raw_link",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "advanced",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        }
+      ],
+      "output_parameter_details": [
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "options",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "list[str]"
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "is_output_list",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        }
+      ],
       "type_hint": "str",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": true
@@ -192,6 +869,125 @@
         "advanced"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "options",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "list[str]"
+        },
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "lazy",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "default",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "list[str]"
+        },
+        {
+          "name": "placeholder",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "chip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "control_after_generate",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool | ControlAfterGenerate"
+        },
+        {
+          "name": "socketless",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "extra_dict",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          }
+        },
+        {
+          "name": "raw_link",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "advanced",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "list[str]",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": true
@@ -202,6 +998,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "torch.Tensor",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -212,6 +1010,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "torch.Tensor",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -232,6 +1032,89 @@
         "advanced"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "lazy",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "default",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "socketless",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "extra_dict",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          }
+        },
+        {
+          "name": "raw_link",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "advanced",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "str",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": true
@@ -242,6 +1125,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "torch.Tensor",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -252,6 +1137,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "LatentDict",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -262,6 +1149,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "CondList",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -272,6 +1161,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Sampler",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -282,6 +1173,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "torch.Tensor",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -292,6 +1185,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "torch.Tensor",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -302,6 +1197,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "CFGGuider",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -312,6 +1209,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "CLIP",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -322,6 +1221,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "ControlNet",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -332,6 +1233,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "VAE",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -342,6 +1245,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "ModelPatcher",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -352,6 +1257,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "ClipVisionModel",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -362,6 +1269,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "ClipVisionOutput_",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -372,6 +1281,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "StyleModel_",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -382,6 +1293,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "ModelPatcher",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -392,6 +1305,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "ImageModelDescriptor",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -402,6 +1317,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Any",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -412,6 +1329,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "AudioDict",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -422,6 +1341,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "VideoInput",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -432,6 +1353,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "_SVG",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -442,6 +1365,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "dict[str, torch.Tensor]",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -452,6 +1377,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "LossMapDict",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -462,6 +1389,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "VOXEL",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -472,6 +1401,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "MESH",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -482,6 +1413,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "File3D",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -492,6 +1425,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "File3D",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -502,6 +1437,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "File3D",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -512,6 +1449,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "File3D",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -522,6 +1461,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "File3D",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -532,6 +1473,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "File3D",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -542,6 +1485,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "File3D",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -552,6 +1497,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "HookGroup",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -562,6 +1509,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "HookKeyframeGroup",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -572,6 +1521,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "tuple[int, int]",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -582,6 +1533,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Callable[[torch.Tensor], torch.Tensor]",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -592,6 +1545,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "tuple[str, Any]",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -602,6 +1557,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "AccumulationDict",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -612,6 +1569,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "CameraInfo",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -622,6 +1581,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Model3DDict",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -632,6 +1593,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Model3DDict",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -642,6 +1605,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Any",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -652,6 +1617,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Any",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -662,6 +1629,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Any",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -672,6 +1641,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Any",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -682,6 +1653,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Any",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -692,6 +1665,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Any",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -702,6 +1677,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Any",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -712,6 +1689,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Any",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -722,6 +1701,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "Any",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -741,6 +1722,80 @@
         "advanced"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "types",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "list[type[_ComfyType] | _ComfyType]"
+        },
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "lazy",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "extra_dict",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          }
+        },
+        {
+          "name": "raw_link",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "advanced",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "TrackDict",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -765,6 +1820,117 @@
         "tooltip",
         "is_output_list"
       ],
+      "input_parameter_details": [
+        {
+          "name": "template",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "MatchType.Template"
+        },
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "lazy",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "extra_dict",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          }
+        },
+        {
+          "name": "raw_link",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "advanced",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        }
+      ],
+      "output_parameter_details": [
+        {
+          "name": "template",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "MatchType.Template"
+        },
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "is_output_list",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        }
+      ],
       "type_hint": null,
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -782,6 +1948,62 @@
         "extra_dict"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "template",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "Autogrow.TemplatePrefix | Autogrow.TemplateNames"
+        },
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "lazy",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "extra_dict",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          }
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "dict[str, Any]",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -799,6 +2021,62 @@
         "extra_dict"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "options",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "list[DynamicCombo.Option]"
+        },
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "lazy",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "extra_dict",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          }
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "dict[str, Any]",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -816,6 +2094,62 @@
         "extra_dict"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "slot",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "Input"
+        },
+        {
+          "name": "inputs",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "list[Input]"
+        },
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "lazy",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "extra_dict",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          }
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "dict[str, Any]",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -832,6 +2166,55 @@
         "advanced"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "socketless",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool",
+          "default": true
+        },
+        {
+          "name": "advanced",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "dict",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": true
@@ -849,6 +2232,65 @@
         "default"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "socketless",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool",
+          "default": true
+        },
+        {
+          "name": "advanced",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        },
+        {
+          "name": "default",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str",
+          "default": "#ffffff"
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "str",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": true
@@ -867,6 +2309,73 @@
         "force_input"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "socketless",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool",
+          "default": true
+        },
+        {
+          "name": "default",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "dict"
+        },
+        {
+          "name": "component",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "force_input",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "BoundingBoxDict",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": true
@@ -884,6 +2393,64 @@
         "advanced"
       ],
       "output_parameters": [],
+      "input_parameter_details": [
+        {
+          "name": "display_name",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "optional",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "default": false
+        },
+        {
+          "name": "tooltip",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "str"
+        },
+        {
+          "name": "socketless",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool",
+          "default": true
+        },
+        {
+          "name": "default",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "list[tuple[float, float]]"
+        },
+        {
+          "name": "advanced",
+          "location": "python_signature",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "python_signature"
+          },
+          "type_hint": "bool"
+        }
+      ],
+      "output_parameter_details": [],
       "type_hint": "CurveInput_",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": true
@@ -894,6 +2461,8 @@
       "input_class": null,
       "input_parameters": [],
       "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
       "type_hint": "list[int]",
       "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
       "is_widget": false
@@ -906,29 +2475,51 @@
   "typed_input_shapes": {
     "AudioInput": {
       "description": "TypedDict representing audio input.",
+      "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_input/basic_types.py",
       "fields": {
         "waveform": {
           "type": "torch.Tensor",
-          "description": "Tensor in the format [B, C, T] where B is the batch size, C is the number of channels,"
+          "description": "Tensor in the format [B, C, T] where B is the batch size, C is the number of channels,",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "typed_dict_field"
+          }
         },
         "sample_rate": {
-          "type": "int"
+          "type": "int",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "typed_dict_field"
+          }
         }
       }
     },
     "LatentInput": {
       "description": "TypedDict representing latent input.",
+      "defined_in": "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_input/basic_types.py",
       "fields": {
         "samples": {
           "type": "torch.Tensor",
-          "description": "Tensor in the format [B, C, H, W] where B is the batch size, C is the number of channels, H is the height, and W is the width."
+          "description": "Tensor in the format [B, C, H, W] where B is the batch size, C is the number of channels, H is the height, and W is the width.",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "typed_dict_field"
+          }
         },
         "noise_mask": {
           "type": "Optional[MaskInput]",
-          "description": "Optional noise mask tensor in the same format as samples."
+          "description": "Optional noise mask tensor in the same format as samples.",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "typed_dict_field"
+          }
         },
         "batch_index": {
-          "type": "Optional[list[int]]"
+          "type": "Optional[list[int]]",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "typed_dict_field"
+          }
         }
       }
     }

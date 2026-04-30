@@ -19,10 +19,11 @@
       "endpoints[].description",
       "endpoints[].parameters",
       "endpoints[].returns.summary",
-      "endpoints[].returns.fields"
+      "endpoints[].returns.fields",
+      "endpoints[].returns.traceability"
     ],
     "deferred": [
-      "parameter typing",
+      "deep parameter typing and validation semantics",
       "richer error contracts",
       "full response-body fidelity for variable-return branches"
     ]
@@ -32,7 +33,19 @@
       "route": "/ws",
       "method": "GET",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "clientId",
+          "location": "query",
+          "required": false,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.get",
+            "detail": "request.rel_url.query"
+          },
+          "default": ""
+        }
+      ],
       "returns": {
         "kind": "websocket",
         "summary": "WebSocket connection upgrade.",
@@ -40,7 +53,11 @@
           101
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.WebSocketResponse"
+        }
       }
     },
     {
@@ -55,7 +72,11 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.FileResponse"
+        }
       }
     },
     {
@@ -70,7 +91,11 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
@@ -85,14 +110,29 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
       "route": "/models/{folder}",
       "method": "GET",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "folder",
+          "location": "path",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "route_token",
+            "detail": "/models/{folder}"
+          }
+        }
+      ],
       "returns": {
         "kind": "json",
         "summary": "JSON response.",
@@ -103,7 +143,11 @@
         "fields": [],
         "notes": [
           "Returns 404 when the requested resource is not found."
-        ]
+        ],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
@@ -118,14 +162,64 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
       "route": "/upload/image",
       "method": "POST",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "image",
+          "location": "form",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "form_access.get",
+            "detail": "post"
+          }
+        },
+        {
+          "name": "overwrite",
+          "location": "form",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "form_access.get",
+            "detail": "post"
+          }
+        },
+        {
+          "name": "type",
+          "location": "form",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "form_access.get",
+            "detail": "post"
+          },
+          "allowed_values": [
+            "input",
+            "output"
+          ]
+        },
+        {
+          "name": "subfolder",
+          "location": "form",
+          "required": false,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "form_access.get",
+            "detail": "post"
+          },
+          "default": ""
+        }
+      ],
       "returns": {
         "kind": "json",
         "summary": "JSON object with fields: name, subfolder, type, asset.",
@@ -149,14 +243,64 @@
         ],
         "notes": [
           "Returns 400 for validation failures or bad requests."
-        ]
+        ],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
       "route": "/upload/mask",
       "method": "POST",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "image",
+          "location": "form",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "form_access.get",
+            "detail": "post"
+          }
+        },
+        {
+          "name": "overwrite",
+          "location": "form",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "form_access.get",
+            "detail": "post"
+          }
+        },
+        {
+          "name": "type",
+          "location": "form",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "form_access.get",
+            "detail": "post"
+          },
+          "allowed_values": [
+            "input",
+            "output"
+          ]
+        },
+        {
+          "name": "subfolder",
+          "location": "form",
+          "required": false,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "form_access.get",
+            "detail": "post"
+          },
+          "default": ""
+        }
+      ],
       "returns": {
         "kind": "json",
         "summary": "JSON object with fields: name, subfolder, type, asset.",
@@ -180,14 +324,71 @@
         ],
         "notes": [
           "Returns 400 for validation failures or bad requests."
-        ]
+        ],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
       "route": "/view",
       "method": "GET",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "filename",
+          "location": "query",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.subscription",
+            "detail": "request.rel_url.query"
+          }
+        },
+        {
+          "name": "subfolder",
+          "location": "query",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.subscription",
+            "detail": "request.rel_url.query"
+          }
+        },
+        {
+          "name": "preview",
+          "location": "query",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.subscription",
+            "detail": "request.rel_url.query"
+          }
+        },
+        {
+          "name": "channel",
+          "location": "query",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.subscription",
+            "detail": "request.rel_url.query"
+          },
+          "default": ""
+        },
+        {
+          "name": "type",
+          "location": "query",
+          "required": false,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.get",
+            "detail": "request.rel_url.query"
+          },
+          "default": "output"
+        }
+      ],
       "returns": {
         "kind": "file",
         "summary": "File response with inferred content type.",
@@ -195,14 +396,39 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.FileResponse"
+        }
       }
     },
     {
       "route": "/view_metadata/{folder_name}",
       "method": "GET",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "folder_name",
+          "location": "path",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "route_token",
+            "detail": "/view_metadata/{folder_name}"
+          }
+        },
+        {
+          "name": "filename",
+          "location": "query",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.subscription",
+            "detail": "request.rel_url.query"
+          }
+        }
+      ],
       "returns": {
         "kind": "json",
         "summary": "JSON response.",
@@ -213,7 +439,11 @@
         "fields": [],
         "notes": [
           "Returns 404 when the requested resource is not found."
-        ]
+        ],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
@@ -289,7 +519,11 @@
             "name": "torch_vram_free"
           }
         ],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
@@ -304,7 +538,11 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
@@ -319,7 +557,11 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
@@ -334,14 +576,29 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
       "route": "/object_info/{node_class}",
       "method": "GET",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "node_class",
+          "location": "path",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "route_token",
+            "detail": "/object_info/{node_class}"
+          }
+        }
+      ],
       "returns": {
         "kind": "json",
         "summary": "JSON response.",
@@ -349,14 +606,89 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
       "route": "/api/jobs",
       "method": "GET",
       "description": "List all jobs with filtering, sorting, and pagination. Query parameters: status: Filter by status (comma-separated): pending, in_progress, completed, failed workflow_id: Filter by workflow ID sort_by: Sort field: created_at (default), execution_duration sort_order: Sort direction: asc, desc (default) limit: Max items to return (positive integer) offset: Items to skip (non-negative integer, default 0)",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "status",
+          "location": "query",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.get",
+            "detail": "query"
+          }
+        },
+        {
+          "name": "workflow_id",
+          "location": "query",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.get",
+            "detail": "query"
+          }
+        },
+        {
+          "name": "sort_by",
+          "location": "query",
+          "required": false,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.get",
+            "detail": "query"
+          },
+          "default": "created_at",
+          "allowed_values": [
+            "created_at",
+            "execution_duration"
+          ]
+        },
+        {
+          "name": "sort_order",
+          "location": "query",
+          "required": false,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.get",
+            "detail": "query"
+          },
+          "default": "desc",
+          "allowed_values": [
+            "asc",
+            "desc"
+          ]
+        },
+        {
+          "name": "limit",
+          "location": "query",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.get",
+            "detail": "query"
+          }
+        },
+        {
+          "name": "offset",
+          "location": "query",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.get",
+            "detail": "query"
+          }
+        }
+      ],
       "returns": {
         "kind": "json",
         "summary": "JSON object with fields: jobs, pagination, offset, limit, total, has_more.",
@@ -386,14 +718,29 @@
         ],
         "notes": [
           "Returns 400 for validation failures or bad requests."
-        ]
+        ],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
       "route": "/api/jobs/{job_id}",
       "method": "GET",
       "description": "Get a single job by ID.",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "job_id",
+          "location": "path",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "route_token",
+            "detail": "/api/jobs/{job_id}"
+          }
+        }
+      ],
       "returns": {
         "kind": "json",
         "summary": "JSON response.",
@@ -406,14 +753,39 @@
         "notes": [
           "Returns 404 when the requested resource is not found.",
           "Returns 400 for validation failures or bad requests."
-        ]
+        ],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
       "route": "/history",
       "method": "GET",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "max_items",
+          "location": "query",
+          "required": false,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.get",
+            "detail": "request.rel_url.query"
+          }
+        },
+        {
+          "name": "offset",
+          "location": "query",
+          "required": false,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "query_access.get",
+            "detail": "request.rel_url.query"
+          }
+        }
+      ],
       "returns": {
         "kind": "json",
         "summary": "JSON response.",
@@ -421,14 +793,29 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
       "route": "/history/{prompt_id}",
       "method": "GET",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "prompt_id",
+          "location": "path",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "route_token",
+            "detail": "/history/{prompt_id}"
+          }
+        }
+      ],
       "returns": {
         "kind": "json",
         "summary": "JSON response.",
@@ -436,7 +823,11 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
@@ -458,14 +849,89 @@
             "name": "queue_pending"
           }
         ],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
       "route": "/prompt",
       "method": "POST",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "number",
+          "location": "json",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.subscription",
+            "detail": "json_data"
+          }
+        },
+        {
+          "name": "front",
+          "location": "json",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.subscription",
+            "detail": "json_data"
+          }
+        },
+        {
+          "name": "prompt",
+          "location": "json",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.subscription",
+            "detail": "json_data"
+          }
+        },
+        {
+          "name": "partial_execution_targets",
+          "location": "json",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.subscription",
+            "detail": "json_data"
+          }
+        },
+        {
+          "name": "extra_data",
+          "location": "json",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.subscription",
+            "detail": "json_data"
+          }
+        },
+        {
+          "name": "client_id",
+          "location": "json",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.subscription",
+            "detail": "json_data"
+          }
+        },
+        {
+          "name": "prompt_id",
+          "location": "json",
+          "required": false,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.get",
+            "detail": "json_data"
+          }
+        }
+      ],
       "returns": {
         "kind": "json",
         "summary": "JSON object with fields: prompt_id, number, node_errors.",
@@ -486,14 +952,39 @@
         ],
         "notes": [
           "Returns 400 for validation failures or bad requests."
-        ]
+        ],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
       }
     },
     {
       "route": "/queue",
       "method": "POST",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "clear",
+          "location": "json",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.subscription",
+            "detail": "json_data"
+          }
+        },
+        {
+          "name": "delete",
+          "location": "json",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.subscription",
+            "detail": "json_data"
+          }
+        }
+      ],
       "returns": {
         "kind": "empty",
         "summary": "Empty acknowledgement response.",
@@ -501,14 +992,29 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.Response"
+        }
       }
     },
     {
       "route": "/interrupt",
       "method": "POST",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "prompt_id",
+          "location": "json",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.get",
+            "detail": "json_data"
+          }
+        }
+      ],
       "returns": {
         "kind": "empty",
         "summary": "Empty acknowledgement response.",
@@ -516,14 +1022,41 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.Response"
+        }
       }
     },
     {
       "route": "/free",
       "method": "POST",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "unload_models",
+          "location": "json",
+          "required": false,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.get",
+            "detail": "json_data"
+          },
+          "default": false
+        },
+        {
+          "name": "free_memory",
+          "location": "json",
+          "required": false,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.get",
+            "detail": "json_data"
+          },
+          "default": false
+        }
+      ],
       "returns": {
         "kind": "empty",
         "summary": "Empty acknowledgement response.",
@@ -531,14 +1064,39 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.Response"
+        }
       }
     },
     {
       "route": "/history",
       "method": "POST",
       "description": "",
-      "parameters": [],
+      "parameters": [
+        {
+          "name": "clear",
+          "location": "json",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.subscription",
+            "detail": "json_data"
+          }
+        },
+        {
+          "name": "delete",
+          "location": "json",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.subscription",
+            "detail": "json_data"
+          }
+        }
+      ],
       "returns": {
         "kind": "empty",
         "summary": "Empty acknowledgement response.",
@@ -546,7 +1104,11 @@
           200
         ],
         "fields": [],
-        "notes": []
+        "notes": [],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.Response"
+        }
       }
     }
   ]

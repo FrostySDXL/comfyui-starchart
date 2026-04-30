@@ -1,4 +1,5 @@
 import argparse
+import ast
 import json
 import re
 import sys
@@ -78,6 +79,83 @@ def parse_parameters(signature_text: str) -> list[str]:
         if name not in {"self", "cls", "id"} and name:
             names.append(name)
     return names
+
+
+def parse_parameter_details(signature_text: str) -> list[dict]:
+    """Parse parameter details from a Python signature."""
+    compact = " ".join(signature_text.replace("\n", " ").split())
+    details: list[dict] = []
+    depth = 0
+    current = []
+
+    def flush(item_text: str) -> None:
+        item = item_text.strip()
+        if not item or item in {"self", "cls"} or item.startswith("*"):
+            return
+        name_part, sep, remainder = item.partition(":")
+        name = name_part.split("=", 1)[0].strip()
+        if name in {"self", "cls", "id"} or not name:
+            return
+
+        type_hint = None
+        default = None
+        literal_values = None
+        tail = remainder if sep else item[len(name_part):]
+        if sep:
+            type_part, default_sep, default_part = remainder.partition("=")
+            type_hint = type_part.strip() or None
+            if default_sep:
+                try:
+                    default = ast.literal_eval(default_part.strip())
+                except (SyntaxError, ValueError):
+                    default = default_part.strip()
+        else:
+            _name_only, default_sep, default_part = item.partition("=")
+            if default_sep:
+                try:
+                    default = ast.literal_eval(default_part.strip())
+                except (SyntaxError, ValueError):
+                    default = default_part.strip()
+
+        if type_hint:
+            literal_match = re.search(r"Literal\[(.*)\]", type_hint)
+            if literal_match:
+                literal_values = []
+                for value_text in [part.strip() for part in literal_match.group(1).split(",")]:
+                    try:
+                        literal_values.append(ast.literal_eval(value_text))
+                    except (SyntaxError, ValueError):
+                        literal_values.append(value_text)
+
+        detail = {
+            "name": name,
+            "location": "python_signature",
+            "traceability": {
+                "source_type": "source-backed",
+                "strategy": "python_signature",
+            },
+        }
+        if type_hint:
+            detail["type_hint"] = type_hint
+        if default is not None:
+            detail["default"] = default
+        if literal_values:
+            detail["allowed_values"] = literal_values
+        details.append(detail)
+
+    for char in compact:
+        if char == "," and depth == 0:
+            flush("".join(current))
+            current = []
+            continue
+        if char in "([{":
+            depth += 1
+        elif char in ")]}" and depth > 0:
+            depth -= 1
+        current.append(char)
+
+    flush("".join(current))
+    return details
 
 
 def _extract_nested_class_block(block: str, class_name: str) -> str | None:
@@ -199,18 +277,22 @@ def extract_io_types(io_text: str, io_path: str) -> list[dict]:
         input_class = input_class_match.group(1) if input_class_match else None
 
         input_params: list[str] = []
+        input_parameter_details: list[dict] = []
         input_block = _extract_nested_class_block(block, "Input")
         init_match = INPUT_INIT_RE.search(input_block) if input_block else None
         if init_match:
-            input_params = parse_parameters(init_match.group(1))
+            input_parameter_details = parse_parameter_details(init_match.group(1))
+            input_params = [detail["name"] for detail in input_parameter_details]
 
         output_params: list[str] = []
+        output_parameter_details: list[dict] = []
         output_class_match = OUTPUT_CLASS_RE.search(block)
         if output_class_match:
             output_block = _extract_nested_class_block(block, "Output") or block[output_class_match.start():]
             output_init_match = OUTPUT_INIT_RE.search(output_block)
             if output_init_match:
-                output_params = parse_parameters(output_init_match.group(1))
+                output_parameter_details = parse_parameter_details(output_init_match.group(1))
+                output_params = [detail["name"] for detail in output_parameter_details]
 
         type_hint = resolve_type_hint(class_name)
 
@@ -225,6 +307,8 @@ def extract_io_types(io_text: str, io_path: str) -> list[dict]:
                 "input_class": input_class,
                 "input_parameters": input_params,
                 "output_parameters": output_params,
+                "input_parameter_details": input_parameter_details,
+                "output_parameter_details": output_parameter_details,
                 "type_hint": type_hint,
                 "defined_in": normalize_repo_path(io_path),
                 "is_widget": is_widget,
@@ -241,7 +325,7 @@ def extract_basic_input_shapes(basic_types_text: str) -> dict[str, str]:
     }
 
 
-def extract_typed_input_shapes(basic_types_text: str) -> dict[str, dict]:
+def extract_typed_input_shapes(basic_types_text: str, basic_types_path: str) -> dict[str, dict]:
     """Extract TypedDict classes with their fields and descriptions."""
     result: dict[str, dict] = {}
     lines = basic_types_text.splitlines()
@@ -287,11 +371,16 @@ def extract_typed_input_shapes(basic_types_text: str) -> dict[str, dict]:
                     fields[field_name] = {"type": type_hint}
                     if field_doc:
                         fields[field_name]["description"] = field_doc
+                    fields[field_name]["traceability"] = {
+                        "source_type": "source-backed",
+                        "strategy": "typed_dict_field",
+                    }
                 else:
                     i += 1
 
             result[name] = {
                 "description": description,
+                "defined_in": normalize_repo_path(basic_types_path),
                 "fields": fields,
             }
         else:
@@ -371,7 +460,7 @@ def main() -> int:
         "object_info_fields": extract_object_info_fields(server_text),
         "io_types": extract_io_types(io_text, str(io_path)),
         "basic_input_shapes": extract_basic_input_shapes(basic_types_text),
-        "typed_input_shapes": extract_typed_input_shapes(basic_types_text),
+        "typed_input_shapes": extract_typed_input_shapes(basic_types_text, str(basic_types_path)),
         "coverage": {
             "description": (
                 "Extracted from pinned source files with runtime /object_info enrichment."

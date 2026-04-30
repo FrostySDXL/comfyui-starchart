@@ -9,33 +9,33 @@ Generated from `references/raw/server_endpoints.json`.
 
 ## Route Summary
 
-| Method | Route | Description |
-| --- | --- | --- |
-| GET | /ws |  |
-| GET | / |  |
-| GET | /embeddings |  |
-| GET | /models |  |
-| GET | /models/{folder} |  |
-| GET | /extensions |  |
-| POST | /upload/image |  |
-| POST | /upload/mask |  |
-| GET | /view |  |
-| GET | /view_metadata/{folder_name} |  |
-| GET | /system_stats |  |
-| GET | /features |  |
-| GET | /prompt |  |
-| GET | /object_info |  |
-| GET | /object_info/{node_class} |  |
-| GET | /api/jobs | List all jobs with filtering, sorting, and pagination. Query parameters: status: Filter by status (comma-separated): pending, in_progress, completed, failed workflow_id: Filter by workflow ID sort_by: Sort field: created_at (default), execution_duration sort_order: Sort direction: asc, desc (default) limit: Max items to return (positive integer) offset: Items to skip (non-negative integer, default 0) |
-| GET | /api/jobs/{job_id} | Get a single job by ID. |
-| GET | /history |  |
-| GET | /history/{prompt_id} |  |
-| GET | /queue |  |
-| POST | /prompt |  |
-| POST | /queue |  |
-| POST | /interrupt |  |
-| POST | /free |  |
-| POST | /history |  |
+| Method | Route | Description | Parameters |
+| --- | --- | --- | --- |
+| GET | /ws |  | clientId (query) default= |
+| GET | / |  | - |
+| GET | /embeddings |  | - |
+| GET | /models |  | - |
+| GET | /models/{folder} |  | folder (path) |
+| GET | /extensions |  | - |
+| POST | /upload/image |  | image (form); overwrite (form); type (form); subfolder (form) default= |
+| POST | /upload/mask |  | image (form); overwrite (form); type (form); subfolder (form) default= |
+| GET | /view |  | filename (query); subfolder (query); preview (query); channel (query) default=; type (query) default=output |
+| GET | /view_metadata/{folder_name} |  | folder_name (path); filename (query) |
+| GET | /system_stats |  | - |
+| GET | /features |  | - |
+| GET | /prompt |  | - |
+| GET | /object_info |  | - |
+| GET | /object_info/{node_class} |  | node_class (path) |
+| GET | /api/jobs | List all jobs with filtering, sorting, and pagination. Query parameters: status: Filter by status (comma-separated): pending, in_progress, completed, failed workflow_id: Filter by workflow ID sort_by: Sort field: created_at (default), execution_duration sort_order: Sort direction: asc, desc (default) limit: Max items to return (positive integer) offset: Items to skip (non-negative integer, default 0) | status (query); workflow_id (query); sort_by (query) default=created_at; sort_order (query) default=desc; limit (query); offset (query) |
+| GET | /api/jobs/{job_id} | Get a single job by ID. | job_id (path) |
+| GET | /history |  | max_items (query); offset (query) |
+| GET | /history/{prompt_id} |  | prompt_id (path) |
+| GET | /queue |  | - |
+| POST | /prompt |  | number (json); front (json); prompt (json); partial_execution_targets (json); extra_data (json); client_id (json); prompt_id (json) |
+| POST | /queue |  | clear (json); delete (json) |
+| POST | /interrupt |  | prompt_id (json) |
+| POST | /free |  | unload_models (json) default=False; free_memory (json) default=False |
+| POST | /history |  | clear (json); delete (json) |
 
 ## Response Summary
 

@@ -32,6 +32,27 @@ def _format_notes(notes: list[str]) -> str:
     return " ".join(note.strip() for note in notes if note.strip()) or "-"
 
 
+def _format_parameters(parameters: list[dict]) -> str:
+    if not parameters:
+        return "-"
+    rendered = []
+    for parameter in parameters:
+        if isinstance(parameter, str):
+            rendered.append(parameter)
+            continue
+        if not isinstance(parameter, dict):
+            rendered.append(str(parameter))
+            continue
+        name = parameter.get("name", "")
+        location = parameter.get("location", "")
+        default = parameter.get("default")
+        piece = f"{name} ({location})" if location else name
+        if default is not None:
+            piece += f" default={default}"
+        rendered.append(piece)
+    return "; ".join(rendered) if rendered else "-"
+
+
 def _format_sources(sources: object) -> str:
     if isinstance(sources, list):
         cleaned = [str(source) for source in sources if str(source).strip()]
@@ -71,14 +92,14 @@ def build_markdown(data: dict) -> str:
             "",
             "## Route Summary",
             "",
-            "| Method | Route | Description |",
-            "| --- | --- | --- |",
+            "| Method | Route | Description | Parameters |",
+            "| --- | --- | --- | --- |",
         ]
     )
 
     for endpoint in endpoints:
         lines.append(
-            f"| {endpoint.get('method', '')} | {endpoint.get('route', '')} | {endpoint.get('description', '')} |"
+            f"| {endpoint.get('method', '')} | {endpoint.get('route', '')} | {endpoint.get('description', '')} | {_escape_cell(_format_parameters(endpoint.get('parameters', [])))} |"
         )
 
     lines.extend(

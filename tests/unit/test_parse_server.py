@@ -386,6 +386,95 @@ async def upload_image(request):
             "JSON object with fields: name, subfolder, type, asset.",
         )
 
+    def test_extracts_route_and_query_parameter_details(self):
+        sample = '''
+@routes.get("/models/{folder}")
+async def get_models(request):
+    folder = request.match_info.get("folder", None)
+    limit = request.rel_url.query.get("limit", 50)
+    sort_order = request.rel_url.query.get("sort_order", "desc")
+    if sort_order not in ["asc", "desc"]:
+        return web.json_response({"error": "bad sort order"}, status=400)
+    if folder not in folder_paths.folder_names_and_paths:
+        return web.Response(status=404)
+    return web.json_response({"items": []})
+'''
+
+        with tempfile.TemporaryDirectory() as tmp:
+            server_path = Path(tmp) / "server.py"
+            server_path.write_text(sample, encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(server_path)],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+        params = {(param["name"], param["location"]): param for param in data["endpoints"][0]["parameters"]}
+        self.assertTrue(params[("folder", "path")]["required"])
+        self.assertEqual(params[("limit", "query")]["default"], 50)
+        self.assertEqual(params[("sort_order", "query")]["allowed_values"], ["asc", "desc"])
+        self.assertEqual(
+            params[("folder", "path")]["traceability"]["strategy"],
+            "route_token",
+        )
+
+    def test_extracts_form_parameters_from_helper(self):
+        sample = '''
+def image_upload(post):
+    image = post.get("image")
+    overwrite = post.get("overwrite", False)
+    return web.json_response({"ok": True})
+
+@routes.post("/upload/image")
+async def upload_image(request):
+    post = await request.post()
+    return image_upload(post)
+'''
+
+        with tempfile.TemporaryDirectory() as tmp:
+            server_path = Path(tmp) / "server.py"
+            server_path.write_text(sample, encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(server_path)],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+        params = {(param["name"], param["location"]): param for param in data["endpoints"][0]["parameters"]}
+        self.assertIn(("image", "form"), params)
+        self.assertEqual(params[("overwrite", "form")]["default"], False)
+
+    def test_return_traceability_added(self):
+        sample = '''
+@routes.get("/ws")
+async def websocket_handler(request):
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
+    return ws
+'''
+        with tempfile.TemporaryDirectory() as tmp:
+            server_path = Path(tmp) / "server.py"
+            server_path.write_text(sample, encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(server_path)],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+        returns = data["endpoints"][0]["returns"]
+        self.assertEqual(returns["traceability"]["strategy"], "web.WebSocketResponse")
+
     def test_sibling_helper_definitions_do_not_contaminate_route(self):
         """Top-level helpers after a route should not leak fields into that route."""
         sample = '''

@@ -189,6 +189,22 @@ ENDPOINT_SCHEMA = {
     "returns": (dict, True),
 }
 
+TRACEABILITY_SCHEMA = {
+    "source_type": (str, True),
+    "strategy": (str, True),
+    "detail": (str, False),
+}
+
+PARAMETER_SCHEMA = {
+    "name": (str, True),
+    "location": (str, True),
+    "type_hint": ((str, type(None)), False),
+    "required": (bool, False),
+    "default": ((str, int, float, bool, type(None)), False),
+    "allowed_values": (list, False),
+    "traceability": (dict, False),
+}
+
 # Structured return schema for endpoint responses.
 # Legacy string placeholders are rejected; extractors must emit structured dicts.
 RETURN_SCHEMA = {
@@ -197,6 +213,7 @@ RETURN_SCHEMA = {
     "status_codes": (list, True),
     "fields": (list, True),
     "notes": (list, True),
+    "traceability": (dict, False),
 }
 
 # Field descriptor inside returns.fields
@@ -227,6 +244,16 @@ HOOK_SCHEMA = {
     "description": (str, True),
     "defined_in": ((str, type(None)), True),
     "invoked_in": (list, True),
+    "signature": ((str, type(None)), False),
+    "arguments": (list, False),
+    "return_type": ((str, type(None)), False),
+    "invocation_style": (list, False),
+    "traceability": (dict, False),
+}
+
+HOOK_ARGUMENT_SCHEMA = {
+    "name": (str, True),
+    "type_hint": ((str, type(None)), False),
 }
 
 # IO type schema
@@ -236,9 +263,23 @@ IO_TYPE_SCHEMA = {
     "input_class": ((str, type(None)), True),
     "input_parameters": (list, True),
     "output_parameters": (list, False),
+    "input_parameter_details": (list, False),
+    "output_parameter_details": (list, False),
     "type_hint": ((str, type(None)), False),
     "defined_in": (str, False),
     "is_widget": (bool, False),
+}
+
+TYPED_INPUT_SHAPE_SCHEMA = {
+    "description": (str, True),
+    "fields": (dict, True),
+    "defined_in": (str, False),
+}
+
+TYPED_INPUT_FIELD_SCHEMA = {
+    "type": (str, True),
+    "description": (str, False),
+    "traceability": (dict, False),
 }
 
 
@@ -402,6 +443,54 @@ def _type_label(expected_type) -> str:
     return expected_type.__name__
 
 
+def validate_traceability(traceability: dict, filename: str, path: str) -> list[str]:
+    """Validate a traceability/provenance object."""
+    errors = []
+    for key, (expected_type, required) in TRACEABILITY_SCHEMA.items():
+        if key not in traceability:
+            if required:
+                errors.append(f"{filename}: {path} missing required key '{key}'")
+            continue
+        if not _check_type(traceability[key], expected_type):
+            errors.append(
+                f"{filename}: {path}.{key} expected {_type_label(expected_type)}, "
+                f"got {type(traceability[key]).__name__}"
+            )
+    return errors
+
+
+def validate_parameter_details(parameters: list, filename: str, path: str) -> list[str]:
+    """Validate endpoint or io-parameter detail entries."""
+    errors = []
+    for i, parameter in enumerate(parameters):
+        if not isinstance(parameter, dict):
+            errors.append(f"{filename}: {path}[{i}] is not a dict")
+            continue
+        for key, (expected_type, required) in PARAMETER_SCHEMA.items():
+            if key not in parameter:
+                if required:
+                    errors.append(f"{filename}: {path}[{i}] missing required key '{key}'")
+                continue
+            if not _check_type(parameter[key], expected_type):
+                errors.append(
+                    f"{filename}: {path}[{i}].{key} expected {_type_label(expected_type)}, "
+                    f"got {type(parameter[key]).__name__}"
+                )
+
+        allowed_values = parameter.get("allowed_values", [])
+        if isinstance(allowed_values, list):
+            for j, value in enumerate(allowed_values):
+                if not isinstance(value, (str, int, float, bool)):
+                    errors.append(
+                        f"{filename}: {path}[{i}].allowed_values[{j}] expected primitive, got {type(value).__name__}"
+                    )
+
+        traceability = parameter.get("traceability")
+        if isinstance(traceability, dict):
+            errors.extend(validate_traceability(traceability, filename, f"{path}[{i}].traceability"))
+    return errors
+
+
 def validate_returns(returns: dict, filename: str, path: str) -> list[str]:
     """Validate a structured returns dict against RETURN_SCHEMA."""
     errors = []
@@ -454,6 +543,10 @@ def validate_returns(returns: dict, filename: str, path: str) -> list[str]:
                     f"{filename}: {path}.notes[{j}] expected str, got {type(note).__name__}"
                 )
 
+    traceability = returns.get("traceability")
+    if isinstance(traceability, dict):
+        errors.extend(validate_traceability(traceability, filename, f"{path}.traceability"))
+
     return errors
 
 
@@ -481,6 +574,10 @@ def validate_endpoints(data: dict, filename: str) -> list[str]:
         if isinstance(returns, dict):
             errors.extend(validate_returns(returns, filename, f"endpoints[{i}].returns"))
 
+        parameters = ep.get("parameters")
+        if isinstance(parameters, list):
+            errors.extend(validate_parameter_details(parameters, filename, f"endpoints[{i}].parameters"))
+
     return errors
 
 
@@ -502,6 +599,37 @@ def validate_hooks(data: dict, filename: str) -> list[str]:
                     f"{filename}: hooks[{i}].{key} expected {_type_label(expected_type)}, "
                     f"got {type(hook[key]).__name__}"
                 )
+
+        arguments = hook.get("arguments", [])
+        if isinstance(arguments, list):
+            for j, argument in enumerate(arguments):
+                if not isinstance(argument, dict):
+                    errors.append(f"{filename}: hooks[{i}].arguments[{j}] is not a dict")
+                    continue
+                for key, (expected_type, required) in HOOK_ARGUMENT_SCHEMA.items():
+                    if key not in argument:
+                        if required:
+                            errors.append(
+                                f"{filename}: hooks[{i}].arguments[{j}] missing required key '{key}'"
+                            )
+                        continue
+                    if not _check_type(argument[key], expected_type):
+                        errors.append(
+                            f"{filename}: hooks[{i}].arguments[{j}].{key} expected {_type_label(expected_type)}, "
+                            f"got {type(argument[key]).__name__}"
+                        )
+
+        invocation_style = hook.get("invocation_style", [])
+        if isinstance(invocation_style, list):
+            for j, style in enumerate(invocation_style):
+                if not isinstance(style, str):
+                    errors.append(
+                        f"{filename}: hooks[{i}].invocation_style[{j}] expected str, got {type(style).__name__}"
+                    )
+
+        traceability = hook.get("traceability")
+        if isinstance(traceability, dict):
+            errors.extend(validate_traceability(traceability, filename, f"hooks[{i}].traceability"))
     return errors
 
 
@@ -523,6 +651,70 @@ def validate_io_types(data: dict, filename: str) -> list[str]:
                     f"{filename}: io_types[{i}].{key} expected {_type_label(expected_type)}, "
                     f"got {type(entry[key]).__name__}"
                 )
+
+        for detail_key in ("input_parameter_details", "output_parameter_details"):
+            details = entry.get(detail_key)
+            if isinstance(details, list):
+                errors.extend(validate_parameter_details(details, filename, f"io_types[{i}].{detail_key}"))
+    return errors
+
+
+def validate_typed_input_shapes(data: dict, filename: str) -> list[str]:
+    """Validate typed_input_shapes enrichment blocks."""
+    errors = []
+    typed_input_shapes = data.get("typed_input_shapes", {})
+    if not isinstance(typed_input_shapes, dict):
+        return errors
+
+    for shape_name, shape in typed_input_shapes.items():
+        if not isinstance(shape, dict):
+            errors.append(f"{filename}: typed_input_shapes['{shape_name}'] is not a dict")
+            continue
+
+        for key, (expected_type, required) in TYPED_INPUT_SHAPE_SCHEMA.items():
+            if key not in shape:
+                if required:
+                    errors.append(
+                        f"{filename}: typed_input_shapes['{shape_name}'] missing required key '{key}'"
+                    )
+                continue
+            if not _check_type(shape[key], expected_type):
+                errors.append(
+                    f"{filename}: typed_input_shapes['{shape_name}'].{key} expected {_type_label(expected_type)}, "
+                    f"got {type(shape[key]).__name__}"
+                )
+
+        fields = shape.get("fields", {})
+        if isinstance(fields, dict):
+            for field_name, field in fields.items():
+                if not isinstance(field, dict):
+                    errors.append(
+                        f"{filename}: typed_input_shapes['{shape_name}'].fields['{field_name}'] is not a dict"
+                    )
+                    continue
+                for key, (expected_type, required) in TYPED_INPUT_FIELD_SCHEMA.items():
+                    if key not in field:
+                        if required:
+                            errors.append(
+                                f"{filename}: typed_input_shapes['{shape_name}'].fields['{field_name}'] missing required key '{key}'"
+                            )
+                        continue
+                    if not _check_type(field[key], expected_type):
+                        errors.append(
+                            f"{filename}: typed_input_shapes['{shape_name}'].fields['{field_name}'].{key} expected {_type_label(expected_type)}, "
+                            f"got {type(field[key]).__name__}"
+                        )
+
+                traceability = field.get("traceability")
+                if isinstance(traceability, dict):
+                    errors.extend(
+                        validate_traceability(
+                            traceability,
+                            filename,
+                            f"typed_input_shapes['{shape_name}'].fields['{field_name}'].traceability",
+                        )
+                    )
+
     return errors
 
 
@@ -723,6 +915,8 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
         all_errors.extend(errors)
     elif json_file.name == "node_api_schema.json":
         errors = validate_io_types(data, json_file.name)
+        all_errors.extend(errors)
+        errors = validate_typed_input_shapes(data, json_file.name)
         all_errors.extend(errors)
     elif json_file.name == "object_info_runtime.json":
         errors = validate_object_info_runtime(data, json_file.name)
