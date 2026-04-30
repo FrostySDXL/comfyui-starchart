@@ -27,8 +27,10 @@ The one-command wrapper for local verification:
 python scripts/verify/run_all.py
 ```
 
-`run_all.py` already includes the test suite and MkDocs build, so you do not need to
-run those separately if you use the wrapper.
+Use `run_all.py` as the default maintainer-grade before-push check. It mirrors
+the CI job's blocking checks in the same order. Advisory CI checks remain
+separate, so you only need to run them locally when your change touches that
+surface.
 
 ---
 
@@ -72,9 +74,9 @@ guides, and tooling artifacts.
 | Update the community catalog | `references/community/ecosystem_packages.json` + `docs/reference/community-maintenance-policy.md` | The JSON source file | `validate_schema.py`, `community_metadata.py`, `community_staleness.py`, `generate_community_pages.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `cross_references.py`, `mkdocs build` |
 | Update extracted references after a snapshot refresh | Matching extractor in `scripts/extract/` + snapshot files in `references/snapshots/<date>/` | Run the extractor script | `python scripts/verify/extraction_idempotency.py` + `validate_schema.py` |
 | Add a new extractor | An existing extractor in `scripts/extract/` + its test in `tests/unit/` | New script + new test | `python -m unittest discover -s tests -v` |
-| Add a verification script | An existing verifier in `scripts/verify/` + its test in `tests/unit/` | New script + new test + add to `.github/workflows/ci.yml` if needed | `python -m unittest discover -s tests -v` |
+| Add a verification script | An existing verifier in `scripts/verify/` + its test in `tests/unit/` | New script + new test + update `run_all.py` / `.github/workflows/ci.yml` intentionally | `python -m unittest discover -s tests -v` |
 | Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Run the script with `--core-version` and/or `--frontend-version` | All verify scripts (`run_all.py`) |
-| Change CI behavior | Relevant workflow in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs | Local verification first, then inspect the Actions tab after push |
+| Change CI behavior | Relevant workflow in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then inspect the Actions tab after push |
 
 
 ## Task Playbooks
@@ -155,8 +157,16 @@ The ecosystem map at `docs/ecosystem/map.md` is generated. Do not edit it by han
    - Print human-readable error messages.
 2. Add tests in `tests/unit/test_<name>.py`.
    - Include at minimum: import check, smoke test, edge cases.
-3. Add the script to `.github/workflows/ci.yml` if it should run in CI.
-4. Run the full test suite:
+3. Add it to `scripts/verify/run_all.py` if it should be part of the default
+   local blocking gate before push.
+4. Add the script to `.github/workflows/ci.yml` if it should run in CI.
+5. Choose CI placement intentionally:
+   - **Blocking:** add it to the main CI sequence when failure should stop merge
+     and maintainers should normally catch it locally through `run_all.py`.
+   - **Advisory:** add it with `continue-on-error: true` when the signal is
+     useful but still needs human follow-up or is expected to be noisy.
+6. Treat this section as the authoritative home for future verifier placement.
+7. Run the full test suite:
    ```bash
    python -m unittest discover -s tests -v
    ```
@@ -199,7 +209,10 @@ If a file is generated or extracted, change its source and rerun the pipeline ra
 
 ## Verification Commands Reference
 
-Run the narrowest relevant checks first, then broader checks before completion.
+Run the narrowest relevant checks first while iterating, then
+`python scripts/verify/run_all.py` before opening a PR or handing maintainer
+workflow changes to review. The wrapper mirrors the CI job's blocking checks;
+advisory checks remain separate.
 
 ### Essential (run these for almost every change)
 
@@ -227,6 +240,8 @@ python -m mkdocs build
 ```bash
 python scripts/verify/run_all.py
 ```
+
+This is the recommended maintainer pre-push command.
 
 ### Individual verifiers
 

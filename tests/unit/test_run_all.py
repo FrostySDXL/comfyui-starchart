@@ -136,6 +136,8 @@ class RunAllScriptTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertIn("--skip-tests", result.stdout)
         self.assertIn("--skip-mkdocs", result.stdout)
+        self.assertIn("blocking local verification", result.stdout)
+        self.assertIn("Advisory checks", result.stdout)
 
 
 if __name__ == "__main__":

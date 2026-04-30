@@ -10,6 +10,12 @@ python -m mkdocs build
 
 Serve locally: `python -m mkdocs serve`
 
+Default maintainer pre-push wrapper:
+
+```bash
+python scripts/verify/run_all.py
+```
+
 ## 0.5. Decision Tree
 
 | Task | Read first | Edit | Verify |
@@ -18,10 +24,10 @@ Serve locally: `python -m mkdocs serve`
 | Update extracted references | `references/raw/<file>.json` | Run the matching extractor script | `python scripts/verify/extraction_idempotency.py` |
 | Update community catalog | `references/community/ecosystem_packages.json` + `docs/reference/community-maintenance-policy.md` | Edit JSON source; regenerate page | `python scripts/verify/validate_schema.py` + `python scripts/verify/community_metadata.py` + `python scripts/verify/community_staleness.py` + `python scripts/generate/generate_community_pages.py` + `python scripts/verify/community_generated_freshness.py` + `python scripts/verify/community_page_coverage.py` + `python scripts/verify/cross_references.py` + `python -m mkdocs build` |
 | Add a new extractor | Existing extractor in `scripts/extract/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
-| Add a verification script | Existing script in `scripts/verify/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
+| Add a verification script | Existing script in `scripts/verify/` | New script + test in `tests/unit/` + intentional `run_all.py` / CI placement | `python -m unittest discover -s tests` |
 | Refresh upstream version | `scripts/refresh_snapshots.py` | Run with `--core-version` / `--frontend-version` | All verify scripts pass |
 | Runtime extraction | `scripts/extract/parse_from_api.py` | Run with `--url` and `--output` | `validate_schema.py` passes on output |
-| Change CI workflow | relevant file in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs when operator behavior changes | Inspect YAML carefully, run affected local verification, then check Actions tab after push |
+| Change CI workflow | relevant file in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs when operator behavior changes | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then check Actions tab after push |
 
 ## 0.6. Consumer Agent Orientation
 
@@ -91,7 +97,7 @@ Non-goals: official docs replacement, community wiki, package registry.
 ## 4. Key Commands
 
 ```bash
-# One-command wrapper
+# One-command wrapper for the blocking local gate mirrored by CI
 python scripts/verify/run_all.py
 
 # Tests
@@ -136,6 +142,9 @@ python scripts/verify/runtime_smoke.py --url <url>
 python scripts/verify/wait_for_runtime.py --url <endpoint>
 ```
 
+Use narrow checks while iterating. Use `python scripts/verify/run_all.py`
+before calling maintainer workflow changes complete.
+
 ## 5. Task Playbooks
 
 ### Updating extracted references
@@ -173,7 +182,8 @@ python scripts/verify/wait_for_runtime.py --url <endpoint>
 
 1. Create `scripts/verify/<name>.py` -- exit 0 on pass, exit 1 on fail
 2. Add test in `tests/unit/test_<name>.py` -- import check, smoke test, edge cases
-3. Add step to `.github/workflows/ci.yml` if it should run in CI
+3. Add it to `scripts/verify/run_all.py` if it should be part of the default local blocking gate
+4. Add step to `.github/workflows/ci.yml` with an explicit blocking vs advisory choice
 
 ### Adding a new extractor
 

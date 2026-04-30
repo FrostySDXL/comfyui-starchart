@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-"""One-command verification wrapper for maintainers.
+"""One-command blocking verification wrapper for maintainers.
 
-Runs the standard verification sequence:
+Runs the default local pre-push sequence in the same blocking order as the
+main CI job:
     1. Unit tests
     2. cross_references.py
     3. validate_schema.py
     4. community_generated_freshness.py
     5. community_page_coverage.py
     6. mkdocs build
+
+Advisory/non-blocking checks remain separate and are not included here.
 
 Usage:
     python scripts/verify/run_all.py
@@ -43,10 +46,22 @@ def run_step(cmd: list[str], description: str, cwd: str | None = None) -> bool:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Run the standard verification sequence."
+        description="Run the default blocking local verification sequence before push.",
+        epilog=(
+            "Mirrors the main CI job's blocking checks. Advisory checks such as "
+            "stale_content.py and extraction_idempotency.py stay separate."
+        ),
     )
-    parser.add_argument("--skip-tests", action="store_true", help="Skip unit tests")
-    parser.add_argument("--skip-mkdocs", action="store_true", help="Skip MkDocs build")
+    parser.add_argument(
+        "--skip-tests",
+        action="store_true",
+        help="Skip unit tests during focused iteration; rerun the full wrapper before push.",
+    )
+    parser.add_argument(
+        "--skip-mkdocs",
+        action="store_true",
+        help="Skip the docs build during focused iteration; rerun the full wrapper before push.",
+    )
     args = parser.parse_args()
 
     steps = []

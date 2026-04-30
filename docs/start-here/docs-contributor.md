@@ -63,6 +63,12 @@ If you added or changed a verification script or extractor, also run:
 python -m unittest discover -s tests -v
 ```
 
+If your work crosses into maintainer workflow surfaces such as
+`scripts/verify/`, `.github/workflows/`, or repo-local operational guidance,
+use targeted checks while iterating and then follow the authoritative
+maintainer verification path in `CONTRIBUTING.md`, including
+`python scripts/verify/run_all.py` before handoff.
+
 ## Where Generated vs Hand-Authored Boundaries Matter
 
 - **Hand-authored:** pages under `docs/`, `examples/`, and editorial reference files.
