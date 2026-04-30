@@ -1,7 +1,7 @@
 # ComfyUI Knowledge Base
 
-**Last Updated:** 2026-04-29
-**ComfyUI Version Pin:** Core `v0.19.3` (`3086026401180c9216bcb6ace442a4e3587d2c66`) with official frontend `v1.42.11` (`3dc4061d484d61cb89366de25bf5e2f8a65da4d0`) for pinned snapshots and extracted reference data
+**Last Updated:** 2026-04-30
+**ComfyUI Version Pin:** Core `v0.20.1` (`64b8457f55cd7fb54ca7a956d9c73b505e903e0c`) with official frontend `v1.44.13` (`389ff8ba49468cc3afa11aec5778224689a8f9b9`) for the current pinned snapshots and extracted reference data
 
 **Evidence:** Scaffold
 
@@ -95,9 +95,9 @@ included in the built output.
 ### Extracting references
 
 ```bash
-python scripts/extract/parse_server.py path/to/server.py --version v0.19.3 --commit 3086026401180c9216bcb6ace442a4e3587d2c66
-python scripts/extract/parse_hooks.py path/to/app.ts path/to/comfy.ts path/to/litegraphService.ts --version v1.42.11 --commit 3dc4061d484d61cb89366de25bf5e2f8a65da4d0
-python scripts/extract/parse_node_api_schema.py path/to/server.py path/to/_io.py path/to/basic_types.py --version v0.19.3 --commit 3086026401180c9216bcb6ace442a4e3587d2c66
+python scripts/extract/parse_server.py path/to/server.py --version v0.20.1 --commit 64b8457f55cd7fb54ca7a956d9c73b505e903e0c
+python scripts/extract/parse_hooks.py path/to/app.ts path/to/comfy.ts path/to/litegraphService.ts --version v1.44.13 --commit 389ff8ba49468cc3afa11aec5778224689a8f9b9
+python scripts/extract/parse_node_api_schema.py path/to/server.py path/to/_io.py path/to/basic_types.py --version v0.20.1 --commit 64b8457f55cd7fb54ca7a956d9c73b505e903e0c
 python scripts/generate/md_from_json.py
 python scripts/generate/publish_reference_artifacts.py
 ```
@@ -110,10 +110,12 @@ python scripts/generate/generate_community_pages.py
 
 ### Comparing artifact baselines
 
-When a second pinned baseline exists (e.g., after `refresh_snapshots.py`):
+When comparing two pinned baselines after a refresh, preserve the pre-refresh
+`references/raw/` directory first because `refresh_snapshots.py` overwrites the
+canonical raw artifacts in place.
 
 ```bash
-python scripts/generate/generate_snapshot_delta_summary.py --old <old-dir> --new <new-dir> --output docs/artifacts/delta-summary.json
+python scripts/generate/generate_snapshot_delta_summary.py --old <pre-refresh-raw-copy> --new references/raw --output docs/artifacts/delta-summary.json
 ```
 
 ### Refreshing upstream versions
@@ -125,6 +127,7 @@ refresh you are performing.
 python scripts/refresh_snapshots.py --core-version <new-core-version>
 python scripts/refresh_snapshots.py --frontend-version <new-frontend-version>
 python scripts/refresh_snapshots.py --core-version <new-core-version> --frontend-version <new-frontend-version>
+python scripts/generate/publish_reference_artifacts.py
 ```
 
 ## Verification
@@ -181,10 +184,10 @@ The repo supports optional runtime capture from a live ComfyUI instance:
 
 ```bash
 # Capture runtime object_info
-python scripts/extract/parse_from_api.py --url http://127.0.0.1:8188 --version v0.19.3 --commit <sha> --output references/raw/object_info_runtime.json
+python scripts/extract/parse_from_api.py --url http://127.0.0.1:8188 --version v0.20.1 --commit <sha> --output references/raw/object_info_runtime.json
 
 # Hybrid refresh (source + runtime)
-python scripts/refresh_snapshots.py --core-version v0.19.4 --runtime-object-info-url http://127.0.0.1:8188
+python scripts/refresh_snapshots.py --core-version v0.20.1 --runtime-object-info-url http://127.0.0.1:8188
 
 # Runtime smoke checks
 python scripts/verify/runtime_smoke.py --url http://127.0.0.1:8188

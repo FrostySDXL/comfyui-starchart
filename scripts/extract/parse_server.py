@@ -11,7 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.common.path_normalization import normalize_repo_path
+from scripts.common.path_normalization import normalize_repo_relative_path
 
 
 OUTPUT_PATH = REPO_ROOT / "references" / "raw" / "server_endpoints.json"
@@ -633,7 +633,7 @@ def main() -> int:
 
     payload = {
         "metadata": {
-            "sources": [normalize_repo_path(source_path)],
+            "sources": [normalize_repo_relative_path(source_path, REPO_ROOT)],
             "extracted_date": datetime.now().strftime("%Y-%m-%d"),
             "version": args.version or "unversioned",
             "commit": args.commit,

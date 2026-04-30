@@ -210,6 +210,67 @@ class AudioInput(TypedDict):
                 self.assertIn("is_widget", entry)
                 self.assertIn("defined_in", entry)
 
+    def test_metadata_sources_and_defined_in_are_repo_relative_when_inputs_are_in_repo(self):
+        server_sample = '''
+def node_info(node_class):
+    info = {}
+    info['input'] = obj_class.INPUT_TYPES()
+    return info
+'''
+        io_sample = '''
+@comfytype(io_type="BOOLEAN")
+class Boolean(ComfyTypeIO):
+    Type = bool
+'''
+        basic_types_sample = '''
+ImageInput = torch.Tensor
+"""An image tensor."""
+'''
+
+        with tempfile.TemporaryDirectory(dir=REPO_ROOT) as tmp:
+            tmp_path = Path(tmp)
+            server_path = tmp_path / "server.py"
+            io_path = tmp_path / "_io.py"
+            basic_types_path = tmp_path / "basic_types.py"
+            out_path = tmp_path / "node_api_schema.json"
+            server_path.write_text(server_sample, encoding="utf-8")
+            io_path.write_text(io_sample, encoding="utf-8")
+            basic_types_path.write_text(basic_types_sample, encoding="utf-8")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    str(server_path),
+                    str(io_path),
+                    str(basic_types_path),
+                    "--output",
+                    str(out_path),
+                ],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            self.assertEqual(
+                data["metadata"]["sources"],
+                [
+                    server_path.relative_to(REPO_ROOT).as_posix(),
+                    io_path.relative_to(REPO_ROOT).as_posix(),
+                    basic_types_path.relative_to(REPO_ROOT).as_posix(),
+                ],
+            )
+            self.assertEqual(
+                data["io_types"][0]["defined_in"],
+                io_path.relative_to(REPO_ROOT).as_posix(),
+            )
+            self.assertEqual(
+                data["typed_input_shapes"],
+                {},
+            )
+
     def test_bracket_aware_parameter_parsing(self):
         """Parameters with nested generic types like Dict[str, List[float]] should not produce bogus names."""
         # Import the module directly to test parse_parameters

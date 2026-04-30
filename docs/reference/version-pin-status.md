@@ -1,7 +1,7 @@
 # Version Pin Status
 
 **Evidence:** Scaffold
-**Last Updated:** 2026-04-24
+**Last Updated:** 2026-04-30
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.
@@ -17,14 +17,17 @@ reference data.
 
 Pinned source set:
 
-- ComfyUI core tag `v0.19.3`
-- core commit `3086026401180c9216bcb6ace442a4e3587d2c66`
-- official frontend package version `1.42.11`
-- official frontend tag `v1.42.11`
-- frontend commit `3dc4061d484d61cb89366de25bf5e2f8a65da4d0`
+- ComfyUI core tag `v0.20.1`
+- core commit `64b8457f55cd7fb54ca7a956d9c73b505e903e0c`
+- official frontend package version `1.44.13`
+- official frontend tag `v1.44.13`
+- frontend commit `389ff8ba49468cc3afa11aec5778224689a8f9b9`
 
-Pinned files now live under `references/snapshots/2026-04-19/` and the extracted
-JSON in `references/raw/` points at those snapshot files.
+The active pinned files now live under `references/snapshots/2026-04-30/` and
+the extracted JSON in `references/raw/` points at those snapshot files.
+
+The earlier pinned baseline under `references/snapshots/2026-04-19/` is still
+preserved for historical comparison and refresh-path proof.
 
 ## Included Pinned Snapshot Material
 
@@ -52,6 +55,9 @@ These artifacts are also published as static files under `docs/artifacts/`,
 with current copies and versioned copies keyed to the pinned baseline. See
 [Machine-Readable Artifacts](machine-readable-artifacts.md) for the manifest
 and consumption details.
+
+The current published versioned artifact directory is
+`docs/artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30/`.
 
 ## Automation
 

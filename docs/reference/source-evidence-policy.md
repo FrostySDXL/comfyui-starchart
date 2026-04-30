@@ -112,7 +112,7 @@ If a feature is in `master` but not yet in a pinned snapshot, note it: "Source-b
 
 - official docs are cited across the repo
 - several pages also cite upstream source URLs
-- pinned source snapshots have been added under `references/snapshots/2026-04-19/`
+- pinned source snapshots now exist under `references/snapshots/2026-04-19/` and `references/snapshots/2026-04-30/`
 - machine-readable reference files in `references/raw/` now point at those pinned
   snapshot files for their extracted data
 - broader prose documentation still needs ongoing review to replace broad `master`

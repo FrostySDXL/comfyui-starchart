@@ -1,13 +1,13 @@
 # Add Custom Routes
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-30
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_routes
 
 ## Primary Sources
 
 - https://docs.comfy.org/development/comfyui-server/comms_routes
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
+- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py` (v0.20.1, commit 64b8457)
 
 ## Scope
 

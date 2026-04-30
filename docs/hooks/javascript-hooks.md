@@ -1,14 +1,14 @@
 # JavaScript Hooks
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-30
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
 
 ## Primary Sources
 
 - https://docs.comfy.org/custom-nodes/js/javascript_hooks
 - https://docs.comfy.org/custom-nodes/js/javascript_objects_and_hijacking
-- `references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts` (v1.42.11, commit 3dc4061)
+- `references/snapshots/2026-04-30/comfyui-frontend-v1.44.13/src/scripts/app.ts` (v1.44.13, commit 389ff8b)
 
 ## Scope
 

@@ -193,6 +193,31 @@ invokeExtensionsAsync("beforeRegisterNodeDef", nodeType, nodeData, app)
                 ],
             )
 
+    def test_metadata_sources_and_invoked_in_are_repo_relative_when_inputs_are_in_repo(self):
+        sample = '''
+invokeExtensions("beforeRegisterNodeDef", nodeDef, nodeData)
+'''
+
+        with tempfile.TemporaryDirectory(dir=REPO_ROOT) as tmp:
+            tmp_path = Path(tmp)
+            app_path = tmp_path / "app.ts"
+            out_path = tmp_path / "js_hooks.json"
+            app_path.write_text(sample, encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(app_path), "--output", str(out_path)],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            expected_path = app_path.relative_to(REPO_ROOT).as_posix()
+            self.assertEqual(data["metadata"]["sources"], [expected_path])
+            entry = next(hook for hook in data["hooks"] if hook["name"] == "beforeRegisterNodeDef")
+            self.assertEqual(entry["invoked_in"], [expected_path])
+
 
 if __name__ == "__main__":
     unittest.main()

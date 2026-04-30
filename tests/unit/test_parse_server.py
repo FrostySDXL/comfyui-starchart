@@ -95,6 +95,33 @@ def socket():
                 self.assertIn("parameters", ep)
                 self.assertIn("returns", ep)
 
+    def test_metadata_sources_are_repo_relative_when_input_is_in_repo(self):
+        sample = '''
+@routes.get("/history")
+def history():
+    return None
+'''
+
+        with tempfile.TemporaryDirectory(dir=REPO_ROOT) as tmp:
+            tmp_path = Path(tmp)
+            server_path = tmp_path / "server.py"
+            out_path = tmp_path / "server_endpoints.json"
+            server_path.write_text(sample, encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            self.assertEqual(
+                data["metadata"]["sources"],
+                [server_path.relative_to(REPO_ROOT).as_posix()],
+            )
+
     def test_json_response_extraction(self):
         sample = '''
 @routes.get("/models")

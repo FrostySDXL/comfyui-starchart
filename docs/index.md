@@ -1,7 +1,7 @@
 # ComfyUI Knowledge Base
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-24
+**Last Updated:** 2026-04-30
 
 ## Scope
 
@@ -60,7 +60,7 @@ full labeling rules.
 
 ## Current Version Pin
 
-ComfyUI core `v0.19.3` and official frontend `v1.42.11`. Content written
+ComfyUI core `v0.20.1` and official frontend `v1.44.13`. Content written
 against other versions should note the version it applies to.
 
 ## Scope Boundaries

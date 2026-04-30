@@ -1,12 +1,12 @@
 # API Endpoints
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-21
-**Primary Source:** ComfyUI core v0.19.3 `server.py` (pinned snapshot)
+**Last Updated:** 2026-04-30
+**Primary Source:** ComfyUI core v0.20.1 `server.py` (pinned snapshot)
 
 ## Primary Sources
 
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
+- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py` (v0.20.1, commit 64b8457)
 - https://docs.comfy.org/development/comfyui-server/comms_routes
 - https://docs.comfy.org/development/comfyui-server/comms_messages
 

@@ -1,7 +1,7 @@
 # Known Limitations
 
 **Evidence:** Official docs-backed from docs.comfy.org and source-backed from pinned snapshots
-**Last Updated:** 2026-04-22
+**Last Updated:** 2026-04-30
 
 ## Scope
 
@@ -31,7 +31,7 @@ Before adding an entry:
 
 **Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks ; https://docs.comfy.org/development/comfyui-server/comms_routes
 
-**Verified in:** docs.comfy.org pages cited above and this repo's pinned core v0.19.3 / frontend v1.42.11 baseline
+**Verified in:** docs.comfy.org pages cited above and this repo's pinned core v0.20.1 / frontend v1.44.13 baseline
 
 **Status:** Behavioral constraint
 
@@ -47,7 +47,7 @@ mode, use the official `progress` WebSocket event and poll `GET /queue` while
 the prompt is running. After completion, use `GET /history/{prompt_id}` to
 fetch stored outputs and metadata.
 
-**Last verified:** 2026-04-22
+**Last verified:** 2026-04-30
 
 ---
 
@@ -95,9 +95,9 @@ and recoverable if the directory is removed without running the script.
 
 ### Initial WebSocket `status` only exposes queue count, not full queue lists
 
-**Source:** `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py`
+**Source:** `references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py`
 
-**Verified in:** ComfyUI core v0.19.3 pinned snapshot
+**Verified in:** ComfyUI core v0.20.1 pinned snapshot
 
 **Status:** Behavioral constraint
 
@@ -110,15 +110,15 @@ the full `queue_running` and `queue_pending` lists.
 entries themselves. Treat the WebSocket `status` snapshot as a lightweight
 queue-count signal.
 
-**Last verified:** 2026-04-22
+**Last verified:** 2026-04-30
 
 ---
 
 ### `executed` is not emitted for every completed node
 
-**Source:** `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py`
+**Source:** `references/snapshots/2026-04-30/comfyui-core-v0.20.1/execution.py`
 
-**Verified in:** ComfyUI core v0.19.3 pinned snapshot
+**Verified in:** ComfyUI core v0.20.1 pinned snapshot
 
 **Status:** Behavioral constraint
 
@@ -130,7 +130,7 @@ without UI output still execute, but they do not emit this message.
 history lookup together when you need complete execution tracking. Do not use
 `executed` as a proxy for "every node finished."
 
-**Last verified:** 2026-04-22
+**Last verified:** 2026-04-30
 
 ---
 

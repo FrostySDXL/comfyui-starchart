@@ -1,6 +1,6 @@
 {
   "comparison": {
-    "old": "references/raw",
+    "old": "references/raw_backup_before_refresh",
     "new": "references/raw"
   },
   "notes": [
@@ -20,7 +20,27 @@
       "new_count": 19,
       "added": [],
       "removed": [],
-      "changed": []
+      "changed": [
+        "addCustomNodeDefs",
+        "afterConfigureGraph",
+        "beforeConfigureGraph",
+        "beforeRegisterNodeDef",
+        "beforeRegisterVueAppNodeDefs",
+        "getCanvasMenuItems",
+        "getCustomWidgets",
+        "getNodeMenuItems",
+        "getSelectionToolboxCommands",
+        "init",
+        "loadedGraphNode",
+        "nodeCreated",
+        "onAuthTokenRefreshed",
+        "onAuthUserLogout",
+        "onAuthUserResolved",
+        "onNodeOutputsUpdated",
+        "refreshComboInNodes",
+        "registerCustomNodes",
+        "setup"
+      ]
     },
     "node_api_schema": {
       "object_info_fields": {
@@ -32,17 +52,91 @@
       },
       "io_types": {
         "old_count": 68,
-        "new_count": 68,
-        "added": [],
+        "new_count": 69,
+        "added": [
+          "RANGE:Range"
+        ],
         "removed": [],
-        "changed": []
+        "changed": [
+          "*:AnyType",
+          "ACCUMULATION:Accumulation",
+          "AUDIO:Audio",
+          "AUDIO_ENCODER:AudioEncoder",
+          "AUDIO_ENCODER_OUTPUT:AudioEncoderOutput",
+          "BBOX:BBOX",
+          "BOOLEAN:Boolean",
+          "BOUNDING_BOX:BoundingBox",
+          "CLIP:Clip",
+          "CLIP_VISION:ClipVision",
+          "CLIP_VISION_OUTPUT:ClipVisionOutput",
+          "COLOR:Color",
+          "COMBO:Combo",
+          "COMBO:MultiCombo",
+          "COMFY_AUTOGROW_V3:Autogrow",
+          "COMFY_DYNAMICCOMBO_V3:DynamicCombo",
+          "COMFY_DYNAMICSLOT_V3:DynamicSlot",
+          "COMFY_MATCHTYPE_V3:MatchType",
+          "CONDITIONING:Conditioning",
+          "CONTROL_NET:ControlNet",
+          "CURVE:Curve",
+          "FACE_ANALYSIS:FaceAnalysis",
+          "FILE_3D:File3DAny",
+          "FILE_3D_FBX:File3DFBX",
+          "FILE_3D_GLB:File3DGLB",
+          "FILE_3D_GLTF:File3DGLTF",
+          "FILE_3D_OBJ:File3DOBJ",
+          "FILE_3D_STL:File3DSTL",
+          "FILE_3D_USDZ:File3DUSDZ",
+          "FLOAT:Float",
+          "FLOW_CONTROL:FlowControl",
+          "GLIGEN:Gligen",
+          "GUIDER:Guider",
+          "HISTOGRAM:Histogram",
+          "HOOKS:Hooks",
+          "HOOK_KEYFRAMES:HookKeyframes",
+          "IMAGE:Image",
+          "IMAGECOMPARE:ImageCompare",
+          "INT:Int",
+          "LATENT:Latent",
+          "LATENT_OPERATION:LatentOperation",
+          "LATENT_UPSCALE_MODEL:LatentUpscaleModel",
+          "LOAD3D_CAMERA:Load3DCamera",
+          "LOAD_3D:Load3D",
+          "LOAD_3D_ANIMATION:Load3DAnimation",
+          "LORA_MODEL:LoraModel",
+          "LOSS_MAP:LossMap",
+          "MASK:Mask",
+          "MESH:Mesh",
+          "MODEL:Model",
+          "MODEL_PATCH:ModelPatch",
+          "NOISE:Noise",
+          "PHOTOMAKER:Photomaker",
+          "POINT:Point",
+          "SAMPLER:Sampler",
+          "SEGS:SEGS",
+          "SIGMAS:Sigmas",
+          "STRING:String",
+          "STYLE_MODEL:StyleModel",
+          "SVG:SVG",
+          "TIMESTEPS_RANGE:TimestepsRange",
+          "TRACKS:Tracks",
+          "UPSCALE_MODEL:UpscaleModel",
+          "VAE:Vae",
+          "VIDEO:Video",
+          "VOXEL:Voxel",
+          "WAN_CAMERA_EMBEDDING:WanCameraEmbedding",
+          "WEBCAM:Webcam"
+        ]
       },
       "typed_input_shapes": {
         "old_count": 2,
         "new_count": 2,
         "added": [],
         "removed": [],
-        "changed": []
+        "changed": [
+          "AudioInput",
+          "LatentInput"
+        ]
       }
     }
   }

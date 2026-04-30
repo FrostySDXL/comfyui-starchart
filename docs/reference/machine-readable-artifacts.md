@@ -1,7 +1,7 @@
 # Machine-Readable Artifacts
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-04-29
+**Last Updated:** 2026-04-30
 
 ## Scope
 
@@ -125,8 +125,9 @@ Use it to answer questions like:
 - whether object-info fields, I/O types, or typed input shapes drifted
 
 Do not use it as runtime truth. It compares checked-in artifact baselines only.
-Plan K establishes the generator and output shape; Plan J is responsible for the
-first real two-baseline proof after a second snapshot baseline exists.
+When generating this file after a refresh, preserve a copy of the pre-refresh
+`references/raw/` directory first and use that preserved copy as `--old`. The
+refresh script overwrites `references/raw/` in place.
 
 ## Repo Sources vs Published Copies
 
@@ -168,6 +169,13 @@ core-<core-version>_frontend-<frontend-version>_<oldest-extracted-date>
 When upstream snapshots are refreshed, running the packaging script generates a
 new version key and new versioned copies. The `current/` copies are overwritten,
 but the versioned copies are preserved until explicitly removed.
+
+For baseline-to-baseline comparisons, the proven maintainer sequence is:
+
+1. preserve the current `references/raw/` directory
+2. run `scripts/refresh_snapshots.py`
+3. run `scripts/generate/publish_reference_artifacts.py`
+4. run `scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output docs/artifacts/delta-summary.json`
 
 ## Bounded Usage Examples
 

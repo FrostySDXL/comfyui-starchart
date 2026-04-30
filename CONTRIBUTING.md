@@ -75,7 +75,7 @@ guides, and tooling artifacts.
 | Update extracted references after a snapshot refresh | Matching extractor in `scripts/extract/` + snapshot files in `references/snapshots/<date>/` | Run the extractor script | `python scripts/verify/extraction_idempotency.py` + `validate_schema.py` |
 | Add a new extractor | An existing extractor in `scripts/extract/` + its test in `tests/unit/` | New script + new test | `python -m unittest discover -s tests -v` |
 | Add a verification script | An existing verifier in `scripts/verify/` + its test in `tests/unit/` | New script + new test + update `run_all.py` / `.github/workflows/ci.yml` intentionally | `python -m unittest discover -s tests -v` |
-| Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Run the script with `--core-version` and/or `--frontend-version` | All verify scripts (`run_all.py`) |
+| Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Back up `references/raw/`, run refresh, republish artifacts, then regenerate the delta summary when comparing baselines | `publish_reference_artifacts.py` + `generate_snapshot_delta_summary.py` + `run_all.py` |
 | Change CI behavior | Relevant workflow in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then inspect the Actions tab after push |
 
 
@@ -148,6 +148,32 @@ The ecosystem map at `docs/ecosystem/map.md` is generated. Do not edit it by han
    python scripts/verify/cross_references.py
    python scripts/verify/validate_schema.py
    python scripts/verify/extraction_idempotency.py
+   ```
+
+### Refreshing Upstream Baselines
+
+Use this when you are proving or updating the pinned baseline rather than rerunning a single extractor.
+
+1. Preserve the current canonical artifacts before refresh:
+   ```bash
+   Copy-Item -Recurse references/raw references/raw_backup_before_refresh
+   ```
+2. Run the refresh pipeline:
+   ```bash
+   python scripts/refresh_snapshots.py --core-version <version> --frontend-version <version>
+   ```
+3. Republish the artifact surface:
+   ```bash
+   python scripts/generate/publish_reference_artifacts.py
+   ```
+4. If you are comparing two baselines, generate the published delta summary from the preserved copy:
+   ```bash
+   python scripts/generate/generate_snapshot_delta_summary.py --old references/raw_backup_before_refresh --new references/raw --output docs/artifacts/delta-summary.json
+   ```
+5. Remove the temporary backup after confirming the delta output.
+6. Run the maintainer verification gate:
+   ```bash
+   python scripts/verify/run_all.py
    ```
 
 ### Adding a New Verification Script
@@ -268,6 +294,8 @@ python scripts/generate/generate_community_pages.py
 python scripts/generate/publish_reference_artifacts.py
 python scripts/generate/generate_snapshot_delta_summary.py --old <dir> --new <dir> --output docs/artifacts/delta-summary.json
 ```
+
+When generating a refresh delta from the live repo state, `--old` should point at a preserved pre-refresh copy of `references/raw/` because `refresh_snapshots.py` overwrites the canonical raw artifacts in place.
 
 ### Runtime testing (optional)
 

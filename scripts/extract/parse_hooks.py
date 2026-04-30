@@ -10,7 +10,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.common.path_normalization import normalize_repo_path
+from scripts.common.path_normalization import normalize_repo_relative_path
 
 
 OUTPUT_PATH = REPO_ROOT / "references" / "raw" / "js_hooks.json"
@@ -269,14 +269,14 @@ def main() -> int:
 
     source_paths = [Path(path) for path in args.source_paths]
     source_map = {
-        normalize_repo_path(source_path): source_path.read_text(encoding="utf-8")
+        normalize_repo_relative_path(source_path, REPO_ROOT): source_path.read_text(encoding="utf-8")
         for source_path in source_paths
     }
     hooks = extract_hooks(source_map)
 
     payload = {
         "metadata": {
-            "sources": [normalize_repo_path(path) for path in source_paths],
+            "sources": [normalize_repo_relative_path(path, REPO_ROOT) for path in source_paths],
             "extracted_date": datetime.now().strftime("%Y-%m-%d"),
             "version": args.version or "unversioned",
             "commit": args.commit,

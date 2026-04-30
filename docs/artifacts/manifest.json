@@ -1,38 +1,38 @@
 {
-  "version_key": "core-v0.19.3_frontend-v1.42.11_2026-04-29",
+  "version_key": "core-v0.20.1_frontend-v1.44.13_2026-04-30",
   "artifacts": {
     "server_endpoints.json": {
       "current_url": "artifacts/current/server_endpoints.json",
-      "versioned_url": "artifacts/versions/core-v0.19.3_frontend-v1.42.11_2026-04-29/server_endpoints.json",
-      "version": "v0.19.3",
-      "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-      "extracted_date": "2026-04-29",
+      "versioned_url": "artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30/server_endpoints.json",
+      "version": "v0.20.1",
+      "commit": "64b8457f55cd7fb54ca7a956d9c73b505e903e0c",
+      "extracted_date": "2026-04-30",
       "sources": [
-        "references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py"
+        "references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py"
       ]
     },
     "js_hooks.json": {
       "current_url": "artifacts/current/js_hooks.json",
-      "versioned_url": "artifacts/versions/core-v0.19.3_frontend-v1.42.11_2026-04-29/js_hooks.json",
-      "version": "v1.42.11",
-      "commit": "3dc4061d484d61cb89366de25bf5e2f8a65da4d0",
-      "extracted_date": "2026-04-29",
+      "versioned_url": "artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30/js_hooks.json",
+      "version": "v1.44.13",
+      "commit": "389ff8ba49468cc3afa11aec5778224689a8f9b9",
+      "extracted_date": "2026-04-30",
       "sources": [
-        "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts",
-        "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/types/comfy.ts",
-        "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/services/litegraphService.ts"
+        "references/snapshots/2026-04-30/comfyui-frontend-v1.44.13/src/scripts/app.ts",
+        "references/snapshots/2026-04-30/comfyui-frontend-v1.44.13/src/types/comfy.ts",
+        "references/snapshots/2026-04-30/comfyui-frontend-v1.44.13/src/services/litegraphService.ts"
       ]
     },
     "node_api_schema.json": {
       "current_url": "artifacts/current/node_api_schema.json",
-      "versioned_url": "artifacts/versions/core-v0.19.3_frontend-v1.42.11_2026-04-29/node_api_schema.json",
-      "version": "v0.19.3",
-      "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-      "extracted_date": "2026-04-29",
+      "versioned_url": "artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30/node_api_schema.json",
+      "version": "v0.20.1",
+      "commit": "64b8457f55cd7fb54ca7a956d9c73b505e903e0c",
+      "extracted_date": "2026-04-30",
       "sources": [
-        "references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py",
-        "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_io.py",
-        "references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_api/latest/_input/basic_types.py"
+        "references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py",
+        "references/snapshots/2026-04-30/comfyui-core-v0.20.1/comfy_api/latest/_io.py",
+        "references/snapshots/2026-04-30/comfyui-core-v0.20.1/comfy_api/latest/_input/basic_types.py"
       ]
     }
   }

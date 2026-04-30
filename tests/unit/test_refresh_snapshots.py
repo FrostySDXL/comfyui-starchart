@@ -91,6 +91,19 @@ class RefreshSnapshotsArgumentTests(unittest.TestCase):
 class RefreshSnapshotsConstantsTests(unittest.TestCase):
     """Test that file list constants are correct."""
 
+    def test_module_repo_root_matches_repo(self):
+        """Module REPO_ROOT should resolve to this repository root."""
+        module = _load_module()
+        self.assertEqual(module.REPO_ROOT, REPO_ROOT)
+
+    def test_derived_paths_exist(self):
+        """Derived script and references paths should exist in-repo."""
+        module = _load_module()
+        self.assertTrue(module.REFERENCES_RAW_DIR.exists())
+        self.assertTrue(module.SNAPSHOTS_DIR.exists())
+        self.assertTrue(module.SCRIPTS_EXTRACT_DIR.exists())
+        self.assertTrue(module.SCRIPTS_GENERATE_DIR.exists())
+
     def test_core_files_list(self):
         """CORE_FILES should contain the expected source files."""
         module = _load_module()

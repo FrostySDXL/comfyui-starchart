@@ -22,7 +22,7 @@ import tempfile
 from datetime import date
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[1]
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 SNAPSHOTS_DIR = REPO_ROOT / "references" / "snapshots"
 SCRIPTS_EXTRACT_DIR = REPO_ROOT / "scripts" / "extract"

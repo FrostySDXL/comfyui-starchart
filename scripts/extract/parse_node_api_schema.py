@@ -11,7 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.common.path_normalization import normalize_repo_path
+from scripts.common.path_normalization import normalize_repo_relative_path
 
 
 OUTPUT_PATH = REPO_ROOT / "references" / "raw" / "node_api_schema.json"
@@ -310,7 +310,7 @@ def extract_io_types(io_text: str, io_path: str) -> list[dict]:
                 "input_parameter_details": input_parameter_details,
                 "output_parameter_details": output_parameter_details,
                 "type_hint": type_hint,
-                "defined_in": normalize_repo_path(io_path),
+                "defined_in": normalize_repo_relative_path(io_path, REPO_ROOT),
                 "is_widget": is_widget,
             }
         )
@@ -380,7 +380,7 @@ def extract_typed_input_shapes(basic_types_text: str, basic_types_path: str) -> 
 
             result[name] = {
                 "description": description,
-                "defined_in": normalize_repo_path(basic_types_path),
+                "defined_in": normalize_repo_relative_path(basic_types_path, REPO_ROOT),
                 "fields": fields,
             }
         else:
@@ -447,7 +447,10 @@ def main() -> int:
 
     payload = {
         "metadata": {
-            "sources": [normalize_repo_path(p) for p in [server_path, io_path, basic_types_path]],
+            "sources": [
+                normalize_repo_relative_path(p, REPO_ROOT)
+                for p in [server_path, io_path, basic_types_path]
+            ],
             "extracted_date": datetime.now().strftime("%Y-%m-%d"),
             "version": args.version or "unversioned",
             "commit": args.commit,
@@ -469,9 +472,9 @@ def main() -> int:
                 "Runtime-only data such as per-node INPUT_TYPES schemas and custom node types are deferred beyond pinned-snapshot extraction."
             ),
             "sources_covered": [
-                normalize_repo_path(server_path),
-                normalize_repo_path(io_path),
-                normalize_repo_path(basic_types_path),
+                normalize_repo_relative_path(server_path, REPO_ROOT),
+                normalize_repo_relative_path(io_path, REPO_ROOT),
+                normalize_repo_relative_path(basic_types_path, REPO_ROOT),
             ],
             "runtime_enriched": bool(runtime_snapshot),
             "deferred": [
