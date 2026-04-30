@@ -266,6 +266,7 @@ python scripts/verify/community_staleness.py           # [non-blocking]
 python scripts/generate/md_from_json.py
 python scripts/generate/generate_community_pages.py
 python scripts/generate/publish_reference_artifacts.py
+python scripts/generate/generate_snapshot_delta_summary.py --old <dir> --new <dir> --output docs/artifacts/delta-summary.json
 ```
 
 ### Runtime testing (optional)
@@ -302,6 +303,7 @@ Always fix the root cause rather than bypassing the check.
 - **Windows backslashes in JSON:** If you author or run extractors on Windows, paths written with `str(path)` will contain backslashes. Always normalize with `.replace("\\", "/")` before writing JSON metadata.
 - **Forgetting to regenerate after JSON changes:** If you edit `references/raw/` or `references/community/` JSON files, rerun the matching generator before running `cross_references.py` or `mkdocs build`.
 - **Misunderstanding CI blocking behavior:** `cross_references.py`, `validate_schema.py`, `community_generated_freshness.py`, and `community_page_coverage.py` will block CI and prevent merge. `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py` run in CI but do not block the pipeline.
+- **Misreading semantic enrichment fields:** Plan K adds `traceability` markers and richer typed detail to endpoints, hooks, and node schema fields. These are best-effort from static analysis. The `kind` field is reliable; deeper fields should be treated as helpful signals, not strict runtime contracts.
 - **Writing from memory:** Claims about ComfyUI behavior must be traceable to a pinned snapshot or official docs. If you cannot find a source, mark the claim accordingly or leave it out.
 - **Skipping unit tests for script changes:** If you change any script under `scripts/`, add or update the matching test under `tests/unit/` and run the full test suite.
 - **Misreading extraction idempotency failures:** The idempotency checker may report byte-level differences because extractors write timestamps (`extracted_date`). These are expected. Structural differences in the JSON are the real concern.

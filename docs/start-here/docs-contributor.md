@@ -74,6 +74,7 @@ maintainer verification path in `CONTRIBUTING.md`, including
 - **Hand-authored:** pages under `docs/`, `examples/`, and editorial reference files.
 - **Generated:** `docs/ecosystem/map.md` (driven by `references/community/ecosystem_packages.json`).
 - **Extracted:** JSON files under `references/raw/` (driven by `scripts/extract/`).
+- **Published:** files under `docs/artifacts/` (produced by `scripts/generate/publish_reference_artifacts.py`). This includes the manifest, current and versioned artifact copies, and the optional `delta-summary.json` when a second baseline exists.
 
 Edit generated or extracted output only by changing its source and rerunning the
 generator or extractor. Never hand-edit `docs/ecosystem/map.md` directly.

@@ -99,12 +99,21 @@ python scripts/extract/parse_server.py path/to/server.py --version v0.19.3 --com
 python scripts/extract/parse_hooks.py path/to/app.ts path/to/comfy.ts path/to/litegraphService.ts --version v1.42.11 --commit 3dc4061d484d61cb89366de25bf5e2f8a65da4d0
 python scripts/extract/parse_node_api_schema.py path/to/server.py path/to/_io.py path/to/basic_types.py --version v0.19.3 --commit 3086026401180c9216bcb6ace442a4e3587d2c66
 python scripts/generate/md_from_json.py
+python scripts/generate/publish_reference_artifacts.py
 ```
 
 ### Generating community pages
 
 ```bash
 python scripts/generate/generate_community_pages.py
+```
+
+### Comparing artifact baselines
+
+When a second pinned baseline exists (e.g., after `refresh_snapshots.py`):
+
+```bash
+python scripts/generate/generate_snapshot_delta_summary.py --old <old-dir> --new <new-dir> --output docs/artifacts/delta-summary.json
 ```
 
 ### Refreshing upstream versions

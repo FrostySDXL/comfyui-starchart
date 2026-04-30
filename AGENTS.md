@@ -25,7 +25,7 @@ python scripts/verify/run_all.py
 | Update community catalog | `references/community/ecosystem_packages.json` + `docs/reference/community-maintenance-policy.md` | Edit JSON source; regenerate page | `python scripts/verify/validate_schema.py` + `python scripts/verify/community_metadata.py` + `python scripts/verify/community_staleness.py` + `python scripts/generate/generate_community_pages.py` + `python scripts/verify/community_generated_freshness.py` + `python scripts/verify/community_page_coverage.py` + `python scripts/verify/cross_references.py` + `python -m mkdocs build` |
 | Add a new extractor | Existing extractor in `scripts/extract/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
 | Add a verification script | Existing script in `scripts/verify/` | New script + test in `tests/unit/` + intentional `run_all.py` / CI placement | `python -m unittest discover -s tests` |
-| Refresh upstream version | `scripts/refresh_snapshots.py` | Run with `--core-version` / `--frontend-version` | All verify scripts pass |
+| Refresh upstream version | `scripts/refresh_snapshots.py` | Run with `--core-version` / `--frontend-version` | All verify scripts pass; if a second baseline exists, also run `generate_snapshot_delta_summary.py` |
 | Runtime extraction | `scripts/extract/parse_from_api.py` | Run with `--url` and `--output` | `validate_schema.py` passes on output |
 | Change CI workflow | relevant file in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs when operator behavior changes | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then check Actions tab after push |
 
@@ -70,6 +70,7 @@ Non-goals: official docs replacement, community wiki, package registry.
 ## 3. Repo Map
 
 - `docs/` -- MkDocs source-backed documentation pages
+  - `docs/artifacts/` -- Published JSON artifacts, manifest, and delta summary
 - `references/raw/` -- JSON reference data extracted from pinned upstream snapshots
   - `server_endpoints.json` -- API routes from `parse_server.py`
   - `js_hooks.json` -- Frontend hooks from `parse_hooks.py`
@@ -83,6 +84,7 @@ Non-goals: official docs replacement, community wiki, package registry.
   - `md_from_json.py` -- Renders reference docs from `references/raw/`
   - `generate_community_pages.py` -- Renders `docs/ecosystem/map.md` from community metadata
   - `publish_reference_artifacts.py` -- Copies canonical JSON artifacts to `docs/artifacts/` and writes `manifest.json`
+  - `generate_snapshot_delta_summary.py` -- Produces deterministic baseline-to-baseline comparison under `docs/artifacts/delta-summary.json`
 - `scripts/verify/` -- Verification scripts
   - Core blocking checks: `cross_references.py`, `validate_schema.py`, `community_generated_freshness.py`, `community_page_coverage.py`
   - Non-blocking: `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`
@@ -131,6 +133,7 @@ python scripts/extract/parse_from_api.py --url <url> --version <v> --commit <sha
 python scripts/generate/md_from_json.py
 python scripts/generate/generate_community_pages.py
 python scripts/generate/publish_reference_artifacts.py
+python scripts/generate/generate_snapshot_delta_summary.py --old <dir> --new <dir> --output docs/artifacts/delta-summary.json
 
 # Refresh upstream (clone, extract, generate)
 python scripts/refresh_snapshots.py --core-version v0.19.4
@@ -197,7 +200,7 @@ before calling maintainer workflow changes complete.
 
 - **Windows backslashes in JSON**: Extractors run on Windows produce `\` in paths. Always use `.replace("\\", "/")` when writing `str(path)` to JSON metadata.
 - **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
-- **Structured returns are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`, but some endpoints still show generic summaries when the handler returns a variable rather than a literal dict. The `kind` field is reliable; `fields` and `summary` are best-effort from static analysis.
+- **Structured returns and traceability are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`, and Plan K semantic enrichment adds `traceability` markers to endpoints, hooks, and node schema fields. The `kind` field is reliable; `fields`, `summary`, and `traceability` details are best-effort from static analysis.
 - **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, and `community_staleness` use `continue-on-error: true` in CI. `cross_references`, `validate_schema`, `community_generated_freshness`, and `community_page_coverage` block the pipeline.
 - **Generated community pages must not be hand-edited**: `docs/ecosystem/map.md` is generated from `references/community/ecosystem_packages.json`. Edit the JSON and rerun the generator.
 - **Examples are not all source-backed**: Treat files under `examples/` as pattern examples unless the page explicitly states they were generated or extracted from pinned upstream sources.
