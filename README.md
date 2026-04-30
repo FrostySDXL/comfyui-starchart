@@ -71,6 +71,8 @@ For editorial standards and evidence rules, use these files together:
 
 ## Quick Start
 
+Supported Python: `3.11+`
+
 ```bash
 python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v

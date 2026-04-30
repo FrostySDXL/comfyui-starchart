@@ -2,7 +2,7 @@
 """Fetch runtime /object_info from a live ComfyUI instance and persist a pinned snapshot.
 
 Usage:
-    python scripts/extract/parse_from_api.py --url http://127.0.0.1:8188 --version v0.19.3 --commit <sha> --output references/raw/object_info_runtime.json
+    python scripts/extract/parse_from_api.py --url http://127.0.0.1:8188 --version v0.20.1 --commit <sha> --output references/raw/object_info_runtime.json
 
 Exits 0 on success, exits 1 on HTTP/network/JSON decode failures.
 """

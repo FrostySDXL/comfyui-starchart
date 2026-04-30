@@ -2,6 +2,8 @@
 
 ## 0. Quickstart
 
+Supported Python: `3.11+`
+
 ```
 python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v

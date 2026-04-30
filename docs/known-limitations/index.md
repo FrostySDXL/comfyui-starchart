@@ -8,11 +8,12 @@
 This page is intentionally small. It only keeps limitations that can be
 verified against the repo's pinned ComfyUI snapshots or official docs.
 
-**Tier note:** This page covers ComfyUI official behavior (Tier 1) and curated
-community-reported limitations (Tier 2). See the External Evidence Model
-section of `2026-04-20-expansion-followup-implementation-plan.md` for the tier
-definitions. In the current revision, every listed entry is Tier 1 because no
-additional Tier 2 item met the page's evidence threshold.
+**Tier note:** This page uses two evidence tiers. Tier 1 covers limitations
+verified directly against official docs or this repo's pinned snapshots. Tier 2
+covers curated community-reported limitations only when the report is specific,
+reproducible, and clearly labeled as external evidence. In the current
+revision, every listed entry is Tier 1 because no additional Tier 2 item met
+the page's evidence threshold.
 
 ## Curation Policy
 
