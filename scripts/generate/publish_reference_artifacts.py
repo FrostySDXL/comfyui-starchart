@@ -28,6 +28,9 @@ SOURCE_DIR = REPO_ROOT / "references" / "raw"
 OUTPUT_ROOT = REPO_ROOT / "docs" / "artifacts"
 CURRENT_DIR = OUTPUT_ROOT / "current"
 VERSIONS_DIR = OUTPUT_ROOT / "versions"
+SCHEMAS_DIR = OUTPUT_ROOT / "schemas"
+
+ARTIFACT_SCHEMA_VERSION = "1.0.0"
 
 ARTIFACT_FILES = [
     "server_endpoints.json",
@@ -116,9 +119,17 @@ def build_manifest(
     verification.
     """
     manifest = {
+        "artifact_schema_version": ARTIFACT_SCHEMA_VERSION,
         "version_key": version_key,
+        "schemas": {},
         "artifacts": {},
     }
+
+    for name in ARTIFACT_FILES:
+        schema_name = name.replace(".json", ".schema.json")
+        manifest["schemas"][name] = {
+            "schema_url": _site_rel(SCHEMAS_DIR / schema_name),
+        }
 
     for name in ARTIFACT_FILES:
         meta = artifacts.get(name, {}).get("metadata", {})
@@ -138,7 +149,22 @@ def build_manifest(
     return manifest
 
 
+def _ensure_published_schema_files_exist() -> bool:
+    """Return True when all published schema files exist, else print an error."""
+    missing = False
+    for name in ARTIFACT_FILES:
+        schema_name = name.replace(".json", ".schema.json")
+        schema_path = SCHEMAS_DIR / schema_name
+        if not schema_path.exists():
+            print(f"ERROR: Published schema file not found: {schema_path}")
+            missing = True
+    return not missing
+
+
 def main() -> int:
+    if not _ensure_published_schema_files_exist():
+        return 1
+
     artifacts: dict[str, dict] = {}
     for name in ARTIFACT_FILES:
         path = SOURCE_DIR / name

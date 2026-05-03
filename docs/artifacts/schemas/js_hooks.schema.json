@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "artifacts/schemas/js_hooks.schema.json",
+  "title": "ComfyUI Knowledge Base js_hooks artifact",
+  "description": "Bounded guaranteed structure for the published js_hooks.json artifact. Optional descriptive fields stay outside the hard contract.",
+  "type": "object",
+  "required": [
+    "metadata",
+    "coverage",
+    "hooks"
+  ],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": [
+        "sources",
+        "extracted_date",
+        "version",
+        "commit"
+      ],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extracted_date": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "description",
+        "guaranteed_fields",
+        "best_effort_fields",
+        "deferred"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "guaranteed_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "best_effort_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deferred": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "hooks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "invoked_in"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "invoked_in": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

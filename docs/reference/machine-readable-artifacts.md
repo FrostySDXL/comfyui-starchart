@@ -39,6 +39,15 @@ The repo also publishes a non-canonical support artifact:
 |----------|---------|------------|
 | `delta-summary.json` | Deterministic comparison summary between two artifact baselines | `artifacts/delta-summary.json` |
 
+The repo also publishes bounded JSON Schema files for the three canonical
+artifacts:
+
+| Schema file | Covers | Stable URL |
+|-------------|--------|------------|
+| `server_endpoints.schema.json` | `server_endpoints.json` guaranteed structure | `artifacts/schemas/server_endpoints.schema.json` |
+| `js_hooks.schema.json` | `js_hooks.json` guaranteed structure | `artifacts/schemas/js_hooks.schema.json` |
+| `node_api_schema.schema.json` | `node_api_schema.json` guaranteed structure | `artifacts/schemas/node_api_schema.schema.json` |
+
 ## Contract Tiers
 
 Read each artifact through these tiers:
@@ -52,6 +61,10 @@ Read each artifact through these tiers:
 
 Tooling can depend on guaranteed structure. Treat best-effort fields as useful
 helpers, not strict contracts.
+
+The published JSON Schema files intentionally encode only the guaranteed
+structure. They do not hard-contract every descriptive or inferred field that
+may appear in the current artifacts.
 
 ### server_endpoints.json
 
@@ -141,6 +154,7 @@ site.
 | `docs/artifacts/current/` | Stable current-copy URL for web consumption |
 | `docs/artifacts/versions/<key>/` | Immutable snapshot for reproducible builds |
 | `docs/artifacts/manifest.json` | Discovery metadata with URLs, versions, commits, and SHA-256 checksums for canonical published artifacts |
+| `docs/artifacts/schemas/` | Checked-in bounded JSON Schema files for the canonical published artifacts |
 | `docs/artifacts/delta-summary.json` | Deterministic baseline-to-baseline comparison output |
 
 For the three canonical published artifacts, `references/raw/` remains the
@@ -155,7 +169,10 @@ artifact, read its `metadata` object or consult `manifest.json`.
 
 `docs/artifacts/manifest.json` (served at `artifacts/manifest.json`) contains:
 
+- `artifact_schema_version` -- the version of this repo's published artifact
+  contract, independent from upstream ComfyUI version pins
 - `version_key` -- the deterministic key for the current versioned copy
+- `schemas` -- per-artifact schema discovery entries with `schema_url`
 - `artifacts` -- per-artifact entries with:
   - `current_url` and `versioned_url` (relative to the site root, with no leading
     slash, so they resolve correctly on GitHub Pages project sites)
@@ -168,10 +185,35 @@ blocking verifier. It proves the canonical `references/raw/` files, published
 `docs/artifacts/current/` copies, and manifest `sha256` values remain aligned
 for the three canonical artifacts.
 
+`python scripts/verify/validate_schema.py` is the matching blocking verifier for
+the schema contract. It validates canonical artifacts against the checked-in
+published schema files under `docs/artifacts/schemas/`.
+
 ## Versioning
 
-Artifacts are versioned by the upstream commit and tag they were extracted from,
-not by an independent schema version. The version key format is:
+The published surface now exposes two separate version concepts:
+
+- `artifact_schema_version` tracks this repo's bounded artifact contract.
+- `version_key` and each artifact entry's `version` / `commit` track the pinned
+  upstream ComfyUI baseline used to extract the current files.
+
+Do not treat them as interchangeable. A new upstream pin can reuse the same
+`artifact_schema_version` if the guaranteed artifact structure is unchanged. A
+schema-version bump can happen without changing the upstream pin if the repo's
+guaranteed artifact contract changes.
+
+The `artifact_schema_version` follows semantic versioning for the bounded
+published contract:
+
+- increment **MAJOR** for breaking changes to guaranteed fields, required
+  structure, or schema-discovery semantics that a consumer must handle
+- increment **MINOR** for backward-compatible additions to guaranteed structure
+  or manifest-level schema discovery
+- increment **PATCH** for non-breaking corrections, clarifications, or schema
+  tightening that does not invalidate previously valid guaranteed-shape content
+
+Artifact content is still versioned by the upstream commit and tag they were
+extracted from. The version key format is:
 
 ```
 core-<core-version>_frontend-<frontend-version>_<oldest-extracted-date>
@@ -180,6 +222,17 @@ core-<core-version>_frontend-<frontend-version>_<oldest-extracted-date>
 When upstream snapshots are refreshed, running the packaging script generates a
 new version key and new versioned copies. The `current/` copies are overwritten,
 but the versioned copies are preserved until explicitly removed.
+
+## Schema Publication Approach
+
+The schema files under `docs/artifacts/schemas/` are checked into the repo as
+deterministic source files rather than being generated from Python definitions.
+This keeps the published contract explicit, reviewable in diffs, and easy to
+inspect without adding a second schema-generation pipeline.
+
+This choice does not widen the contract. The checked-in schemas remain bounded
+to guaranteed structure only, while best-effort fields continue to evolve under
+the artifact `coverage` blocks and prose guidance.
 
 For baseline-to-baseline comparisons, the proven maintainer sequence is:
 

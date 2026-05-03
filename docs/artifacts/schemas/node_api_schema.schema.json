@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "artifacts/schemas/node_api_schema.schema.json",
+  "title": "ComfyUI Knowledge Base node_api_schema artifact",
+  "description": "Bounded guaranteed structure for the published node_api_schema.json artifact. Rich typed-detail enrichment remains optional unless explicitly listed here.",
+  "type": "object",
+  "required": [
+    "metadata",
+    "object_info_fields",
+    "io_types",
+    "basic_input_shapes",
+    "coverage"
+  ],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": [
+        "sources",
+        "extracted_date",
+        "version",
+        "commit"
+      ],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extracted_date": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "object_info_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "io_types": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "io_type",
+          "class_name",
+          "input_class",
+          "input_parameters"
+        ],
+        "properties": {
+          "io_type": {
+            "type": "string"
+          },
+          "class_name": {
+            "type": "string"
+          },
+          "input_class": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "input_parameters": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "basic_input_shapes": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "typed_input_shapes": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "description",
+        "sources_covered",
+        "runtime_enriched",
+        "deferred"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "sources_covered": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "runtime_enriched": {
+          "type": "boolean"
+        },
+        "deferred": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

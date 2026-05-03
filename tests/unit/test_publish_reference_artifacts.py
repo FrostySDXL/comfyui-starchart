@@ -13,6 +13,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "generate" / "publish_reference_artifacts.py"
 SOURCE_DIR = REPO_ROOT / "references" / "raw"
+SCHEMAS_DIR = REPO_ROOT / "docs" / "artifacts" / "schemas"
 
 
 class PublishReferenceArtifactsUnitTests(unittest.TestCase):
@@ -114,10 +115,18 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
 
         # published_at is intentionally omitted for idempotency
         self.assertNotIn("published_at", manifest)
+        self.assertEqual(manifest["artifact_schema_version"], module.ARTIFACT_SCHEMA_VERSION)
         self.assertEqual(manifest["version_key"], "core-v0.19.3_frontend-v1.42.11_2026-04-19")
+        self.assertIn("schemas", manifest)
         self.assertIn("artifacts", manifest)
 
         for name in ["server_endpoints.json", "js_hooks.json", "node_api_schema.json"]:
+            self.assertIn(name, manifest["schemas"])
+            schema_entry = manifest["schemas"][name]
+            self.assertIn("schema_url", schema_entry)
+            self.assertTrue(schema_entry["schema_url"].endswith(".schema.json"))
+            self.assertNotIn("\\", schema_entry["schema_url"])
+            self.assertFalse(schema_entry["schema_url"].startswith("/"))
             self.assertIn(name, manifest["artifacts"])
             entry = manifest["artifacts"][name]
             self.assertIn("current_url", entry)
@@ -201,10 +210,13 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
             # Create minimal directory structure
             (tmp_root / "references" / "raw").mkdir(parents=True)
             (tmp_root / "docs" / "artifacts" / "current").mkdir(parents=True)
+            (tmp_root / "docs" / "artifacts" / "schemas").mkdir(parents=True)
             (tmp_root / "scripts" / "generate").mkdir(parents=True)
 
             # Copy generator script
             shutil.copy(SCRIPT, tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py")
+            for schema_path in SCHEMAS_DIR.glob("*.schema.json"):
+                shutil.copy(schema_path, tmp_root / "docs" / "artifacts" / "schemas" / schema_path.name)
 
             # Write minimal artifact JSONs
             artifacts = {
@@ -267,11 +279,18 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
             manifest_path = tmp_root / "docs" / "artifacts" / "manifest.json"
             self.assertTrue(manifest_path.exists())
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            self.assertEqual(manifest["artifact_schema_version"], "1.0.0")
+            self.assertIn("schemas", manifest)
             self.assertIn("artifacts", manifest)
             self.assertIn("server_endpoints.json", manifest["artifacts"])
+            self.assertIn("server_endpoints.json", manifest["schemas"])
             self.assertIn("current_url", manifest["artifacts"]["server_endpoints.json"])
             self.assertIn("versioned_url", manifest["artifacts"]["server_endpoints.json"])
             self.assertIn("sha256", manifest["artifacts"]["server_endpoints.json"])
+            self.assertEqual(
+                manifest["schemas"]["server_endpoints.json"]["schema_url"],
+                "artifacts/schemas/server_endpoints.schema.json",
+            )
             for name in artifacts:
                 published_path = tmp_root / "docs" / "artifacts" / "current" / name
                 expected_hash = hashlib.sha256(published_path.read_bytes()).hexdigest()
@@ -301,6 +320,57 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
                 cwd=str(tmp_root),
             )
             self.assertNotEqual(result.returncode, 0)
+
+    def test_script_fails_when_schema_missing(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_root = Path(tmpdir)
+            (tmp_root / "references" / "raw").mkdir(parents=True)
+            (tmp_root / "docs" / "artifacts").mkdir(parents=True)
+            (tmp_root / "scripts" / "generate").mkdir(parents=True)
+            shutil.copy(SCRIPT, tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py")
+
+            artifacts = {
+                "server_endpoints.json": {
+                    "metadata": {
+                        "version": "v0.19.3",
+                        "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+                        "extracted_date": "2026-04-23",
+                        "sources": ["snapshots/server.py"],
+                    },
+                    "endpoints": [],
+                },
+                "js_hooks.json": {
+                    "metadata": {
+                        "version": "v1.42.11",
+                        "commit": "3dc4061d484d61cb89366de25bf5e2f8a65da4d0",
+                        "extracted_date": "2026-04-19",
+                        "sources": ["snapshots/app.ts"],
+                    },
+                    "hooks": [],
+                },
+                "node_api_schema.json": {
+                    "metadata": {
+                        "version": "v0.19.3",
+                        "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+                        "extracted_date": "2026-04-23",
+                        "sources": ["snapshots/server.py"],
+                    },
+                    "object_info": {},
+                },
+            }
+            for name, data in artifacts.items():
+                (tmp_root / "references" / "raw" / name).write_text(
+                    json.dumps(data), encoding="utf-8"
+                )
+
+            result = subprocess.run(
+                [sys.executable, str(tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py")],
+                capture_output=True,
+                text=True,
+                cwd=str(tmp_root),
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("Published schema file not found", result.stdout)
 
 
 if __name__ == "__main__":

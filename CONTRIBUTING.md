@@ -77,7 +77,7 @@ guides, and tooling artifacts.
 | `scripts/generate/` | Scripts that render markdown from JSON | **Yes** -- if you are adding or fixing a generator |
 | `scripts/verify/` | Validation scripts (blocking and non-blocking) | **Yes** -- if you are adding or fixing a verifier |
 | `tests/unit/` | Unit tests for scripts | **Yes** -- every new script needs tests |
-| `docs/artifacts/` | Published JSON artifacts and manifest | **No** -- produced by `scripts/generate/publish_reference_artifacts.py` |
+| `docs/artifacts/` | Published JSON artifacts, manifest, versioned copies, and checked-in schema files | **Mixed** -- `docs/artifacts/schemas/` is hand-authored; other published artifact outputs are produced by `scripts/generate/publish_reference_artifacts.py` |
 | `docs/ecosystem/map.md` | Generated community ecosystem page | **No** -- edit `references/community/ecosystem_packages.json`, then regenerate |
 | `.github/workflows/` | CI and deployment automation | **Yes** -- but test locally first |
 

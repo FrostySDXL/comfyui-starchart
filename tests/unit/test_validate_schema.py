@@ -101,6 +101,91 @@ class ValidateSchemaUnitTests(unittest.TestCase):
             ],
         }
 
+    def _valid_js_hooks_data(self):
+        return {
+            "metadata": {
+                "sources": ["references/snapshots/comfy.ts"],
+                "extracted_date": "2026-04-29",
+                "version": "v1.42.11",
+                "commit": "abc123",
+            },
+            "coverage": {
+                "description": "Static extraction of hooks.",
+                "guaranteed_fields": ["hooks[].name"],
+                "best_effort_fields": ["hooks[].description"],
+                "deferred": ["runtime-only hook behavior"],
+            },
+            "hooks": [
+                {
+                    "name": "setup",
+                    "type": "app_lifecycle",
+                    "description": "Setup hook.",
+                    "defined_in": "references/snapshots/comfy.ts",
+                    "invoked_in": ["references/snapshots/app.ts"],
+                    "signature": "setup?(app: ComfyApp): Promise<void> | void",
+                    "arguments": [{"name": "app", "type_hint": "ComfyApp"}],
+                    "return_type": "Promise<void> | void",
+                    "invocation_style": ["async"],
+                    "traceability": {
+                        "source_type": "source-backed",
+                        "strategy": "typed_definition",
+                    },
+                }
+            ],
+        }
+
+    def _valid_node_api_schema_data(self):
+        return {
+            "metadata": {
+                "sources": ["references/snapshots/server.py"],
+                "extracted_date": "2026-04-22",
+                "version": "v0.19.3",
+                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+            },
+            "object_info_fields": ["input", "output"],
+            "io_types": [
+                {
+                    "io_type": "BOOLEAN",
+                    "class_name": "Boolean",
+                    "input_class": "WidgetInput",
+                    "input_parameters": ["default"],
+                    "input_parameter_details": [
+                        {
+                            "name": "default",
+                            "location": "input_signature",
+                            "default": None,
+                            "traceability": {
+                                "source_type": "source-backed",
+                                "strategy": "python_signature",
+                            },
+                        }
+                    ],
+                }
+            ],
+            "basic_input_shapes": {"ImageInput": "An image tensor."},
+            "typed_input_shapes": {
+                "AudioInput": {
+                    "description": "TypedDict representing audio input.",
+                    "defined_in": "references/snapshots/basic_types.py",
+                    "fields": {
+                        "waveform": {
+                            "type": "torch.Tensor",
+                            "traceability": {
+                                "source_type": "source-backed",
+                                "strategy": "typed_dict_field",
+                            },
+                        }
+                    },
+                }
+            },
+            "coverage": {
+                "description": "Static and optional runtime coverage for object_info and IO typing.",
+                "sources_covered": ["object_info_fields", "io_types", "basic_input_shapes"],
+                "runtime_enriched": False,
+                "deferred": ["runtime-only object_info details"],
+            },
+        }
+
     def test_valid_server_endpoints_pass(self):
         module = self._import_module()
         data = self._valid_server_endpoints_data()
@@ -109,6 +194,21 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors.extend(module.validate_coverage(data, "server_endpoints.json"))
         errors.extend(module.validate_endpoints(data, "server_endpoints.json"))
         self.assertEqual(errors, [])
+
+    def test_valid_server_endpoints_pass_published_schema(self):
+        module = self._import_module()
+        errors = module.validate_against_published_artifact_schema(
+            self._valid_server_endpoints_data(),
+            "server_endpoints.json",
+        )
+        self.assertEqual(errors, [])
+
+    def test_published_server_schema_rejects_missing_guaranteed_field(self):
+        module = self._import_module()
+        data = self._valid_server_endpoints_data()
+        del data["endpoints"][0]["route"]
+        errors = module.validate_against_published_artifact_schema(data, "server_endpoints.json")
+        self.assertTrue(any("missing required key 'route'" in e for e in errors))
 
     def test_server_endpoints_rejects_singular_metadata_source(self):
         module = self._import_module()
@@ -228,56 +328,7 @@ class ValidateSchemaUnitTests(unittest.TestCase):
 
     def test_valid_node_api_schema_passes(self):
         module = self._import_module()
-        data = {
-            "metadata": {
-                "sources": ["references/snapshots/server.py"],
-                "extracted_date": "2026-04-22",
-                "version": "v0.19.3",
-                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-            },
-            "object_info_fields": ["input", "output"],
-            "io_types": [
-                {
-                    "io_type": "BOOLEAN",
-                    "class_name": "Boolean",
-                    "input_class": "WidgetInput",
-                    "input_parameters": ["default"],
-                    "input_parameter_details": [
-                        {
-                            "name": "default",
-                            "location": "input_signature",
-                            "default": None,
-                            "traceability": {
-                                "source_type": "source-backed",
-                                "strategy": "python_signature",
-                            },
-                        }
-                    ],
-                }
-            ],
-            "basic_input_shapes": {"ImageInput": "An image tensor."},
-            "typed_input_shapes": {
-                "AudioInput": {
-                    "description": "TypedDict representing audio input.",
-                    "defined_in": "references/snapshots/basic_types.py",
-                    "fields": {
-                        "waveform": {
-                            "type": "torch.Tensor",
-                            "traceability": {
-                                "source_type": "source-backed",
-                                "strategy": "typed_dict_field",
-                            },
-                        }
-                    },
-                }
-            },
-            "coverage": {
-                "description": "Static and optional runtime coverage for object_info and IO typing.",
-                "sources_covered": ["object_info_fields", "io_types", "basic_input_shapes"],
-                "runtime_enriched": False,
-                "deferred": ["runtime-only object_info details"],
-            },
-        }
+        data = self._valid_node_api_schema_data()
         errors = module.validate_top_level(data, module.SCHEMAS["node_api_schema.json"], "node_api_schema.json")
         errors.extend(module.validate_metadata(data, "node_api_schema.json"))
         errors.extend(module.validate_coverage(data, "node_api_schema.json"))
@@ -294,41 +345,27 @@ class ValidateSchemaUnitTests(unittest.TestCase):
 
     def test_hook_enrichment_fields_validate(self):
         module = self._import_module()
-        data = {
-            "metadata": {
-                "sources": ["references/snapshots/comfy.ts"],
-                "extracted_date": "2026-04-29",
-                "version": "v1.42.11",
-                "commit": "abc123",
-            },
-            "coverage": {
-                "description": "Static extraction of hooks.",
-                "guaranteed_fields": ["hooks[].name"],
-                "best_effort_fields": ["hooks[].description"],
-                "deferred": ["runtime-only hook behavior"],
-            },
-            "hooks": [
-                {
-                    "name": "setup",
-                    "type": "app_lifecycle",
-                    "description": "Setup hook.",
-                    "defined_in": "references/snapshots/comfy.ts",
-                    "invoked_in": ["references/snapshots/app.ts"],
-                    "signature": "setup?(app: ComfyApp): Promise<void> | void",
-                    "arguments": [{"name": "app", "type_hint": "ComfyApp"}],
-                    "return_type": "Promise<void> | void",
-                    "invocation_style": ["async"],
-                    "traceability": {
-                        "source_type": "source-backed",
-                        "strategy": "typed_definition",
-                    },
-                }
-            ],
-        }
+        data = self._valid_js_hooks_data()
         errors = module.validate_top_level(data, module.SCHEMAS["js_hooks.json"], "js_hooks.json")
         errors.extend(module.validate_metadata(data, "js_hooks.json"))
         errors.extend(module.validate_coverage(data, "js_hooks.json"))
         errors.extend(module.validate_hooks(data, "js_hooks.json"))
+        self.assertEqual(errors, [])
+
+    def test_valid_js_hooks_pass_published_schema(self):
+        module = self._import_module()
+        errors = module.validate_against_published_artifact_schema(
+            self._valid_js_hooks_data(),
+            "js_hooks.json",
+        )
+        self.assertEqual(errors, [])
+
+    def test_valid_node_api_schema_pass_published_schema(self):
+        module = self._import_module()
+        errors = module.validate_against_published_artifact_schema(
+            self._valid_node_api_schema_data(),
+            "node_api_schema.json",
+        )
         self.assertEqual(errors, [])
 
     def test_typed_input_shapes_rejects_missing_field_type(self):
@@ -778,6 +815,49 @@ class ValidateSchemaScriptTests(unittest.TestCase):
             errors = []
             module._validate_json_file(json_file, errors)
         self.assertEqual(errors, [])
+
+    def test_single_file_reports_published_schema_violation(self):
+        module = self._import_module()
+        payload = {
+            "metadata": {
+                "sources": ["references/snapshots/server.py"],
+                "extracted_date": "2026-04-22",
+                "version": "v0.19.3",
+                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+            },
+            "coverage": {
+                "description": "Static extraction of ComfyUI HTTP and WebSocket endpoint structure.",
+                "guaranteed_fields": [
+                    "endpoints[].route",
+                    "endpoints[].method",
+                    "endpoints[].returns.kind",
+                    "endpoints[].returns.status_codes",
+                ],
+                "best_effort_fields": [
+                    "endpoints[].description",
+                    "endpoints[].parameters",
+                    "endpoints[].returns.summary",
+                    "endpoints[].returns.fields",
+                ],
+                "deferred": [],
+            },
+            "endpoints": [
+                {
+                    "method": "POST",
+                    "returns": {
+                        "kind": "json",
+                        "status_codes": [200],
+                    },
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            json_file = Path(tmpdir) / "server_endpoints.json"
+            json_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+            errors = []
+            module._validate_json_file(json_file, errors)
+        self.assertTrue(any("published schema violation" in e for e in errors))
+        self.assertTrue(any("missing required key 'route'" in e for e in errors))
 
 
 if __name__ == "__main__":

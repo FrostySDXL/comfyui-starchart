@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "artifacts/schemas/server_endpoints.schema.json",
+  "title": "ComfyUI Knowledge Base server_endpoints artifact",
+  "description": "Bounded guaranteed structure for the published server_endpoints.json artifact. Best-effort descriptive fields remain optional and may evolve independently.",
+  "type": "object",
+  "required": [
+    "metadata",
+    "coverage",
+    "endpoints"
+  ],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": [
+        "sources",
+        "extracted_date",
+        "version",
+        "commit"
+      ],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extracted_date": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "description",
+        "guaranteed_fields",
+        "best_effort_fields",
+        "deferred"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "guaranteed_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "best_effort_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deferred": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "endpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "route",
+          "method",
+          "returns"
+        ],
+        "properties": {
+          "route": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          },
+          "returns": {
+            "type": "object",
+            "required": [
+              "kind",
+              "status_codes"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string"
+              },
+              "status_codes": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,5 +1,17 @@
 {
+  "artifact_schema_version": "1.0.0",
   "version_key": "core-v0.20.1_frontend-v1.44.13_2026-04-30",
+  "schemas": {
+    "server_endpoints.json": {
+      "schema_url": "artifacts/schemas/server_endpoints.schema.json"
+    },
+    "js_hooks.json": {
+      "schema_url": "artifacts/schemas/js_hooks.schema.json"
+    },
+    "node_api_schema.json": {
+      "schema_url": "artifacts/schemas/node_api_schema.schema.json"
+    }
+  },
   "artifacts": {
     "server_endpoints.json": {
       "current_url": "artifacts/current/server_endpoints.json",

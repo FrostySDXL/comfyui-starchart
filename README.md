@@ -66,8 +66,8 @@ For editorial standards and evidence rules, use these files together:
 - Helper scripts live in `scripts/extract/` and `scripts/generate/`
 - Published artifact copies and manifest live in `docs/artifacts/`
 - See [Machine-Readable Artifacts](docs/reference/machine-readable-artifacts.md) for
-  the canonical published artifact set, bounded guarantees, and conceptual
-  examples for tooling authors
+  the canonical published artifact set, published JSON Schemas, bounded
+  guarantees, and conceptual examples for tooling authors
 
 ## Quick Start
 
