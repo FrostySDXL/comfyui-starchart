@@ -88,7 +88,7 @@ Non-goals: official docs replacement, community wiki, package registry.
   - `publish_reference_artifacts.py` -- Copies canonical JSON artifacts to `docs/artifacts/` and writes `manifest.json`
   - `generate_snapshot_delta_summary.py` -- Produces deterministic baseline-to-baseline comparison under `docs/artifacts/delta-summary.json`
 - `scripts/verify/` -- Verification scripts
-  - Core blocking checks: `cross_references.py`, `validate_schema.py`, `community_generated_freshness.py`, `community_page_coverage.py`
+  - Core blocking checks: `cross_references.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `community_generated_freshness.py`, `community_page_coverage.py`
   - Non-blocking: `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`
   - Community: `community_metadata.py`, `community_staleness.py`
 - `scripts/refresh_snapshots.py` -- Fetch new upstream versions and re-run pipeline
@@ -118,6 +118,7 @@ python scripts/verify/stale_content.py
 python scripts/verify/extraction_idempotency.py
 python scripts/verify/upstream_pins.py
 python scripts/verify/validate_schema.py
+python scripts/verify/verify_artifact_integrity.py
 
 # Community verifiers (non-blocking in CI)
 python scripts/verify/community_metadata.py
@@ -165,9 +166,10 @@ before calling maintainer workflow changes complete.
 1. Preserve a copy of `references/raw/` before refresh if you need a real baseline-to-baseline delta
 2. Run `python scripts/refresh_snapshots.py --core-version <v> --frontend-version <v>`
 3. Run `python scripts/generate/publish_reference_artifacts.py`
-4. If comparing two baselines, run `python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output docs/artifacts/delta-summary.json`
-5. Remove the temporary backup after confirming the delta output
-6. Run `python scripts/verify/run_all.py`
+4. Run `python scripts/verify/verify_artifact_integrity.py`
+5. If comparing two baselines, run `python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output docs/artifacts/delta-summary.json`
+6. Remove the temporary backup after confirming the delta output
+7. Run `python scripts/verify/run_all.py`
 
 ### Editing prose documentation
 
@@ -212,7 +214,7 @@ before calling maintainer workflow changes complete.
 - **Windows backslashes in JSON**: Extractors run on Windows produce `\` in paths. Always use `.replace("\\", "/")` when writing `str(path)` to JSON metadata.
 - **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
 - **Structured returns and traceability are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`, and Plan K semantic enrichment adds `traceability` markers to endpoints, hooks, and node schema fields. The `kind` field is reliable; `fields`, `summary`, and `traceability` details are best-effort from static analysis.
-- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, and `community_staleness` use `continue-on-error: true` in CI. `cross_references`, `validate_schema`, `community_generated_freshness`, and `community_page_coverage` block the pipeline.
+- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, and `community_staleness` use `continue-on-error: true` in CI. `cross_references`, `validate_schema`, `verify_artifact_integrity`, `community_generated_freshness`, and `community_page_coverage` block the pipeline.
 - **Generated community pages must not be hand-edited**: `docs/ecosystem/map.md` is generated from `references/community/ecosystem_packages.json`. Edit the JSON and rerun the generator.
 - **Examples are not all source-backed**: Treat files under `examples/` as pattern examples unless the page explicitly states they were generated or extracted from pinned upstream sources.
 

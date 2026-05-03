@@ -1,7 +1,7 @@
 # Machine-Readable Artifacts
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-02
 
 ## Scope
 
@@ -140,11 +140,16 @@ site.
 | `references/raw/` | Canonical extractor output; versioned in git |
 | `docs/artifacts/current/` | Stable current-copy URL for web consumption |
 | `docs/artifacts/versions/<key>/` | Immutable snapshot for reproducible builds |
-| `docs/artifacts/manifest.json` | Discovery metadata with URLs, versions, and commits |
+| `docs/artifacts/manifest.json` | Discovery metadata with URLs, versions, commits, and SHA-256 checksums for canonical published artifacts |
 | `docs/artifacts/delta-summary.json` | Deterministic baseline-to-baseline comparison output |
 
-If you need the exact commit and extraction date for an artifact, read its
-`metadata` object or consult `manifest.json`.
+For the three canonical published artifacts, `references/raw/` remains the
+canonical repo-local source. `docs/artifacts/current/` must stay byte-identical
+to those canonical files, and the manifest checksum must match the published
+current-copy bytes.
+
+If you need the exact commit, extraction date, or published checksum for an
+artifact, read its `metadata` object or consult `manifest.json`.
 
 ## Manifest
 
@@ -154,8 +159,14 @@ If you need the exact commit and extraction date for an artifact, read its
 - `artifacts` -- per-artifact entries with:
   - `current_url` and `versioned_url` (relative to the site root, with no leading
     slash, so they resolve correctly on GitHub Pages project sites)
+  - `sha256` for the bytes served from `current_url`
   - `version`, `commit`, `extracted_date`
   - `sources` -- the pinned snapshot file(s) the artifact was extracted from
+
+Maintainership note: `python scripts/verify/verify_artifact_integrity.py` is a
+blocking verifier. It proves the canonical `references/raw/` files, published
+`docs/artifacts/current/` copies, and manifest `sha256` values remain aligned
+for the three canonical artifacts.
 
 ## Versioning
 
@@ -233,6 +244,22 @@ node_type = "CheckpointLoaderSimple"
 assert node_type in schema.get("object_info", {}), f"{node_type} not in schema"
 ```
 
+### Verifying a published artifact checksum from manifest.json
+
+Use the manifest checksum when you need to confirm a downloaded current artifact
+matches the bytes the site publishes.
+
+```python
+import hashlib, json, urllib.request
+
+base = "https://<your-site>"
+manifest = json.load(urllib.request.urlopen(f"{base}/artifacts/manifest.json"))
+entry = manifest["artifacts"]["server_endpoints.json"]
+artifact_bytes = urllib.request.urlopen(f"{base}/{entry['current_url']}").read()
+
+assert hashlib.sha256(artifact_bytes).hexdigest() == entry["sha256"]
+```
+
 ## Runtime Artifacts
 
 The repository can also produce `object_info_runtime.json` via live ComfyUI
@@ -248,6 +275,9 @@ on live installed-node state or hybrid enrichment. See
 - These artifacts are extracted from pinned source, not from live API responses.
   They describe what the source declares, not what every runtime instance will
   expose.
+- Manifest `sha256` fields prove byte integrity for the published canonical
+  current copies only. They do not provide signatures, provenance attestations,
+  or schema-compatibility guarantees by themselves.
 - Return shape inference is best-effort static analysis. Some endpoints return
   variable structures that cannot be captured precisely without runtime data.
 - Traceability fields indicate where an extracted fact came from, not that the

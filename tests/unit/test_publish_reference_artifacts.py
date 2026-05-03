@@ -1,6 +1,7 @@
 """Tests for scripts/generate/publish_reference_artifacts.py."""
 
 import json
+import hashlib
 import shutil
 import subprocess
 import sys
@@ -101,7 +102,15 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
     def test_build_manifest_structure(self):
         module = self._import_module()
         artifacts = self._sample_artifacts()
-        manifest = module.build_manifest(artifacts, "core-v0.19.3_frontend-v1.42.11_2026-04-19")
+        artifact_hashes = {
+            name: hashlib.sha256(name.encode("utf-8")).hexdigest()
+            for name in module.ARTIFACT_FILES
+        }
+        manifest = module.build_manifest(
+            artifacts,
+            "core-v0.19.3_frontend-v1.42.11_2026-04-19",
+            artifact_hashes,
+        )
 
         # published_at is intentionally omitted for idempotency
         self.assertNotIn("published_at", manifest)
@@ -113,10 +122,12 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
             entry = manifest["artifacts"][name]
             self.assertIn("current_url", entry)
             self.assertIn("versioned_url", entry)
+            self.assertIn("sha256", entry)
             self.assertIn("version", entry)
             self.assertIn("commit", entry)
             self.assertIn("extracted_date", entry)
             self.assertIn("sources", entry)
+            self.assertRegex(entry["sha256"], r"^[0-9a-f]{64}$")
             # URLs must use forward slashes and must not start with /
             # so they resolve correctly on GitHub Pages project sites
             self.assertNotIn("\\", entry["current_url"])
@@ -127,14 +138,22 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
     def test_build_manifest_propagates_versions(self):
         module = self._import_module()
         artifacts = self._sample_artifacts()
-        manifest = module.build_manifest(artifacts, "test-key")
+        artifact_hashes = {
+            name: hashlib.sha256(name.encode("utf-8")).hexdigest()
+            for name in module.ARTIFACT_FILES
+        }
+        manifest = module.build_manifest(artifacts, "test-key", artifact_hashes)
         self.assertEqual(manifest["artifacts"]["server_endpoints.json"]["version"], "v0.19.3")
         self.assertEqual(manifest["artifacts"]["js_hooks.json"]["version"], "v1.42.11")
 
     def test_build_manifest_source_vs_sources(self):
         module = self._import_module()
         artifacts = self._sample_artifacts()
-        manifest = module.build_manifest(artifacts, "test-key")
+        artifact_hashes = {
+            name: hashlib.sha256(name.encode("utf-8")).hexdigest()
+            for name in module.ARTIFACT_FILES
+        }
+        manifest = module.build_manifest(artifacts, "test-key", artifact_hashes)
         self.assertIsInstance(manifest["artifacts"]["server_endpoints.json"]["sources"], list)
         self.assertEqual(
             manifest["artifacts"]["server_endpoints.json"]["sources"],
@@ -145,6 +164,19 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
             manifest["artifacts"]["js_hooks.json"]["sources"],
             ["references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts"],
         )
+
+    def test_build_manifest_is_deterministic_for_identical_inputs(self):
+        module = self._import_module()
+        artifacts = self._sample_artifacts()
+        artifact_hashes = {
+            name: hashlib.sha256(name.encode("utf-8")).hexdigest()
+            for name in module.ARTIFACT_FILES
+        }
+
+        first = module.build_manifest(artifacts, "test-key", artifact_hashes)
+        second = module.build_manifest(artifacts, "test-key", artifact_hashes)
+
+        self.assertEqual(first, second)
 
     def test_site_rel_uses_forward_slashes(self):
         module = self._import_module()
@@ -239,6 +271,11 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
             self.assertIn("server_endpoints.json", manifest["artifacts"])
             self.assertIn("current_url", manifest["artifacts"]["server_endpoints.json"])
             self.assertIn("versioned_url", manifest["artifacts"]["server_endpoints.json"])
+            self.assertIn("sha256", manifest["artifacts"]["server_endpoints.json"])
+            for name in artifacts:
+                published_path = tmp_root / "docs" / "artifacts" / "current" / name
+                expected_hash = hashlib.sha256(published_path.read_bytes()).hexdigest()
+                self.assertEqual(manifest["artifacts"][name]["sha256"], expected_hash)
             self.assertTrue(
                 all(isinstance(entry.get("sources", []), list) for entry in manifest["artifacts"].values())
             )

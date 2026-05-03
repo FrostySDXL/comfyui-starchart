@@ -18,6 +18,7 @@ Usage:
 """
 
 import json
+import hashlib
 import shutil
 from datetime import date, datetime
 from pathlib import Path
@@ -37,6 +38,11 @@ ARTIFACT_FILES = [
 
 def _load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _compute_sha256(path: Path) -> str:
+    """Return the SHA-256 hex digest for file bytes."""
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _derive_version_key(artifacts: dict[str, dict]) -> str:
@@ -98,7 +104,11 @@ def _site_rel(file_path: Path) -> str:
     return rel.as_posix()
 
 
-def build_manifest(artifacts: dict[str, dict], version_key: str) -> dict:
+def build_manifest(
+    artifacts: dict[str, dict],
+    version_key: str,
+    artifact_hashes: dict[str, str],
+) -> dict:
     """Build the artifact manifest.
 
     Omits a dynamic timestamp so the manifest is deterministic for the same
@@ -118,6 +128,7 @@ def build_manifest(artifacts: dict[str, dict], version_key: str) -> dict:
         manifest["artifacts"][name] = {
             "current_url": _site_rel(current_path),
             "versioned_url": _site_rel(versioned_path),
+            "sha256": artifact_hashes[name],
             "version": meta.get("version", "unknown"),
             "commit": meta.get("commit", "unknown"),
             "extracted_date": meta.get("extracted_date", "unknown"),
@@ -146,6 +157,7 @@ def main() -> int:
 
     version_key = _derive_version_key(artifacts)
     versioned_dir = VERSIONS_DIR / version_key
+    artifact_hashes = {}
 
     # Write current and versioned copies
     CURRENT_DIR.mkdir(parents=True, exist_ok=True)
@@ -154,12 +166,13 @@ def main() -> int:
         source_path = SOURCE_DIR / name
         current_path = CURRENT_DIR / name
         versioned_path = versioned_dir / name
+        artifact_hashes[name] = _compute_sha256(source_path)
 
         shutil.copy2(str(source_path), str(current_path))
         shutil.copy2(str(source_path), str(versioned_path))
 
     # Write manifest
-    manifest = build_manifest(artifacts, version_key)
+    manifest = build_manifest(artifacts, version_key, artifact_hashes)
     manifest_path = OUTPUT_ROOT / "manifest.json"
     _write_json(manifest_path, manifest)
 

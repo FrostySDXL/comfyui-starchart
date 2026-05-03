@@ -6,9 +6,10 @@ main CI job:
     1. Unit tests
     2. cross_references.py
     3. validate_schema.py
-    4. community_generated_freshness.py
-    5. community_page_coverage.py
-    6. mkdocs build
+    4. verify_artifact_integrity.py
+    5. community_generated_freshness.py
+    6. community_page_coverage.py
+    7. mkdocs build
 
 Advisory/non-blocking checks remain separate and are not included here.
 
@@ -85,6 +86,13 @@ def main() -> int:
         (
             [sys.executable, str(SCRIPTS_VERIFY_DIR / "validate_schema.py")],
             "Schema validation",
+        )
+    )
+
+    steps.append(
+        (
+            [sys.executable, str(SCRIPTS_VERIFY_DIR / "verify_artifact_integrity.py")],
+            "Artifact integrity verification",
         )
     )
 

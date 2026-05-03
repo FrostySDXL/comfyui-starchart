@@ -1,6 +1,6 @@
 # ComfyUI Knowledge Base
 
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-02
 **ComfyUI Version Pin:** Core `v0.20.1` (`64b8457f55cd7fb54ca7a956d9c73b505e903e0c`) with official frontend `v1.44.13` (`389ff8ba49468cc3afa11aec5778224689a8f9b9`) for the current pinned snapshots and extracted reference data
 
 **Evidence:** Scaffold
@@ -142,6 +142,7 @@ python scripts/verify/run_all.py
 python -m unittest discover -s tests -v
 python scripts/verify/cross_references.py
 python scripts/verify/validate_schema.py
+python scripts/verify/verify_artifact_integrity.py
 python scripts/verify/community_generated_freshness.py
 python scripts/verify/community_page_coverage.py
 python -m mkdocs build
@@ -164,7 +165,7 @@ blocking verification path that CI uses.
 
 ### CPU-safe workflows (blocking and non-blocking)
 
-- **`.github/workflows/ci.yml`** -- runs on push/PR to main: tests, cross-references (blocking), schema validation (blocking), generated community freshness (blocking), community page coverage (blocking), MkDocs build (blocking), stale content (non-blocking), idempotency (non-blocking), upstream pins (non-blocking), community metadata (non-blocking), and community staleness (non-blocking). Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
+- **`.github/workflows/ci.yml`** -- runs on push/PR to main: tests, cross-references (blocking), schema validation (blocking), artifact integrity verification for canonical published artifacts (blocking), generated community freshness (blocking), community page coverage (blocking), MkDocs build (blocking), stale content (non-blocking), idempotency (non-blocking), upstream pins (non-blocking), community metadata (non-blocking), and community staleness (non-blocking). Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
 - **`.github/workflows/weekly-pin-check.yml`** -- runs every Monday at 09:00 UTC and on manual dispatch: checks that pinned commits and tags still resolve in upstream repos.
 - **`.github/workflows/upstream-watch.yml`** -- runs every Monday at 10:00 UTC: detects newer upstream versions and creates or updates tracking issues.
 

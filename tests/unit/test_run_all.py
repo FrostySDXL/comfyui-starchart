@@ -54,6 +54,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("unittest" in str(c) for c in call_order))
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
         self.assertTrue(any("validate_schema.py" in str(c) for c in call_order))
+        self.assertTrue(any("verify_artifact_integrity.py" in str(c) for c in call_order))
         self.assertTrue(any("community_generated_freshness.py" in str(c) for c in call_order))
         self.assertTrue(any("community_page_coverage.py" in str(c) for c in call_order))
         self.assertTrue(any("mkdocs" in str(c) for c in call_order))
@@ -62,13 +63,15 @@ class RunAllUnitTests(unittest.TestCase):
         unittest_idx = next(i for i, c in enumerate(call_order) if "unittest" in str(c))
         cross_idx = next(i for i, c in enumerate(call_order) if "cross_references.py" in str(c))
         validate_idx = next(i for i, c in enumerate(call_order) if "validate_schema.py" in str(c))
+        integrity_idx = next(i for i, c in enumerate(call_order) if "verify_artifact_integrity.py" in str(c))
         freshness_idx = next(i for i, c in enumerate(call_order) if "community_generated_freshness.py" in str(c))
         coverage_idx = next(i for i, c in enumerate(call_order) if "community_page_coverage.py" in str(c))
         mkdocs_idx = next(i for i, c in enumerate(call_order) if "mkdocs" in str(c))
 
         self.assertLess(unittest_idx, cross_idx)
         self.assertLess(cross_idx, validate_idx)
-        self.assertLess(validate_idx, freshness_idx)
+        self.assertLess(validate_idx, integrity_idx)
+        self.assertLess(integrity_idx, freshness_idx)
         self.assertLess(freshness_idx, coverage_idx)
         self.assertLess(coverage_idx, mkdocs_idx)
 
@@ -89,6 +92,24 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertEqual(result, 1)
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
         self.assertFalse(any("validate_schema.py" in str(c) for c in call_order))
+
+    def test_integrity_failure_stops_before_downstream_steps(self):
+        module = _load_module()
+        call_order = []
+
+        def fake_run(cmd, **kwargs):
+            call_order.append(cmd)
+            if "verify_artifact_integrity.py" in str(cmd):
+                return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="integrity fail")
+            return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
+
+        with patch("scripts.verify.run_all.subprocess.run", side_effect=fake_run):
+            with patch("sys.argv", ["run_all.py"]):
+                result = module.main()
+
+        self.assertEqual(result, 1)
+        self.assertTrue(any("verify_artifact_integrity.py" in str(c) for c in call_order))
+        self.assertFalse(any("community_generated_freshness.py" in str(c) for c in call_order))
 
     def test_skip_tests_flag(self):
         module = _load_module()

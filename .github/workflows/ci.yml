@@ -42,6 +42,9 @@ jobs:
       - name: Validate JSON schemas
         run: python scripts/verify/validate_schema.py
 
+      - name: Verify artifact integrity
+        run: python scripts/verify/verify_artifact_integrity.py
+
       - name: Verify generated community pages are fresh
         run: python scripts/verify/community_generated_freshness.py
 

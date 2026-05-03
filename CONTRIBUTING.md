@@ -30,7 +30,8 @@ python scripts/verify/run_all.py
 Use `run_all.py` as the default maintainer-grade before-push check. It mirrors
 the CI job's blocking checks in the same order. Advisory CI checks remain
 separate, so you only need to run them locally when your change touches that
-surface.
+surface. The blocking path now includes artifact-integrity verification for the
+canonical published JSON artifacts.
 
 ---
 
@@ -166,12 +167,17 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    ```bash
    python scripts/generate/publish_reference_artifacts.py
    ```
-4. If you are comparing two baselines, generate the published delta summary from the preserved copy:
+4. Verify canonical raw artifacts still match the published current copies and
+   manifest checksums:
+   ```bash
+   python scripts/verify/verify_artifact_integrity.py
+   ```
+5. If you are comparing two baselines, generate the published delta summary from the preserved copy:
    ```bash
    python scripts/generate/generate_snapshot_delta_summary.py --old references/raw_backup_before_refresh --new references/raw --output docs/artifacts/delta-summary.json
    ```
-5. Remove the temporary backup after confirming the delta output.
-6. Run the maintainer verification gate:
+6. Remove the temporary backup after confirming the delta output.
+7. Run the maintainer verification gate:
    ```bash
    python scripts/verify/run_all.py
    ```
@@ -244,6 +250,7 @@ advisory checks remain separate.
 
 ```bash
 python scripts/verify/cross_references.py
+python scripts/verify/verify_artifact_integrity.py
 python -m mkdocs build
 python -m unittest discover -s tests -v
 ```
@@ -277,6 +284,7 @@ Scripts marked **[BLOCKING]** will fail CI and prevent merge. Scripts marked
 ```bash
 python scripts/verify/cross_references.py              # [BLOCKING]
 python scripts/verify/validate_schema.py               # [BLOCKING]
+python scripts/verify/verify_artifact_integrity.py     # [BLOCKING]
 python scripts/verify/community_generated_freshness.py # [BLOCKING]
 python scripts/verify/community_page_coverage.py       # [BLOCKING]
 python scripts/verify/stale_content.py                 # [non-blocking]
@@ -316,6 +324,10 @@ modifying runtime extractors.
   and field that is invalid. Fix the source JSON, not any generated output.
 - **`cross_references.py` fails:** It lists broken internal links. Check that the
   target page exists and that the path uses forward slashes.
+- **`verify_artifact_integrity.py` fails:** A canonical raw artifact,
+  published current copy, or manifest checksum is out of sync. Republish with
+  `publish_reference_artifacts.py` and verify that no published copy was
+  hand-edited.
 - **`community_generated_freshness.py` fails:** You edited a community JSON file
   but forgot to rerun `generate_community_pages.py` before verifying.
 - **`extraction_idempotency.py` fails:** See the Common Pitfalls note on
@@ -330,7 +342,7 @@ Always fix the root cause rather than bypassing the check.
 - **Editing generated markdown directly:** `docs/ecosystem/map.md` looks like a normal markdown file, but it is produced by a generator. Always edit `references/community/ecosystem_packages.json` and rerun the generator instead.
 - **Windows backslashes in JSON:** If you author or run extractors on Windows, paths written with `str(path)` will contain backslashes. Always normalize with `.replace("\\", "/")` before writing JSON metadata.
 - **Forgetting to regenerate after JSON changes:** If you edit `references/raw/` or `references/community/` JSON files, rerun the matching generator before running `cross_references.py` or `mkdocs build`.
-- **Misunderstanding CI blocking behavior:** `cross_references.py`, `validate_schema.py`, `community_generated_freshness.py`, and `community_page_coverage.py` will block CI and prevent merge. `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py` run in CI but do not block the pipeline.
+- **Misunderstanding CI blocking behavior:** `cross_references.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `community_generated_freshness.py`, and `community_page_coverage.py` will block CI and prevent merge. `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py` run in CI but do not block the pipeline.
 - **Misreading semantic enrichment fields:** Plan K adds `traceability` markers and richer typed detail to endpoints, hooks, and node schema fields. These are best-effort from static analysis. The `kind` field is reliable; deeper fields should be treated as helpful signals, not strict runtime contracts.
 - **Writing from memory:** Claims about ComfyUI behavior must be traceable to a pinned snapshot or official docs. If you cannot find a source, mark the claim accordingly or leave it out.
 - **Skipping unit tests for script changes:** If you change any script under `scripts/`, add or update the matching test under `tests/unit/` and run the full test suite.
