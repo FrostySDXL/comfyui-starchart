@@ -33,11 +33,12 @@ snapshots. All paths below are site-relative to the built documentation.
 Each artifact also has a versioned copy under `artifacts/versions/<key>/`, where
 the key includes the pinned core version, frontend version, and extraction date.
 
-The repo also publishes a non-canonical support artifact:
+The repo also publishes non-canonical support artifacts:
 
 | Artifact | Purpose | Stable URL |
 |----------|---------|------------|
 | `delta-summary.json` | Deterministic comparison summary between two artifact baselines | `artifacts/delta-summary.json` |
+| `refresh-provenance.json` | Durable evidence about the most recent refresh run, including requested versions, resolved commits, backup path, and runtime-enrichment intent | `artifacts/refresh-provenance.json` |
 
 The repo also publishes bounded JSON Schema files for the three canonical
 artifacts:
@@ -142,6 +143,25 @@ When generating this file after a refresh, preserve a copy of the pre-refresh
 `references/raw/` directory first and use that preserved copy as `--old`. The
 refresh script overwrites `references/raw/` in place.
 
+### refresh-provenance.json
+
+`refresh-provenance.json` records operator-facing evidence about the latest
+refresh run. It is published under `docs/artifacts/` for auditability, but it
+is not part of the canonical manifest discovery surface.
+
+The current payload records at least:
+
+- `refresh_date`
+- requested core and frontend versions
+- resolved core and frontend commits
+- the repo-local backup path created before `references/raw/` was overwritten
+- whether runtime object-info enrichment was requested and merged
+- the next `generate_snapshot_delta_summary.py` command to run when a backup is available
+
+Use this file as refresh evidence and as a maintainer handoff aid. Do not treat
+it as a canonical artifact contract alongside the three primary published JSON
+artifacts.
+
 ## Repo Sources vs Published Copies
 
 The canonical extraction outputs live in `references/raw/` in the repository.
@@ -156,6 +176,7 @@ site.
 | `docs/artifacts/manifest.json` | Discovery metadata with URLs, versions, commits, and SHA-256 checksums for canonical published artifacts |
 | `docs/artifacts/schemas/` | Checked-in bounded JSON Schema files for the canonical published artifacts |
 | `docs/artifacts/delta-summary.json` | Deterministic baseline-to-baseline comparison output |
+| `docs/artifacts/refresh-provenance.json` | Durable published record of the latest refresh run; intentionally outside manifest discovery |
 
 For the three canonical published artifacts, `references/raw/` remains the
 canonical repo-local source. `docs/artifacts/current/` must stay byte-identical
@@ -188,6 +209,10 @@ for the three canonical artifacts.
 `python scripts/verify/validate_schema.py` is the matching blocking verifier for
 the schema contract. It validates canonical artifacts against the checked-in
 published schema files under `docs/artifacts/schemas/`.
+
+`refresh-provenance.json` is intentionally excluded from `manifest.json`. It is
+useful published operator evidence, but it is not a canonical extracted artifact
+and does not participate in the bounded schema-discovery contract.
 
 ## Versioning
 
@@ -236,10 +261,9 @@ the artifact `coverage` blocks and prose guidance.
 
 For baseline-to-baseline comparisons, the proven maintainer sequence is:
 
-1. preserve the current `references/raw/` directory
-2. run `scripts/refresh_snapshots.py`
-3. run `scripts/generate/publish_reference_artifacts.py`
-4. run `scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output docs/artifacts/delta-summary.json`
+1. run `scripts/refresh_snapshots.py` and note the printed repo-local backup directory plus `refresh-provenance.json` output
+2. run `scripts/generate/publish_reference_artifacts.py`
+3. run `scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output docs/artifacts/delta-summary.json`
 
 ## Bounded Usage Examples
 

@@ -1,9 +1,12 @@
 """Tests for scripts/refresh_snapshots.py."""
 
 import importlib.util
+import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "refresh_snapshots.py"
@@ -72,20 +75,36 @@ class RefreshSnapshotsArgumentTests(unittest.TestCase):
         self.assertIn("--frontend-version", result.stdout)
         self.assertIn("--runtime-object-info-url", result.stdout)
         self.assertIn("--skip-runtime-merge", result.stdout)
+        self.assertIn("automatic repo-local backup", result.stdout.lower())
 
     def test_runtime_url_only_works(self):
         """Running with only --runtime-object-info-url should not fail argument validation."""
-        import subprocess
+        module = _load_module()
+        with mock.patch.object(
+            sys,
+            "argv",
+            [
+                str(SCRIPT_PATH),
+                "--runtime-object-info-url",
+                "http://127.0.0.1:8188",
+            ],
+        ), mock.patch.object(
+            module.subprocess,
+            "run",
+            return_value=mock.Mock(returncode=0, stdout="git version 2.0.0\n", stderr=""),
+        ), mock.patch.object(
+            module,
+            "create_pre_refresh_backup",
+            return_value=None,
+        ), mock.patch.object(
+            module,
+            "run_runtime_extraction",
+            return_value=False,
+        ) as runtime_mock:
+            result = module.main()
 
-        result = subprocess.run(
-            [sys.executable, str(SCRIPT_PATH), "--runtime-object-info-url", "http://127.0.0.1:8188"],
-            capture_output=True,
-            text=True,
-            cwd=str(REPO_ROOT),
-            timeout=10,
-        )
-        # It will fail at git check or runtime extraction, but not at argument parsing
-        self.assertNotIn("at least one", result.stderr.lower() + result.stdout.lower())
+        self.assertEqual(result, 1)
+        runtime_mock.assert_called_once()
 
 
 class RefreshSnapshotsConstantsTests(unittest.TestCase):
@@ -214,6 +233,105 @@ class RefreshSnapshotsRuntimeTests(unittest.TestCase):
         module = _load_module()
         self.assertTrue(hasattr(module, "run_runtime_extraction"))
         self.assertTrue(callable(module.run_runtime_extraction))
+
+
+class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
+    """Test refresh backup safety and provenance helpers."""
+
+    def test_create_pre_refresh_backup_when_raw_exists(self):
+        """A repo-local backup should be created when canonical raw artifacts exist."""
+        module = _load_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            raw_dir = tmp_path / "references" / "raw"
+            raw_dir.mkdir(parents=True)
+            sample_file = raw_dir / "server_endpoints.json"
+            sample_file.write_text('{"ok": true}\n', encoding="utf-8")
+
+            with mock.patch.object(module, "REFERENCES_DIR", tmp_path / "references"), \
+                 mock.patch.object(module, "REFERENCES_RAW_DIR", raw_dir):
+                backup_dir = module.create_pre_refresh_backup()
+                self.assertIsNotNone(backup_dir)
+                self.assertEqual(backup_dir.parent.name, "references")
+                self.assertTrue(backup_dir.name.startswith("raw_backup_"))
+                copied = backup_dir / "server_endpoints.json"
+                self.assertTrue(copied.exists())
+                self.assertEqual(copied.read_text(encoding="utf-8"), '{"ok": true}\n')
+
+    def test_create_pre_refresh_backup_skips_when_no_prior_baseline(self):
+        """No backup should be created when canonical raw artifacts do not yet exist."""
+        module = _load_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            raw_dir = tmp_path / "references" / "raw"
+            raw_dir.mkdir(parents=True)
+
+            with mock.patch.object(module, "REFERENCES_DIR", tmp_path / "references"), \
+                 mock.patch.object(module, "REFERENCES_RAW_DIR", raw_dir):
+                backup_dir = module.create_pre_refresh_backup()
+
+        self.assertIsNone(backup_dir)
+
+    def test_create_pre_refresh_backup_raises_on_copy_failure(self):
+        """Backup creation failures should raise a clear runtime error."""
+        module = _load_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            raw_dir = tmp_path / "references" / "raw"
+            raw_dir.mkdir(parents=True)
+            (raw_dir / "server_endpoints.json").write_text('{"ok": true}\n', encoding="utf-8")
+
+            with mock.patch.object(module, "REFERENCES_DIR", tmp_path / "references"), \
+                 mock.patch.object(module, "REFERENCES_RAW_DIR", raw_dir), \
+                 mock.patch.object(module.shutil, "copytree", side_effect=OSError("copy failed")):
+                with self.assertRaises(RuntimeError) as exc:
+                    module.create_pre_refresh_backup()
+
+        self.assertIn("Failed to create pre-refresh backup", str(exc.exception))
+
+    def test_write_refresh_provenance_persists_required_fields(self):
+        """Refresh provenance output should persist the documented minimum fields."""
+        module = _load_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            backup_dir = tmp_path / "references" / "raw_backup_20260503T010203Z"
+            backup_dir.mkdir(parents=True)
+            provenance_path = tmp_path / "docs" / "artifacts" / "refresh-provenance.json"
+
+            with mock.patch.object(module, "REPO_ROOT", tmp_path), \
+                 mock.patch.object(module, "PROVENANCE_OUTPUT_PATH", provenance_path):
+                payload = module.build_refresh_provenance(
+                    refresh_date="2026-05-03",
+                    requested_core_version="v0.20.1",
+                    requested_frontend_version="v1.44.13",
+                    resolved_core_commit="abc123",
+                    resolved_frontend_commit="def456",
+                    backup_dir=backup_dir,
+                    runtime_object_info_requested=True,
+                    runtime_object_info_merged=False,
+                )
+                written_path = module.write_refresh_provenance(payload)
+
+            self.assertEqual(written_path, provenance_path)
+            persisted = json.loads(provenance_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(persisted["refresh_date"], "2026-05-03")
+        self.assertEqual(persisted["requested_versions"]["core"], "v0.20.1")
+        self.assertEqual(persisted["requested_versions"]["frontend"], "v1.44.13")
+        self.assertEqual(persisted["resolved_commits"]["core"], "abc123")
+        self.assertEqual(persisted["resolved_commits"]["frontend"], "def456")
+        self.assertEqual(
+            persisted["backup_location"],
+            "references/raw_backup_20260503T010203Z",
+        )
+        self.assertTrue(persisted["runtime_object_info"]["requested"])
+        self.assertFalse(persisted["runtime_object_info"]["merged_into_node_api_schema"])
+        self.assertEqual(
+            persisted["published"]["provenance_path"],
+            "docs/artifacts/refresh-provenance.json",
+        )
+        self.assertFalse(persisted["published"]["manifest_included"])
+        self.assertIn("generate_snapshot_delta_summary.py", persisted["next_steps"]["delta_summary_command"])
 
 
 if __name__ == "__main__":

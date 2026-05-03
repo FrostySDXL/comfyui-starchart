@@ -100,8 +100,18 @@ def build_delta_summary(old_artifacts: dict[str, dict], new_artifacts: dict[str,
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate a snapshot delta summary from two artifact baselines")
-    parser.add_argument("--old", required=True, help="Directory containing the old baseline artifacts")
+    parser = argparse.ArgumentParser(
+        description=(
+            "Generate a snapshot delta summary from two artifact baselines. "
+            "After running refresh_snapshots.py, pass the auto-created "
+            "references/raw_backup_<timestamp> directory as --old."
+        )
+    )
+    parser.add_argument(
+        "--old",
+        required=True,
+        help="Directory containing the old baseline artifacts (typically the auto-created references/raw_backup_<timestamp> path)",
+    )
     parser.add_argument("--new", required=True, help="Directory containing the new baseline artifacts")
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT), help="Output JSON path")
     args = parser.parse_args()

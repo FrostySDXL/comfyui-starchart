@@ -2,7 +2,7 @@
 
 ## 0. Quickstart
 
-Supported Python: `3.11+`
+Always Use Supported Python: `3.11+`
 
 ```
 python -m pip install -r requirements.lock
@@ -41,7 +41,7 @@ python scripts/verify/run_all.py
 | Update community catalog | `references/community/ecosystem_packages.json` + `docs/reference/community-maintenance-policy.md` | Edit JSON source; regenerate page | `python scripts/verify/validate_schema.py` + `python scripts/verify/community_metadata.py` + `python scripts/verify/community_staleness.py` + `python scripts/generate/generate_community_pages.py` + `python scripts/verify/community_generated_freshness.py` + `python scripts/verify/community_page_coverage.py` + `python scripts/verify/cross_references.py` + `python -m mkdocs build` |
 | Add a new extractor | Existing extractor in `scripts/extract/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
 | Add a verification script | Existing script in `scripts/verify/` | New script + test in `tests/unit/` + intentional `run_all.py` / CI placement | `python -m unittest discover -s tests` |
-| Refresh upstream version | `scripts/refresh_snapshots.py` | Back up `references/raw/`, run refresh with `--core-version` / `--frontend-version`, then republish artifacts and regenerate delta summary | `python scripts/generate/publish_reference_artifacts.py` + `python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output docs/artifacts/delta-summary.json` + `python scripts/verify/run_all.py` |
+| Refresh upstream version | `scripts/refresh_snapshots.py` | Run refresh with `--core-version` / `--frontend-version`, note the auto-created `references/raw_backup_TIMESTAMP` path and `docs/artifacts/refresh-provenance.json`, then republish artifacts and regenerate delta summary | `python scripts/generate/publish_reference_artifacts.py` + `python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output docs/artifacts/delta-summary.json` + `python scripts/verify/run_all.py` |
 | Runtime extraction | `scripts/extract/parse_from_api.py` | Run with `--url` and `--output` | `validate_schema.py` passes on output |
 | Change CI workflow | relevant file in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs when operator behavior changes | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then check Ubuntu/Windows Actions runs and any advisory replay workflow after push |
 
@@ -86,7 +86,7 @@ Non-goals: official docs replacement, community wiki, package registry.
 ## 3. Repo Map
 
 - `docs/` -- MkDocs source-backed documentation pages
-  - `docs/artifacts/` -- Published JSON artifacts, manifest, and delta summary
+  - `docs/artifacts/` -- Published JSON artifacts, manifest, delta summary, refresh provenance, and checked-in schemas
 - `references/raw/` -- JSON reference data extracted from pinned upstream snapshots
   - `server_endpoints.json` -- API routes from `parse_server.py`
   - `js_hooks.json` -- Frontend hooks from `parse_hooks.py`
@@ -179,13 +179,12 @@ separate and escalate through the dedicated advisory replay workflow.
 
 ### Refreshing upstream baselines
 
-1. Preserve a copy of `references/raw/` before refresh if you need a real baseline-to-baseline delta
-2. Run `python scripts/refresh_snapshots.py --core-version <v> --frontend-version <v>`
-3. Run `python scripts/generate/publish_reference_artifacts.py`
-4. Run `python scripts/verify/verify_artifact_integrity.py`
-5. If comparing two baselines, run `python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output docs/artifacts/delta-summary.json`
-6. Remove the temporary backup after confirming the delta output
-7. Run `python scripts/verify/run_all.py`
+1. Run `python scripts/refresh_snapshots.py --core-version <v> --frontend-version <v>` and note the printed `references/raw_backup_TIMESTAMP` path plus `docs/artifacts/refresh-provenance.json`
+2. Run `python scripts/generate/publish_reference_artifacts.py`
+3. Run `python scripts/verify/verify_artifact_integrity.py`
+4. If comparing two baselines, run `python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output docs/artifacts/delta-summary.json`
+5. Remove the temporary backup after confirming the delta output if you no longer need it
+6. Run `python scripts/verify/run_all.py`
 
 ### Editing prose documentation
 

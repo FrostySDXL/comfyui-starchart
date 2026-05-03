@@ -19,14 +19,16 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+REFERENCES_DIR = REPO_ROOT / "references"
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 SNAPSHOTS_DIR = REPO_ROOT / "references" / "snapshots"
 SCRIPTS_EXTRACT_DIR = REPO_ROOT / "scripts" / "extract"
 SCRIPTS_GENERATE_DIR = REPO_ROOT / "scripts" / "generate"
+PROVENANCE_OUTPUT_PATH = REPO_ROOT / "docs" / "artifacts" / "refresh-provenance.json"
 
 # Source files to copy from each repo
 CORE_FILES = [
@@ -48,6 +50,101 @@ FRONTEND_FILES = [
 
 CORE_REPO_URL = "https://github.com/Comfy-Org/ComfyUI.git"
 FRONTEND_REPO_URL = "https://github.com/Comfy-Org/ComfyUI_Frontend.git"
+
+
+def _repo_relative_path(path: Path | None) -> str | None:
+    """Return a repo-relative path with forward slashes."""
+    if path is None:
+        return None
+    try:
+        return path.resolve().relative_to(REPO_ROOT.resolve()).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def canonical_raw_artifacts_exist() -> bool:
+    """Return True when a prior canonical raw baseline exists."""
+    return REFERENCES_RAW_DIR.exists() and any(REFERENCES_RAW_DIR.iterdir())
+
+
+def create_pre_refresh_backup() -> Path | None:
+    """Create a repo-local backup of references/raw before mutation."""
+    if not canonical_raw_artifacts_exist():
+        return None
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    backup_dir = REFERENCES_DIR / f"raw_backup_{timestamp}"
+    try:
+        shutil.copytree(REFERENCES_RAW_DIR, backup_dir)
+    except OSError as exc:
+        raise RuntimeError(
+            f"Failed to create pre-refresh backup at {_repo_relative_path(backup_dir)}: {exc}"
+        ) from exc
+    return backup_dir
+
+
+def build_delta_summary_command(backup_dir: Path | None) -> str | None:
+    """Build the next-step delta-summary command for maintainers."""
+    if backup_dir is None:
+        return None
+    return (
+        f'{sys.executable} scripts/generate/generate_snapshot_delta_summary.py '
+        f'--old "{_repo_relative_path(backup_dir)}" '
+        f'--new "references/raw" '
+        f'--output "docs/artifacts/delta-summary.json"'
+    )
+
+
+def build_refresh_provenance(
+    *,
+    refresh_date: str,
+    requested_core_version: str | None,
+    requested_frontend_version: str | None,
+    resolved_core_commit: str | None,
+    resolved_frontend_commit: str | None,
+    backup_dir: Path | None,
+    runtime_object_info_requested: bool,
+    runtime_object_info_merged: bool,
+) -> dict:
+    """Build the durable refresh provenance payload."""
+    return {
+        "refresh_date": refresh_date,
+        "requested_versions": {
+            "core": requested_core_version,
+            "frontend": requested_frontend_version,
+        },
+        "resolved_commits": {
+            "core": resolved_core_commit,
+            "frontend": resolved_frontend_commit,
+        },
+        "backup_location": _repo_relative_path(backup_dir),
+        "runtime_object_info": {
+            "requested": runtime_object_info_requested,
+            "merged_into_node_api_schema": runtime_object_info_merged,
+        },
+        "published": {
+            "provenance_path": _repo_relative_path(PROVENANCE_OUTPUT_PATH),
+            "manifest_included": False,
+        },
+        "next_steps": {
+            "delta_summary_command": build_delta_summary_command(backup_dir),
+        },
+    }
+
+
+def write_refresh_provenance(payload: dict) -> Path:
+    """Write the refresh provenance payload to the published repo-local path."""
+    try:
+        PROVENANCE_OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+        PROVENANCE_OUTPUT_PATH.write_text(
+            json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+    except OSError as exc:
+        raise RuntimeError(
+            f"Failed to write refresh provenance to {_repo_relative_path(PROVENANCE_OUTPUT_PATH)}: {exc}"
+        ) from exc
+    return PROVENANCE_OUTPUT_PATH
 
 
 def _run_cmd(cmd: list[str], description: str, cwd: str | None = None) -> subprocess.CompletedProcess:
@@ -380,7 +477,11 @@ def compute_diff_summary(old_json: dict, new_json: dict, json_name: str) -> list
 def main():
     """Main entry point for snapshot refresh."""
     parser = argparse.ArgumentParser(
-        description="Fetch new upstream versions and refresh snapshots, extractors, and docs."
+        description=(
+            "Fetch new upstream versions and refresh snapshots, extractors, and docs. "
+            "Creates an automatic repo-local backup before overwriting canonical raw artifacts "
+            "and writes refresh provenance to docs/artifacts/refresh-provenance.json."
+        )
     )
     parser.add_argument(
         "--core-version",
@@ -435,6 +536,17 @@ def main():
     core_commit = None
     frontend_commit = None
     runtime_object_info_path = None
+
+    try:
+        backup_dir = create_pre_refresh_backup()
+    except RuntimeError as exc:
+        print(f"Error: {exc}")
+        return 1
+
+    if backup_dir is not None:
+        print(f"Pre-refresh backup created at: {_repo_relative_path(backup_dir)}")
+    else:
+        print("No prior canonical raw baseline found; skipping pre-refresh backup.")
 
     # Save current JSON content for diff comparison
     old_jsons = {}
@@ -491,6 +603,22 @@ def main():
             for change in changes:
                 print(change)
 
+    provenance_payload = build_refresh_provenance(
+        refresh_date=snapshot_date,
+        requested_core_version=args.core_version,
+        requested_frontend_version=args.frontend_version,
+        resolved_core_commit=core_commit,
+        resolved_frontend_commit=frontend_commit,
+        backup_dir=backup_dir,
+        runtime_object_info_requested=bool(args.runtime_object_info_url),
+        runtime_object_info_merged=bool(args.runtime_object_info_url and not args.skip_runtime_merge),
+    )
+    try:
+        provenance_path = write_refresh_provenance(provenance_payload)
+    except RuntimeError as exc:
+        print(f"Error: {exc}")
+        return 1
+
     print(f"\n=== Refresh Complete ===")
     print(f"Snapshot date: {snapshot_date}")
     if args.core_version:
@@ -503,6 +631,9 @@ def main():
             print("Runtime merge skipped (--skip-runtime-merge)")
         else:
             print("Runtime object_info merged into node_api_schema")
+    print(f"Refresh provenance written to: {_repo_relative_path(provenance_path)}")
+    if backup_dir is not None:
+        print(f"Delta summary command: {build_delta_summary_command(backup_dir)}")
     print("\nReview the changes and commit manually if everything looks correct.")
     return 0
 

@@ -64,7 +64,7 @@ For editorial standards and evidence rules, use these files together:
 - Community metadata lives in `references/community/`
 - Snapshots live in `references/snapshots/`
 - Helper scripts live in `scripts/extract/` and `scripts/generate/`
-- Published artifact copies and manifest live in `docs/artifacts/`
+- Published artifact copies, manifest, delta summary, and refresh provenance live in `docs/artifacts/`
 - See [Machine-Readable Artifacts](docs/reference/machine-readable-artifacts.md) for
   the canonical published artifact set, published JSON Schemas, bounded
   guarantees, and conceptual examples for tooling authors
@@ -126,12 +126,15 @@ python scripts/generate/generate_community_pages.py
 
 ### Comparing artifact baselines
 
-When comparing two pinned baselines after a refresh, preserve the pre-refresh
-`references/raw/` directory first because `refresh_snapshots.py` overwrites the
-canonical raw artifacts in place.
+When comparing two pinned baselines after a refresh, use the auto-created
+`references/raw_backup_TIMESTAMP/` directory that `refresh_snapshots.py`
+prints before it overwrites the canonical raw artifacts in place. The same
+refresh run also writes `docs/artifacts/refresh-provenance.json` with the
+requested versions, resolved commits, backup path, and runtime-enrichment
+intent.
 
 ```bash
-python scripts/generate/generate_snapshot_delta_summary.py --old <pre-refresh-raw-copy> --new references/raw --output docs/artifacts/delta-summary.json
+python scripts/generate/generate_snapshot_delta_summary.py --old references/raw_backup_TIMESTAMP --new references/raw --output docs/artifacts/delta-summary.json
 ```
 
 ### Refreshing upstream versions
@@ -145,6 +148,11 @@ python scripts/refresh_snapshots.py --frontend-version <new-frontend-version>
 python scripts/refresh_snapshots.py --core-version <new-core-version> --frontend-version <new-frontend-version>
 python scripts/generate/publish_reference_artifacts.py
 ```
+
+The refresh script now creates a repo-local backup automatically when
+`references/raw/` already exists, prints the exact backup path to reuse for
+delta generation, and writes `docs/artifacts/refresh-provenance.json`. It does
+not auto-generate `delta-summary.json`, auto-clean backups, or auto-commit.
 
 ## Verification
 
