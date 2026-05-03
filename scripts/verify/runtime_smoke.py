@@ -15,43 +15,23 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.common import http_utils
 DEFAULT_PROMPT_PATH = REPO_ROOT / "examples" / "api-calls" / "post-prompt.json"
 
 
 def _fetch_json(url: str, timeout: int = 30) -> dict:
     """Fetch JSON from a URL."""
-    req = Request(url, headers={"Accept": "application/json"})
-    try:
-        with urlopen(req, timeout=timeout) as response:
-            return json.loads(response.read())
-    except HTTPError as exc:
-        raise RuntimeError(f"HTTP error {exc.code} from {url}: {exc.reason}") from exc
-    except URLError as exc:
-        raise RuntimeError(f"URL error reaching {url}: {exc.reason}") from exc
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Invalid JSON from {url}: {exc}") from exc
+    return http_utils.get_json(url, timeout=timeout)
 
 
 def _post_json(url: str, payload: dict, timeout: int = 30) -> dict:
     """POST JSON to a URL and return the response."""
-    data = json.dumps(payload).encode("utf-8")
-    req = Request(url, data=data, headers={
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-    }, method="POST")
-    try:
-        with urlopen(req, timeout=timeout) as response:
-            return json.loads(response.read())
-    except HTTPError as exc:
-        raise RuntimeError(f"HTTP error {exc.code} from {url}: {exc.reason}") from exc
-    except URLError as exc:
-        raise RuntimeError(f"URL error reaching {url}: {exc.reason}") from exc
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Invalid JSON from {url}: {exc}") from exc
+    return http_utils.post_json(url, payload, timeout=timeout)
 
 
 def check_features(base_url: str, timeout: int) -> bool:

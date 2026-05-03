@@ -47,8 +47,8 @@ class StaleContentTests(unittest.TestCase):
             text=True,
             cwd=str(REPO_ROOT),
         )
-        # Exit code 0 means no stale content found, which is expected after cleanup
-        self.assertIn(result.returncode, [0, 1], msg=result.stderr)
+        self.assertEqual(result.returncode, 0, msg=result.stderr or result.stdout)
+        self.assertIn("No stale content markers found.", result.stdout)
 
     def test_stale_content_imports(self):
         """The stale_content module should be importable."""

@@ -13,36 +13,27 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from urllib.error import HTTPError, URLError
-from urllib.request import urlopen
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.common import http_utils
 
 
-def fetch_object_info(url: str, timeout: int) -> dict:
+def fetch_object_info(url: str, timeout: int) -> tuple[dict, bytes]:
     """Fetch /object_info from a running ComfyUI instance.
 
-    Returns the parsed JSON response.
+    Returns the parsed JSON response plus raw response bytes.
     Raises RuntimeError on network, HTTP, or JSON decode failures.
     """
     endpoint = url.rstrip("/") + "/object_info"
-    try:
-        with urlopen(endpoint, timeout=timeout) as response:
-            data = response.read()
-    except HTTPError as exc:
-        raise RuntimeError(f"HTTP error {exc.code} from {endpoint}: {exc.reason}") from exc
-    except URLError as exc:
-        raise RuntimeError(f"URL error reaching {endpoint}: {exc.reason}") from exc
-    except TimeoutError as exc:
-        raise RuntimeError(f"Timeout reaching {endpoint} after {timeout}s") from exc
-
-    try:
-        payload = json.loads(data)
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Invalid JSON from {endpoint}: {exc}") from exc
+    payload, data = http_utils.get_json_with_bytes(endpoint, timeout=timeout)
 
     if not isinstance(payload, dict):
         raise RuntimeError(f"Expected dict response from {endpoint}, got {type(payload).__name__}")
 
-    return payload
+    return payload, data
 
 
 def compute_sha256(data: bytes) -> str:
@@ -76,13 +67,11 @@ def main() -> int:
     args = parser.parse_args()
 
     try:
-        payload = fetch_object_info(args.url, args.timeout)
+        payload, raw_bytes = fetch_object_info(args.url, args.timeout)
     except RuntimeError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 
-    # Re-serialize to bytes deterministically for hash calculation
-    raw_bytes = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     snapshot = build_snapshot(args.url, args.version, args.commit, payload, raw_bytes)
 
     output_path = Path(args.output)

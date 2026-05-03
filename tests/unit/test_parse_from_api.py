@@ -4,16 +4,25 @@ import importlib.util
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "extract" / "parse_from_api.py"
+HTTP_UTILS = REPO_ROOT / "scripts" / "common" / "http_utils.py"
 
 
 def _load_module():
     spec = importlib.util.spec_from_file_location("parse_from_api", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _load_http_utils_module():
+    spec = importlib.util.spec_from_file_location("http_utils", HTTP_UTILS)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -47,27 +56,22 @@ class ParseFromApiUnitTests(unittest.TestCase):
 
     def test_fetch_object_info_success(self):
         module = _load_module()
-        fake_bytes = json.dumps({"KSampler": {"input": {}}}).encode("utf-8")
-        fake_response = MagicMock()
-        fake_response.read.return_value = fake_bytes
-        fake_response.__enter__ = MagicMock(return_value=fake_response)
-        fake_response.__exit__ = MagicMock(return_value=False)
+        fake_payload = {"KSampler": {"input": {}}}
+        fake_bytes = json.dumps(fake_payload).encode("utf-8")
 
-        with patch.object(module, "urlopen", return_value=fake_response) as mock_urlopen:
-            result = module.fetch_object_info("http://127.0.0.1:8188", timeout=10)
+        with patch.object(module.http_utils, "get_json_with_bytes", return_value=(fake_payload, fake_bytes)) as mock_get_json:
+            result, raw_bytes = module.fetch_object_info("http://127.0.0.1:8188", timeout=10)
 
-        self.assertEqual(result, {"KSampler": {"input": {}}})
-        mock_urlopen.assert_called_once()
-        call_url = mock_urlopen.call_args[0][0]
-        self.assertTrue(call_url.endswith("/object_info"))
+        self.assertEqual(result, fake_payload)
+        self.assertEqual(raw_bytes, fake_bytes)
+        mock_get_json.assert_called_once_with("http://127.0.0.1:8188/object_info", timeout=10)
 
     def test_fetch_object_info_http_error(self):
         module = _load_module()
-        from urllib.error import HTTPError
-
         with patch.object(
-            module, "urlopen",
-            side_effect=HTTPError("http://127.0.0.1:8188/object_info", 500, "Internal Server Error", {}, None),
+            module.http_utils,
+            "get_json_with_bytes",
+            side_effect=RuntimeError("HTTP error 500 from http://127.0.0.1:8188/object_info: Internal Server Error"),
         ):
             with self.assertRaises(RuntimeError) as ctx:
                 module.fetch_object_info("http://127.0.0.1:8188", timeout=10)
@@ -75,24 +79,18 @@ class ParseFromApiUnitTests(unittest.TestCase):
 
     def test_fetch_object_info_invalid_json(self):
         module = _load_module()
-        fake_response = MagicMock()
-        fake_response.read.return_value = b"not json"
-        fake_response.__enter__ = MagicMock(return_value=fake_response)
-        fake_response.__exit__ = MagicMock(return_value=False)
-
-        with patch.object(module, "urlopen", return_value=fake_response):
+        with patch.object(
+            module.http_utils,
+            "get_json_with_bytes",
+            side_effect=RuntimeError("Invalid JSON from http://127.0.0.1:8188/object_info: bad payload"),
+        ):
             with self.assertRaises(RuntimeError) as ctx:
                 module.fetch_object_info("http://127.0.0.1:8188", timeout=10)
         self.assertIn("Invalid JSON", str(ctx.exception))
 
     def test_fetch_object_info_non_dict_response(self):
         module = _load_module()
-        fake_response = MagicMock()
-        fake_response.read.return_value = b"[]"
-        fake_response.__enter__ = MagicMock(return_value=fake_response)
-        fake_response.__exit__ = MagicMock(return_value=False)
-
-        with patch.object(module, "urlopen", return_value=fake_response):
+        with patch.object(module.http_utils, "get_json_with_bytes", return_value=([], b"[]")):
             with self.assertRaises(RuntimeError) as ctx:
                 module.fetch_object_info("http://127.0.0.1:8188", timeout=10)
         self.assertIn("Expected dict response", str(ctx.exception))
@@ -103,6 +101,17 @@ class ParseFromApiUnitTests(unittest.TestCase):
         hash1 = module.compute_sha256(data)
         hash2 = module.compute_sha256(data)
         self.assertEqual(hash1, hash2)
+
+
+class HttpUtilsBehaviorTests(unittest.TestCase):
+    """Behavior tests for the shared HTTP helper used by extractor/runtime scripts."""
+
+    def test_get_json_timeout_is_wrapped_consistently(self):
+        module = _load_http_utils_module()
+        with patch.object(module, "urlopen", side_effect=TimeoutError):
+            with self.assertRaises(RuntimeError) as ctx:
+                module.get_json("http://127.0.0.1:8188/object_info", timeout=5)
+        self.assertIn("Timeout reaching http://127.0.0.1:8188/object_info after 5s", str(ctx.exception))
 
 
 class ParseFromApiScriptTests(unittest.TestCase):
@@ -121,32 +130,26 @@ class ParseFromApiScriptTests(unittest.TestCase):
         module = _load_module()
         fake_payload = {"KSampler": {"input": {}}}
         fake_bytes = json.dumps(fake_payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        fake_response = MagicMock()
-        fake_response.read.return_value = fake_bytes
-        fake_response.__enter__ = MagicMock(return_value=fake_response)
-        fake_response.__exit__ = MagicMock(return_value=False)
 
-        output_path = REPO_ROOT / "references" / "raw" / "object_info_runtime_test.json"
-        if output_path.exists():
-            output_path.unlink()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = Path(tmpdir) / "object_info_runtime_test.json"
 
-        with patch.object(module, "urlopen", return_value=fake_response):
-            with patch("sys.argv", [
-                "parse_from_api.py",
-                "--url", "http://127.0.0.1:8188",
-                "--version", "v0.19.3",
-                "--commit", "3086026401180c9216bcb6ace442a4e3587d2c66",
-                "--output", str(output_path),
-            ]):
-                result = module.main()
+            with patch.object(module.http_utils, "get_json_with_bytes", return_value=(fake_payload, fake_bytes)):
+                with patch("sys.argv", [
+                    "parse_from_api.py",
+                    "--url", "http://127.0.0.1:8188",
+                    "--version", "v0.19.3",
+                    "--commit", "3086026401180c9216bcb6ace442a4e3587d2c66",
+                    "--output", str(output_path),
+                ]):
+                    result = module.main()
 
-        self.assertEqual(result, 0)
-        self.assertTrue(output_path.exists())
-        data = json.loads(output_path.read_text(encoding="utf-8"))
-        self.assertEqual(data["metadata"]["version"], "v0.19.3")
-        self.assertEqual(data["metadata"]["commit"], "3086026401180c9216bcb6ace442a4e3587d2c66")
-        self.assertIn("object_info", data)
-        output_path.unlink(missing_ok=True)
+            self.assertEqual(result, 0)
+            self.assertTrue(output_path.exists())
+            data = json.loads(output_path.read_text(encoding="utf-8"))
+            self.assertEqual(data["metadata"]["version"], "v0.19.3")
+            self.assertEqual(data["metadata"]["commit"], "3086026401180c9216bcb6ace442a4e3587d2c66")
+            self.assertIn("object_info", data)
 
 
 if __name__ == "__main__":

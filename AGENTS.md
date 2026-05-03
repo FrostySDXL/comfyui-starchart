@@ -95,6 +95,7 @@ Non-goals: official docs replacement, community wiki, package registry.
   - `ecosystem_packages.json` -- Package catalog that drives `docs/ecosystem/map.md`
   - `community_pages.json` -- Review metadata for community pages
 - `references/snapshots/` -- Pinned upstream source files organized by date
+- `scripts/common/` -- Shared utility modules used by multiple scripts (for example path normalization and HTTP helpers)
 - `scripts/extract/` -- Extractors that parse source into JSON
 - `scripts/generate/` -- Generators that render markdown from JSON or package artifacts
   - `md_from_json.py` -- Renders reference docs from `references/raw/`

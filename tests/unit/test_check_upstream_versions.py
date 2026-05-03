@@ -6,7 +6,7 @@ import subprocess
 import sys
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "check_upstream_versions.py"
@@ -112,23 +112,13 @@ class CheckUpstreamVersionsUnitTests(unittest.TestCase):
 
     def test_fetch_json_success(self):
         module = _load_module()
-        fake_data = json.dumps([{"name": "v1.0.0"}]).encode("utf-8")
-        fake_response = MagicMock()
-        fake_response.read.return_value = fake_data
-        fake_response.__enter__ = MagicMock(return_value=fake_response)
-        fake_response.__exit__ = MagicMock(return_value=False)
-
-        with patch.object(module, "urlopen", return_value=fake_response):
+        with patch.object(module.http_utils, "get_json", return_value=[{"name": "v1.0.0"}]):
             result = module._fetch_json("http://example.com/tags")
         self.assertEqual(result, [{"name": "v1.0.0"}])
 
     def test_fetch_json_http_error(self):
         module = _load_module()
-        from urllib.error import HTTPError
-        with patch.object(
-            module, "urlopen",
-            side_effect=HTTPError("http://example.com", 500, "Error", {}, None),
-        ):
+        with patch.object(module.http_utils, "get_json", side_effect=RuntimeError("HTTP error 500 from http://example.com/tags: Error")):
             with self.assertRaises(RuntimeError) as ctx:
                 module._fetch_json("http://example.com/tags")
         self.assertIn("HTTP error 500", str(ctx.exception))

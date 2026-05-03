@@ -12,10 +12,12 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.common import http_utils
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 
 CORE_TAGS_URL = "https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=100"
@@ -24,16 +26,14 @@ FRONTEND_TAGS_URL = "https://api.github.com/repos/Comfy-Org/ComfyUI_Frontend/tag
 
 def _fetch_json(url: str, timeout: int = 30) -> list | dict:
     """Fetch and parse JSON from a URL."""
-    req = Request(url, headers={"Accept": "application/vnd.github+json", "User-Agent": "comfyui-kb-upstream-watch"})
-    try:
-        with urlopen(req, timeout=timeout) as response:
-            return json.loads(response.read())
-    except HTTPError as exc:
-        raise RuntimeError(f"HTTP error {exc.code} from {url}: {exc.reason}") from exc
-    except URLError as exc:
-        raise RuntimeError(f"URL error reaching {url}: {exc.reason}") from exc
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Invalid JSON from {url}: {exc}") from exc
+    return http_utils.get_json(
+        url,
+        timeout=timeout,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "comfyui-kb-upstream-watch",
+        },
+    )
 
 
 def _read_pinned_version(json_path: Path) -> dict | None:

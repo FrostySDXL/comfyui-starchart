@@ -28,9 +28,13 @@ jobs:
         run: python -m pip install -r requirements.lock
 
       - name: Run runtime smoke checks
+        shell: bash
+        env:
+          COMFYUI_URL: ${{ inputs.comfyui_url }}
+          SKIP_PROMPT: ${{ inputs.skip_prompt }}
         run: |
-          ARGS="--url ${{ inputs.comfyui_url }}"
-          if [ "${{ inputs.skip_prompt }}" == "true" ]; then
-            ARGS="$ARGS --skip-prompt"
+          args=(--url "$COMFYUI_URL")
+          if [ "$SKIP_PROMPT" = "true" ]; then
+            args+=(--skip-prompt)
           fi
-          python scripts/verify/runtime_smoke.py $ARGS
+          python scripts/verify/runtime_smoke.py "${args[@]}"
