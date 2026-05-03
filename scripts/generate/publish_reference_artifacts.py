@@ -44,8 +44,14 @@ def _load_json(path: Path) -> dict:
 
 
 def _compute_sha256(path: Path) -> str:
-    """Return the SHA-256 hex digest for file bytes."""
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    """Return a cross-platform SHA-256 hex digest for textual JSON artifacts.
+
+    Git stores tracked text files with LF line endings, but Windows working
+    trees may materialize them as CRLF. Normalize CRLF to LF before hashing so
+    published manifest hashes are stable across operating systems.
+    """
+    file_bytes = path.read_bytes().replace(b"\r\n", b"\n")
+    return hashlib.sha256(file_bytes).hexdigest()
 
 
 def _derive_version_key(artifacts: dict[str, dict]) -> str:

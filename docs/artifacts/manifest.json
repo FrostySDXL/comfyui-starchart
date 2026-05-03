@@ -16,7 +16,7 @@
     "server_endpoints.json": {
       "current_url": "artifacts/current/server_endpoints.json",
       "versioned_url": "artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30/server_endpoints.json",
-      "sha256": "61d238b5797ba9823f6441d6c5318e0d3889e5d25c7b6907fbd386a96b83a94a",
+      "sha256": "e71e3253a38e706189d9a8c3822d33b1aae543ff7ebe20f782efebe69c9d7d5c",
       "version": "v0.20.1",
       "commit": "64b8457f55cd7fb54ca7a956d9c73b505e903e0c",
       "extracted_date": "2026-04-30",
@@ -27,7 +27,7 @@
     "js_hooks.json": {
       "current_url": "artifacts/current/js_hooks.json",
       "versioned_url": "artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30/js_hooks.json",
-      "sha256": "56ac72dac73f35a78ba39d83a57eb1c0b2a0555d4509bfe49e8e5c1ffb757469",
+      "sha256": "3495bb2a20ec927bfd3bc112b743a57d939e3d7ba66df58e1fdd0d4183e6cffb",
       "version": "v1.44.13",
       "commit": "389ff8ba49468cc3afa11aec5778224689a8f9b9",
       "extracted_date": "2026-04-30",
@@ -40,7 +40,7 @@
     "node_api_schema.json": {
       "current_url": "artifacts/current/node_api_schema.json",
       "versioned_url": "artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30/node_api_schema.json",
-      "sha256": "debd94dc71cbb492d6b7eca6d7007a3e6e6c5df7b63a2bae0f6f0204ffc181d4",
+      "sha256": "df060932b6e6068f6cbb9ea514c738c788649b65d620b507dc22e33819f0150a",
       "version": "v0.20.1",
       "commit": "64b8457f55cd7fb54ca7a956d9c73b505e903e0c",
       "extracted_date": "2026-04-30",

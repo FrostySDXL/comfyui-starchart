@@ -176,7 +176,8 @@ separate and escalate through the dedicated advisory replay workflow.
 2. Run the matching extractor with `--version` and `--commit` flags
 3. Optionally run `parse_from_api.py` with `--url` for runtime enrichment
 4. Run `md_from_json.py` to regenerate markdown
-5. Run `cross_references.py` and `validate_schema.py` to verify
+5. If published JSON artifacts or `docs/artifacts/manifest.json` changed, rerun `python scripts/generate/publish_reference_artifacts.py` before verification so manifest hashes stay in sync
+6. Run `cross_references.py` and `validate_schema.py` to verify
 
 ### Refreshing upstream baselines
 
@@ -228,6 +229,7 @@ separate and escalate through the dedicated advisory replay workflow.
 ## 6. Common Pitfalls
 
 - **Windows backslashes in JSON**: Extractors run on Windows produce `\` in paths. Always use `.replace("\\", "/")` when writing `str(path)` to JSON metadata.
+- **Cross-platform artifact hashes**: The three published artifact checksums are for textual JSON files and must be stable across Windows and Linux checkouts. Hash them after normalizing `CRLF` to `LF`; do not use this normalization rule for future binary artifacts.
 - **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
 - **Structured returns and traceability are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`, and Plan K semantic enrichment adds `traceability` markers to endpoints, hooks, and node schema fields. The `kind` field is reliable; `fields`, `summary`, and `traceability` details are best-effort from static analysis.
 - **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, and `community_staleness` use `continue-on-error: true` in normal push/PR CI. `cross_references`, `validate_schema`, `verify_artifact_integrity`, `community_generated_freshness`, and `community_page_coverage` block the pipeline, and the advisory scripts also replay in `advisory-checks.yml` as a scheduled/manual blocking escalation path.

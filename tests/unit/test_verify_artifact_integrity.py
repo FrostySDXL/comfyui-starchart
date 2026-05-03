@@ -47,7 +47,9 @@ class VerifyArtifactIntegrityUnitTests(unittest.TestCase):
             artifact_text = json.dumps(payload, indent=2, sort_keys=True) + "\n"
             (canonical_dir / name).write_text(artifact_text, encoding="utf-8")
             (published_dir / name).write_text(artifact_text, encoding="utf-8")
-            digest = hashlib.sha256((published_dir / name).read_bytes()).hexdigest()
+            digest = hashlib.sha256(
+                (published_dir / name).read_bytes().replace(b"\r\n", b"\n")
+            ).hexdigest()
             manifest["artifacts"][name] = {
                 "current_url": f"artifacts/current/{name}",
                 "versioned_url": f"artifacts/versions/test-key/{name}",
@@ -114,6 +116,37 @@ class VerifyArtifactIntegrityUnitTests(unittest.TestCase):
             errors = module.verify_integrity(manifest_path, canonical_dir, published_dir)
 
             self.assertTrue(any("Manifest hash mismatch" in error for error in errors))
+
+    def test_crlf_and_lf_artifacts_hash_identically(self):
+        module = _load_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            canonical_dir = root / "references" / "raw"
+            published_dir = root / "docs" / "artifacts" / "current"
+            manifest_path = root / "docs" / "artifacts" / "manifest.json"
+            canonical_dir.mkdir(parents=True)
+            published_dir.mkdir(parents=True)
+            manifest = {"version_key": "test-key", "artifacts": {}}
+
+            for name in ARTIFACT_FILES:
+                lf_text = '{\n  "metadata": {"version": "test"},\n  "items": []\n}\n'
+                crlf_text = lf_text.replace("\n", "\r\n")
+                (canonical_dir / name).write_text(crlf_text, encoding="utf-8", newline="")
+                (published_dir / name).write_text(crlf_text, encoding="utf-8", newline="")
+                digest = hashlib.sha256(lf_text.encode("utf-8")).hexdigest()
+
+                manifest["artifacts"][name] = {
+                    "current_url": f"artifacts/current/{name}",
+                    "versioned_url": f"artifacts/versions/test-key/{name}",
+                    "sha256": digest,
+                    "version": "test",
+                    "commit": "test-commit",
+                    "extracted_date": "2026-05-03",
+                    "sources": [],
+                }
+
+            manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+            self.assertEqual(module.verify_integrity(manifest_path, canonical_dir, published_dir), [])
 
     def test_missing_manifest_entry(self):
         module = _load_module()

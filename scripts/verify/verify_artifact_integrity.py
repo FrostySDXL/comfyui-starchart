@@ -27,8 +27,14 @@ ARTIFACT_FILES = [
 
 
 def compute_sha256(path: Path) -> str:
-    """Return the SHA-256 hex digest for file bytes."""
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    """Return a cross-platform SHA-256 hex digest for textual JSON artifacts.
+
+    Git normalizes tracked text files to LF in the index, but Windows working
+    trees may contain CRLF. Normalize CRLF to LF before hashing so manifest
+    hashes remain stable across platforms and match committed artifact bytes.
+    """
+    file_bytes = path.read_bytes().replace(b"\r\n", b"\n")
+    return hashlib.sha256(file_bytes).hexdigest()
 
 
 def load_manifest(path: Path) -> dict:

@@ -200,6 +200,17 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
         self.assertNotIn('meta.get("source")', text)
         self.assertNotIn('meta["source"]', text)
 
+    def test_compute_sha256_normalizes_crlf_to_lf(self):
+        module = self._import_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "artifact.json"
+            lf_text = '{\n  "key": "value"\n}\n'
+            path.write_text(lf_text.replace("\n", "\r\n"), encoding="utf-8", newline="")
+            self.assertEqual(
+                module._compute_sha256(path),
+                hashlib.sha256(lf_text.encode("utf-8")).hexdigest(),
+            )
+
 
 class PublishReferenceArtifactsScriptTests(unittest.TestCase):
     """Tests that the packaging script runs and produces expected outputs."""
@@ -293,7 +304,9 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
             )
             for name in artifacts:
                 published_path = tmp_root / "docs" / "artifacts" / "current" / name
-                expected_hash = hashlib.sha256(published_path.read_bytes()).hexdigest()
+                expected_hash = hashlib.sha256(
+                    published_path.read_bytes().replace(b"\r\n", b"\n")
+                ).hexdigest()
                 self.assertEqual(manifest["artifacts"][name]["sha256"], expected_hash)
             self.assertTrue(
                 all(isinstance(entry.get("sources", []), list) for entry in manifest["artifacts"].values())
