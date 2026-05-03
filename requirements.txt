@@ -1,3 +1,4 @@
 # Supported Python: 3.11+
-mkdocs-material>=9.0.0,<10.0.0
-Pygments>=2.16.0,<3.0.0
+# Direct dependency edits belong in requirements.in.
+# The supported maintainer/CI install surface is requirements.lock.
+-r requirements.lock

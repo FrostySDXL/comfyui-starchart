@@ -14,12 +14,26 @@ workflows that are not fully duplicated in the published docs site.
 ## Quickstart
 
 ```bash
-python -m pip install -r requirements.txt
+python -m pip install -r requirements.lock
 python -m unittest discover -s tests -v
 python -m mkdocs build
 ```
 
 Serve locally: `python -m mkdocs serve`
+
+### Dependency management
+
+- The supported maintainer and CI install surface is `requirements.lock`.
+- Edit direct dependencies in `requirements.in`.
+- Do not hand-edit `requirements.lock`; regenerate it after direct dependency changes.
+- `requirements.txt` remains only as a compatibility shim to `requirements.lock`.
+
+Regenerate the lockfile from a Python 3.11+ environment with `pip-tools` installed:
+
+```bash
+python -m pip install pip-tools
+python -m piptools compile --strip-extras requirements.in --output-file requirements.lock
+```
 
 The one-command wrapper for local verification:
 

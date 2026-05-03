@@ -74,12 +74,26 @@ For editorial standards and evidence rules, use these files together:
 Supported Python: `3.11+`
 
 ```bash
-python -m pip install -r requirements.txt
+python -m pip install -r requirements.lock
 python -m unittest discover -s tests -v
 python -m mkdocs build
 ```
 
 Serve locally: `python -m mkdocs serve`
+
+### Dependency reproducibility
+
+- Install the repo's maintainer environment from `requirements.lock`.
+- Edit direct Python dependencies in `requirements.in`.
+- Do not hand-edit `requirements.lock`; regenerate it after dependency changes.
+- `requirements.txt` is a compatibility shim that points to `requirements.lock`.
+
+Refresh the lockfile from a Python 3.11+ environment with `pip-tools` installed:
+
+```bash
+python -m pip install pip-tools
+python -m piptools compile --strip-extras requirements.in --output-file requirements.lock
+```
 
 Before pushing maintainer-grade workflow, script, or verifier changes, run:
 
