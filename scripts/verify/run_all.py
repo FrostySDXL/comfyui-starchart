@@ -2,7 +2,7 @@
 """One-command blocking verification wrapper for maintainers.
 
 Runs the default local pre-push sequence in the same blocking order as the
-main CI job:
+cross-platform CI blocking path (ubuntu-latest and windows-latest):
     1. Unit tests
     2. cross_references.py
     3. validate_schema.py

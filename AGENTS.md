@@ -43,7 +43,7 @@ python scripts/verify/run_all.py
 | Add a verification script | Existing script in `scripts/verify/` | New script + test in `tests/unit/` + intentional `run_all.py` / CI placement | `python -m unittest discover -s tests` |
 | Refresh upstream version | `scripts/refresh_snapshots.py` | Back up `references/raw/`, run refresh with `--core-version` / `--frontend-version`, then republish artifacts and regenerate delta summary | `python scripts/generate/publish_reference_artifacts.py` + `python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output docs/artifacts/delta-summary.json` + `python scripts/verify/run_all.py` |
 | Runtime extraction | `scripts/extract/parse_from_api.py` | Run with `--url` and `--output` | `validate_schema.py` passes on output |
-| Change CI workflow | relevant file in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs when operator behavior changes | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then check Actions tab after push |
+| Change CI workflow | relevant file in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs when operator behavior changes | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then check Ubuntu/Windows Actions runs and any advisory replay workflow after push |
 
 ## 0.6. Consumer Agent Orientation
 
@@ -108,8 +108,8 @@ Non-goals: official docs replacement, community wiki, package registry.
 - `scripts/refresh_snapshots.py` -- Fetch new upstream versions and re-run pipeline
 - `tests/unit/` -- Unit tests for all scripts
 - `examples/` -- Hand-authored pattern examples, API calls, and workflows
-- `.github/workflows/` -- CI (`ci.yml`), weekly pin check (`weekly-pin-check.yml`),
-  upstream version watch (`upstream-watch.yml`), and docs deployment (`deploy-pages.yml`)
+- `.github/workflows/` -- CI (`ci.yml`), advisory replay (`advisory-checks.yml`),
+  weekly pin check (`weekly-pin-check.yml`), upstream version watch (`upstream-watch.yml`), and docs deployment (`deploy-pages.yml`)
   - includes opt-in runtime workflows such as `runtime-smoke.yml` and `headless-runtime-metadata.yml`
 
 ## 4. Key Commands
@@ -163,7 +163,9 @@ python scripts/verify/wait_for_runtime.py --url <endpoint>
 ```
 
 Use narrow checks while iterating. Use `python scripts/verify/run_all.py`
-before calling maintainer workflow changes complete.
+before calling maintainer workflow changes complete. That wrapper mirrors the
+blocking CI path that now runs on both Ubuntu and Windows; advisory checks stay
+separate and escalate through the dedicated advisory replay workflow.
 
 ## 5. Task Playbooks
 
@@ -228,7 +230,7 @@ before calling maintainer workflow changes complete.
 - **Windows backslashes in JSON**: Extractors run on Windows produce `\` in paths. Always use `.replace("\\", "/")` when writing `str(path)` to JSON metadata.
 - **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
 - **Structured returns and traceability are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`, and Plan K semantic enrichment adds `traceability` markers to endpoints, hooks, and node schema fields. The `kind` field is reliable; `fields`, `summary`, and `traceability` details are best-effort from static analysis.
-- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, and `community_staleness` use `continue-on-error: true` in CI. `cross_references`, `validate_schema`, `verify_artifact_integrity`, `community_generated_freshness`, and `community_page_coverage` block the pipeline.
+- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, and `community_staleness` use `continue-on-error: true` in normal push/PR CI. `cross_references`, `validate_schema`, `verify_artifact_integrity`, `community_generated_freshness`, and `community_page_coverage` block the pipeline, and the advisory scripts also replay in `advisory-checks.yml` as a scheduled/manual blocking escalation path.
 - **Generated community pages must not be hand-edited**: `docs/ecosystem/map.md` is generated from `references/community/ecosystem_packages.json`. Edit the JSON and rerun the generator.
 - **Examples are not all source-backed**: Treat files under `examples/` as pattern examples unless the page explicitly states they were generated or extracted from pinned upstream sources.
 

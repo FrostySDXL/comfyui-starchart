@@ -42,10 +42,11 @@ python scripts/verify/run_all.py
 ```
 
 Use `run_all.py` as the default maintainer-grade before-push check. It mirrors
-the CI job's blocking checks in the same order. Advisory CI checks remain
-separate, so you only need to run them locally when your change touches that
-surface. The blocking path now includes artifact-integrity verification for the
-canonical published JSON artifacts.
+the CI job's blocking checks in the same order, and that blocking path now runs
+on both Ubuntu and Windows in GitHub Actions. Advisory CI checks remain
+separate and non-blocking in normal push/PR CI, so you only need to run them
+locally when your change touches that surface. The blocking path now includes
+artifact-integrity verification for the canonical published JSON artifacts.
 
 ---
 
@@ -91,7 +92,7 @@ guides, and tooling artifacts.
 | Add a new extractor | An existing extractor in `scripts/extract/` + its test in `tests/unit/` | New script + new test | `python -m unittest discover -s tests -v` |
 | Add a verification script | An existing verifier in `scripts/verify/` + its test in `tests/unit/` | New script + new test + update `run_all.py` / `.github/workflows/ci.yml` intentionally | `python -m unittest discover -s tests -v` |
 | Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Back up `references/raw/`, run refresh, republish artifacts, then regenerate the delta summary when comparing baselines | `publish_reference_artifacts.py` + `generate_snapshot_delta_summary.py` + `run_all.py` |
-| Change CI behavior | Relevant workflow in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then inspect the Actions tab after push |
+| Change CI behavior | Relevant workflow in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then inspect Ubuntu/Windows Actions runs and any advisory replay workflow after push |
 
 
 ## Task Playbooks
@@ -257,8 +258,9 @@ If a file is generated or extracted, change its source and rerun the pipeline ra
 
 Run the narrowest relevant checks first while iterating, then
 `python scripts/verify/run_all.py` before opening a PR or handing maintainer
-workflow changes to review. The wrapper mirrors the CI job's blocking checks;
-advisory checks remain separate.
+workflow changes to review. The wrapper mirrors the CI job's blocking checks on
+both Ubuntu and Windows; advisory checks remain separate in normal PR CI and
+escalate through the dedicated advisory replay workflow.
 
 ### Essential (run these for almost every change)
 
@@ -288,12 +290,13 @@ python -m mkdocs build
 python scripts/verify/run_all.py
 ```
 
-This is the recommended maintainer pre-push command.
+This is the recommended maintainer pre-push command for the blocking path.
 
 ### Individual verifiers
 
 Scripts marked **[BLOCKING]** will fail CI and prevent merge. Scripts marked
-**[non-blocking]** run in CI but do not stop the pipeline.
+**[non-blocking]** run in normal push/PR CI but do not stop the pipeline there;
+the same advisory scripts are replayed separately in `.github/workflows/advisory-checks.yml` as a scheduled/manual blocking escalation path.
 
 ```bash
 python scripts/verify/cross_references.py              # [BLOCKING]

@@ -160,6 +160,10 @@ class RunAllScriptTests(unittest.TestCase):
         self.assertIn("blocking local verification", result.stdout)
         self.assertIn("Advisory checks", result.stdout)
 
+    def test_module_docstring_mentions_cross_platform_blocking_path(self):
+        module = _load_module()
+        self.assertIn("cross-platform CI blocking path", module.__doc__)
+
 
 if __name__ == "__main__":
     unittest.main()

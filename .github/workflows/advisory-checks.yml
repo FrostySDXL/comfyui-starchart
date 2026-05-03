@@ -1,0 +1,38 @@
+name: Advisory Checks
+
+on:
+  schedule:
+    - cron: "30 11 * * 1"
+  workflow_dispatch:
+
+jobs:
+  advisory-replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.lock
+
+      # Plan N durable escalation choice: keep advisory checks non-blocking in
+      # normal push/PR CI, but replay the same scripts here as blocking on a
+      # weekly schedule and manual dispatch so failures remain visible.
+      - name: Check for stale content
+        run: python scripts/verify/stale_content.py
+
+      - name: Verify extraction idempotency
+        run: python scripts/verify/extraction_idempotency.py
+
+      - name: Verify upstream pins
+        run: python scripts/verify/upstream_pins.py
+
+      - name: Check community metadata
+        run: python scripts/verify/community_metadata.py
+
+      - name: Check community staleness
+        run: python scripts/verify/community_staleness.py

@@ -173,13 +173,15 @@ python scripts/verify/community_staleness.py
 
 Use targeted commands while iterating on a narrow surface. Run
 `python scripts/verify/run_all.py` before opening a PR when you need the same
-blocking verification path that CI uses.
+blocking verification path that CI runs on both Ubuntu and Windows. Advisory
+checks remain separate from this local wrapper and from PR-blocking status.
 
 ## CI
 
 ### CPU-safe workflows (blocking and non-blocking)
 
-- **`.github/workflows/ci.yml`** -- runs on push/PR to main: tests, cross-references (blocking), schema validation (blocking), artifact integrity verification for canonical published artifacts (blocking), generated community freshness (blocking), community page coverage (blocking), MkDocs build (blocking), stale content (non-blocking), idempotency (non-blocking), upstream pins (non-blocking), community metadata (non-blocking), and community staleness (non-blocking). Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
+- **`.github/workflows/ci.yml`** -- runs on push/PR to main: the blocking verification path runs on both `ubuntu-latest` and `windows-latest` (tests, cross-references, schema validation, artifact integrity verification for canonical published artifacts, generated community freshness, community page coverage, and MkDocs build). Advisory checks (`stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py`) still run in CI but remain non-blocking there. Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
+- **`.github/workflows/advisory-checks.yml`** -- scheduled weekly and available via `workflow_dispatch`: reruns the current advisory scripts as blocking so advisory failures remain visible without turning normal PR CI into a noisy blocker.
 - **`.github/workflows/weekly-pin-check.yml`** -- runs every Monday at 09:00 UTC and on manual dispatch: checks that pinned commits and tags still resolve in upstream repos.
 - **`.github/workflows/upstream-watch.yml`** -- runs every Monday at 10:00 UTC: detects newer upstream versions and creates or updates tracking issues.
 
