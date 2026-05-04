@@ -96,3 +96,10 @@ to the repo's `CONTRIBUTING.md` file for maintainer-grade workflow details.
 - [Server Hooks](../hooks/server-hooks.md) -- execution lifecycle callbacks
 - [Extension Patterns](../extensions/patterns.md) -- architectural tradeoffs
 - [Decision Tree: API Integration](../decision-trees/api-integration.md) -- if you discover you need integration, not extension
+
+If you want a short map of the hook surfaces before reading individual hook
+pages, start with the [Hooks Section Guide](../hooks/index.md).
+
+If you are unsure whether a problem belongs to a frontend extension, a Python
+node, or both, see
+[Custom Node and Extension Boundaries](../troubleshooting/custom-node-and-extension-boundaries.md).

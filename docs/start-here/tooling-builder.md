@@ -76,3 +76,7 @@ guidance.
 - [Object Info](../reference/object-info.md)
 - [Runtime and CI Operations](../reference/runtime-ci-operations.md)
 - [Decision Tree: API Integration](../decision-trees/api-integration.md)
+
+If you want section-level routing before diving into reference pages, use the
+[API Section Guide](../api/index.md), [Hooks Section Guide](../hooks/index.md),
+and [Troubleshooting](../troubleshooting/index.md).

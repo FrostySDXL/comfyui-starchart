@@ -1,6 +1,6 @@
 # ComfyUI Knowledge Base
 
-**Last Updated:** 2026-05-02
+**Last Updated:** 2026-05-03
 **ComfyUI Version Pin:** Core `v0.20.1` (`64b8457f55cd7fb54ca7a956d9c73b505e903e0c`) with official frontend `v1.44.13` (`389ff8ba49468cc3afa11aec5778224689a8f9b9`) for the current pinned snapshots and extracted reference data
 
 **Evidence:** Scaffold
@@ -80,6 +80,12 @@ For editorial standards and evidence rules, use these files together:
 - See [Machine-Readable Artifacts](docs/reference/machine-readable-artifacts.md) for
   the canonical published artifact set, published JSON Schemas, bounded
   guarantees, and conceptual examples for tooling authors
+
+### Orientation aids
+
+- [Docs home](docs/index.md) for audience-based entry paths
+- [Glossary](docs/reference/glossary.md) for repeated artifact and repo terms
+- [What's New](docs/whats-new/index.md) for recent reader-visible changes
 
 ## Quick Start
 

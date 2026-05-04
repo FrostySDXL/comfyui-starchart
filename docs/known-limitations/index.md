@@ -1,6 +1,6 @@
 # Known Limitations
 
-**Evidence:** Official docs-backed from docs.comfy.org and source-backed from pinned snapshots
+**Evidence:** Official docs-backed from docs.comfy.org, source-backed from pinned snapshots, and operational guidance for repo-local publication boundaries
 **Last Updated:** 2026-04-30
 
 ## Scope
@@ -49,6 +49,31 @@ the prompt is running. After completion, use `GET /history/{prompt_id}` to
 fetch stored outputs and metadata.
 
 **Last verified:** 2026-04-30
+
+---
+
+### Runtime `/object_info` is not the canonical published artifact surface
+
+**Source:** `docs/reference/machine-readable-artifacts.md`; `docs/reference/runtime-ci-operations.md`
+
+**Verified in:** current repo-published artifact contract and runtime-capture guidance for the pinned core v0.20.1 / frontend v1.44.13 baseline
+
+**Status:** Publication boundary
+
+**Description:** The repo's canonical published artifact set is intentionally
+bounded to the three extracted JSON artifacts documented under
+`docs/artifacts/`. Runtime-only `object_info` capture reflects the installed
+state of a live ComfyUI instance, including custom nodes, so it is useful for
+live analysis but is not promoted to the canonical published artifact contract.
+
+**Workaround:** Build against the canonical published artifacts first. Add
+runtime `object_info` capture only when your tool depends on live installed-node
+state, and treat that runtime file as instance-specific enrichment rather than a
+stable published baseline. For routing help, see
+[API Integration Troubleshooting](../troubleshooting/api-integration.md) and
+[Start Here: Tooling Builder](../start-here/tooling-builder.md).
+
+**Last verified:** 2026-05-03
 
 ---
 

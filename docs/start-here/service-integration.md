@@ -118,3 +118,10 @@ repo's `CONTRIBUTING.md` file for workflow and verification guidance.
 - [WebSocket](../api/websocket.md) -- event stream details
 - [Prompt Submission](../api/prompt-submission.md) -- constructing prompts
 - [Decision Tree: API Integration](../decision-trees/api-integration.md) -- choose integration approach
+
+If you want a short map of the API family before reading route details, start
+with the [API Section Guide](../api/index.md).
+
+If you are stuck on API mode expectations, extension routes, or progress
+tracking boundaries, start with
+[API Integration Troubleshooting](../troubleshooting/api-integration.md).

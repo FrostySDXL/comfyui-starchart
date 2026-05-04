@@ -88,3 +88,7 @@ the mode and evidence label in a draft before adding body content.
 - [Source Evidence Policy](../reference/source-evidence-policy.md)
 - [Doc Quality Checklist](../reference/doc-quality-checklist.md)
 - `CONTRIBUTING.md` in the repo root when your change crosses into maintainer-owned surfaces
+
+If you are blocked on generated versus hand-authored boundaries or the minimum
+doc verification bar, see
+[Docs Authoring and Site Build Troubleshooting](../troubleshooting/docs-authoring-and-site-build.md).

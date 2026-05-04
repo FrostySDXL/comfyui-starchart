@@ -89,3 +89,7 @@ repo's `CONTRIBUTING.md` file for workflow and verification guidance.
 - [Node Structure](../custom-nodes/node-structure.md) -- INPUT_TYPES, RETURN_TYPES, and execution
 - [Decision Tree: Custom Node Architecture](../decision-trees/custom-node-architecture.md) -- choose node type and V1 vs V3
 - [Tutorial: Building Your First Node](../tutorials/building-first-node.md) -- guided walkthrough
+
+If you want a short map of the whole authoring section before diving into one
+page, start with the
+[Custom Nodes Section Guide](../custom-nodes/index.md).

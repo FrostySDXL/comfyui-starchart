@@ -1,7 +1,7 @@
 # ComfyUI Knowledge Base
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-03
 
 ## Scope
 
@@ -41,6 +41,15 @@ If you need repo-local maintainer workflow details after starting here, switch
 to the repository's `CONTRIBUTING.md` file and only escalate further when your
 change reaches scripts, CI, extracted references, or published artifacts.
 
+## Orientation Aids
+
+- [Glossary](reference/glossary.md) -- repeated repo and artifact terms used
+  across the docs
+- [What's New](whats-new/index.md) -- notable repo-visible changes that affect
+  readers and contributors
+- [Troubleshooting](troubleshooting/index.md) -- bounded confusion-reduction
+  routes for integration, authoring, and extension-boundary questions
+
 ## Page Structure
 
 This documentation is organized as follows:
@@ -56,10 +65,25 @@ This documentation is organized as follows:
 - **Tutorials** (`tutorials/`) -- Task-oriented guides that combine multiple
   concepts
 - **How-To** (`how-to/`) -- Focused operational recipes
+- **Troubleshooting** (`troubleshooting/`) -- Bounded routing pages for recurring
+  confusion points
 - **Start Here** (`start-here/`) -- Audience-specific reading paths
 - **Decision Trees** (`decision-trees/`) -- Tradeoff guides for architectural choices
 - **Ecosystem** (`ecosystem/`) -- Community tools and patterns
 - **Deep Dives** (`deep-dives/`) -- Detailed analysis of specific tools
+
+## Section Hubs
+
+Use these short guides when you know the family you need but do not want to scan
+every page in that section.
+
+| Section | Hub |
+|---------|-----|
+| API | [API Section Guide](api/index.md) |
+| Hooks | [Hooks Section Guide](hooks/index.md) |
+| Custom Nodes | [Custom Nodes Section Guide](custom-nodes/index.md) |
+| Tutorials | [Tutorials Section Guide](tutorials/index.md) |
+| How-To | [How-To Section Guide](how-to/index.md) |
 
 ## Evidence Policy
 
