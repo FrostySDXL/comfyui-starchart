@@ -25,6 +25,10 @@ reading prose in full. If your tool later needs installed custom-node state, add
 the runtime-only `object_info` capture path from
 [Runtime and CI Operations](../reference/runtime-ci-operations.md).
 
+Before you build strict parsing or validation logic, read the minimum consumer
+contract on the machine-readable artifacts page. It defines the bounded rules
+this repo expects consumers to rely on.
+
 ## References That Matter Most
 
 | Artifact | Location | Use for |
@@ -37,6 +41,7 @@ the runtime-only `object_info` capture path from
 | Runtime-only capture | [Runtime and CI Operations](../reference/runtime-ci-operations.md) | Use `object_info_runtime.json` only for live-instance or hybrid workflows |
 | Server hooks | [`docs/hooks/server-hooks.md`](../hooks/server-hooks.md) | Understand server-side extension points |
 | JavaScript hooks | [`docs/hooks/javascript-hooks.md`](../hooks/javascript-hooks.md) | Understand frontend extension points |
+| Consumer starter examples | [Consumer Starter Examples](../how-to/consumer-starter-examples.md) | Small manifest, docs-index, and artifact consumption patterns without SDK promises |
 | Worked examples | `examples/` | Concrete API calls and extension patterns |
 
 ## Standard API vs Extension Routes
@@ -65,6 +70,15 @@ Build tooling against the canonical published artifacts first. Use
 `docs-index.json` only as a lightweight routing aid into the prose docs. Move to
 runtime capture only when your tool depends on the live installed-node state of
 a real ComfyUI instance. Use prose pages for context and design decisions.
+
+## Starter Examples
+
+Use these small starter patterns when you want runnable consumer-side examples
+instead of conceptual snippets:
+
+- [Consumer Starter Examples](../how-to/consumer-starter-examples.md) - overview page for both example directories and their contract boundaries
+
+These examples are bounded starter patterns. They are not a supported SDK or client-library surface.
 
 ## When to Switch to Repo-Local Workflow Docs
 

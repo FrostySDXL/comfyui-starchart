@@ -84,6 +84,7 @@ nav:
       - how-to/monitor-execution.md
       - how-to/add-custom-routes.md
       - how-to/integrate-with-manager.md
+      - how-to/consumer-starter-examples.md
   - Decision Trees:
       - decision-trees/api-integration.md
       - decision-trees/custom-node-architecture.md

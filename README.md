@@ -80,7 +80,11 @@ For editorial standards and evidence rules, use these files together:
 - `docs/artifacts/docs-index.json` is a bounded support artifact for tooling and agent page discovery; it does not widen the canonical JSON artifact contract
 - See [Machine-Readable Artifacts](docs/reference/machine-readable-artifacts.md) for
   the canonical published artifact set, published JSON Schemas, bounded
-  guarantees, and conceptual examples for tooling authors
+  guarantees, the minimum consumer contract, and conceptual examples for tooling
+  authors
+- Consumer starter examples for manifest-first artifact loading and docs-discovery
+  patterns live under `examples/consumers/`; see
+  [Consumer Starter Examples](docs/how-to/consumer-starter-examples.md)
 
 ### Orientation aids
 

@@ -1,7 +1,7 @@
 # Start Here: Service Integration
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-05-03
 
 ## Who This Path Is For
 
@@ -106,6 +106,12 @@ See the API docs for full parameter and response documentation.
 For integration constraints and limitations, see the
 [Decision Tree: API Integration](../decision-trees/api-integration.md).
 
+If your service also needs the repo's pinned artifact baseline for route,
+hook, or schema-aware validation, start with
+[Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) and the
+consumer starter examples on
+[Consumer Starter Examples](../how-to/consumer-starter-examples.md).
+
 ## When to Switch to Repo-Local Workflow Docs
 
 Stay in the published docs path unless you are contributing changes to this
@@ -114,6 +120,7 @@ repo's `CONTRIBUTING.md` file for workflow and verification guidance.
 
 ## Read Next
 
+- [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) -- canonical published artifact contract and support-artifact boundaries
 - [API Endpoints](../api/endpoints.md) -- complete route reference
 - [WebSocket](../api/websocket.md) -- event stream details
 - [Prompt Submission](../api/prompt-submission.md) -- constructing prompts

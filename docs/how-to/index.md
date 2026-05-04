@@ -15,8 +15,9 @@
 
  ## Choose by job
 
- | Goal | Page |
- |------|------|
- | Watch prompt progress | [Monitor Execution](monitor-execution.md) |
- | Add an extension route | [Add Custom Routes](add-custom-routes.md) |
- | Plan for Manager distribution | [Integrate with Manager](integrate-with-manager.md) |
+| Goal | Page |
+|------|------|
+| Watch prompt progress | [Monitor Execution](monitor-execution.md) |
+| Add an extension route | [Add Custom Routes](add-custom-routes.md) |
+| Plan for Manager distribution | [Integrate with Manager](integrate-with-manager.md) |
+| Load consumer starter examples | [Consumer Starter Examples](consumer-starter-examples.md) |

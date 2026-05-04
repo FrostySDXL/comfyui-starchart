@@ -68,6 +68,29 @@ The published JSON Schema files intentionally encode only the guaranteed
 structure. They do not hard-contract every descriptive or inferred field that
 may appear in the current artifacts.
 
+## Minimum Consumer Contract
+
+If you are building strict tooling against the published artifact surface, keep
+to these minimum rules:
+
+- start from `artifacts/manifest.json` and the canonical published artifacts it
+  points to instead of hardcoding versioned artifact paths
+- verify the manifest metadata before trusting a download; at minimum, compare
+  the artifact bytes against the manifest `sha256` for canonical current-copy
+  URLs
+- build strict logic only against guaranteed fields and the published schema
+  files; treat best-effort summaries, traceability, and other descriptive fields
+  as optional helpers
+- treat `docs-index.json`, `delta-summary.json`, and
+  `refresh-provenance.json` as support artifacts with narrower guarantees than
+  the three canonical extracted artifacts
+- treat runtime-only captures such as `object_info_runtime.json` as optional,
+  instance-specific inputs rather than part of the canonical published contract
+
+This contract is intentionally lightweight. It defines safe consumption
+behavior for this repo's published artifacts. It does not promise an SDK,
+OpenAPI-grade semantics, or a full runtime truth layer.
+
 ### server_endpoints.json
 
 Contains HTTP routes, methods, return kinds, and limited inferred response
@@ -322,6 +345,16 @@ These examples show how tooling authors can consume the published artifacts.
 They are conceptual and lightweight. They demonstrate bounded consumption
 patterns, not full SDK or OpenAPI generation guarantees.
 
+If you want runnable starter patterns instead of inline conceptual snippets, use
+the self-contained consumer examples summarized on
+[Consumer Starter Examples](../how-to/consumer-starter-examples.md):
+
+- Python manifest reader - manifest-first canonical artifact loading with checksum validation
+- JavaScript docs/artifacts example - optional `docs-index.json` routing plus separate manifest-based artifact discovery
+
+Treat those directories as starter patterns, not a formal supported library
+surface.
+
 ### Building a route inventory from endpoint metadata
 
 Read `server_endpoints.json` and map each entry to a lightweight request helper
@@ -422,9 +455,9 @@ on live installed-node state or hybrid enrichment. See
 
 ## Read Next
 
+- [Start Here: Tooling Builder](../start-here/tooling-builder.md)
 - [Version Pin Status](version-pin-status.md)
 - [Runtime and CI Operations](runtime-ci-operations.md)
-- [Start Here: Tooling Builder](../start-here/tooling-builder.md)
 - [Source Evidence Policy](source-evidence-policy.md)
 - [API Reference: Endpoints](../api/endpoints.md)
 - [Hooks: JavaScript Hooks](../hooks/javascript-hooks.md)
