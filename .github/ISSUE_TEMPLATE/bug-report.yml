@@ -1,0 +1,67 @@
+name: Bug Report
+description: Report a repo bug affecting docs, scripts, verifiers, or published artifacts
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Affected surface
+      description: Which repo surface is affected?
+      options:
+        - Documentation page or start-here path
+        - Example or editorial guidance
+        - Extractor / generator / verifier script
+        - Published artifact or manifest
+        - CI or workflow behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Issue type
+      description: Which kind of bug is this?
+      options:
+        - Docs-only issue
+        - Extractor / generator / verifier issue
+        - Published-artifact issue
+        - Mixed or unsure
+    validations:
+      required: true
+  - type: textarea
+    id: location
+    attributes:
+      label: Affected page, script, or artifact
+      description: Name the specific file, page, artifact, or workflow if you know it.
+      placeholder: docs/start-here/docs-contributor.md, scripts/verify/cross_references.py, docs/artifacts/manifest.json
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+      description: What happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps or reference links
+      description: Provide steps, example commands, related pages, or links that help reproduce or inspect the issue.
+      placeholder: |
+        1. Open ...
+        2. Run ...
+        3. Observe ...
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Include version pin, environment notes, screenshots, or related issue links if they help.

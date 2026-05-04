@@ -15,6 +15,14 @@ programmatically. This includes:
 
 **Prerequisites:** basic HTTP/WebSocket knowledge and familiarity with JSON.
 
+## First Practical Step
+
+Read [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md),
+fetch `artifacts/manifest.json`, and inspect the three canonical published JSON
+artifacts. If your tool later needs installed custom-node state, add the
+runtime-only `object_info` capture path from
+[Runtime and CI Operations](../reference/runtime-ci-operations.md).
+
 ## References That Matter Most
 
 | Artifact | Location | Use for |
@@ -53,13 +61,12 @@ Build tooling against the canonical published artifacts first. Move to runtime
 capture only when your tool depends on the live installed-node state of a real
 ComfyUI instance. Use prose pages for context and design decisions.
 
-## First Practical Step
+## When to Switch to Repo-Local Workflow Docs
 
-Read [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md),
-fetch `artifacts/manifest.json`, and inspect the three canonical published JSON
-artifacts. If your tool later needs installed custom-node state, add the
-runtime-only `object_info` capture path from
-[Runtime and CI Operations](../reference/runtime-ci-operations.md).
+Stay in the published docs path unless you are contributing changes to this
+repository. If you begin editing repo docs, published artifacts, or scripts,
+switch to the repo's `CONTRIBUTING.md` file for maintainer-grade workflow
+guidance.
 
 ## Read Next
 

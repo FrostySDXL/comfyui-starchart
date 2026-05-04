@@ -10,6 +10,9 @@ assignees: []
 
 The upstream watch workflow has detected that one or more pinned upstream versions may be outdated.
 
+Use this maintainer-focused template only for version refresh follow-up. Use the
+bug-report or docs-request template for normal contributor reports.
+
 ## Current Status
 
 <!-- This section will be updated automatically by the upstream-watch workflow -->

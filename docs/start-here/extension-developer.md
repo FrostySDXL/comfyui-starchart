@@ -13,6 +13,13 @@ You want to extend ComfyUI beyond what custom nodes can express. This includes:
 
 **Prerequisites:** familiarity with JavaScript or Python, depending on which layer you target.
 
+## First Practical Step
+
+Create a `web/extensions/my_extension/` directory with a `my_extension.js` file
+that registers an `app.registerExtension` call adding one `nodeCreated` hook.
+Load ComfyUI, add a node to the graph, and verify your hook logs to the browser
+console.
+
 ## Two Extension Layers
 
 ### Frontend Extensions
@@ -77,12 +84,11 @@ Read [Integrate with Manager](../how-to/integrate-with-manager.md) to understand
 how extension packages get distributed. Frontend extensions that are part of
 a node pack follow the same publication flow as pure node packages.
 
-## First Practical Step
+## When to Switch to Repo-Local Workflow Docs
 
-Create a `web/extensions/my_extension/` directory with a `my_extension.js` file
-that registers an `app.registerExtension` call adding one `nodeCreated` hook.
-Load ComfyUI, add a node to the graph, and verify your hook logs to the browser
-console.
+Stay in the published docs path unless you are contributing changes to this
+repository itself. If you begin editing repo docs, examples, or scripts, switch
+to the repo's `CONTRIBUTING.md` file for maintainer-grade workflow details.
 
 ## Read Next
 

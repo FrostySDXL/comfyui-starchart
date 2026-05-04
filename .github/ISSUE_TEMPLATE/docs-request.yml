@@ -1,0 +1,53 @@
+name: Docs Request
+description: Request a documentation clarification, new page, or discoverability improvement
+title: "docs: "
+labels:
+  - documentation
+body:
+  - type: input
+    id: audience
+    attributes:
+      label: Audience
+      description: Who is this request for?
+      placeholder: Custom node author, tooling builder, docs contributor, maintainer
+    validations:
+      required: true
+  - type: textarea
+    id: gap
+    attributes:
+      label: Missing page or gap area
+      description: Which page, path, or topic is missing, confusing, or hard to discover?
+      placeholder: docs/start-here/tooling-builder.md does not point clearly to ...
+    validations:
+      required: true
+  - type: dropdown
+    id: request_type
+    attributes:
+      label: Request type
+      description: What kind of docs work is needed?
+      options:
+        - New page
+        - Clarification or correction
+        - Discoverability or orientation improvement
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What should be easier after this is fixed?
+      description: Describe the reader task or question that should become easier to complete.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or source expectations
+      description: If this request makes claims about ComfyUI behavior, list the official docs page, pinned snapshot path, or other source you expect the page to use.
+      placeholder: docs.comfy.org page, references/snapshots/2026-04-30/... , or "orientation-only request"
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: Reference links or examples
+      description: Add links to related pages, issues, upstream docs, or example repos if relevant.

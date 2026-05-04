@@ -17,6 +17,14 @@ who need a stable, cited baseline for selected ComfyUI API surfaces, hooks, and
 node schema behavior. Because everything is pinned to exact upstream commits,
 the reference baseline is reproducible and forkable.
 
+This repo serves three bounded audiences:
+
+- **Consumers** using the published docs and artifacts to build custom nodes,
+  extensions, integrations, or tools against ComfyUI
+- **Contributors** editing docs, examples, or other hand-authored repo content
+- **Maintainers** running snapshot refreshes, generators, verifiers, CI-facing
+  workflow changes, or published artifact updates
+
 This repository covers:
 - server API endpoints and WebSocket behavior
 - JavaScript and server-side extension hooks
@@ -52,11 +60,15 @@ For editorial standards and evidence rules, use these files together:
 
 ### Where to Start
 
-- Building custom nodes: [`docs/start-here/author.md`](docs/start-here/author.md)
-- Extending ComfyUI: [`docs/start-here/extension-developer.md`](docs/start-here/extension-developer.md)
-- Integrating ComfyUI into a service: [`docs/start-here/service-integration.md`](docs/start-here/service-integration.md)
-- Contributing documentation: [`docs/start-here/docs-contributor.md`](docs/start-here/docs-contributor.md)
-- Building tools or agents: [`docs/start-here/tooling-builder.md`](docs/start-here/tooling-builder.md)
+- **Consumers**
+  - Building custom nodes: [`docs/start-here/author.md`](docs/start-here/author.md)
+  - Extending ComfyUI: [`docs/start-here/extension-developer.md`](docs/start-here/extension-developer.md)
+  - Integrating ComfyUI into a service: [`docs/start-here/service-integration.md`](docs/start-here/service-integration.md)
+  - Building tools or agents: [`docs/start-here/tooling-builder.md`](docs/start-here/tooling-builder.md)
+- **Contributors**
+  - Start with [`docs/start-here/docs-contributor.md`](docs/start-here/docs-contributor.md) for the lighter editorial path
+- **Maintainers**
+  - Use [`CONTRIBUTING.md`](CONTRIBUTING.md) for repo-local operational workflows, verification, refresh, and release-style tasks
 
 ### Machine-readable references
 
@@ -183,6 +195,11 @@ Use targeted commands while iterating on a narrow surface. Run
 `python scripts/verify/run_all.py` before opening a PR when you need the same
 blocking verification path that CI runs on both Ubuntu and Windows. Advisory
 checks remain separate from this local wrapper and from PR-blocking status.
+
+For issue intake, use the repository's bug-report template for behavior or
+artifact problems, the docs-request template for documentation gaps or
+discoverability requests, and the upstream-refresh template for maintainer-run
+version watch follow-up.
 
 ## CI
 

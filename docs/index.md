@@ -14,6 +14,17 @@ The repository also publishes machine-readable JSON artifacts extracted from
 pinned upstream snapshots. See [Machine-Readable Artifacts](reference/machine-readable-artifacts.md)
 for a catalog of available artifacts, stable URLs, and consumption guidance.
 
+Treat this docs site as a product with bounded audiences:
+
+- **Consumers** use these published pages and artifacts to build against
+  ComfyUI.
+- **Contributors** use the published start-here pages first, then move into
+  repo-local workflow docs only when a change crosses into maintainer-owned
+  surfaces.
+- **Maintainers** use repo-local files such as `CONTRIBUTING.md` and
+  `AGENTS.md` for refresh, verifier, and release-style workflows that are not
+  fully duplicated here.
+
 ## Who This Section Is For
 
 Choose your starting point based on what you are building:
@@ -25,6 +36,10 @@ Choose your starting point based on what you are building:
 | Integrate ComfyUI into an external service | [Service Integration](start-here/service-integration.md) |
 | Contribute documentation | [Docs Contributor](start-here/docs-contributor.md) |
 | Build tools or agents against ComfyUI | [Tooling Builder](start-here/tooling-builder.md) |
+
+If you need repo-local maintainer workflow details after starting here, switch
+to the repository's `CONTRIBUTING.md` file and only escalate further when your
+change reaches scripts, CI, extracted references, or published artifacts.
 
 ## Page Structure
 

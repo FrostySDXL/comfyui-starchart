@@ -14,6 +14,13 @@ You want to integrate ComfyUI with an external service or tool. This includes:
 
 **Prerequisites:** basic HTTP/WebSocket knowledge and a running ComfyUI instance.
 
+## First Practical Step
+
+Make a `POST /prompt` call to your ComfyUI instance with a minimal prompt
+dictionary and your `client_id`. Inspect the `prompt_id` in the response to
+confirm the queue accepted your request. This confirms the API integration
+surface is reachable.
+
 ## Two Integration Surfaces
 
 ### API-First Integration
@@ -99,12 +106,11 @@ See the API docs for full parameter and response documentation.
 For integration constraints and limitations, see the
 [Decision Tree: API Integration](../decision-trees/api-integration.md).
 
-## First Practical Step
+## When to Switch to Repo-Local Workflow Docs
 
-Make a `POST /prompt` call to your ComfyUI instance with a minimal prompt
-dictionary and your `client_id`. Inspect the `prompt_id` in the response to
-confirm the queue accepted your request. This confirms the API integration
-surface is reachable.
+Stay in the published docs path unless you are contributing changes to this
+repository. If you begin editing repo docs, examples, or scripts, switch to the
+repo's `CONTRIBUTING.md` file for workflow and verification guidance.
 
 ## Read Next
 

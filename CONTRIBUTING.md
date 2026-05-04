@@ -1,10 +1,20 @@
 # Contributing
 
-Thank you for contributing to the ComfyUI Knowledge Base. This guide covers everything you need to make changes safely and get them merged.
+Thank you for contributing to the ComfyUI Knowledge Base. This guide covers
+maintainer-grade repo workflows for making changes safely and getting them
+merged.
 
-If you are new to documentation contributions, also read
-[`docs/start-here/docs-contributor.md`](docs/start-here/docs-contributor.md)
-for a gentler introduction to page modes and editorial standards.
+If you are new to documentation contributions or only need the lighter
+editorial path, start with
+[`docs/start-here/docs-contributor.md`](docs/start-here/docs-contributor.md).
+
+Move from that lighter path into `CONTRIBUTING.md` when your change crosses
+into maintainer-owned surfaces such as scripts, CI, extracted data, published
+artifacts, or repo-local operational guidance.
+
+For issue intake, use the bug-report template for repo bugs, the docs-request
+template for documentation gaps, and the upstream-refresh template only for
+maintainer version-refresh tracking.
 
 `CONTRIBUTING.md` is the authoritative repo-local guide for maintainer-grade
 workflows that are not fully duplicated in the published docs site.

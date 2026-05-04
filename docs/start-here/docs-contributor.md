@@ -13,15 +13,20 @@ This includes:
 - updating extracted references after a snapshot refresh
 - contributing examples or decision guides
 
-**Prerequisites:** you have read `AGENTS.md` / `CONTRIBUTING.md` and can run the verification scripts.
+**Prerequisites:** you are ready to follow the editorial references first and
+run the minimum verification that matches your change.
 
-## Published Docs vs Repo-Local Workflow Material
+## Start With the Editorial Reference Stack
 
-Use the built documentation for editorial standards, reader-facing structure,
-and the published artifact story. Move into the repo-local `CONTRIBUTING.md`
-and `AGENTS.md` files when you need maintainer-grade workflow details such as
-extractor maintenance, regeneration steps, or repo operations that are not fully
-duplicated in the built site.
+Read these files in this order before writing or editing prose documentation:
+
+1. [`source-evidence-policy.md`](../reference/source-evidence-policy.md) -- evidence levels and labeling rules
+2. [`writing-style-guide.md`](../reference/writing-style-guide.md) -- page modes, sentence style, section naming
+3. [`doc-quality-checklist.md`](../reference/doc-quality-checklist.md) -- required, recommended, and optional checks
+
+Use `CONTRIBUTING.md` only when your change crosses into maintainer-owned
+surfaces such as scripts, CI, extracted data, published artifacts, or other
+repo-local workflow material.
 
 ## How to Pick the Right Page Mode
 
@@ -37,14 +42,6 @@ Every page must have one primary mode. Use the decision matrix in
 | A placeholder for future work | Scaffold |
 
 Do not mix modes on the same page.
-
-## When to Read the Editorial References
-
-Read these files in this order before writing or editing prose documentation:
-
-1. [`source-evidence-policy.md`](../reference/source-evidence-policy.md) -- evidence levels and labeling rules
-2. [`writing-style-guide.md`](../reference/writing-style-guide.md) -- page modes, sentence style, section naming
-3. [`doc-quality-checklist.md`](../reference/doc-quality-checklist.md) -- required, recommended, and optional checks
 
 Return to the checklist before marking any page complete.
 
@@ -90,3 +87,4 @@ the mode and evidence label in a draft before adding body content.
 - [Writing Style Guide](../reference/writing-style-guide.md)
 - [Source Evidence Policy](../reference/source-evidence-policy.md)
 - [Doc Quality Checklist](../reference/doc-quality-checklist.md)
+- `CONTRIBUTING.md` in the repo root when your change crosses into maintainer-owned surfaces

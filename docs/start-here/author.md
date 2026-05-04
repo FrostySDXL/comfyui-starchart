@@ -13,6 +13,12 @@ You want to build custom nodes for ComfyUI. This could be:
 
 **Prerequisites:** basic Python and a working ComfyUI installation.
 
+## First Practical Step
+
+Create a single Python file in `custom_nodes/my_first_node.py` with a minimal
+V1 node class, register it with `NODE_CLASS_MAPPINGS`, and restart ComfyUI.
+Confirm the node appears in the Add Node menu before adding inputs or logic.
+
 ## What You Need to Know
 
 ComfyUI custom nodes follow a client-server model:
@@ -71,11 +77,11 @@ For incremental learning, work through these examples in order:
    complete small extension package -- multiple nodes, lifecycle scripts,
    Manager-ready structure
 
-## First Practical Step
+## When to Switch to Repo-Local Workflow Docs
 
-Create a single Python file in `custom_nodes/my_first_node.py` with a minimal
-V1 node class, register it with `NODE_CLASS_MAPPINGS`, and restart ComfyUI.
-Confirm the node appears in the Add Node menu before adding inputs or logic.
+Stay in the published docs path unless you are contributing back to this
+repository. If you start editing repo pages, examples, or scripts, switch to the
+repo's `CONTRIBUTING.md` file for workflow and verification guidance.
 
 ## Read Next
 
