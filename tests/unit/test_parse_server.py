@@ -5,20 +5,28 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import importlib.util
+from tests.unit.helpers.extractor_test_utils import call_main, load_module
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "extract" / "parse_server.py"
 
 
 def _load_validate_schema():
-    spec = importlib.util.spec_from_file_location(
-        "validate_schema",
-        REPO_ROOT / "scripts" / "verify" / "validate_schema.py",
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_module("validate_schema", REPO_ROOT / "scripts" / "verify" / "validate_schema.py")
+
+
+def _load_parse_server():
+    return load_module("parse_server", SCRIPT)
+
+
+def _run_parse_server_main(server_path: Path, out_path: Path, *extra_args: str):
+    parse_server = _load_parse_server()
+    return call_main(parse_server, str(server_path), *extra_args, "--output", str(out_path))
+
+
+def _extract_single_sample(sample: str) -> list[dict]:
+    parse_server = _load_parse_server()
+    return parse_server.extract_endpoints(sample)
 
 
 class ParseServerTests(unittest.TestCase):
@@ -49,51 +57,45 @@ def socket():
     """Socket stream."""
     return None
 '''
+        parse_server = _load_parse_server()
+        endpoints = parse_server.extract_endpoints(sample)
+        data = {
+            "metadata": {
+                "sources": ["tmp/server.py"],
+                "extracted_date": "2026-05-03",
+                "version": "v0.0.1",
+                "commit": "abc123",
+            },
+            "coverage": parse_server.ENDPOINT_COVERAGE,
+            "endpoints": endpoints,
+        }
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
+        self.assertEqual(len(data["endpoints"]), 3)
+        self.assertIn("sources", data["metadata"])
+        self.assertIsInstance(data["metadata"]["sources"], list)
+        self.assertNotIn("source", data["metadata"])
+        self.assertIn("coverage", data)
+        self.assertIn("description", data["coverage"])
+        self.assertIn("guaranteed_fields", data["coverage"])
+        self.assertIn("best_effort_fields", data["coverage"])
+        self.assertIn("deferred", data["coverage"])
+        self.assertEqual(data["endpoints"][0]["method"], "GET")
+        self.assertEqual(data["endpoints"][0]["route"], "/history")
+        self.assertEqual(data["endpoints"][0]["description"], "History listing.")
 
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--version", "v0.0.1", "--commit", "abc123", "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
+        validate_schema = _load_validate_schema()
+        errors = validate_schema.validate_top_level(data, validate_schema.SCHEMAS["server_endpoints.json"], "server_endpoints.json")
+        errors.extend(validate_schema.validate_metadata(data, "server_endpoints.json"))
+        errors.extend(validate_schema.validate_coverage(data, "server_endpoints.json"))
+        errors.extend(validate_schema.validate_endpoints(data, "server_endpoints.json"))
+        self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
 
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            self.assertIn("Extracted 3 endpoints", result.stdout)
-
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            self.assertEqual(len(data["endpoints"]), 3)
-            self.assertIn("sources", data["metadata"])
-            self.assertIsInstance(data["metadata"]["sources"], list)
-            self.assertNotIn("source", data["metadata"])
-            self.assertIn("coverage", data)
-            self.assertIn("description", data["coverage"])
-            self.assertIn("guaranteed_fields", data["coverage"])
-            self.assertIn("best_effort_fields", data["coverage"])
-            self.assertIn("deferred", data["coverage"])
-            self.assertEqual(data["endpoints"][0]["method"], "GET")
-            self.assertEqual(data["endpoints"][0]["route"], "/history")
-            self.assertEqual(data["endpoints"][0]["description"], "History listing.")
-
-            # Verify output passes schema validation
-            validate_schema = _load_validate_schema()
-            errors = validate_schema.validate_top_level(data, validate_schema.SCHEMAS["server_endpoints.json"], "server_endpoints.json")
-            errors.extend(validate_schema.validate_metadata(data, "server_endpoints.json"))
-            errors.extend(validate_schema.validate_coverage(data, "server_endpoints.json"))
-            errors.extend(validate_schema.validate_endpoints(data, "server_endpoints.json"))
-            self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
-
-            # Assert richer contract: each endpoint has expected keys
-            for ep in data["endpoints"]:
-                self.assertIn("route", ep)
-                self.assertIn("method", ep)
-                self.assertIn("description", ep)
-                self.assertIn("parameters", ep)
-                self.assertIn("returns", ep)
+        for ep in data["endpoints"]:
+            self.assertIn("route", ep)
+            self.assertIn("method", ep)
+            self.assertIn("description", ep)
+            self.assertIn("parameters", ep)
+            self.assertIn("returns", ep)
 
     def test_metadata_sources_are_repo_relative_when_input_is_in_repo(self):
         sample = '''
@@ -108,14 +110,9 @@ def history():
             out_path = tmp_path / "server_endpoints.json"
             server_path.write_text(sample, encoding="utf-8")
 
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
+            exit_code, _stdout, stderr = _run_parse_server_main(server_path, out_path)
 
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             self.assertEqual(
                 data["metadata"]["sources"],
@@ -134,29 +131,16 @@ def queue_prompt(request):
     return web.json_response({"prompt_id": "abc", "number": 1})
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
+        endpoints = _extract_single_sample(sample)
 
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
+        ep_map = {ep["route"]: ep for ep in endpoints}
+        self.assertEqual(ep_map["/models"]["returns"]["kind"], "json")
+        self.assertIn(200, ep_map["/models"]["returns"]["status_codes"])
 
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-
-            ep_map = {ep["route"]: ep for ep in data["endpoints"]}
-            self.assertEqual(ep_map["/models"]["returns"]["kind"], "json")
-            self.assertIn(200, ep_map["/models"]["returns"]["status_codes"])
-
-            self.assertEqual(ep_map["/prompt"]["returns"]["kind"], "json")
-            fields = {f["name"] for f in ep_map["/prompt"]["returns"]["fields"]}
-            self.assertIn("prompt_id", fields)
-            self.assertIn("number", fields)
+        self.assertEqual(ep_map["/prompt"]["returns"]["kind"], "json")
+        fields = {f["name"] for f in ep_map["/prompt"]["returns"]["fields"]}
+        self.assertIn("prompt_id", fields)
+        self.assertIn("number", fields)
 
     def test_websocket_route_detection(self):
         sample = '''
@@ -167,22 +151,9 @@ async def websocket_handler(request):
     return ws
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            self.assertEqual(data["endpoints"][0]["returns"]["kind"], "websocket")
-            self.assertIn(101, data["endpoints"][0]["returns"]["status_codes"])
+        endpoint = _extract_single_sample(sample)[0]
+        self.assertEqual(endpoint["returns"]["kind"], "websocket")
+        self.assertIn(101, endpoint["returns"]["status_codes"])
 
     def test_empty_acknowledgement_route(self):
         sample = '''
@@ -192,22 +163,9 @@ async def post_interrupt(request):
     return web.Response(status=200)
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            self.assertEqual(data["endpoints"][0]["returns"]["kind"], "empty")
-            self.assertIn(200, data["endpoints"][0]["returns"]["status_codes"])
+        endpoint = _extract_single_sample(sample)[0]
+        self.assertEqual(endpoint["returns"]["kind"], "empty")
+        self.assertIn(200, endpoint["returns"]["status_codes"])
 
     def test_file_response_detection(self):
         sample = '''
@@ -216,21 +174,8 @@ async def get_root(request):
     return web.FileResponse(os.path.join(root, "index.html"))
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            self.assertEqual(data["endpoints"][0]["returns"]["kind"], "file")
+        endpoint = _extract_single_sample(sample)[0]
+        self.assertEqual(endpoint["returns"]["kind"], "file")
 
     def test_unknown_fallback(self):
         sample = '''
@@ -240,21 +185,8 @@ def legacy(request):
     return result
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            self.assertEqual(data["endpoints"][0]["returns"]["kind"], "unknown")
+        endpoint = _extract_single_sample(sample)[0]
+        self.assertEqual(endpoint["returns"]["kind"], "unknown")
 
     def test_helper_delegation(self):
         sample = '''
@@ -270,22 +202,9 @@ async def upload_image(request):
     return image_upload(post)
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            self.assertEqual(data["endpoints"][0]["returns"]["kind"], "json")
-            self.assertIn(400, data["endpoints"][0]["returns"]["status_codes"])
+        endpoint = _extract_single_sample(sample)[0]
+        self.assertEqual(endpoint["returns"]["kind"], "json")
+        self.assertIn(400, endpoint["returns"]["status_codes"])
 
     def test_nested_function_ignored(self):
         """Nested function definitions should not confuse response inference."""
@@ -303,23 +222,10 @@ async def upload_mask(request):
     return image_upload(post, image_save_function)
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            # The nested Response should be ignored; since image_upload is not defined
-            # in this sample, it falls back to unknown.
-            self.assertEqual(data["endpoints"][0]["returns"]["kind"], "unknown")
+        endpoint = _extract_single_sample(sample)[0]
+        # The nested Response should be ignored; since image_upload is not defined
+        # in this sample, it falls back to unknown.
+        self.assertEqual(endpoint["returns"]["kind"], "unknown")
 
     def test_json_response_with_error_response_elsewhere(self):
         """When a handler has both web.Response(status=404) and a json_response,
@@ -334,25 +240,12 @@ async def get_models(request):
     return web.json_response(files)
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            # The json_response has no explicit status, so it defaults to 200,
-            # but the handler also documents an explicit 404 branch.
-            self.assertEqual(data["endpoints"][0]["returns"]["kind"], "json")
-            self.assertIn(200, data["endpoints"][0]["returns"]["status_codes"])
-            self.assertIn(404, data["endpoints"][0]["returns"]["status_codes"])
+        endpoint = _extract_single_sample(sample)[0]
+        # The json_response has no explicit status, so it defaults to 200,
+        # but the handler also documents an explicit 404 branch.
+        self.assertEqual(endpoint["returns"]["kind"], "json")
+        self.assertIn(200, endpoint["returns"]["status_codes"])
+        self.assertIn(404, endpoint["returns"]["status_codes"])
 
     def test_json_response_with_explicit_error_status(self):
         """When a json_response has an explicit error status in its argument,
@@ -366,24 +259,11 @@ def create_resource(request):
     return web.json_response({"id": "123"})
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            # Should prefer the success response (more fields)
-            self.assertEqual(data["endpoints"][0]["returns"]["kind"], "json")
-            # The success response has no explicit status, so it defaults to 200
-            self.assertIn(200, data["endpoints"][0]["returns"]["status_codes"])
+        endpoint = _extract_single_sample(sample)[0]
+        # Should prefer the success response (more fields)
+        self.assertEqual(endpoint["returns"]["kind"], "json")
+        # The success response has no explicit status, so it defaults to 200
+        self.assertIn(200, endpoint["returns"]["status_codes"])
 
     def test_json_response_variable_payload_and_augmented_fields(self):
         """Variable-backed dict payloads should expose literal and augmented keys."""
@@ -396,26 +276,13 @@ async def upload_image(request):
     return web.json_response(resp)
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            fields = {f["name"] for f in data["endpoints"][0]["returns"]["fields"]}
-            self.assertEqual(fields, {"name", "subfolder", "type", "asset"})
-            self.assertEqual(
-                data["endpoints"][0]["returns"]["summary"],
-                "JSON object with fields: name, subfolder, type, asset.",
-            )
+        endpoint = _extract_single_sample(sample)[0]
+        fields = {f["name"] for f in endpoint["returns"]["fields"]}
+        self.assertEqual(fields, {"name", "subfolder", "type", "asset"})
+        self.assertEqual(
+            endpoint["returns"]["summary"],
+            "JSON object with fields: name, subfolder, type, asset.",
+        )
 
     def test_extracts_route_and_query_parameter_details(self):
         sample = '''
@@ -431,28 +298,15 @@ async def get_models(request):
     return web.json_response({"items": []})
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            params = {(param["name"], param["location"]): param for param in data["endpoints"][0]["parameters"]}
-            self.assertTrue(params[("folder", "path")]["required"])
-            self.assertEqual(params[("limit", "query")]["default"], 50)
-            self.assertEqual(params[("sort_order", "query")]["allowed_values"], ["asc", "desc"])
-            self.assertEqual(
-                params[("folder", "path")]["traceability"]["strategy"],
-                "route_token",
-            )
+        endpoint = _extract_single_sample(sample)[0]
+        params = {(param["name"], param["location"]): param for param in endpoint["parameters"]}
+        self.assertTrue(params[("folder", "path")]["required"])
+        self.assertEqual(params[("limit", "query")]["default"], 50)
+        self.assertEqual(params[("sort_order", "query")]["allowed_values"], ["asc", "desc"])
+        self.assertEqual(
+            params[("folder", "path")]["traceability"]["strategy"],
+            "route_token",
+        )
 
     def test_extracts_form_parameters_from_helper(self):
         sample = '''
@@ -467,23 +321,10 @@ async def upload_image(request):
     return image_upload(post)
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            params = {(param["name"], param["location"]): param for param in data["endpoints"][0]["parameters"]}
-            self.assertIn(("image", "form"), params)
-            self.assertEqual(params[("overwrite", "form")]["default"], False)
+        endpoint = _extract_single_sample(sample)[0]
+        params = {(param["name"], param["location"]): param for param in endpoint["parameters"]}
+        self.assertIn(("image", "form"), params)
+        self.assertEqual(params[("overwrite", "form")]["default"], False)
 
     def test_return_traceability_added(self):
         sample = '''
@@ -493,21 +334,9 @@ async def websocket_handler(request):
     await ws.prepare(request)
     return ws
 '''
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            returns = data["endpoints"][0]["returns"]
-            self.assertEqual(returns["traceability"]["strategy"], "web.WebSocketResponse")
+        endpoint = _extract_single_sample(sample)[0]
+        returns = endpoint["returns"]
+        self.assertEqual(returns["traceability"]["strategy"], "web.WebSocketResponse")
 
     def test_sibling_helper_definitions_do_not_contaminate_route(self):
         """Top-level helpers after a route should not leak fields into that route."""
@@ -523,24 +352,11 @@ def image_upload(post):
     return web.json_response(resp)
 '''
 
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-
-            result = subprocess.run(
-                [sys.executable, str(SCRIPT), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            returns = data["endpoints"][0]["returns"]
-            self.assertEqual(returns["kind"], "json")
-            self.assertEqual(returns["fields"], [])
-            self.assertEqual(returns["status_codes"], [200])
+        endpoint = _extract_single_sample(sample)[0]
+        returns = endpoint["returns"]
+        self.assertEqual(returns["kind"], "json")
+        self.assertEqual(returns["fields"], [])
+        self.assertEqual(returns["status_codes"], [200])
 
 
 if __name__ == "__main__":

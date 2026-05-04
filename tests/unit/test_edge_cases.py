@@ -2,11 +2,11 @@
 
 import importlib.util
 import json
-import subprocess
-import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+from tests.unit.helpers.extractor_test_utils import call_main, load_module
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PARSE_SERVER = REPO_ROOT / "scripts" / "extract" / "parse_server.py"
@@ -14,13 +14,40 @@ PARSE_HOOKS = REPO_ROOT / "scripts" / "extract" / "parse_hooks.py"
 PARSE_NODE_API = REPO_ROOT / "scripts" / "extract" / "parse_node_api_schema.py"
 VALIDATE_SCHEMA = REPO_ROOT / "scripts" / "verify" / "validate_schema.py"
 
+def _load_parse_server():
+    return load_module("parse_server", PARSE_SERVER)
+
+
+def _run_parse_server_main(server_path: Path, out_path: Path, *extra_args: str):
+    parse_server = _load_parse_server()
+    return call_main(parse_server, str(server_path), *extra_args, "--output", str(out_path))
+
+
+def _load_parse_hooks():
+    return load_module("parse_hooks", PARSE_HOOKS)
+
+
+def _run_parse_hooks_main(*args: str):
+    return call_main(_load_parse_hooks(), *args)
+
+
+def _load_parse_node_api():
+    return load_module("parse_node_api_schema", PARSE_NODE_API)
+
+
+def _run_parse_node_api_main(server_path: Path, io_path: Path, basic_types_path: Path, *extra_args: str):
+    return call_main(
+        _load_parse_node_api(),
+        str(server_path),
+        str(io_path),
+        str(basic_types_path),
+        *extra_args,
+    )
+
 
 def _load_module(name, path):
     """Load a Python module from file path."""
-    spec = importlib.util.spec_from_file_location(name, path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_module(name, path)
 
 
 class ParseServerEdgeCases(unittest.TestCase):
@@ -32,14 +59,9 @@ class ParseServerEdgeCases(unittest.TestCase):
             server_path = Path(tmp) / "server.py"
             out_path = Path(tmp) / "server_endpoints.json"
             server_path.write_text("", encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(PARSE_SERVER), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=str(REPO_ROOT),
-            )
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            self.assertIn("Extracted 0 endpoints", result.stdout)
+            exit_code, stdout, stderr = _run_parse_server_main(server_path, out_path)
+            self.assertEqual(exit_code, 0, msg=stderr)
+            self.assertIn("Extracted 0 endpoints", stdout)
 
     def test_decorators_without_docstrings(self):
         """Routes with decorators but no docstrings should still be extracted."""
@@ -48,21 +70,10 @@ class ParseServerEdgeCases(unittest.TestCase):
 def test_route():
     return None
 '''
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(PARSE_SERVER), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=str(REPO_ROOT),
-            )
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            self.assertEqual(len(data["endpoints"]), 1)
-            self.assertEqual(data["endpoints"][0]["route"], "/test")
-            self.assertEqual(data["endpoints"][0]["description"], "")
+        endpoints = _load_parse_server().extract_endpoints(sample)
+        self.assertEqual(len(endpoints), 1)
+        self.assertEqual(endpoints[0]["route"], "/test")
+        self.assertEqual(endpoints[0]["description"], "")
 
     def test_path_normalization_in_metadata(self):
         """Source paths in metadata should use forward slashes."""
@@ -70,14 +81,15 @@ def test_route():
             server_path = Path(tmp) / "server.py"
             out_path = Path(tmp) / "server_endpoints.json"
             server_path.write_text("@routes.get('/health')\ndef health(): pass", encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(PARSE_SERVER), str(server_path),
-                 "--version", "v0.0.1", "--commit", "abc123", "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=str(REPO_ROOT),
+            exit_code, _stdout, stderr = _run_parse_server_main(
+                server_path,
+                out_path,
+                "--version",
+                "v0.0.1",
+                "--commit",
+                "abc123",
             )
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             self.assertIn("sources", data["metadata"])
             self.assertNotIn("source", data["metadata"])
@@ -94,19 +106,8 @@ def status():
     """Check the status of the server."""
     return None
 '''
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(PARSE_SERVER), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=str(REPO_ROOT),
-            )
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            self.assertEqual(len(data["endpoints"]), 1)
+        endpoints = _load_parse_server().extract_endpoints(sample)
+        self.assertEqual(len(endpoints), 1)
 
     def test_variable_payload_without_literal_assignment_stays_conservative(self):
         """Unknown variable-backed payloads should not invent response fields."""
@@ -116,22 +117,10 @@ def legacy_route():
     response = build_response()
     return web.json_response(response)
 '''
-        with tempfile.TemporaryDirectory() as tmp:
-            server_path = Path(tmp) / "server.py"
-            out_path = Path(tmp) / "server_endpoints.json"
-            server_path.write_text(sample, encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(PARSE_SERVER), str(server_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=str(REPO_ROOT),
-            )
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            data = json.loads(out_path.read_text(encoding="utf-8"))
-            returns = data["endpoints"][0]["returns"]
-            self.assertEqual(returns["kind"], "json")
-            self.assertEqual(returns["fields"], [])
-            self.assertEqual(returns["summary"], "JSON response.")
+        returns = _load_parse_server().extract_endpoints(sample)[0]["returns"]
+        self.assertEqual(returns["kind"], "json")
+        self.assertEqual(returns["fields"], [])
+        self.assertEqual(returns["summary"], "JSON response.")
 
 
 class ParseHooksEdgeCases(unittest.TestCase):
@@ -143,14 +132,13 @@ class ParseHooksEdgeCases(unittest.TestCase):
             app_path = Path(tmp) / "app.ts"
             out_path = Path(tmp) / "js_hooks.json"
             app_path.write_text("", encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(PARSE_HOOKS), str(app_path),
-                 "--version", "v0.0.1", "--commit", "abc123", "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=str(REPO_ROOT),
+            exit_code, _stdout, stderr = _run_parse_hooks_main(
+                str(app_path),
+                "--version", "v0.0.1",
+                "--commit", "abc123",
+                "--output", str(out_path),
             )
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             # Empty file should produce 0 hooks (no invocations, no typed hooks, no known hook matches)
             self.assertEqual(len(data["hooks"]), 0)
@@ -161,14 +149,13 @@ class ParseHooksEdgeCases(unittest.TestCase):
             app_path = Path(tmp) / "app.ts"
             out_path = Path(tmp) / "js_hooks.json"
             app_path.write_text("invokeExtensions('setup')", encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(PARSE_HOOKS), str(app_path),
-                 "--version", "v0.0.1", "--commit", "abc123", "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=str(REPO_ROOT),
+            exit_code, _stdout, stderr = _run_parse_hooks_main(
+                str(app_path),
+                "--version", "v0.0.1",
+                "--commit", "abc123",
+                "--output", str(out_path),
             )
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             for source in data["metadata"]["sources"]:
                 self.assertNotIn("\\", source,
@@ -185,13 +172,8 @@ const note = "nodeCreated is mentioned as plain text";
             app_path = Path(tmp) / "app.ts"
             out_path = Path(tmp) / "js_hooks.json"
             app_path.write_text(sample, encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(PARSE_HOOKS), str(app_path), "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=str(REPO_ROOT),
-            )
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            exit_code, _stdout, stderr = _run_parse_hooks_main(str(app_path), "--output", str(out_path))
+            self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             self.assertEqual(data["hooks"], [])
 
@@ -210,16 +192,15 @@ class ParseNodeApiSchemaEdgeCases(unittest.TestCase):
             server_path.write_text("", encoding="utf-8")
             io_path.write_text("", encoding="utf-8")
             basic_types_path.write_text("", encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(PARSE_NODE_API),
-                 str(server_path), str(io_path), str(basic_types_path),
-                 "--version", "v0.0.1", "--commit", "abc123",
-                 "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=str(REPO_ROOT),
+            exit_code, _stdout, stderr = _run_parse_node_api_main(
+                server_path,
+                io_path,
+                basic_types_path,
+                "--version", "v0.0.1",
+                "--commit", "abc123",
+                "--output", str(out_path),
             )
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             self.assertEqual(len(data["object_info_fields"]), 0)
             self.assertEqual(len(data["io_types"]), 0)
@@ -236,16 +217,15 @@ class ParseNodeApiSchemaEdgeCases(unittest.TestCase):
             server_path.write_text("", encoding="utf-8")
             io_path.write_text("", encoding="utf-8")
             basic_types_path.write_text("", encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(PARSE_NODE_API),
-                 str(server_path), str(io_path), str(basic_types_path),
-                 "--version", "v0.0.1", "--commit", "abc123",
-                 "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=str(REPO_ROOT),
+            exit_code, _stdout, stderr = _run_parse_node_api_main(
+                server_path,
+                io_path,
+                basic_types_path,
+                "--version", "v0.0.1",
+                "--commit", "abc123",
+                "--output", str(out_path),
             )
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             for source in data["metadata"]["sources"]:
                 self.assertNotIn("\\", source,
@@ -263,18 +243,16 @@ class ParseNodeApiSchemaEdgeCases(unittest.TestCase):
             server_path.write_text("", encoding="utf-8")
             io_path.write_text("", encoding="utf-8")
             basic_types_path.write_text("", encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(PARSE_NODE_API),
-                 str(server_path), str(io_path), str(basic_types_path),
-                 "--object-info-runtime-path", str(missing_runtime_path),
-                 "--output", str(out_path)],
-                capture_output=True,
-                text=True,
-                cwd=str(REPO_ROOT),
+            exit_code, _stdout, stderr = _run_parse_node_api_main(
+                server_path,
+                io_path,
+                basic_types_path,
+                "--object-info-runtime-path", str(missing_runtime_path),
+                "--output", str(out_path),
             )
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            self.assertIn("WARNING: runtime snapshot not found", result.stderr)
-            self.assertNotIn("NameError", result.stderr)
+            self.assertEqual(exit_code, 0, msg=stderr)
+            self.assertIn("WARNING: runtime snapshot not found", stderr)
+            self.assertNotIn("NameError", stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             self.assertEqual(data["metadata"]["provenance"]["mode"], "source-only")
             self.assertFalse(data["coverage"]["runtime_enriched"])

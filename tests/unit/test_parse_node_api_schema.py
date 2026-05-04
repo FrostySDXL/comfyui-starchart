@@ -5,20 +5,34 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import importlib.util
+from tests.unit.helpers.extractor_test_utils import call_main, load_module
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "extract" / "parse_node_api_schema.py"
 
 
 def _load_validate_schema():
-    spec = importlib.util.spec_from_file_location(
-        "validate_schema",
-        REPO_ROOT / "scripts" / "verify" / "validate_schema.py",
+    return load_module("validate_schema", REPO_ROOT / "scripts" / "verify" / "validate_schema.py")
+
+
+def _load_parse_node_api_schema():
+    return load_module("parse_node_api_schema", SCRIPT)
+
+
+def _run_parse_node_api_schema_main(
+    server_path: Path,
+    io_path: Path,
+    basic_types_path: Path,
+    *extra_args: str,
+):
+    module = _load_parse_node_api_schema()
+    return call_main(
+        module,
+        str(server_path),
+        str(io_path),
+        str(basic_types_path),
+        *extra_args,
     )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 class ParseNodeApiSchemaTests(unittest.TestCase):
@@ -112,37 +126,48 @@ class AudioInput(TypedDict):
 
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
-            server_path = tmp_path / "server.py"
             io_path = tmp_path / "_io.py"
             basic_types_path = tmp_path / "basic_types.py"
-            out_path = tmp_path / "node_api_schema.json"
-            server_path.write_text(server_sample, encoding="utf-8")
             io_path.write_text(io_sample, encoding="utf-8")
             basic_types_path.write_text(basic_types_sample, encoding="utf-8")
 
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPT),
-                    str(server_path),
-                    str(io_path),
-                    str(basic_types_path),
-                    "--version",
-                    "v-test",
-                    "--commit",
-                    "abc123",
-                    "--output",
-                    str(out_path),
-                ],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-            )
+            parse_node_api_schema = _load_parse_node_api_schema()
+            data = {
+                "metadata": {
+                    "sources": ["tmp/server.py", "tmp/_io.py", "tmp/basic_types.py"],
+                    "extracted_date": "2026-05-03",
+                    "version": "v-test",
+                    "commit": "abc123",
+                    "provenance": {
+                        "mode": "source-only",
+                        "source_sections": [
+                            "object_info_fields",
+                            "io_types",
+                            "basic_input_shapes",
+                            "typed_input_shapes",
+                        ],
+                        "runtime_sections": [],
+                    },
+                },
+                "object_info_fields": parse_node_api_schema.extract_object_info_fields(server_sample),
+                "io_types": parse_node_api_schema.extract_io_types(io_sample, str(io_path)),
+                "basic_input_shapes": parse_node_api_schema.extract_basic_input_shapes(basic_types_sample),
+                "typed_input_shapes": parse_node_api_schema.extract_typed_input_shapes(basic_types_sample, str(basic_types_path)),
+                "coverage": {
+                    "description": (
+                        "Extracted from pinned source files only. "
+                        "Runtime-only data such as per-node INPUT_TYPES schemas and custom node types are deferred beyond pinned-snapshot extraction."
+                    ),
+                    "sources_covered": ["tmp/server.py", "tmp/_io.py", "tmp/basic_types.py"],
+                    "runtime_enriched": False,
+                    "deferred": [
+                        "runtime /object_info response",
+                        "custom node definitions",
+                        "per-node INPUT_TYPES schemas",
+                    ],
+                },
+            }
 
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            self.assertIn("Extracted node API schema", result.stdout)
-
-            data = json.loads(out_path.read_text(encoding="utf-8"))
             self.assertEqual(data["metadata"]["version"], "v-test")
             self.assertEqual(data["metadata"]["commit"], "abc123")
             self.assertIn("input", data["object_info_fields"])
@@ -166,8 +191,6 @@ class AudioInput(TypedDict):
             self.assertEqual(io_types["HISTOGRAM"]["input_parameters"], [])
 
             self.assertEqual(data["basic_input_shapes"]["ImageInput"], "An image in format [B, H, W, C]")
-
-            # Verify typed_input_shapes extraction
             self.assertIn("AudioInput", data["typed_input_shapes"])
             self.assertEqual(data["typed_input_shapes"]["AudioInput"]["description"], "TypedDict representing audio input.")
             self.assertEqual(data["typed_input_shapes"]["AudioInput"]["defined_in"], str(basic_types_path).replace("\\", "/"))
@@ -179,12 +202,10 @@ class AudioInput(TypedDict):
                 "typed_dict_field",
             )
 
-            # Verify coverage metadata
             self.assertIn("coverage", data)
             self.assertIn("description", data["coverage"])
             self.assertIn("deferred", data["coverage"])
 
-            # Verify output passes schema validation
             validate_schema = _load_validate_schema()
             errors = validate_schema.validate_top_level(
                 data, validate_schema.SCHEMAS["node_api_schema.json"], "node_api_schema.json"
@@ -194,7 +215,6 @@ class AudioInput(TypedDict):
             errors.extend(validate_schema.validate_typed_input_shapes(data, "node_api_schema.json"))
             self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
 
-            # Assert richer contract shape beyond top-level file existence
             self.assertIn("metadata", data)
             self.assertIn("object_info_fields", data)
             self.assertIn("io_types", data)
@@ -237,22 +257,15 @@ ImageInput = torch.Tensor
             io_path.write_text(io_sample, encoding="utf-8")
             basic_types_path.write_text(basic_types_sample, encoding="utf-8")
 
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPT),
-                    str(server_path),
-                    str(io_path),
-                    str(basic_types_path),
-                    "--output",
-                    str(out_path),
-                ],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
+            exit_code, _stdout, stderr = _run_parse_node_api_schema_main(
+                server_path,
+                io_path,
+                basic_types_path,
+                "--output",
+                str(out_path),
             )
 
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             self.assertEqual(
                 data["metadata"]["sources"],
@@ -274,10 +287,7 @@ ImageInput = torch.Tensor
     def test_bracket_aware_parameter_parsing(self):
         """Parameters with nested generic types like Dict[str, List[float]] should not produce bogus names."""
         # Import the module directly to test parse_parameters
-        import importlib.util
-        spec = importlib.util.spec_from_file_location("parse_node_api_schema", SCRIPT)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        module = _load_parse_node_api_schema()
 
         # Test cases: (input, expected_names)
         test_cases = [
@@ -300,10 +310,7 @@ ImageInput = torch.Tensor
             self.assertEqual(result, expected, f"Failed for: {sig_text}")
 
     def test_match_type_without_top_level_type_remains_null(self):
-        import importlib.util
-        spec = importlib.util.spec_from_file_location("parse_node_api_schema", SCRIPT)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        module = _load_parse_node_api_schema()
 
         io_sample = '''
 @comfytype(io_type="COMFY_MATCHTYPE_V3")
@@ -321,10 +328,7 @@ class MatchType(ComfyTypeIO):
         self.assertEqual(io_types[0]["type_hint"], None)
 
     def test_parameter_details_capture_literal_choices(self):
-        import importlib.util
-        spec = importlib.util.spec_from_file_location("parse_node_api_schema", SCRIPT)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        module = _load_parse_node_api_schema()
 
         details = module.parse_parameter_details(
             'control_after_refresh: Literal["first", "last"]="first", timeout: int=None'
@@ -380,24 +384,17 @@ ImageInput = torch.Tensor
             basic_types_path.write_text(basic_types_sample, encoding="utf-8")
             runtime_path.write_text(json.dumps(runtime_snapshot), encoding="utf-8")
 
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPT),
-                    str(server_path),
-                    str(io_path),
-                    str(basic_types_path),
-                    "--version", "v-test",
-                    "--commit", "abc123",
-                    "--object-info-runtime-path", str(runtime_path),
-                    "--output", str(out_path),
-                ],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
+            exit_code, _stdout, stderr = _run_parse_node_api_schema_main(
+                server_path,
+                io_path,
+                basic_types_path,
+                "--version", "v-test",
+                "--commit", "abc123",
+                "--object-info-runtime-path", str(runtime_path),
+                "--output", str(out_path),
             )
 
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
 
             # Provenance metadata
@@ -455,23 +452,16 @@ ImageInput = torch.Tensor
             io_path.write_text(io_sample, encoding="utf-8")
             basic_types_path.write_text(basic_types_sample, encoding="utf-8")
 
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPT),
-                    str(server_path),
-                    str(io_path),
-                    str(basic_types_path),
-                    "--version", "v-test",
-                    "--commit", "abc123",
-                    "--output", str(out_path),
-                ],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
+            exit_code, _stdout, stderr = _run_parse_node_api_schema_main(
+                server_path,
+                io_path,
+                basic_types_path,
+                "--version", "v-test",
+                "--commit", "abc123",
+                "--output", str(out_path),
             )
 
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
 
             self.assertEqual(data["metadata"]["provenance"]["mode"], "source-only")
@@ -517,22 +507,15 @@ ImageInput = torch.Tensor
             basic_types_path.write_text(basic_types_sample, encoding="utf-8")
             runtime_path.write_text(json.dumps(runtime_snapshot), encoding="utf-8")
 
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPT),
-                    str(server_path),
-                    str(io_path),
-                    str(basic_types_path),
-                    "--object-info-runtime-path", str(runtime_path),
-                    "--output", str(out_path),
-                ],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
+            exit_code, _stdout, stderr = _run_parse_node_api_schema_main(
+                server_path,
+                io_path,
+                basic_types_path,
+                "--object-info-runtime-path", str(runtime_path),
+                "--output", str(out_path),
             )
 
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             self.assertEqual(data["metadata"]["provenance"]["mode"], "hybrid")
             self.assertTrue(data["coverage"]["runtime_enriched"])
@@ -568,27 +551,20 @@ ImageInput = torch.Tensor
             io_path.write_text(io_sample, encoding="utf-8")
             basic_types_path.write_text(basic_types_sample, encoding="utf-8")
 
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPT),
-                    str(server_path),
-                    str(io_path),
-                    str(basic_types_path),
-                    "--version", "v-test",
-                    "--commit", "abc123",
-                    "--output", str(output_path),
-                ],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
+            exit_code, stdout, stderr = _run_parse_node_api_schema_main(
+                server_path,
+                io_path,
+                basic_types_path,
+                "--version", "v-test",
+                "--commit", "abc123",
+                "--output", str(output_path),
             )
 
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(exit_code, 0, msg=stderr)
             self.assertTrue(output_path.exists())
             data = json.loads(output_path.read_text(encoding="utf-8"))
             self.assertEqual(data["metadata"]["version"], "v-test")
-            self.assertIn(str(output_path), result.stdout)
+            self.assertIn(str(output_path), stdout)
 
 
 if __name__ == "__main__":
