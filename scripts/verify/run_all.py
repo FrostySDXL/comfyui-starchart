@@ -5,11 +5,12 @@ Runs the default local pre-push sequence in the same blocking order as the
 cross-platform CI blocking path (ubuntu-latest and windows-latest):
     1. Unit tests
     2. cross_references.py
-    3. validate_schema.py
-    4. verify_artifact_integrity.py
-    5. community_generated_freshness.py
-    6. community_page_coverage.py
-    7. mkdocs build
+    3. docs_index_freshness.py
+    4. validate_schema.py
+    5. verify_artifact_integrity.py
+    6. community_generated_freshness.py
+    7. community_page_coverage.py
+    8. mkdocs build
 
 Advisory/non-blocking checks remain separate and are not included here.
 
@@ -79,6 +80,13 @@ def main() -> int:
         (
             [sys.executable, str(SCRIPTS_VERIFY_DIR / "cross_references.py")],
             "Cross-reference verification",
+        )
+    )
+
+    steps.append(
+        (
+            [sys.executable, str(SCRIPTS_VERIFY_DIR / "docs_index_freshness.py")],
+            "Docs index freshness verification",
         )
     )
 

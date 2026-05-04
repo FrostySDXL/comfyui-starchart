@@ -46,6 +46,9 @@ jobs:
       - name: Verify cross-references
         run: python scripts/verify/cross_references.py
 
+      - name: Verify docs index freshness
+        run: python scripts/verify/docs_index_freshness.py
+
       - name: Validate JSON schemas
         run: python scripts/verify/validate_schema.py
 

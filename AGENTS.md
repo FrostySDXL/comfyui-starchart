@@ -123,7 +123,7 @@ Non-goals: official docs replacement, community wiki, package registry.
   - `publish_reference_artifacts.py` -- Copies canonical JSON artifacts to `docs/artifacts/` and writes `manifest.json`
   - `generate_snapshot_delta_summary.py` -- Produces deterministic baseline-to-baseline comparison under `docs/artifacts/delta-summary.json`
 - `scripts/verify/` -- Verification scripts
-  - Core blocking checks: `cross_references.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `community_generated_freshness.py`, `community_page_coverage.py`
+  - Core blocking checks: `cross_references.py`, `docs_index_freshness.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `community_generated_freshness.py`, `community_page_coverage.py`
   - Non-blocking: `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`
   - Community: `community_metadata.py`, `community_staleness.py`
 - `scripts/refresh_snapshots.py` -- Fetch new upstream versions and re-run pipeline
@@ -147,6 +147,7 @@ python -m mkdocs build
 
 # Verification scripts (all should exit 0 on clean repo)
 python scripts/verify/cross_references.py
+python scripts/verify/docs_index_freshness.py
 python scripts/verify/community_generated_freshness.py
 python scripts/verify/community_page_coverage.py
 python scripts/verify/stale_content.py

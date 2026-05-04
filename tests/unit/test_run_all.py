@@ -53,6 +53,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertEqual(result, 0)
         self.assertTrue(any("unittest" in str(c) for c in call_order))
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
+        self.assertTrue(any("docs_index_freshness.py" in str(c) for c in call_order))
         self.assertTrue(any("validate_schema.py" in str(c) for c in call_order))
         self.assertTrue(any("verify_artifact_integrity.py" in str(c) for c in call_order))
         self.assertTrue(any("community_generated_freshness.py" in str(c) for c in call_order))
@@ -62,6 +63,7 @@ class RunAllUnitTests(unittest.TestCase):
         # Verify order: tests first, then blocking verifiers, then mkdocs
         unittest_idx = next(i for i, c in enumerate(call_order) if "unittest" in str(c))
         cross_idx = next(i for i, c in enumerate(call_order) if "cross_references.py" in str(c))
+        docs_index_idx = next(i for i, c in enumerate(call_order) if "docs_index_freshness.py" in str(c))
         validate_idx = next(i for i, c in enumerate(call_order) if "validate_schema.py" in str(c))
         integrity_idx = next(i for i, c in enumerate(call_order) if "verify_artifact_integrity.py" in str(c))
         freshness_idx = next(i for i, c in enumerate(call_order) if "community_generated_freshness.py" in str(c))
@@ -69,7 +71,8 @@ class RunAllUnitTests(unittest.TestCase):
         mkdocs_idx = next(i for i, c in enumerate(call_order) if "mkdocs" in str(c))
 
         self.assertLess(unittest_idx, cross_idx)
-        self.assertLess(cross_idx, validate_idx)
+        self.assertLess(cross_idx, docs_index_idx)
+        self.assertLess(docs_index_idx, validate_idx)
         self.assertLess(validate_idx, integrity_idx)
         self.assertLess(integrity_idx, freshness_idx)
         self.assertLess(freshness_idx, coverage_idx)
@@ -91,6 +94,7 @@ class RunAllUnitTests(unittest.TestCase):
 
         self.assertEqual(result, 1)
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
+        self.assertFalse(any("docs_index_freshness.py" in str(c) for c in call_order))
         self.assertFalse(any("validate_schema.py" in str(c) for c in call_order))
 
     def test_integrity_failure_stops_before_downstream_steps(self):
@@ -126,6 +130,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertEqual(result, 0)
         self.assertFalse(any("unittest" in str(c) for c in call_order))
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
+        self.assertTrue(any("docs_index_freshness.py" in str(c) for c in call_order))
 
     def test_skip_mkdocs_flag(self):
         module = _load_module()
