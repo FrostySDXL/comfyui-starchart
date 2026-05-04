@@ -13,6 +13,8 @@ documentation. See [docs.comfy.org](https://docs.comfy.org/) for official docs.
 The repository also publishes machine-readable JSON artifacts extracted from
 pinned upstream snapshots. See [Machine-Readable Artifacts](reference/machine-readable-artifacts.md)
 for a catalog of available artifacts, stable URLs, and consumption guidance.
+That page also documents `artifacts/docs-index.json`, a bounded support artifact
+for page discovery rather than a replacement for the canonical JSON references.
 
 Treat this docs site as a product with bounded audiences:
 
@@ -54,21 +56,25 @@ change reaches scripts, CI, extracted references, or published artifacts.
 
 This documentation is organized as follows:
 
+- **Start Here** (`start-here/`) -- Audience-specific reading paths
+- **Orientation** (`whats-new/`, `reference/glossary.md`, `troubleshooting/`,
+  `known-limitations/`) -- Discoverability pages for repo terms, recent reader-
+  visible changes, bounded troubleshooting, and verified limitations
+- **Section Guides** (`api/index.md`, `hooks/index.md`, `custom-nodes/index.md`,
+  `tutorials/index.md`, `how-to/index.md`) -- Short hub pages for choosing the
+  right page within a family
 - **API Reference** (`api/`) -- HTTP endpoints, WebSocket events, prompt
   submission, queue, and history semantics
 - **Hooks** (`hooks/`) -- JavaScript hooks, server hooks, and extension points
 - **Custom Nodes** (`custom-nodes/`) -- V3-oriented node authoring, registration,
   datatypes, and best practices
 - **Extensions** (`extensions/`) -- Extension architecture patterns and analysis
-- **Reference** (`reference/`) -- Evidence policy, writing style guide, and
-  machine-readable summaries
 - **Tutorials** (`tutorials/`) -- Task-oriented guides that combine multiple
   concepts
 - **How-To** (`how-to/`) -- Focused operational recipes
-- **Troubleshooting** (`troubleshooting/`) -- Bounded routing pages for recurring
-  confusion points
-- **Start Here** (`start-here/`) -- Audience-specific reading paths
 - **Decision Trees** (`decision-trees/`) -- Tradeoff guides for architectural choices
+- **Reference** (`reference/`) -- Evidence policy, writing style guide, and
+  machine-readable summaries
 - **Ecosystem** (`ecosystem/`) -- Community tools and patterns
 - **Deep Dives** (`deep-dives/`) -- Detailed analysis of specific tools
 

@@ -77,6 +77,7 @@ For editorial standards and evidence rules, use these files together:
 - Snapshots live in `references/snapshots/`
 - Helper scripts live in `scripts/extract/` and `scripts/generate/`
 - Published artifact copies, manifest, delta summary, and refresh provenance live in `docs/artifacts/`
+- `docs/artifacts/docs-index.json` is a bounded support artifact for tooling and agent page discovery; it does not widen the canonical JSON artifact contract
 - See [Machine-Readable Artifacts](docs/reference/machine-readable-artifacts.md) for
   the canonical published artifact set, published JSON Schemas, bounded
   guarantees, and conceptual examples for tooling authors

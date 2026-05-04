@@ -84,9 +84,9 @@ Covers server API endpoints, JS/server hooks, custom node patterns, and
 extension architecture. Content is extracted from pinned upstream source
 snapshots, not written from memory.
 
-The repo also publishes machine-readable JSON artifacts and a manifest for
-tooling authors and integrators. These artifacts are packaged into the built
-site under `docs/artifacts/`.
+The repo also publishes machine-readable JSON artifacts, a manifest for
+tooling authors and integrators, and a bounded docs-index support artifact.
+These files are packaged into the built site under `docs/artifacts/`.
 
 Consumer-facing docs describe the published artifact surface, while repo-local
 maintainer workflows intentionally remain in `AGENTS.md` and `CONTRIBUTING.md`.
@@ -105,7 +105,7 @@ Non-goals: official docs replacement, community wiki, package registry.
 ## 3. Repo Map
 
 - `docs/` -- MkDocs source-backed documentation pages
-  - `docs/artifacts/` -- Published JSON artifacts, manifest, delta summary, refresh provenance, and checked-in schemas
+  - `docs/artifacts/` -- Published JSON artifacts, manifest, docs index support artifact, delta summary, refresh provenance, and checked-in schemas
 - `references/raw/` -- JSON reference data extracted from pinned upstream snapshots
   - `server_endpoints.json` -- API routes from `parse_server.py`
   - `js_hooks.json` -- Frontend hooks from `parse_hooks.py`
@@ -119,6 +119,7 @@ Non-goals: official docs replacement, community wiki, package registry.
 - `scripts/generate/` -- Generators that render markdown from JSON or package artifacts
   - `md_from_json.py` -- Renders reference docs from `references/raw/`
   - `generate_community_pages.py` -- Renders `docs/ecosystem/map.md` from community metadata
+  - `generate_docs_index.py` -- Produces `docs/artifacts/docs-index.json` from the published docs surface
   - `publish_reference_artifacts.py` -- Copies canonical JSON artifacts to `docs/artifacts/` and writes `manifest.json`
   - `generate_snapshot_delta_summary.py` -- Produces deterministic baseline-to-baseline comparison under `docs/artifacts/delta-summary.json`
 - `scripts/verify/` -- Verification scripts
@@ -169,6 +170,7 @@ python scripts/extract/parse_from_api.py --url <url> --version <v> --commit <sha
 # Generators
 python scripts/generate/md_from_json.py
 python scripts/generate/generate_community_pages.py
+python scripts/generate/generate_docs_index.py
 python scripts/generate/publish_reference_artifacts.py
 python scripts/generate/generate_snapshot_delta_summary.py --old <dir> --new <dir> --output docs/artifacts/delta-summary.json
 

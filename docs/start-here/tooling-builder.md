@@ -1,7 +1,7 @@
 # Start Here: Tooling Builder
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-04-29
+**Last Updated:** 2026-05-03
 
 ## Who This Path Is For
 
@@ -19,8 +19,10 @@ programmatically. This includes:
 
 Read [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md),
 fetch `artifacts/manifest.json`, and inspect the three canonical published JSON
-artifacts. If your tool later needs installed custom-node state, add the
-runtime-only `object_info` capture path from
+artifacts. Use `artifacts/docs-index.json` only when you need a bounded page
+discovery layer for routing a tool or agent to the right docs page before
+reading prose in full. If your tool later needs installed custom-node state, add
+the runtime-only `object_info` capture path from
 [Runtime and CI Operations](../reference/runtime-ci-operations.md).
 
 ## References That Matter Most
@@ -28,6 +30,7 @@ runtime-only `object_info` capture path from
 | Artifact | Location | Use for |
 |----------|----------|---------|
 | Canonical published artifacts | [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) | Start with the published JSON contract, manifest, and bounded guarantees |
+| Docs index support artifact | `artifacts/docs-index.json` | Route a tool or agent to likely relevant docs pages without full-site scraping |
 | HTTP API routes | [`docs/api/endpoints.md`](../api/endpoints.md) | Submit prompts, poll history, manage queue |
 | WebSocket events | [`docs/api/websocket.md`](../api/websocket.md) | Real-time execution progress and completion |
 | Node schema reference | [Object Info](../reference/object-info.md) | Understand source-backed node metadata and optional runtime enrichment |
@@ -52,14 +55,16 @@ extension routes only after confirming the data you need is unavailable.
 
 - **Machine-readable:** the three canonical published JSON artifacts documented in
   [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md), the
-  repo-local copies under `references/raw/`, snapshot files under
+  bounded `docs-index.json` support artifact for page discovery, the repo-local
+  copies under `references/raw/`, snapshot files under
   `references/snapshots/`, code in `examples/`, and API endpoint documentation.
 - **Prose-only:** decision guides, tutorials, deep dives, and community pattern
   studies. These explain intent and tradeoffs but are not structured for parsing.
 
-Build tooling against the canonical published artifacts first. Move to runtime
-capture only when your tool depends on the live installed-node state of a real
-ComfyUI instance. Use prose pages for context and design decisions.
+Build tooling against the canonical published artifacts first. Use
+`docs-index.json` only as a lightweight routing aid into the prose docs. Move to
+runtime capture only when your tool depends on the live installed-node state of
+a real ComfyUI instance. Use prose pages for context and design decisions.
 
 ## When to Switch to Repo-Local Workflow Docs
 

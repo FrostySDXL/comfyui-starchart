@@ -31,17 +31,35 @@ plugins:
 
 nav:
   - Home: index.md
+  - Start Here:
+      - start-here/author.md
+      - start-here/extension-developer.md
+      - start-here/service-integration.md
+      - start-here/docs-contributor.md
+      - start-here/tooling-builder.md
+  - Orientation:
+      - What's New: whats-new/index.md
+      - Glossary: reference/glossary.md
+      - Troubleshooting:
+          - troubleshooting/index.md
+          - troubleshooting/api-integration.md
+          - troubleshooting/custom-node-and-extension-boundaries.md
+          - troubleshooting/docs-authoring-and-site-build.md
+      - Known Limitations: known-limitations/index.md
   - API Reference:
+      - API Section Guide: api/index.md
       - api/endpoints.md
       - api/websocket.md
       - api/prompt-submission.md
       - api/history-queue.md
       - api/client-id.md
   - Hooks:
+      - Hooks Section Guide: hooks/index.md
       - hooks/javascript-hooks.md
       - hooks/server-hooks.md
       - hooks/extension-points.md
   - Custom Nodes:
+      - Custom Nodes Section Guide: custom-nodes/index.md
       - custom-nodes/development-guide.md
       - custom-nodes/node-structure.md
       - custom-nodes/registration.md
@@ -54,6 +72,21 @@ nav:
       - extensions/patterns.md
       - extensions/profilerx-analysis.md
       - extensions/common-architectures.md
+  - Tutorials:
+      - Tutorials Section Guide: tutorials/index.md
+      - tutorials/building-first-node.md
+      - tutorials/adding-background-metrics.md
+      - tutorials/extending-server.md
+      - "API to Workflow: Prompt Lifecycle": "tutorials/api-to-workflow-prompt-lifecycle.md"
+      - "API to Workflow: Execution Events": "tutorials/api-to-workflow-execution-events.md"
+  - How-To:
+      - How-To Section Guide: how-to/index.md
+      - how-to/monitor-execution.md
+      - how-to/add-custom-routes.md
+      - how-to/integrate-with-manager.md
+  - Decision Trees:
+      - decision-trees/api-integration.md
+      - decision-trees/custom-node-architecture.md
   - Reference:
       - reference/object-info.md
       - reference/server-py-summary.md
@@ -65,32 +98,11 @@ nav:
       - reference/version-history.md
       - reference/machine-readable-artifacts.md
       - reference/runtime-ci-operations.md
-  - Tutorials:
-      - tutorials/building-first-node.md
-      - tutorials/adding-background-metrics.md
-      - tutorials/extending-server.md
-      - "API to Workflow: Prompt Lifecycle": "tutorials/api-to-workflow-prompt-lifecycle.md"
-      - "API to Workflow: Execution Events": "tutorials/api-to-workflow-execution-events.md"
   - Ecosystem:
       - ecosystem/map.md
-  - Start Here:
-      - start-here/author.md
-      - start-here/extension-developer.md
-      - start-here/service-integration.md
-      - start-here/docs-contributor.md
-      - start-here/tooling-builder.md
-  - Decision Trees:
-      - decision-trees/api-integration.md
-      - decision-trees/custom-node-architecture.md
   - Deep Dives:
       - deep-dives/comfyui-manager.md
       - "ComfyUI-Impact-Pack (Community)": "deep-dives/comfyui-impact-pack.md"
-  - Known Limitations:
-      - known-limitations/index.md
-  - How-To:
-      - how-to/monitor-execution.md
-      - how-to/add-custom-routes.md
-      - how-to/integrate-with-manager.md
 
 markdown_extensions:
   - pymdownx.highlight:

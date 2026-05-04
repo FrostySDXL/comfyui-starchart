@@ -88,7 +88,7 @@ guides, and tooling artifacts.
 | `scripts/generate/` | Scripts that render markdown from JSON | **Yes** -- if you are adding or fixing a generator |
 | `scripts/verify/` | Validation scripts (blocking and non-blocking) | **Yes** -- if you are adding or fixing a verifier |
 | `tests/unit/` | Unit tests for scripts | **Yes** -- every new script needs tests |
-| `docs/artifacts/` | Published JSON artifacts, manifest, versioned copies, checked-in schema files, delta summary, and refresh provenance | **Mixed** -- `docs/artifacts/schemas/` is hand-authored; `refresh-provenance.json` is written by `scripts/refresh_snapshots.py`; other published artifact outputs are produced by `scripts/generate/publish_reference_artifacts.py` |
+| `docs/artifacts/` | Published JSON artifacts, manifest, versioned copies, checked-in schema files, docs-index support artifact, delta summary, and refresh provenance | **Mixed** -- `docs/artifacts/schemas/` is hand-authored; `refresh-provenance.json` is written by `scripts/refresh_snapshots.py`; `docs-index.json` is produced by `scripts/generate/generate_docs_index.py`; other canonical published artifact outputs are produced by `scripts/generate/publish_reference_artifacts.py` |
 | `docs/ecosystem/map.md` | Generated community ecosystem page | **No** -- edit `references/community/ecosystem_packages.json`, then regenerate |
 | `.github/workflows/` | CI and deployment automation | **Yes** -- but test locally first |
 
@@ -248,6 +248,7 @@ Understanding this boundary prevents accidentally editing files that will be ove
 - **Generated:** `docs/ecosystem/map.md` is produced by `scripts/generate/generate_community_pages.py` from `references/community/ecosystem_packages.json`.
 - **Extracted:** JSON files under `references/raw/` are produced by `scripts/extract/` from `references/snapshots/`.
 - **Published:** Files under `docs/artifacts/` are produced by `scripts/generate/publish_reference_artifacts.py`.
+- **Support-artifact exception:** `docs/artifacts/docs-index.json` is produced by `scripts/generate/generate_docs_index.py` and stays outside the canonical manifest-discovery contract.
 
 If a file is generated or extracted, change its source and rerun the pipeline rather than editing the output directly.
 

@@ -1,7 +1,7 @@
 # Machine-Readable Artifacts
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-02
+**Last Updated:** 2026-05-03
 
 ## Scope
 
@@ -37,6 +37,7 @@ The repo also publishes non-canonical support artifacts:
 
 | Artifact | Purpose | Stable URL |
 |----------|---------|------------|
+| `docs-index.json` | Bounded page-level index for routing tools and agents to the right published docs page without full-site scraping | `artifacts/docs-index.json` |
 | `delta-summary.json` | Deterministic comparison summary between two artifact baselines | `artifacts/delta-summary.json` |
 | `refresh-provenance.json` | Durable evidence about the most recent refresh run, including requested versions, resolved commits, backup path, and runtime-enrichment intent | `artifacts/refresh-provenance.json` |
 
@@ -162,6 +163,52 @@ Use this file as refresh evidence and as a maintainer handoff aid. Do not treat
 it as a canonical artifact contract alongside the three primary published JSON
 artifacts.
 
+### docs-index.json
+
+`docs-index.json` is a bounded support artifact for tooling and agent consumers
+that need lightweight page discovery without scraping the full built site.
+
+It is intentionally narrower than the canonical extracted artifacts. The index
+may include only conservative, machine-derivable page metadata such as:
+
+- page title
+- repo-relative docs path
+- nav family or section
+- audience when the page path or repo-local start-here routing makes it obvious
+- evidence label
+- short scope line when it can be extracted deterministically from the page;
+  currently this is limited to the first non-empty paragraph under `## Scope`
+
+The source surface is intentionally limited to hand-authored published docs
+pages under `docs/` that belong to the MkDocs site. It excludes the built
+`site/` output, root-level repo workflow markdown, and any attempt at full-text
+page capture.
+
+Use this file to answer questions like:
+
+- which published docs page best fits a tooling or agent task
+- which page families exist in the current nav structure
+- which pages are reference, troubleshooting, start-here, or tutorial-style
+  entry points
+
+Do not treat it as:
+
+- full-text search
+- a guarantee that every prose nuance is machine-readable
+- a replacement for reading the pages themselves
+- a new canonical artifact contract alongside `server_endpoints.json`,
+  `js_hooks.json`, and `node_api_schema.json`
+
+The maintained generation path is:
+
+```bash
+python scripts/generate/generate_docs_index.py
+```
+
+`docs-index.json` is intentionally excluded from `manifest.json`. It is a
+published support artifact for routing and discovery, not part of the canonical
+schema-discovery contract.
+
 ## Repo Sources vs Published Copies
 
 The canonical extraction outputs live in `references/raw/` in the repository.
@@ -174,6 +221,7 @@ site.
 | `docs/artifacts/current/` | Stable current-copy URL for web consumption |
 | `docs/artifacts/versions/<key>/` | Immutable snapshot for reproducible builds |
 | `docs/artifacts/manifest.json` | Discovery metadata with URLs, versions, commits, and SHA-256 checksums for canonical published artifacts |
+| `docs/artifacts/docs-index.json` | Published support artifact for bounded docs-page discovery |
 | `docs/artifacts/schemas/` | Checked-in bounded JSON Schema files for the canonical published artifacts |
 | `docs/artifacts/delta-summary.json` | Deterministic baseline-to-baseline comparison output |
 | `docs/artifacts/refresh-provenance.json` | Durable published record of the latest refresh run; intentionally outside manifest discovery |
@@ -213,6 +261,9 @@ published schema files under `docs/artifacts/schemas/`.
 `refresh-provenance.json` is intentionally excluded from `manifest.json`. It is
 useful published operator evidence, but it is not a canonical extracted artifact
 and does not participate in the bounded schema-discovery contract.
+
+`docs-index.json` is also intentionally excluded from `manifest.json`. It is a
+published docs-routing aid rather than a canonical extracted artifact.
 
 ## Versioning
 
