@@ -1,9 +1,10 @@
-<!-- Remove this comment block and any placeholder text that does not apply. -->
+<!-- Remove placeholder text that does not apply. Keep steps concrete and outcome-focused. -->
 
 # Page Title
 
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** YYYY-MM-DD
+**Primary Source:** Official docs page or pinned source path that anchors this workflow
 
 ## Who This Page Is For
 
@@ -12,6 +13,11 @@ Describe the audience and prerequisites.
 ## Goal
 
 State the concrete outcome the reader will achieve.
+
+## Constraints or Assumptions
+
+- State any version, environment, or repo assumptions.
+- State what this tutorial deliberately does not cover if that boundary matters.
 
 ## Steps
 
@@ -24,6 +30,10 @@ State the concrete outcome the reader will achieve.
 
 Describe the success state.
 
+## Common Failure Point
+
+Name one likely mistake or mismatch the reader should check first.
+
 ## Read Next
 
-- [Next Page](../path/to/next.md)
+- Link only to the next one or two pages that continue this workflow.

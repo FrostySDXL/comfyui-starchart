@@ -66,6 +66,18 @@ use targeted checks while iterating and then follow the authoritative
 maintainer verification path in `CONTRIBUTING.md`, including
 `python scripts/verify/run_all.py` before handoff.
 
+## Preferred New-Page Workflow
+
+When you are creating a new page, start with the scaffold tool instead of pasting an old page by hand:
+
+```bash
+python scripts/new_doc.py --output docs/tutorials/my-topic.md --mode tutorial --title "My Topic" --primary-source "docs.comfy.org/<page-or-section>"
+```
+
+Keep the output under `docs/`, and use the mode that matches the folder when practical. For example, tutorials usually belong under `docs/tutorials/` or `docs/how-to/`, community pattern studies usually belong under `docs/extensions/` or `docs/ecosystem/`, and reference pages usually belong under `docs/reference/`, `docs/api/`, `docs/hooks/`, or `docs/custom-nodes/`.
+
+If the script rejects a mode/path combination that you still want intentionally, fix the path first or use `--allow-path-mismatch` with a short note in your PR or handoff.
+
 ## Where Generated vs Hand-Authored Boundaries Matter
 
 - **Hand-authored:** pages under `docs/`, `examples/`, and editorial reference files.

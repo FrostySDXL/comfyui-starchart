@@ -117,10 +117,11 @@ guides, and tooling artifacts.
    - `docs/reference/doc-quality-checklist.md`
 3. **Edit the page.** Keep claims tied to sources from `references/snapshots/` or
    `docs.comfy.org`. Do not write from memory.
-4. **For new pages**, copy the matching template from `templates/docs/` (choose from `scaffold`, `tutorial`, `reference`, `decision-guide`, or `community-pattern`) or run:
+4. **For new pages**, prefer `scripts/new_doc.py` so the title, date, template mode, and path checks start in the right shape. Use the matching mode (`scaffold`, `tutorial`, `reference`, `decision-guide`, or `community-pattern`) and keep the output in the matching docs area when possible:
    ```bash
-   python scripts/new_doc.py --output docs/how-to/my-topic.md --mode tutorial --title "My Topic"
+   python scripts/new_doc.py --output docs/how-to/my-topic.md --mode tutorial --title "My Topic" --primary-source "docs.comfy.org/<page-or-section>"
    ```
+   If you intentionally need an unusual folder for that mode, add `--allow-path-mismatch` rather than bypassing the guardrails by hand. Copy a template directly only when you need a one-off draft outside the script's normal workflow.
 5. **Verify locally:**
    ```bash
    python scripts/verify/cross_references.py

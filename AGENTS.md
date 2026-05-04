@@ -4,6 +4,19 @@
 
 Always Use Supported Python: `3.11+`
 
+Windows interpreter rule:
+
+- Do not assume `python` points to 3.11.
+- Before running repo commands on Windows, verify `python --version` is `3.11.x`.
+- If the default `python` is not 3.11, use `py -3.11` for every repo command instead of `python`.
+- Prefer these Windows-safe forms when there is any doubt:
+
+```bash
+py -3.11 -m pip install -r requirements.lock
+py -3.11 -m unittest discover -s tests -v
+py -3.11 -m mkdocs build
+```
+
 ```
 python -m pip install -r requirements.lock
 python -m unittest discover -s tests -v
@@ -11,6 +24,8 @@ python -m mkdocs build
 ```
 
 Serve locally: `python -m mkdocs serve`
+
+On Windows when `python` is not 3.11, use: `py -3.11 -m mkdocs serve`
 
 Maintainer dependency contract:
 
@@ -26,11 +41,15 @@ python -m pip install pip-tools
 python -m piptools compile --strip-extras requirements.in --output-file requirements.lock
 ```
 
+On Windows when `python` is not 3.11, run the same commands with `py -3.11 -m ...`.
+
 Default maintainer pre-push wrapper:
 
 ```bash
 python scripts/verify/run_all.py
 ```
+
+On Windows when `python` is not 3.11, use: `py -3.11 scripts/verify/run_all.py`
 
 ## 0.5. Decision Tree
 
