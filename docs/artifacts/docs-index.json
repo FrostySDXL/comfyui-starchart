@@ -372,6 +372,14 @@
       "summary": "ComfyUI Manager is the main distribution path most users expect for custom node packs. Publishing through the Manager makes installation, upgrades, disable/enable operations, and dependency setup easier than asking users to clone a repository by hand."
     },
     {
+      "title": "Consumer Starter Examples",
+      "path": "how-to/consumer-starter-examples.md",
+      "nav_section": "How-To",
+      "audience": null,
+      "evidence": "Operational guidance",
+      "summary": "This page points consumer-oriented readers to the small starter examples added in this repository for artifact and docs discovery work. It does not introduce a new client-library contract or replace the machine-readable artifact reference."
+    },
+    {
       "title": "Decision Tree: Choosing an Integration Approach",
       "path": "decision-trees/api-integration.md",
       "nav_section": "Decision Trees",

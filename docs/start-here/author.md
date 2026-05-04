@@ -93,3 +93,7 @@ repo's `CONTRIBUTING.md` file for workflow and verification guidance.
 If you want a short map of the whole authoring section before diving into one
 page, start with the
 [Custom Nodes Section Guide](../custom-nodes/index.md).
+
+If you are unsure whether a behavior belongs in a frontend extension, a Python
+node, or the boundary between them, see
+[Custom Node and Extension Boundaries](../troubleshooting/custom-node-and-extension-boundaries.md).

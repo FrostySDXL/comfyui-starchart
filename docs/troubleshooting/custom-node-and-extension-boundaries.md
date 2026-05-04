@@ -1,4 +1,4 @@
- # Custom Node and Extension Boundaries
+# Custom Node and Extension Boundaries
 
  **Evidence:** Official docs-backed from docs.comfy.org and source-backed from pinned snapshots
  **Last Updated:** 2026-05-03
