@@ -131,25 +131,6 @@
       "last_verified": "2026-04-22",
       "needs_review_after": "2026-07-22",
       "maintenance_tier": "tier_2"
-    },
-    {
-      "slug": "comfyui-collatui",
-      "name": "ComfyUI-CollatUI",
-      "repo_url": null,
-      "registry_url": null,
-      "category": "tooling",
-      "status": "Unknown",
-      "role_summary": "Frontend extension for styling and UI improvements",
-      "notable_patterns": [],
-      "used_by": null,
-      "source_type": "community_observation",
-      "evidence_urls": [],
-      "pinned_external_version": null,
-      "pinned_commit": null,
-      "last_verified": "2026-04-22",
-      "needs_review_after": "2026-05-22",
-      "maintenance_tier": "tier_4",
-      "caveats": "Verify current maintenance before building on this; insufficient public signal to assess"
     }
   ]
 }

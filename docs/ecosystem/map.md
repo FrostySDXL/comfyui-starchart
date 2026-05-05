@@ -118,13 +118,6 @@ Before depending on a community package:
 - **Used By:** External tooling integrations
 - **Last Verified:** 2026-04-22
 
-### ComfyUI-CollatUI
-
-- **Status:** Unknown
-- **Role:** Frontend extension for styling and UI improvements
-- **Last Verified:** 2026-04-22
-- **Caveats:** Verify current maintenance before building on this; insufficient public signal to assess
-
 ## Deep-Dive Candidates
 
 For learning extension and node pack architecture, these three packages are
