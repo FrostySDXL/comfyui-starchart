@@ -47,6 +47,10 @@ class CheckUpstreamVersionsUnitTests(unittest.TestCase):
         with patch.object(module, "Version", side_effect=module.InvalidVersion("bad version")):
             self.assertTrue(module._is_newer_version("v1.2.3", "v1.2.4"))
 
+    def test_is_newer_version_treats_prerelease_as_older_than_stable(self):
+        module = _load_module()
+        self.assertFalse(module._is_newer_version("v1.0.0", "v1.0.0-rc1"))
+
     def test_read_pinned_version_success(self):
         module = _load_module()
         data = {

@@ -34,7 +34,7 @@ if ! printf '%s' "$endpoints_json" | jq -e '.endpoints[] | select(.method == "GE
   exit 1
 fi
 
-echo "Pinned artifact confirms GET /queue exists." 
+echo "Pinned artifact confirms GET /queue exists." >&2
 printf '%s' "$endpoints_json" | jq -r '.endpoints[] | select(.method == "GET" and .route == "/queue") | "Return kind: \(.returns.kind)"'
 
 if [[ -z "$runtime_base" ]]; then
@@ -51,5 +51,5 @@ if ! response_json="$(curl -fsSL "$runtime_url")"; then
   exit 0
 fi
 
-echo "Live GET /queue response:" 
+echo "Live GET /queue response:" >&2
 printf '%s' "$response_json" | jq .

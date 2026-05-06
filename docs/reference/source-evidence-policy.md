@@ -1,6 +1,6 @@
 # Source Evidence Policy
 
-**Last Updated:** 2026-04-23
+**Last Updated:** 2026-05-06
 **Primary Sources:** https://docs.comfy.org/, https://github.com/Comfy-Org/ComfyUI
 
 ## Purpose
@@ -58,6 +58,12 @@ not for claims about native ComfyUI behavior.
 Qualifier (preferred): `Operational guidance`
 
 ## Labeling Rules
+
+### Multiple evidence sources on one page
+
+When a page legitimately uses more than one evidence source, separate each
+qualifier with a semicolon and a space. Example:
+`Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots`.
 
 ### Official behavior
 

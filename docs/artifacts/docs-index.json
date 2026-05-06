@@ -88,7 +88,7 @@
       "path": "troubleshooting/api-integration.md",
       "nav_section": "Orientation / Troubleshooting",
       "audience": null,
-      "evidence": "Official docs-backed from docs.comfy.org and source-backed from pinned snapshots",
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
       "summary": "This page covers bounded integration confusion that already appears in the API, start-here, and known-limitations docs. It routes you to the right surface instead of restating the full API reference."
     },
     {
@@ -112,7 +112,7 @@
       "path": "known-limitations/index.md",
       "nav_section": "Orientation / Known Limitations",
       "audience": null,
-      "evidence": "Official docs-backed from docs.comfy.org, source-backed from pinned snapshots, and operational guidance for repo-local publication boundaries",
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance for repo-local publication boundaries",
       "summary": "This page is intentionally small. It only keeps limitations that can be verified against the repo's pinned ComfyUI snapshots or official docs."
     },
     {

@@ -1,7 +1,7 @@
 # V1 Custom Node Reference
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-06
 **Primary Sources:** https://docs.comfy.org/custom-nodes/walkthrough, https://docs.comfy.org/custom-nodes/backend/server_overview, https://docs.comfy.org/custom-nodes/backend/more_on_inputs, `references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py`, `references/snapshots/2026-04-30/comfyui-core-v0.20.1/execution.py`, `references/snapshots/2026-04-30/comfyui-core-v0.20.1/comfy_api/latest/_io.py`
 
 ## Scope
@@ -62,7 +62,7 @@ class MyV1Node:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "text": ("STRING", {"default": "hello"}),
+                "text": ("STRING", {"default": "hello", "multiline": False}),
             }
         }
 
@@ -189,7 +189,7 @@ class StringEchoReference:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "text": ("STRING", {"default": "hello"}),
+                "text": ("STRING", {"default": "hello", "multiline": False}),
             }
         }
 

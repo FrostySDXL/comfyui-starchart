@@ -30,7 +30,7 @@ artifact_url="$docs_base/$artifact_path"
 echo "Loading endpoint artifact: $artifact_url" >&2
 endpoints_json="$(curl -fsSL "$artifact_url")"
 
-echo "Discovered endpoints:" 
+echo "Discovered endpoints:" >&2
 printf '%s' "$endpoints_json" | jq -r '.endpoints[] | "\(.method) \(.route)"'
 
 preferred_route="$(printf '%s' "$endpoints_json" | jq -r '
@@ -63,5 +63,5 @@ if ! response_json="$(curl -fsSL "$runtime_url")"; then
   exit 0
 fi
 
-echo "Live runtime response for $preferred_route:" 
+echo "Live runtime response for $preferred_route:" >&2
 printf '%s' "$response_json" | jq .
