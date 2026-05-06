@@ -1,7 +1,7 @@
 # Adding Background Metrics
 
 **Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version
-**Last Updated:** 2026-04-24
+**Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_messages
 
 ## Primary Sources
@@ -9,9 +9,9 @@
 - https://github.com/ryanontheinside/ComfyUI_ProfilerX (community pattern example)
 - https://docs.comfy.org/development/comfyui-server/comms_messages
 - https://docs.comfy.org/development/comfyui-server/comms_routes
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640) -- upstream source for built-in routes and message patterns
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640) -- upstream source for progress-handler registration during execution
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` (v0.19.3, commit 308602640) -- upstream source for the `ProgressHandler` callback contract
+- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py` (v0.20.1, commit 64b8457f55cd7fb54ca7a956d9c73b505e903e0c) -- upstream source for built-in routes and message patterns
+- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/execution.py` (v0.20.1, commit 64b8457f55cd7fb54ca7a956d9c73b505e903e0c) -- upstream source for progress-handler registration during execution
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` (v0.19.3, commit 308602640) -- intentionally retained for the `ProgressHandler` callback contract because the current pinned v0.20.1 snapshot set does not include an equivalent `comfy_execution/progress.py` path
 
 ## Scope
 

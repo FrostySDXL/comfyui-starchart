@@ -1,9 +1,9 @@
 # ComfyUI Knowledge Base
 
-**Last Updated:** 2026-05-03
+**Last Updated:** 2026-05-05
 **ComfyUI Version Pin:** Core `v0.20.1` (`64b8457f55cd7fb54ca7a956d9c73b505e903e0c`) with official frontend `v1.44.13` (`389ff8ba49468cc3afa11aec5778224689a8f9b9`) for the current pinned snapshots and extracted reference data
 
-**Evidence:** Scaffold
+**Evidence:** Operational guidance
 
 ## What This Repository Is
 
@@ -186,6 +186,7 @@ python scripts/verify/run_all.py
 # CI-blocking local checks
 python -m unittest discover -s tests -v
 python scripts/verify/cross_references.py
+python scripts/verify/docs_index_freshness.py
 python scripts/verify/validate_schema.py
 python scripts/verify/verify_artifact_integrity.py
 python scripts/verify/community_generated_freshness.py

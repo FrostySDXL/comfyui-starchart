@@ -1,14 +1,14 @@
 # Server Hooks
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-24
-**Primary Source:** ComfyUI core v0.19.3 `server.py`, `execution.py`, and `comfy_execution/progress.py` (pinned snapshots)
+**Last Updated:** 2026-05-05
+**Primary Source:** ComfyUI core v0.20.1 `server.py` and `execution.py`, plus the pinned v0.19.3 `comfy_execution/progress.py` snapshot retained intentionally because the current pinned v0.20.1 snapshot set does not include an equivalent file path
 
 ## Primary Sources
 
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` (v0.19.3, commit 308602640)
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` (v0.19.3, commit 308602640)
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` (v0.19.3, commit 308602640)
+- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py` (v0.20.1, commit 64b8457f55cd7fb54ca7a956d9c73b505e903e0c)
+- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/execution.py` (v0.20.1, commit 64b8457f55cd7fb54ca7a956d9c73b505e903e0c)
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` (v0.19.3, commit 308602640) -- intentionally retained because the current pinned v0.20.1 snapshot set does not include an equivalent `comfy_execution/progress.py` path
 
 ## Scope
 

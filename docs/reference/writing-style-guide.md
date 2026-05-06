@@ -1,7 +1,8 @@
 # Writing Style Guide
 
-**Last Updated:** 2026-04-23
+**Last Updated:** 2026-05-05
 **Related:** `source-evidence-policy.md` for evidence labeling rules
+**Evidence:** Operational guidance
 
 ## Purpose
 

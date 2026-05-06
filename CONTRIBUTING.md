@@ -56,7 +56,8 @@ the CI job's blocking checks in the same order, and that blocking path now runs
 on both Ubuntu and Windows in GitHub Actions. Advisory CI checks remain
 separate and non-blocking in normal push/PR CI, so you only need to run them
 locally when your change touches that surface. The blocking path now includes
-artifact-integrity verification for the canonical published JSON artifacts.
+docs-index freshness verification and artifact-integrity verification for the
+canonical published JSON artifacts.
 
 ---
 
@@ -276,6 +277,7 @@ escalate through the dedicated advisory replay workflow.
 
 ```bash
 python scripts/verify/cross_references.py
+python scripts/verify/docs_index_freshness.py
 python scripts/verify/verify_artifact_integrity.py
 python -m mkdocs build
 python -m unittest discover -s tests -v
@@ -310,6 +312,7 @@ the same advisory scripts are replayed separately in `.github/workflows/advisory
 
 ```bash
 python scripts/verify/cross_references.py              # [BLOCKING]
+python scripts/verify/docs_index_freshness.py          # [BLOCKING]
 python scripts/verify/validate_schema.py               # [BLOCKING]
 python scripts/verify/verify_artifact_integrity.py     # [BLOCKING]
 python scripts/verify/community_generated_freshness.py # [BLOCKING]

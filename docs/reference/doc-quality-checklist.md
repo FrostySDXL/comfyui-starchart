@@ -1,7 +1,8 @@
 # Doc Quality Checklist
 
-**Last Updated:** 2026-04-23
+**Last Updated:** 2026-05-05
 **Related:** `writing-style-guide.md`, `source-evidence-policy.md`
+**Evidence:** Operational guidance
 
 Use this checklist before marking any documentation page complete. Run through
 each item and confirm it passes or note why it does not apply.

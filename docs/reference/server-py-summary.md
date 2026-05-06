@@ -2,6 +2,7 @@
 
 **Last Synced:** 2026-04-30
 **Source:** references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py
+**Evidence:** Source-backed from pinned snapshots
 
 ## Overview
 

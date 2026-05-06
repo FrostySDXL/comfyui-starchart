@@ -1,7 +1,7 @@
 # Start Here: Custom Node Author
 
-**Evidence:** Mixed: source-backed (V1/V3 concepts) and scaffold examples (example ladder)
-**Last Updated:** 2026-04-22
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-05-05
 
 ## Who This Path Is For
 
