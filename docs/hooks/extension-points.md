@@ -1,7 +1,7 @@
 # Extension Points
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
 
 ## Primary Sources
@@ -13,10 +13,10 @@
 
 ## Scope
 
-ComfyUI extension work splits across a few distinct surfaces rather than
-one universal plugin API. In practice, you choose between frontend hook
-methods, Python prompt/execution integration, custom server routes, and
-full custom node packages depending on what you are trying to change.
+ComfyUI extension work splits across a few distinct surfaces rather than one
+universal plugin API. In practice, you choose between frontend hooks,
+server-hook callbacks, custom routes, and custom nodes depending on what you
+are trying to change.
 
 ## Available Entry Points
 
@@ -33,10 +33,11 @@ Official frontend hooks include:
 
 These are the preferred way to modify client-side behavior.
 
-### 2. Prompt preprocessing hooks
+### 2. Server hooks
 
-On the Python side, `PromptServer.add_on_prompt_handler()` lets code
-inspect or modify prompt JSON before validation and queueing.
+On the Python side, `PromptServer.add_on_prompt_handler()` lets code inspect or
+modify prompt JSON before validation and queueing. This is the callback-oriented
+server-hook surface documented in [Server Hooks](server-hooks.md).
 
 ### 3. Execution and progress events
 
@@ -59,7 +60,9 @@ route providers and manager objects such as:
 - internal sub-app mounting under `/internal`
 
 This is the clearest pattern to follow when an extension needs a new API
-surface rather than a UI-only customization.
+surface rather than a UI-only customization. These routes are part of the
+broader server-side extension surface, but they are distinct from the narrower
+callback-oriented server hooks above.
 
 ### 5. Custom nodes
 
@@ -77,8 +80,8 @@ Use the narrowest extension point that matches the problem:
   queueing
 - use execution/progress events when you need runtime monitoring,
   profiling, or live status overlays
-- use custom routes when external tools or dashboards need structured
-  server data
+- use custom routes when UI code, dashboards, or external tools need
+  structured server data through HTTP request/response endpoints
 - use custom nodes when the workflow graph itself needs new capability
 
 ## Anti-pattern to avoid

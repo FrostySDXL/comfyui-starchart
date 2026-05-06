@@ -1,7 +1,7 @@
 # Custom Node and Extension Boundaries
 
- **Evidence:** Official docs-backed from docs.comfy.org and source-backed from pinned snapshots
- **Last Updated:** 2026-05-03
+**Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
+**Last Updated:** 2026-05-05
 
  ## Scope
 
@@ -22,17 +22,23 @@
  - [Start Here: Extension Developer](../start-here/extension-developer.md)
  - [Custom Node Development Guide](../custom-nodes/development-guide.md)
 
- ## Problem: I am reading V1 examples but planning a new package
+  ## Problem: I am reading V1 examples but planning a new package
 
- Older repositories and tutorials still use V1 class mappings. New work should
- usually read those examples as mental-model material, then map the design to
- the repo's current V3-oriented guidance.
+  Older repositories and tutorials still use V1 class mappings. New work should
+  usually read those examples as mental-model material, then map the design to
+  the repo's current V3-oriented guidance.
 
- Read next:
+  If you need the legacy V1 contract itself, start with the repo's single
+  landing page for that surface. If your package is hybrid and also registers a
+  custom route, keep the node contract and the route surface separate in your
+  mental model.
 
- - [Node Structure](../custom-nodes/node-structure.md)
- - [Registration](../custom-nodes/registration.md)
- - [V1 to V3 Migration](../custom-nodes/v1-to-v3-migration.md)
+  Read next:
+
+  - [V1 Custom Node Reference](../custom-nodes/v1-reference.md)
+  - [Node Structure](../custom-nodes/node-structure.md)
+  - [Registration](../custom-nodes/registration.md)
+  - [V1 to V3 Migration](../custom-nodes/v1-to-v3-migration.md)
 
  ## Problem: I assumed Manager distribution rules are the same as local development
 

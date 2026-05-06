@@ -1,14 +1,14 @@
 # Start Here: Extension Developer
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-05-05
 
 ## Who This Path Is For
 
 You want to extend ComfyUI beyond what custom nodes can express. This includes:
 
 - frontend UI changes (custom widgets, sidebar panels, graph modifications)
-- server-side behavior changes (custom routes, execution hooks)
+- server-side behavior changes (custom routes, server hooks)
 - hybrid extensions that combine both
 
 **Prerequisites:** familiarity with JavaScript or Python, depending on which layer you target.
@@ -40,6 +40,15 @@ Key resources:
 Python-based, run on the ComfyUI server process. Can add custom routes,
 modify execution behavior, and expose new APIs.
 
+Within the broader server-side extension surface, keep these terms separate:
+
+| Surface | What it is | Use it when |
+|------|------|------|
+| Server hooks | Callback-oriented prompt or execution integration points | You need prompt preprocessing or execution-time observation |
+| Custom routes | Extension-owned HTTP endpoints registered on `PromptServer.instance.routes` | You need request/response access for UI code or external tools |
+| Custom nodes | Graph-executable Python nodes | You need new workflow behavior or graph-facing primitives |
+| Frontend hooks | Browser/editor hook surfaces | You need UI or graph-editor changes |
+
 Key resources:
 
 - [Server Hooks](../hooks/server-hooks.md) -- execution callbacks and lifecycle hooks
@@ -57,6 +66,11 @@ Key resources:
 | New HTTP API for external tools | Custom routes |
 | Metrics, profiling, monitoring | Hybrid (both layers) |
 
+If your hybrid package includes a legacy V1 node plus a route, keep the node
+contract in the authoritative
+[V1 Custom Node Reference](../custom-nodes/v1-reference.md) and treat the route
+as a separate server-side extension point.
+
 ## Recommended Reading Order
 
 1. [JavaScript Hooks](../hooks/javascript-hooks.md) -- core frontend extension API
@@ -71,6 +85,8 @@ Key resources:
 ## Common Patterns to Study
 
 - **Route-backed panel** -- frontend panel + backend routes (dashboards, inspectors)
+- **Minimal hybrid package** -- one small V1 node + one custom route in the same
+  Python package; see `examples/extensions/hybrid-v1-route/`
 - **Runtime monitoring** -- ProfilerX pattern: listen to execution events,
   expose metrics through a frontend panel
 - **Hook-provider composition** -- community pattern (from Impact-Pack): hook

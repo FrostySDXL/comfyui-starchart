@@ -19,6 +19,10 @@ Execution also exposes progress and lifecycle messaging through the
 executor and WebSocket path, which is the main observability surface for
 server-side integrations.
 
+This page covers callback-oriented server hooks. Custom routes are also part of
+the broader server-side extension surface, but they are a different extension
+point and are documented separately in [Add Custom Routes](../how-to/add-custom-routes.md).
+
 ## Hook Registration
 
 ### `add_on_prompt_handler(handler)`

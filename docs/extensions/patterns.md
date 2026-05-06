@@ -1,7 +1,7 @@
 # Extension Patterns
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
 
 ## Primary Sources
@@ -100,13 +100,23 @@ introducing new server execution behavior.
 Adds a frontend panel plus one or more backend routes to fetch or mutate
 state. Good for dashboards, management tools, and inspectors.
 
-### 4. Runtime monitoring extension
+### 4. Minimal hybrid package
+
+Adds one small custom node package plus one extension-owned route in the same
+Python package. This is the lightest useful pattern when you need graph
+behavior and one small server endpoint without taking on a frontend panel.
+
+Use the repo path `examples/extensions/hybrid-v1-route/` as the worked example.
+For the V1 node contract used there, go to the
+[V1 Custom Node Reference](../custom-nodes/v1-reference.md).
+
+### 5. Runtime monitoring extension
 
 Listens to built-in execution messages like `executing`, `progress`, and
 `execution_success`, then combines them with server-side metrics or
 history APIs. ProfilerX is the clearest example of this family.
 
-### 5. Client/server hybrid node package
+### 6. Client/server hybrid node package
 
 Adds custom nodes, frontend JS, and sometimes custom routes. This is the
 most powerful pattern, but also the easiest to make brittle if UI and

@@ -1,7 +1,7 @@
 # Add Custom Routes
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_routes
 
 ## Primary Sources
@@ -14,6 +14,12 @@
 Add a custom route when your extension needs explicit client-to-server
 communication that does not fit naturally into prompt submission,
 WebSocket status, or existing built-in endpoints.
+
+Custom routes sit inside the broader server-side extension surface, but they are
+not the same thing as callback-oriented [Server Hooks](../hooks/server-hooks.md).
+Use routes when you need an HTTP endpoint. Use server hooks when you need to
+intercept prompt or execution flow. For the broader map of extension surfaces,
+see [Extension Points](../hooks/extension-points.md).
 
 Good candidates include:
 
@@ -80,3 +86,4 @@ function send_message(node_id, message) {
 
 - [Extending the Server](../tutorials/extending-server.md)
 - [Server Hooks](../hooks/server-hooks.md)
+- [Extension Points](../hooks/extension-points.md)

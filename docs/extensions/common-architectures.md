@@ -1,7 +1,7 @@
 # Common Architectures
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/custom-nodes/overview
 
 ## Primary Sources
@@ -90,6 +90,23 @@ Example for pattern study only:
 - `Acly/comfyui-tooling-nodes` adds custom `/api/etn/...` routes for cached
   image transfer, translation, and model inspection to support external tool
   integrations
+
+### Minimal hybrid packages
+
+These packages stay server-side but combine one small node surface with one
+small route surface in the same extension.
+
+Typical shape:
+
+- `__init__.py` exports `NODE_CLASS_MAPPINGS`
+- `routes.py` registers `PromptServer.instance.routes` handlers
+- a small README points readers back to the authoritative V1 contract when the
+  node uses V1 registration
+
+Use this shape when you need one graph-facing primitive and one request/response
+endpoint, but do not need frontend JS yet. The repo's worked example lives at
+`examples/extensions/hybrid-v1-route/`. For the V1 node contract that example
+reuses, go to the [V1 Custom Node Reference](../custom-nodes/v1-reference.md).
 
 ### Metrics and monitoring dashboards
 
