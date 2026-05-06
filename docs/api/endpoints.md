@@ -1,7 +1,7 @@
 # API Endpoints
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-05
 **Primary Source:** ComfyUI core v0.20.1 `server.py` (pinned snapshot)
 
 ## Primary Sources
@@ -23,6 +23,15 @@ routes are registered, ComfyUI also creates `/api`-prefixed copies of
 every non-static route. That means most routes are reachable at both
 their original path and an `/api` mirror, such as `/prompt` and
 `/api/prompt`.
+
+This repo does not promote those aliases into the canonical
+machine-readable endpoint surface for this pinned baseline. The aliasing is
+added generically in `add_routes()` as a delegation convenience, and routes
+already declared under `/api` in the base list also receive a second alias pass.
+For example, `GET /api/jobs` and `GET /api/jobs/{job_id}` also gain
+`/api/api/jobs` variants from the same loop. Use the undecorated route path in
+the artifact and treat `/api/...` mirrors as snapshot-backed compatibility
+behavior documented in prose.
 
 ## Endpoint Inventory
 
@@ -72,15 +81,18 @@ passes it through `trigger_on_prompt`, validates the workflow with
 `execution.validate_prompt`, copies `client_id` into `extra_data`, and
 enqueues the request when validation succeeds.
 
+For direct local HTTP calls, the practical default base URL is
+`http://127.0.0.1:8188`. Send JSON with `Content-Type: application/json`.
+
 Common request fields seen in the handler:
 
-- `prompt`
-- `prompt_id`
-- `client_id`
-- `extra_data`
-- `partial_execution_targets`
-- `number`
-- `front`
+- `prompt` — required; the handler returns HTTP 400 when it is missing
+- `prompt_id` — optional caller-supplied identifier
+- `client_id` — optional client-targeting value copied into `extra_data`
+- `extra_data` — optional execution metadata
+- `partial_execution_targets` — optional partial-execution subset
+- `number` — optional explicit queue ordering value
+- `front` — optional queue-priority flag used only when `number` is not supplied
 
 Success response shape:
 
@@ -116,10 +128,11 @@ and tooling that need to inspect available nodes programmatically.
 ## Notes and Caveats
 
 - Base routes are duplicated under `/api` in `add_routes()`. Treat the
-  `/api` prefix as a compatibility alias for non-static routes.
+  `/api` prefix as a compatibility alias for non-static routes, not as the
+  canonical machine-readable route surface for this repo.
 - `GET /api/jobs` and `GET /api/jobs/{job_id}` are already declared with
   `/api` in the base route list, so the aliasing logic also creates
-  `/api/api/jobs` variants unless upstream filters them elsewhere.
+  `/api/api/jobs` variants.
 - Several routes deliberately return bare `HTTP 200` responses instead of
   JSON payloads for mutating operations like `/queue`, `/interrupt`,
   `/free`, and `/history` POSTs.

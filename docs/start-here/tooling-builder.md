@@ -1,7 +1,7 @@
 # Start Here: Tooling Builder
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-03
+**Last Updated:** 2026-05-05
 
 ## Who This Path Is For
 
@@ -24,6 +24,10 @@ discovery layer for routing a tool or agent to the right docs page before
 reading prose in full. If your tool later needs installed custom-node state, add
 the runtime-only `object_info` capture path from
 [Runtime and CI Operations](../reference/runtime-ci-operations.md).
+
+For direct local API calls, assume the practical default ComfyUI base URL is
+`http://127.0.0.1:8188` unless your deployment changed it. When you submit JSON
+to routes such as `POST /prompt`, send `Content-Type: application/json`.
 
 Before you build strict parsing or validation logic, read the minimum consumer
 contract on the machine-readable artifacts page. It defines the bounded rules
@@ -49,6 +53,10 @@ this repo expects consumers to rely on.
 - **Standard API** (`/prompt`, `/history`, `/queue`, `/object_info`) requires no
   server modifications and is documented in this repo's API reference. Use this
   for remote automation.
+- The pinned snapshot also creates `/api/...` mirrors for non-static routes, but
+  this repo keeps the undecorated route path as the canonical tooling surface
+  and documents `/api` aliases as compatibility behavior rather than a promoted
+  machine-readable contract.
 - **Extension routes** (`/api/etn/...` or custom routes) require a corresponding
   extension installed inside ComfyUI. Use this only when you need runtime state
   the standard API does not expose.

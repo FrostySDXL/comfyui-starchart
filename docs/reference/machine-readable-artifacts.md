@@ -1,7 +1,7 @@
 # Machine-Readable Artifacts
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-03
+**Last Updated:** 2026-05-05
 
 ## Scope
 
@@ -81,6 +81,10 @@ to these minimum rules:
 - build strict logic only against guaranteed fields and the published schema
   files; treat best-effort summaries, traceability, and other descriptive fields
   as optional helpers
+- do not expect the artifacts to encode HTTP transport setup such as the ComfyUI
+  base URL, port, or request headers; for direct local use, the practical
+  default is `http://127.0.0.1:8188`, and JSON `POST` calls such as `/prompt`
+  should send `Content-Type: application/json`
 - treat `docs-index.json`, `delta-summary.json`, and
   `refresh-provenance.json` as support artifacts with narrower guarantees than
   the three canonical extracted artifacts
@@ -111,6 +115,17 @@ When present, `parameters[]` entries may include:
 - `allowed_values` when a small literal constraint is directly visible nearby
 - `traceability` showing whether the detail came from a route token, request
   access pattern, or another bounded static rule
+
+For mutation endpoints, treat `parameters[].required` as a bounded
+source-access requiredness hint, not a full API-level requiredness contract. The
+current extractor can reliably see route tokens, direct subscripting,
+`.get(...)` calls, defaults, and small literal checks, but it does not prove
+every branch-conditioned request rule. `POST /prompt` is the clearest example:
+the pinned handler only hard-fails when `prompt` is missing, while fields such
+as `number`, `front`, `extra_data`, `client_id`, and
+`partial_execution_targets` are conditionally consumed. Use the artifact for
+route scaffolding and then read the matching prose API page when you need
+precise mutation-request semantics.
 
 ### js_hooks.json
 
@@ -166,6 +181,10 @@ Do not use it as runtime truth. It compares checked-in artifact baselines only.
 When generating this file after a refresh, preserve a copy of the pre-refresh
 `references/raw/` directory first and use that preserved copy as `--old`. The
 refresh script overwrites `references/raw/` in place.
+
+`delta-summary.json` also remains outside the canonical published contract. It
+is not discovered from `manifest.json`, and `verify_artifact_integrity.py` does
+not treat it as part of the canonical byte-identity guarantee.
 
 ### refresh-provenance.json
 
@@ -230,7 +249,8 @@ python scripts/generate/generate_docs_index.py
 
 `docs-index.json` is intentionally excluded from `manifest.json`. It is a
 published support artifact for routing and discovery, not part of the canonical
-schema-discovery contract.
+schema-discovery contract. It remains outside the canonical-artifact
+byte-identity guarantee enforced for the three extracted JSON artifacts.
 
 ## Repo Sources vs Published Copies
 
@@ -430,6 +450,10 @@ from and is not a reproducible baseline. Use it only when your workflow depends
 on live installed-node state or hybrid enrichment. See
 [Runtime and CI Operations](runtime-ci-operations.md) and
 [Object Info](object-info.md).
+
+This runtime-only surface remains optional by design. The canonical artifact
+publish step excludes it, `manifest.json` does not discover it, and its
+presence depends on whether someone ran the live runtime capture path at all.
 
 ## Caveats
 

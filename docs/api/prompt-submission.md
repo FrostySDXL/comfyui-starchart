@@ -1,7 +1,7 @@
 # Prompt Submission
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-05
 **Primary Source:** ComfyUI core v0.20.1 `server.py` (pinned snapshot)
 
 ## Primary Sources
@@ -23,6 +23,10 @@ This page describes native ComfyUI behavior first. Community client
 libraries often wrap this endpoint with higher-level conveniences, but
 those wrapper APIs are not the same thing as ComfyUI's public contract.
 
+For direct local HTTP calls, the practical default base URL is
+`http://127.0.0.1:8188`. Send the request body as JSON with
+`Content-Type: application/json`.
+
 ## Request Structure
 
 The handler recognizes these request fields directly:
@@ -37,6 +41,13 @@ The handler recognizes these request fields directly:
 - `number` — optional explicit queue ordering value
 - `front` — optional flag that pushes queue priority forward by negating
   the generated number
+
+Only `prompt` has API-level requiredness in the pinned handler. The other fields
+are optional or conditional. This matters if you inspect
+`server_endpoints.json`: that artifact can expose parameter-level
+source-access requiredness as a bounded static hint, but the prose page is the
+authority for the branch-conditioned `/prompt` request contract in this
+baseline.
 
 Minimal request shape:
 
@@ -84,6 +95,10 @@ After validation succeeds, the handler:
 Queue order is based on `number`. If `front: true` is supplied and no
 explicit number is provided, the generated queue number is negated so
 that the job runs earlier.
+
+If neither `number` nor `front` is provided, the server uses its internal queue
+counter. If `client_id`, `extra_data`, or `partial_execution_targets` are
+omitted, the handler continues without them.
 
 ## Response and Execution Flow
 
