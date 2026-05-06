@@ -14,6 +14,7 @@ site/
 .idea/
 .cache/
 archived/
-site/
 .tmp_runtime_verify/
 .env
+livedocs/
+livetests/
