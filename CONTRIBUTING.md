@@ -273,6 +273,52 @@ workflow changes to review. The wrapper mirrors the CI job's blocking checks on
 both Ubuntu and Windows; advisory checks remain separate in normal PR CI and
 escalate through the dedicated advisory replay workflow.
 
+## Maintainer Failure-Path Quick Guide
+
+Use this section when a push or PR does not fail as one obvious script error.
+Keep the deeper workflow-specific detail in
+[`docs/reference/runtime-ci-operations.md`](docs/reference/runtime-ci-operations.md).
+
+### Broken pushes
+
+- Treat a broken push as a failed maintainer verification path, not just a bad
+  commit message or cosmetic CI hiccup.
+- First rerun the closest local command that matches the failing CI lane:
+  `python scripts/verify/run_all.py` for the blocking path, or the individual
+  advisory script if the failure came from advisory replay.
+- If the same failure reproduces locally, fix the repo state first and rerun the
+  failing verifier before pushing again.
+- If the failure does not reproduce locally, inspect the specific workflow,
+  matrix OS, and job type before changing docs or scripts. Compare the failing
+  GitHub job to `.github/workflows/ci.yml` or
+  `.github/workflows/advisory-checks.yml` rather than guessing.
+
+### Ambiguous CI failures
+
+- Treat ambiguous CI failures as a workflow investigation problem, not an excuse
+  to bypass verification.
+- Distinguish blocking vs advisory first:
+  - blocking failures come from the `blocking-verification` job in
+    `.github/workflows/ci.yml` and should be reproducible from
+    `python scripts/verify/run_all.py`
+  - advisory failures come from the `advisory-checks` job in `ci.yml` or the
+    blocking replay in `.github/workflows/advisory-checks.yml`
+- Rerun locally when the failing step is a repo command you can execute on this
+  machine.
+- Inspect workflow-specific behavior first when the failure depends on:
+  - Ubuntu vs Windows matrix differences
+  - scheduled or manual advisory replay
+  - workflow-dispatch refresh inputs
+  - runtime-only workflows that require a live ComfyUI instance
+
+### Runtime-only optional artifacts
+
+- Treat runtime-only files such as `references/raw/object_info_runtime.json` as
+  optional runtime inputs, not as required outputs of standard local verification
+  or normal push/PR CI.
+- Their absence is normal unless you intentionally ran the live runtime capture
+  path or a runtime-specific workflow.
+
 ### Essential (run these for almost every change)
 
 ```bash
@@ -364,6 +410,30 @@ modifying runtime extractors.
   idempotency drift.
 
 Always fix the root cause rather than bypassing the check.
+
+## Rollback and Restore Expectations
+
+When maintainer work goes wrong, prefer a small revert or restore to leaving the
+repo in a half-updated state.
+
+- **Doc-only changes:** revert or restore the affected markdown files, then rerun
+  `python scripts/verify/cross_references.py` and `python -m mkdocs build`.
+- **Canonical artifact publication changes:** restore the intended source of
+  truth first (`references/raw/` or checked-in schema files), rerun
+  `python scripts/generate/publish_reference_artifacts.py`, then rerun
+  `python scripts/verify/verify_artifact_integrity.py` and the relevant
+  verification commands.
+- **Snapshot refresh changes:** use the repo-local `references/raw_backup_TIMESTAMP`
+  directory created by `scripts/refresh_snapshots.py` when you need to restore
+  the prior canonical raw baseline. After restore, republish artifacts, rerun
+  integrity verification, regenerate `docs/artifacts/delta-summary.json` if the
+  comparison record should stay current, and confirm the latest
+  `docs/artifacts/refresh-provenance.json` still tells the truth about what was
+  attempted.
+
+For the full refresh closure, broken-push triage sequence, and workflow-level
+rollback posture, use
+[`docs/reference/runtime-ci-operations.md`](docs/reference/runtime-ci-operations.md).
 
 ---
 

@@ -1,7 +1,7 @@
 # Runtime and CI Operations
 
-**Evidence:** Scaffold
-**Last Updated:** 2026-04-29
+**Evidence:** Operational guidance
+**Last Updated:** 2026-05-06
 
 ## Overview
 
@@ -32,6 +32,8 @@ running ComfyUI process.
 ### Workflows
 
 - `.github/workflows/ci.yml` -- blocking checks on push/PR
+- `.github/workflows/advisory-checks.yml` -- scheduled/manual blocking replay of
+  the advisory scripts
 - `.github/workflows/weekly-pin-check.yml` -- verifies pinned commits still
   resolve upstream
 - `.github/workflows/upstream-watch.yml` -- detects newer upstream versions and
@@ -51,6 +53,16 @@ CPU-safe CI does **not** verify that:
 - extracted data matches a live ComfyUI instance
 - example payloads work against a real server
 - custom nodes registered at runtime match static parsers
+
+### Blocking vs advisory interpretation
+
+- `blocking-verification` in `.github/workflows/ci.yml` is the merge-gating path.
+  It should line up with the local `python scripts/verify/run_all.py` wrapper.
+- `advisory-checks` in `.github/workflows/ci.yml` keeps noisy or still-maturing
+  checks visible without blocking push/PR CI.
+- `.github/workflows/advisory-checks.yml` reruns those same advisory scripts as
+  blocking on a scheduled or manual basis so maintainers still get a durable
+  escalation path.
 
 ## Opt-In Runtime Verification
 
@@ -138,6 +150,89 @@ python scripts/refresh_snapshots.py --core-version v0.20.1 \
   --runtime-object-info-version v0.20.1
 ```
 
+Refresh is not complete at the first command. The maintainer closure sequence is:
+
+1. run `scripts/refresh_snapshots.py` and note the printed repo-local backup
+   directory path
+2. confirm `docs/artifacts/refresh-provenance.json` was written and still matches
+   what you intended to refresh
+3. run `python scripts/generate/publish_reference_artifacts.py`
+4. run `python scripts/verify/verify_artifact_integrity.py`
+5. if you are comparing baselines, run
+   `python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output docs/artifacts/delta-summary.json`
+6. review `docs/artifacts/delta-summary.json` and `docs/artifacts/refresh-provenance.json`
+   together before calling the refresh closed
+7. run the broader verification path required by the change, typically
+   `python scripts/verify/run_all.py`
+8. remove the temporary backup only after you no longer need it for restore or
+   delta review
+
+## Broken pushes and ambiguous CI failures
+
+Use this section when a maintainer push or PR does not fail as one obvious repo
+script error.
+
+### Broken pushes
+
+1. Identify whether the failure came from the blocking path, the advisory path,
+   a runtime-only workflow, or a manual refresh workflow.
+2. Reproduce locally with the closest repo command you can actually run:
+   - `python scripts/verify/run_all.py` for the blocking path
+   - the specific advisory script for advisory failures
+   - the matching runtime script only when you intentionally have a live
+     ComfyUI instance available
+3. If the failure reproduces locally, fix the repo state first and rerun the
+   failing command before pushing again.
+4. If the failure does not reproduce locally, inspect workflow-specific inputs:
+   matrix OS, scheduled/manual trigger context, or runtime availability.
+
+### Ambiguous CI failures
+
+Treat ambiguous CI failures as classification work first:
+
+- **Blocking failure:** starts in `blocking-verification` and should be explainable
+  from the ordered local gate mirrored by `run_all.py`.
+- **Advisory failure:** starts in the advisory job or advisory replay; fix it when
+  the signal is real, but do not misreport it as a canonical artifact or docs
+  build failure.
+- **Runtime-only failure:** can be normal when the workflow requires a live or
+  disposable ComfyUI instance and the problem is specific to that operating mode.
+
+Inspect `.github/workflows/ci.yml` when the failure might depend on the Ubuntu or
+Windows matrix, and inspect `.github/workflows/advisory-checks.yml` when the
+same script passed in normal PR CI but failed in the scheduled/manual blocking
+replay.
+
+## Rollback and restore expectations
+
+Use the smallest truthful rollback that returns the repo to a verified state.
+
+### Doc-only changes
+
+- Revert or restore the affected docs files.
+- Rerun `python scripts/verify/cross_references.py`.
+- Rerun `python -m mkdocs build`.
+
+### Canonical artifact publication changes
+
+- Restore the intended source of truth first: checked-in schema files or the
+  canonical `references/raw/` outputs.
+- Rerun `python scripts/generate/publish_reference_artifacts.py`.
+- Rerun `python scripts/verify/verify_artifact_integrity.py`.
+- If the change also affected docs links or published guidance, rerun
+  `python scripts/verify/cross_references.py` and `python -m mkdocs build`.
+
+### Snapshot refresh changes
+
+- Use the printed repo-local backup directory when you need to restore the prior
+  canonical raw baseline.
+- After restore, republish artifacts and rerun integrity verification.
+- Regenerate `docs/artifacts/delta-summary.json` if you want the published
+  comparison view to match the restored baseline.
+- Keep `docs/artifacts/refresh-provenance.json` honest about the last attempted
+  refresh or explicitly update the surrounding maintainer note if the published
+  provenance record is intentionally being replaced.
+
 ## Artifact Boundaries
 
 | Artifact | Source | Canonical | Packaged |
@@ -151,6 +246,11 @@ python scripts/refresh_snapshots.py --core-version v0.20.1 \
 `object_info_runtime.json` is a runtime-only capture artifact. It is excluded
 from the public artifact packaging pipeline because its contents depend on the
 specific ComfyUI instance configuration at capture time.
+
+Treat that runtime-only file as optional in normal local verification, normal
+push/PR CI, and standard consumer artifact loading. Its absence is expected
+unless someone intentionally ran `scripts/extract/parse_from_api.py`, used the
+runtime-enriched refresh path, or triggered a runtime-focused workflow.
 
 The canonical published artifact surface is documented in
 [Machine-Readable Artifacts](machine-readable-artifacts.md).
