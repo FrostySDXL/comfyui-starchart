@@ -1,7 +1,7 @@
 # Building Your First Node
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/custom-nodes/walkthrough
 
 ## Primary Sources
@@ -39,6 +39,10 @@ comfy node scaffold
 
 That creates the package skeleton and can optionally include a web
 directory for frontend JavaScript.
+
+If you are testing a single-file V1 example instead of a full scaffolded
+package, place that file under `ComfyUI/custom_nodes/` and restart ComfyUI
+before you check the Add Node menu. That confirms discovery and placement first.
 
 ### 2. Define a minimal node
 

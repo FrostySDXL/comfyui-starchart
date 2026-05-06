@@ -44,6 +44,11 @@ server-side Python only.
 5. [Best Practices](../custom-nodes/best-practices.md) -- caching, validation,
    category naming, API-mode constraints
 
+If your task is explicitly legacy V1 work, jump next to the
+[V1 Custom Node Reference](../custom-nodes/v1-reference.md). It consolidates the
+V1 class shape, placement rules, registration exports, and a minimal STRING
+example without changing this page's V3-preferred recommendation.
+
 ## V1 vs V3 Decision
 
 See the [Decision Tree: Custom Node Architecture](../decision-trees/custom-node-architecture.md)
@@ -67,13 +72,16 @@ For incremental learning, work through these examples in order:
 1. `examples/custom-nodes/minimal-node-template/` (the base
    example, corresponding to "example-1" in references) --
    single node, server-side only, official walkthrough example
-2. `examples/custom-nodes/example-2-widgets/` --
+2. `examples/custom-nodes/example-6-v1-string-reference/` --
+   smallest repo-local V1 STRING example -- classmethod INPUT_TYPES,
+   registration dictionaries, and tuple returns only
+3. `examples/custom-nodes/example-2-widgets/` --
    node with configuration widgets -- INPUT_TYPES with dropdowns and sliders
-3. `examples/custom-nodes/example-3-node-communication/` --
+4. `examples/custom-nodes/example-3-node-communication/` --
    node communicating with other nodes -- batch processing, intermediate results
-4. `examples/custom-nodes/example-4-progress-ui/` --
+5. `examples/custom-nodes/example-4-progress-ui/` --
    node with frontend component -- custom server events and visible progress UI
-5. `examples/custom-nodes/example-5-full-extension-package/` --
+6. `examples/custom-nodes/example-5-full-extension-package/` --
    complete small extension package -- multiple nodes, lifecycle scripts,
    Manager-ready structure
 

@@ -1,7 +1,7 @@
 # Node Structure
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/server_overview
 
 ## Primary Sources
@@ -16,6 +16,10 @@ In V3, a custom node is a Python class derived from `io.ComfyNode`.
 Instead of scattering configuration across multiple legacy class
 attributes, the node declares its public contract in one schema object
 and implements behavior in one execution method.
+
+If you are here for legacy V1 work, jump to the
+[V1 Custom Node Reference](v1-reference.md) for the callable `INPUT_TYPES()`
+pattern, `NODE_CLASS_MAPPINGS`, placement guidance, and minimal STRING example.
 
 Minimal V3 shape:
 

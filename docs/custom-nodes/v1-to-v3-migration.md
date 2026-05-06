@@ -1,7 +1,7 @@
 # V1 to V3 Migration Guide
 
 **Evidence:** Official docs-backed (migration steps); Community pattern studies (case studies)
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/migration
 
 ## Primary Sources
@@ -33,19 +33,24 @@ and is not deprecated.
 
 ## V1 Node Anatomy
 
-A V1 node is a Python class with class-level attributes:
+A V1 node is a Python class with class-level attributes plus a callable
+`INPUT_TYPES()` definition:
 
 ```python
 class MyNode:
     CATEGORY = "MyNodes"
-    INPUT_TYPES = {
-        "required": {
-            "image": ("IMAGE",),
-        },
-        "optional": {
-            "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0}),
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "image": ("IMAGE",),
+            },
+            "optional": {
+                "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0}),
+            }
         }
-    }
+
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("output_image",)
     FUNCTION = "process"
@@ -61,6 +66,12 @@ Registration happens through module-level dictionaries:
 NODE_CLASS_MAPPINGS = {"MyNode": MyNode}
 NODE_DISPLAY_NAME_MAPPINGS = {"MyNode": "My Node"}
 ```
+
+The pinned core calls `obj_class.INPUT_TYPES()` and `class_def.INPUT_TYPES()` at
+runtime. For that reason, this repo treats the callable form as the preferred
+copy-safe V1 example pattern. If you see `INPUT_TYPES = {...}` in older prose,
+read it as shorthand for the dict shape, not as this repo's preferred runnable
+example form.
 
 ## V3 Node Anatomy
 

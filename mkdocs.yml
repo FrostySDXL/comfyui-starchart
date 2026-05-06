@@ -62,6 +62,7 @@ nav:
       - Custom Nodes Section Guide: custom-nodes/index.md
       - custom-nodes/development-guide.md
       - custom-nodes/node-structure.md
+      - custom-nodes/v1-reference.md
       - custom-nodes/registration.md
       - custom-nodes/datatypes.md
       - custom-nodes/best-practices.md

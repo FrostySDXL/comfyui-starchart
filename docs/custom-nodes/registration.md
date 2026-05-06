@@ -1,7 +1,7 @@
 # Registration
 
 **Evidence:** Mixed: source-backed (io.Schema, execute, NodeOutput from pinned Python snapshot); observed (ComfyExtension + comfy_entrypoint() pattern from pinned frontend TypeScript source and community examples)
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-05
 **Primary Sources**
 
 - https://docs.comfy.org/custom-nodes/overview
@@ -85,6 +85,11 @@ NODE_DISPLAY_NAME_MAPPINGS = {"MyNodeV1": "My Node V1"}
 
 This still matters because a large amount of existing community code uses
 it, and much upstream discussion still references these names.
+
+For consumer authoring, place the V1 module or package under
+`ComfyUI/custom_nodes/` and restart ComfyUI so startup discovery imports it
+again. If the node still does not appear, verify the module exports
+`NODE_CLASS_MAPPINGS` and that the mapping points at the class you expect.
 
 ## Choosing between V1 and V3
 

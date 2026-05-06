@@ -33,6 +33,8 @@ It is useful as a real starter example because it includes:
 - verify against your installed ComfyUI version before shipping a real package
 - if a local upstream ComfyUI checkout is available later, pin this example to a
   specific commit in `references/snapshots/`
+- this example intentionally uses `@classmethod def INPUT_TYPES(cls)` because the
+  pinned ComfyUI core calls `INPUT_TYPES()` as a method at runtime
 
 ## Runtime Validation
 
