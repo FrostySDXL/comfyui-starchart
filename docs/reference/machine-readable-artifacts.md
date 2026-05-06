@@ -1,7 +1,7 @@
 # Machine-Readable Artifacts
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-06
 
 ## Scope
 
@@ -371,6 +371,8 @@ the self-contained consumer examples summarized on
 
 - Python manifest reader - manifest-first canonical artifact loading with checksum validation
 - JavaScript docs/artifacts example - optional `docs-index.json` routing plus separate manifest-based artifact discovery
+- Shell + jq artifact consumer - manifest-first endpoint discovery with optional live zero-parameter `GET` probing
+- Artifacts plus live API example - artifact discovery plus optional live `GET /queue` interaction
 
 Treat those directories as starter patterns, not a formal supported library
 surface.

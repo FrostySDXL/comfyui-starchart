@@ -1,7 +1,7 @@
 # Consumer Starter Examples
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-03
+**Last Updated:** 2026-05-05
 
 ## Scope
 
@@ -32,11 +32,41 @@ Use this example when you want a small JavaScript-side pattern for:
 - locating likely docs pages for a tooling task
 - keeping canonical artifact discovery on `artifacts/manifest.json`
 
+### Shell + jq: Manifest-first endpoint discovery
+
+Repo path: `examples/consumers/shell-jq-artifact-consumer/`
+
+Use this example when you want a minimal shell flow for:
+
+- reading `artifacts/manifest.json`
+- resolving `server_endpoints.json`
+- listing method and route pairs with `jq`
+- optionally probing one standard zero-parameter `GET` route when a live runtime is available
+
+This is the smallest non-Python, non-JavaScript consumer example in the repo.
+
+### Shell: Artifacts plus optional live API interaction
+
+Repo path: `examples/consumers/artifacts-plus-live-api/`
+
+Use this example when you want a bounded two-phase flow for:
+
+- confirming from artifacts that a standard route such as `GET /queue` belongs to the pinned baseline
+- separating artifact discovery from live runtime interaction
+- keeping the runtime-dependent step explicitly optional
+
+This example intentionally stops short of prompt submission. It uses a simple
+live `GET` route so the boundary between pinned artifacts and runtime-only state
+stays clear.
+
 ## Contract Boundary
 
-Treat both directories as starter patterns only. They are intentionally small,
-self-contained examples. They do not create a supported SDK, installable client
-package, or broader productized consumer surface.
+Treat all four directories as starter patterns only. They are intentionally
+small, self-contained examples. They do not create a supported SDK,
+installable client package, or broader productized consumer surface.
+
+Runtime-dependent steps remain optional. The artifact-only portions should still
+be readable and useful when no live ComfyUI runtime is available.
 
 For the actual bounded artifact contract, read
 [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md).

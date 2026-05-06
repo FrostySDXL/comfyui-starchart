@@ -84,7 +84,9 @@ a real ComfyUI instance. Use prose pages for context and design decisions.
 Use these small starter patterns when you want runnable consumer-side examples
 instead of conceptual snippets:
 
-- [Consumer Starter Examples](../how-to/consumer-starter-examples.md) - overview page for both example directories and their contract boundaries
+- [Consumer Starter Examples](../how-to/consumer-starter-examples.md) - overview page for the Python, JavaScript, shell-plus-jq, and artifacts-plus-live-API starter directories
+- `examples/consumers/shell-jq-artifact-consumer/` - manifest-first endpoint discovery with optional live zero-parameter `GET` probing
+- `examples/consumers/artifacts-plus-live-api/` - explicit two-phase artifact discovery plus optional live `GET /queue` interaction
 
 These examples are bounded starter patterns. They are not a supported SDK or client-library surface.
 
