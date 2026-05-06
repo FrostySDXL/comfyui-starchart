@@ -1,9 +1,9 @@
-<!-- GENERATED FILE: do not edit directly. Edit references/community/ecosystem_packages.json and run python scripts/generate/generate_community_pages.py -->
+<!-- GENERATED FILE: do not edit directly. Edit references/community/ecosystem_packages.json and run python scripts/generate/generate_community_pages.py. Note: curated follow-up study highlights are maintained in the generator code, not in the JSON source. -->
 
 # Ecosystem Map
 
 **Evidence:** Community pattern study
-**Last Updated:** 2026-04-23
+**Last Updated:** 2026-05-06
 
 Status labels were manually checked against public package pages and should be
 re-verified before use. This page is a starting point, not a permanent assessment.
@@ -13,6 +13,10 @@ re-verified before use. This page is a starting point, not a permanent assessmen
 This page maps major ComfyUI ecosystem packages with their maintenance status.
 Maintenance status is the most important signal for anyone deciding whether to
 build on or depend on a community package.
+
+For how this catalog is generated, how maintenance tiers are interpreted, and
+what this page does and does not claim, see
+[Community Generated Surfaces](../reference/community-generated-surfaces.md).
 
 A package that was popular two years ago may be effectively abandoned today.
 Building new work on an abandoned dependency creates immediate maintenance debt.
@@ -77,6 +81,36 @@ Before depending on a community package:
 - **Used By:** Large workflows involving image enhancement, face restoration, and inpainting pipelines
 - **Last Verified:** 2026-04-22
 
+### comfyui_controlnet_aux
+
+- **Repo:** [https://github.com/Fannovel16/comfyui_controlnet_aux](https://github.com/Fannovel16/comfyui_controlnet_aux)
+- **Status:** Actively Maintained
+- **Role:** Control and preprocessing node pack with 30+ annotator-backed preprocessors, an AIO preprocessor entry point, and structured pose output patterns that are useful for extension and API integration study.
+- **Notable Patterns:** node_wrappers architecture, AIO Aux Preprocessor, structured OpenPose and DWPose JSON outputs, dev_interface extension path
+- **Used By:** Workflows that depend on ControlNet preprocessing, pose extraction, and reusable annotator wrappers
+- **Last Verified:** 2026-05-05
+- **Caveats:** Research confidence: HIGH. Community-observed package; verify current upstream state before depending on it.
+
+### ComfyUI-AnimateDiff-Evolved
+
+- **Repo:** [https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved](https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved)
+- **Status:** Actively Maintained
+- **Role:** Video and animation node pack that extends motion-module sampling with sliding context windows, keyframe scheduling, and batch latent manipulation for temporally coherent generation.
+- **Notable Patterns:** sliding context windows, motion-module view options, keyframe scheduling, batch latent manipulation
+- **Used By:** Animation workflows that need motion-module scheduling and temporal coherence controls inside ComfyUI
+- **Last Verified:** 2026-05-05
+- **Caveats:** Research confidence: HIGH. Community-observed package; verify current upstream state before depending on it.
+
+### ComfyUI-VideoHelperSuite
+
+- **Repo:** [https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite](https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite)
+- **Status:** Actively Maintained
+- **Role:** Video I/O and batch utility node pack that wraps ffmpeg with JSON-defined codec profiles and adds reusable latent and image batch helpers for animation pipelines.
+- **Notable Patterns:** JSON-defined video format profiles, ffmpeg-backed video I/O, latent and image batch utilities, custom VHS_FILENAMES datatype
+- **Used By:** Animation and video workflows that need video export, import, and batch manipulation utilities around core ComfyUI graphs
+- **Last Verified:** 2026-05-05
+- **Caveats:** Research confidence: HIGH. Community-observed package; verify current upstream state before depending on it.
+
 ### WAS Node Suite
 
 - **Repo:** [https://github.com/WASasquatch/was-node-suite-comfyui](https://github.com/WASasquatch/was-node-suite-comfyui)
@@ -121,14 +155,14 @@ Before depending on a community package:
 ## Deep-Dive Candidates
 
 For learning extension and node pack architecture, these three packages are
-the most instructive:
+the most instructive follow-up studies in the current catalog:
 
 1. **ComfyUI-Manager** -- hybrid extension architecture, custom routes, server
    hooks, and frontend panel integration
-2. **ComfyUI-Impact-Pack** -- V1 node patterns, pipe/bundle datatypes, and
-   large-scale node pack organization
-3. **efficiency-nodes-comfyui** -- V3-style node structure and workflow
-   simplification patterns
+2. **comfyui_controlnet_aux** -- large-scale preprocessor wrapper design,
+   structured pose-data outputs, and extension-friendly annotator packaging
+3. **ComfyUI-AnimateDiff-Evolved** -- advanced animation scheduling,
+   sliding context windows, and motion-module workflow design
 
 ## Scope Notes
 

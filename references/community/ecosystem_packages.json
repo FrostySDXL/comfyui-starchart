@@ -1,7 +1,7 @@
 {
   "metadata": {
     "schema_version": "1.0.0",
-    "last_updated": "2026-04-23",
+    "last_updated": "2026-05-06",
     "description": "Catalog of ComfyUI ecosystem packages and their maintenance status"
   },
   "packages": [
@@ -58,6 +58,63 @@
       "last_verified": "2026-04-22",
       "needs_review_after": "2026-07-22",
       "maintenance_tier": "tier_2"
+    },
+    {
+      "slug": "comfyui-controlnet-aux",
+      "name": "comfyui_controlnet_aux",
+      "repo_url": "https://github.com/Fannovel16/comfyui_controlnet_aux",
+      "registry_url": null,
+      "category": "node_pack",
+      "status": "Actively Maintained",
+      "role_summary": "Control and preprocessing node pack with 30+ annotator-backed preprocessors, an AIO preprocessor entry point, and structured pose output patterns that are useful for extension and API integration study.",
+      "notable_patterns": ["node_wrappers architecture", "AIO Aux Preprocessor", "structured OpenPose and DWPose JSON outputs", "dev_interface extension path"],
+      "used_by": "Workflows that depend on ControlNet preprocessing, pose extraction, and reusable annotator wrappers",
+      "source_type": "community_observation",
+      "evidence_urls": ["https://github.com/Fannovel16/comfyui_controlnet_aux"],
+      "pinned_external_version": null,
+      "pinned_commit": null,
+      "last_verified": "2026-05-05",
+      "needs_review_after": "2026-08-05",
+      "maintenance_tier": "tier_2",
+      "caveats": "Research confidence: HIGH. Community-observed package; verify current upstream state before depending on it."
+    },
+    {
+      "slug": "comfyui-animatediff-evolved",
+      "name": "ComfyUI-AnimateDiff-Evolved",
+      "repo_url": "https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved",
+      "registry_url": null,
+      "category": "node_pack",
+      "status": "Actively Maintained",
+      "role_summary": "Video and animation node pack that extends motion-module sampling with sliding context windows, keyframe scheduling, and batch latent manipulation for temporally coherent generation.",
+      "notable_patterns": ["sliding context windows", "motion-module view options", "keyframe scheduling", "batch latent manipulation"],
+      "used_by": "Animation workflows that need motion-module scheduling and temporal coherence controls inside ComfyUI",
+      "source_type": "community_observation",
+      "evidence_urls": ["https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved"],
+      "pinned_external_version": null,
+      "pinned_commit": null,
+      "last_verified": "2026-05-05",
+      "needs_review_after": "2026-08-05",
+      "maintenance_tier": "tier_2",
+      "caveats": "Research confidence: HIGH. Community-observed package; verify current upstream state before depending on it."
+    },
+    {
+      "slug": "comfyui-videohelpersuite",
+      "name": "ComfyUI-VideoHelperSuite",
+      "repo_url": "https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite",
+      "registry_url": null,
+      "category": "node_pack",
+      "status": "Actively Maintained",
+      "role_summary": "Video I/O and batch utility node pack that wraps ffmpeg with JSON-defined codec profiles and adds reusable latent and image batch helpers for animation pipelines.",
+      "notable_patterns": ["JSON-defined video format profiles", "ffmpeg-backed video I/O", "latent and image batch utilities", "custom VHS_FILENAMES datatype"],
+      "used_by": "Animation and video workflows that need video export, import, and batch manipulation utilities around core ComfyUI graphs",
+      "source_type": "community_observation",
+      "evidence_urls": ["https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite"],
+      "pinned_external_version": null,
+      "pinned_commit": null,
+      "last_verified": "2026-05-05",
+      "needs_review_after": "2026-08-05",
+      "maintenance_tier": "tier_2",
+      "caveats": "Research confidence: HIGH. Community-observed package; verify current upstream state before depending on it."
     },
     {
       "slug": "was-node-suite",

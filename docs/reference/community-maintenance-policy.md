@@ -1,7 +1,7 @@
 # Community Maintenance Policy
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-04-23
+**Last Updated:** 2026-05-06
 **Related:** `references/community/community_pages.json`, `references/community/ecosystem_packages.json`
 
 ## Purpose
@@ -62,6 +62,24 @@ historical context.
 - **Trust framing:** Explicitly weak; do not build production dependencies on
   Tier 4 material
 
+## Low-Confidence and Unknown Entries
+
+Treat low-confidence entries as exceptions, not as the default shape of the
+catalog.
+
+- Prefer omission over weak inclusion. If a candidate does not have enough
+  public signal to support a clear maintenance assessment, leave it out of
+  `references/community/ecosystem_packages.json` until stronger evidence exists.
+- Use `Unknown` status and `tier_4` only when the package is important enough to
+  mention despite weak or mixed signals.
+- When an `Unknown` or `tier_4` entry is intentionally retained, add an explicit
+  `caveats` note that tells readers why confidence is limited and why the entry
+  still appears in the catalog.
+- Do not add placeholder-like entries just to fill a gap category. Gap coverage
+  matters less than confidence clarity.
+- First-wave catalog additions should favor candidates with strong public signal
+  and a clear maintenance story before lower-confidence ecosystem breadth.
+
 ## How Tiers Are Enforced
 
 - `references/community/community_pages.json` records the tier and
@@ -86,6 +104,7 @@ historical context.
 |------|--------------|-------------|
 | Generated catalog | `references/community/ecosystem_packages.json` | `docs/ecosystem/map.md` |
 | Hand-authored deep dive | The markdown file itself | n/a |
+| Generated-surface explainer | `docs/reference/community-generated-surfaces.md` | n/a |
 | Policy page | The markdown file itself | n/a |
 
 If you update community metadata or regenerate a catalog, run the community
@@ -124,5 +143,6 @@ python -m mkdocs build
 ## Read Next
 
 - `docs/reference/source-evidence-policy.md` for evidence labeling rules
+- `docs/reference/community-generated-surfaces.md` for the public generated-community product surface
 - `docs/ecosystem/map.md` for the current ecosystem catalog
 - `references/community/README.md` for the community metadata update workflow

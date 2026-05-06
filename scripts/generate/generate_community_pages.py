@@ -26,7 +26,9 @@ CATEGORY_ORDER = [
 GENERATED_BANNER = (
     "<!-- GENERATED FILE: do not edit directly. "
     "Edit references/community/ecosystem_packages.json and run "
-    "python scripts/generate/generate_community_pages.py -->"
+    "python scripts/generate/generate_community_pages.py. "
+    "Note: curated follow-up study highlights are maintained in the generator "
+    "code, not in the JSON source. -->"
 )
 
 
@@ -104,6 +106,10 @@ def build_markdown(data: dict) -> str:
         "Maintenance status is the most important signal for anyone deciding whether to",
         "build on or depend on a community package.",
         "",
+        "For how this catalog is generated, how maintenance tiers are interpreted, and",
+        "what this page does and does not claim, see",
+        "[Community Generated Surfaces](../reference/community-generated-surfaces.md).",
+        "",
         "A package that was popular two years ago may be effectively abandoned today.",
         "Building new work on an abandoned dependency creates immediate maintenance debt.",
         "",
@@ -148,18 +154,21 @@ def build_markdown(data: dict) -> str:
         for pkg in by_category[cat_key]:
             lines.extend(_build_package_section(pkg))
 
+    # Keep this curated list aligned with the current intended follow-up study
+    # set when Plan AC-style ecosystem expansion changes the strongest teaching
+    # examples. The generated banner points maintainers here on purpose.
     lines.extend([
         "## Deep-Dive Candidates",
         "",
         "For learning extension and node pack architecture, these three packages are",
-        "the most instructive:",
+        "the most instructive follow-up studies in the current catalog:",
         "",
         "1. **ComfyUI-Manager** -- hybrid extension architecture, custom routes, server",
         "   hooks, and frontend panel integration",
-        "2. **ComfyUI-Impact-Pack** -- V1 node patterns, pipe/bundle datatypes, and",
-        "   large-scale node pack organization",
-        "3. **efficiency-nodes-comfyui** -- V3-style node structure and workflow",
-        "   simplification patterns",
+        "2. **comfyui_controlnet_aux** -- large-scale preprocessor wrapper design,",
+        "   structured pose-data outputs, and extension-friendly annotator packaging",
+        "3. **ComfyUI-AnimateDiff-Evolved** -- advanced animation scheduling,",
+        "   sliding context windows, and motion-module workflow design",
         "",
         "## Scope Notes",
         "",
