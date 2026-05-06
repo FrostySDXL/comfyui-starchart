@@ -38,10 +38,11 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
-      # Blocking checks: matrix chosen intentionally for Plan N so the same
-      # blocking path runs on both ubuntu-latest and windows-latest.
-      # Keep this order aligned with scripts/verify/run_all.py so maintainers
-      # can compare local and CI output step-for-step.
+      # Run the blocking verification path on both ubuntu-latest and
+      # windows-latest so local and CI expectations stay aligned across the two
+      # supported platforms. Keep this order aligned with
+      # scripts/verify/run_all.py so maintainers can compare local and CI output
+      # step-for-step.
 
       - name: Verify cross-references
         run: python scripts/verify/cross_references.py

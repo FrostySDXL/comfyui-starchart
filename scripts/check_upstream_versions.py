@@ -13,6 +13,8 @@ import json
 import sys
 from pathlib import Path
 
+from packaging.version import InvalidVersion, Version
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
@@ -79,19 +81,38 @@ def _latest_tag_from_github(tags_url: str) -> str | None:
     return None
 
 
+def _is_newer_version(current_version: str, latest_version: str | None) -> bool:
+    """Return True only when latest_version is newer than current_version."""
+    if latest_version is None:
+        return False
+
+    try:
+        return Version(latest_version.lstrip("v")) > Version(current_version.lstrip("v"))
+    except InvalidVersion:
+        current_parsed = _parse_version_tag(current_version)
+        latest_parsed = _parse_version_tag(latest_version)
+        if current_parsed is None or latest_parsed is None:
+            return False
+        return latest_parsed > current_parsed
+
+
 def _build_summary(core_pinned: dict, core_latest: str | None, frontend_pinned: dict, frontend_latest: str | None) -> dict:
     """Build a machine-readable summary dict."""
     def component_summary(pinned: dict, latest: str | None, name: str) -> dict:
-        update_available = latest is not None and latest != pinned["version"]
+        update_available = _is_newer_version(pinned["version"], latest)
+        suggested_refresh_command = ""
+        if update_available:
+            if name == "ComfyUI Core" and latest:
+                suggested_refresh_command = f"python scripts/refresh_snapshots.py --core-version {latest}"
+            elif name == "ComfyUI Frontend" and latest:
+                suggested_refresh_command = f"python scripts/refresh_snapshots.py --frontend-version {latest}"
         return {
             "name": name,
             "current_version": pinned["version"],
             "current_commit": pinned.get("commit", ""),
             "latest_version": latest or "unknown",
             "update_available": update_available,
-            "suggested_refresh_command": f"python scripts/refresh_snapshots.py --core-version {latest}" if name == "ComfyUI Core" and latest else (
-                f"python scripts/refresh_snapshots.py --frontend-version {latest}" if name == "ComfyUI Frontend" and latest else ""
-            ),
+            "suggested_refresh_command": suggested_refresh_command,
         }
 
     return {
@@ -100,8 +121,8 @@ def _build_summary(core_pinned: dict, core_latest: str | None, frontend_pinned: 
             component_summary(frontend_pinned, frontend_latest, "ComfyUI Frontend"),
         ],
         "any_update_available": (
-            (core_latest is not None and core_latest != core_pinned["version"]) or
-            (frontend_latest is not None and frontend_latest != frontend_pinned["version"])
+            _is_newer_version(core_pinned["version"], core_latest) or
+            _is_newer_version(frontend_pinned["version"], frontend_latest)
         ),
     }
 
@@ -134,7 +155,7 @@ def _build_markdown(summary: dict) -> str:
     else:
         lines.append("## Status")
         lines.append("")
-        lines.append("All pinned versions match the latest discovered upstream tags.")
+        lines.append("No newer upstream versions were detected.")
 
     lines.append("")
     return "\n".join(lines)

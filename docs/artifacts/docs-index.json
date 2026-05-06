@@ -24,7 +24,7 @@
       "path": "start-here/author.md",
       "nav_section": "Start Here",
       "audience": "consumer",
-      "evidence": "Mixed: source-backed (V1/V3 concepts) and scaffold examples (example ladder)",
+      "evidence": "Source-backed from pinned snapshots",
       "summary": null
     },
     {
@@ -96,7 +96,7 @@
       "path": "troubleshooting/custom-node-and-extension-boundaries.md",
       "nav_section": "Orientation / Troubleshooting",
       "audience": null,
-      "evidence": "Official docs-backed from docs.comfy.org and source-backed from pinned snapshots",
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
       "summary": "This page routes readers who are mixing together server-side nodes, frontend extensions, and distribution assumptions. It stays at the boundary level and points onward to the deeper authoring pages."
     },
     {
@@ -193,7 +193,7 @@
       "nav_section": "Hooks",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
-      "summary": "ComfyUI extension work splits across a few distinct surfaces rather than one universal plugin API. In practice, you choose between frontend hook methods, Python prompt/execution integration, custom server routes, and full custom node packages depending on what you are trying to change."
+      "summary": "ComfyUI extension work splits across a few distinct surfaces rather than one universal plugin API. In practice, you choose between frontend hooks, server-hook callbacks, custom routes, and custom nodes depending on what you are trying to change."
     },
     {
       "title": "Custom Nodes Section Guide",
@@ -218,6 +218,14 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
       "summary": "In V3, a custom node is a Python class derived from `io.ComfyNode`. Instead of scattering configuration across multiple legacy class attributes, the node declares its public contract in one schema object and implements behavior in one execution method."
+    },
+    {
+      "title": "V1 Custom Node Reference",
+      "path": "custom-nodes/v1-reference.md",
+      "nav_section": "Custom Nodes",
+      "audience": null,
+      "evidence": "Source-backed from pinned snapshots",
+      "summary": "This page is the repo's single landing page for the legacy V1 custom-node contract. It covers what a V1 node is, where to place it, which class members matter, how registration works, how tuple returns behave, and which minimal patterns are safe to copy. This repo still recommends V3 for new packages, but V1 remains important when you are following the official walkthrough, reading older node packs, or maintaining compatibility with existing V1 code."
     },
     {
       "title": "Registration",
@@ -408,7 +416,7 @@
       "path": "reference/server-py-summary.md",
       "nav_section": "Reference",
       "audience": null,
-      "evidence": null,
+      "evidence": "Source-backed from pinned snapshots",
       "summary": null
     },
     {
@@ -424,7 +432,7 @@
       "path": "reference/writing-style-guide.md",
       "nav_section": "Reference",
       "audience": null,
-      "evidence": null,
+      "evidence": "Operational guidance",
       "summary": null
     },
     {
@@ -432,12 +440,20 @@
       "path": "reference/doc-quality-checklist.md",
       "nav_section": "Reference",
       "audience": null,
-      "evidence": null,
+      "evidence": "Operational guidance",
       "summary": null
     },
     {
       "title": "Community Maintenance Policy",
       "path": "reference/community-maintenance-policy.md",
+      "nav_section": "Reference",
+      "audience": null,
+      "evidence": "Operational guidance",
+      "summary": null
+    },
+    {
+      "title": "Community Generated Surfaces",
+      "path": "reference/community-generated-surfaces.md",
       "nav_section": "Reference",
       "audience": null,
       "evidence": "Operational guidance",
@@ -472,7 +488,7 @@
       "path": "reference/runtime-ci-operations.md",
       "nav_section": "Reference",
       "audience": null,
-      "evidence": "Scaffold",
+      "evidence": "Operational guidance",
       "summary": null
     },
     {

@@ -22,6 +22,31 @@ def _load_module():
 class CheckUpstreamVersionsUnitTests(unittest.TestCase):
     """Direct unit tests for check_upstream_versions functions."""
 
+    def test_parse_version_tag_valid_semver(self):
+        module = _load_module()
+        self.assertEqual(module._parse_version_tag("v1.44.13"), (1, 44, 13))
+
+    def test_parse_version_tag_requires_v_prefix(self):
+        module = _load_module()
+        self.assertIsNone(module._parse_version_tag("1.44.13"))
+
+    def test_parse_version_tag_rejects_non_version_string(self):
+        module = _load_module()
+        self.assertIsNone(module._parse_version_tag("main"))
+
+    def test_parse_version_tag_rejects_non_digit_suffix(self):
+        module = _load_module()
+        self.assertIsNone(module._parse_version_tag("v1.2.3-beta"))
+
+    def test_is_newer_version_returns_false_for_none(self):
+        module = _load_module()
+        self.assertFalse(module._is_newer_version("v1.44.13", None))
+
+    def test_is_newer_version_uses_tuple_fallback_when_packaging_cannot_parse(self):
+        module = _load_module()
+        with patch.object(module, "Version", side_effect=module.InvalidVersion("bad version")):
+            self.assertTrue(module._is_newer_version("v1.2.3", "v1.2.4"))
+
     def test_read_pinned_version_success(self):
         module = _load_module()
         data = {
@@ -96,6 +121,18 @@ class CheckUpstreamVersionsUnitTests(unittest.TestCase):
         )
         self.assertFalse(summary["any_update_available"])
         self.assertFalse(summary["components"][0]["update_available"])
+
+    def test_build_summary_older_latest_version_does_not_report_update(self):
+        module = _load_module()
+        summary = module._build_summary(
+            {"version": "v0.20.1", "commit": "abc"},
+            "v0.19.3",
+            {"version": "v1.44.13", "commit": "def"},
+            "v1.44.13",
+        )
+        self.assertFalse(summary["any_update_available"])
+        self.assertFalse(summary["components"][0]["update_available"])
+        self.assertEqual(summary["components"][0]["suggested_refresh_command"], "")
 
     def test_build_markdown_contains_versions(self):
         module = _load_module()

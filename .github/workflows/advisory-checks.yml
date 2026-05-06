@@ -19,9 +19,9 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.lock
 
-      # Plan N durable escalation choice: keep advisory checks non-blocking in
-      # normal push/PR CI, but replay the same scripts here as blocking on a
-      # weekly schedule and manual dispatch so failures remain visible.
+      # Replay the advisory scripts here as blocking on a weekly schedule and on
+      # manual dispatch. This keeps push/PR CI focused on the normal blocking
+      # gate while preserving a durable escalation path for advisory failures.
       - name: Check for stale content
         run: python scripts/verify/stale_content.py
 
