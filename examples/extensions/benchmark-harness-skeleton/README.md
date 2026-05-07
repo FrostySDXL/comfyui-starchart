@@ -1,11 +1,15 @@
 # Example: Benchmark Harness Skeleton
 
-**Status:** Source-backed example
+**Status:** Source-backed example with implementation caveats
 
 ## What This Example Is
 
 This directory is a minimal hybrid extension that demonstrates a small benchmark
 or profiling harness for ComfyUI.
+
+Treat it as a teaching skeleton, not as a drop-in production profiler. The
+example is intentionally narrow and leaves lifecycle hardening to downstream
+integrators.
 
 It keeps scope tight on purpose:
 

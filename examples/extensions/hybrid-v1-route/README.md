@@ -11,6 +11,11 @@ This example shows the smallest repo-local hybrid extension pattern that combine
 - `__init__.py` holds the V1 node class, exports `NODE_CLASS_MAPPINGS`, and calls route registration during package import.
 - `routes.py` registers one extension-owned HTTP endpoint with `PromptServer.instance.routes`.
 
+The import-time `register_routes()` call is intentional. ComfyUI extension
+packages commonly register routes when the package loads, so this example keeps
+that pattern visible. The route helper in `routes.py` uses an idempotency guard
+to avoid duplicate registration when the module is imported more than once.
+
 ## Why this is a hybrid extension
 
 It combines two server-side extension surfaces in one package:

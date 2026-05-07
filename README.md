@@ -198,6 +198,10 @@ python scripts/verify/stale_content.py
 python scripts/verify/extraction_idempotency.py
 python scripts/verify/upstream_pins.py
 
+# Supplemental integration/example checks
+python scripts/verify/pipeline_smoke.py
+python scripts/verify/shell_examples_syntax.py
+
 # Community metadata checks (non-blocking in CI)
 python scripts/verify/community_metadata.py
 python scripts/verify/community_staleness.py
@@ -215,9 +219,9 @@ version watch follow-up.
 
 ## CI
 
-### CPU-safe workflows (blocking and non-blocking)
+### CPU-safe workflows (blocking, supplemental, and non-blocking)
 
-- **`.github/workflows/ci.yml`** -- runs on push/PR to main: the blocking verification path runs on both `ubuntu-latest` and `windows-latest` (tests, cross-references, schema validation, artifact integrity verification for canonical published artifacts, generated community freshness, community page coverage, and MkDocs build). Advisory checks (`stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py`) still run in CI but remain non-blocking there. Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
+- **`.github/workflows/ci.yml`** -- runs on push/PR to main: the blocking verification path runs on both `ubuntu-latest` and `windows-latest` (tests, cross-references, schema validation, artifact integrity verification for canonical published artifacts, generated community freshness, community page coverage, and MkDocs build). A supplemental Ubuntu job then runs `python scripts/verify/pipeline_smoke.py` to exercise the `run_all.py` wrapper end-to-end without rerunning unit tests, plus `python scripts/verify/shell_examples_syntax.py` to validate hand-authored shell examples with `bash -n`. Advisory checks (`stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py`) still run in CI but remain non-blocking there. Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
 - **`.github/workflows/advisory-checks.yml`** -- scheduled weekly and available via `workflow_dispatch`: reruns the current advisory scripts as blocking so advisory failures remain visible without turning normal PR CI into a noisy blocker.
 - **`.github/workflows/weekly-pin-check.yml`** -- runs every Monday at 09:00 UTC and on manual dispatch: checks that pinned commits and tags still resolve in upstream repos.
 - **`.github/workflows/upstream-watch.yml`** -- runs every Monday at 10:00 UTC: detects newer upstream versions and creates or updates tracking issues.

@@ -29,4 +29,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "HybridStringEcho": "Hybrid String Echo",
 }
 
+# Keep route registration at import time because that is the normal ComfyUI
+# extension pattern for server-owned routes. routes.py guards against duplicate
+# registration if this package is imported more than once.
 register_routes()

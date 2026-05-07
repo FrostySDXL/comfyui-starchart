@@ -124,6 +124,7 @@ Non-goals: official docs replacement, community wiki, package registry.
   - `generate_snapshot_delta_summary.py` -- Produces deterministic baseline-to-baseline comparison under `docs/artifacts/delta-summary.json`
 - `scripts/verify/` -- Verification scripts
   - Core blocking checks: `cross_references.py`, `docs_index_freshness.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `community_generated_freshness.py`, `community_page_coverage.py`
+  - Supplemental checks: `pipeline_smoke.py`, `shell_examples_syntax.py`
   - Non-blocking: `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`
   - Community: `community_metadata.py`, `community_staleness.py`
 - `scripts/refresh_snapshots.py` -- Fetch new upstream versions and re-run pipeline
@@ -155,6 +156,8 @@ python scripts/verify/extraction_idempotency.py
 python scripts/verify/upstream_pins.py
 python scripts/verify/validate_schema.py
 python scripts/verify/verify_artifact_integrity.py
+python scripts/verify/pipeline_smoke.py
+python scripts/verify/shell_examples_syntax.py
 
 # Community verifiers (non-blocking in CI)
 python scripts/verify/community_metadata.py
@@ -255,6 +258,7 @@ separate and escalate through the dedicated advisory replay workflow.
 - **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
 - **Structured returns and traceability are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`, and Plan K semantic enrichment adds `traceability` markers to endpoints, hooks, and node schema fields. The `kind` field is reliable; `fields`, `summary`, and `traceability` details are best-effort from static analysis.
 - **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, and `community_staleness` use `continue-on-error: true` in normal push/PR CI. `cross_references`, `validate_schema`, `verify_artifact_integrity`, `community_generated_freshness`, and `community_page_coverage` block the pipeline, and the advisory scripts also replay in `advisory-checks.yml` as a scheduled/manual blocking escalation path.
+- **Supplemental CI checks are intentionally outside `run_all.py`**: `pipeline_smoke.py` reruns the blocking wrapper end-to-end without recursive unit tests, and `shell_examples_syntax.py` depends on a `bash` executable for `examples/**/*.sh` validation.
 - **Generated community pages must not be hand-edited**: `docs/ecosystem/map.md` is generated from `references/community/ecosystem_packages.json`. Edit the JSON and rerun the generator.
 - **Examples are not all source-backed**: Treat files under `examples/` as pattern examples unless the page explicitly states they were generated or extracted from pinned upstream sources.
 

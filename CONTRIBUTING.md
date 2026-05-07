@@ -59,6 +59,18 @@ locally when your change touches that surface. The blocking path now includes
 docs-index freshness verification and artifact-integrity verification for the
 canonical published JSON artifacts.
 
+Two supplemental verification commands sit outside `run_all.py`:
+
+```bash
+python scripts/verify/pipeline_smoke.py
+python scripts/verify/shell_examples_syntax.py
+```
+
+Use `pipeline_smoke.py` when you want one subprocess-level end-to-end pass
+through `run_all.py` without recursively rerunning unit tests. Use
+`shell_examples_syntax.py` when your change touches shell examples under
+`examples/`; it validates them with `bash -n`.
+
 ---
 
 ## What This Repository Is
@@ -99,6 +111,7 @@ guides, and tooling artifacts.
 | I want to... | Start by reading... | Edit these files... | Run these checks... |
 |--------------|---------------------|---------------------|---------------------|
 | Fix or add a docs page | The target page + `docs/reference/source-evidence-policy.md` + `docs/reference/writing-style-guide.md` | `docs/<topic>/<page>.md`; use `templates/docs/` or `scripts/new_doc.py` | `python scripts/verify/cross_references.py` + `python -m mkdocs build` |
+| Add or modify shell examples | Existing shell example under `examples/` + adjacent example README | The `.sh` file + any paired README guidance | `python scripts/verify/shell_examples_syntax.py` |
 | Update the community catalog | `references/community/ecosystem_packages.json` + `docs/reference/community-maintenance-policy.md` | The JSON source file | `validate_schema.py`, `community_metadata.py`, `community_staleness.py`, `generate_community_pages.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `cross_references.py`, `mkdocs build` |
 | Update extracted references after a snapshot refresh | Matching extractor in `scripts/extract/` + snapshot files in `references/snapshots/<date>/` | Run the extractor script | `python scripts/verify/extraction_idempotency.py` + `validate_schema.py` |
 | Add a new extractor | An existing extractor in `scripts/extract/` + its test in `tests/unit/` | New script + new test | `python -m unittest discover -s tests -v` |
@@ -225,8 +238,9 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
 6. Treat this section as the authoritative home for future verifier placement.
 7. Run the full test suite:
    ```bash
-   python -m unittest discover -s tests -v
-   ```
+    python -m unittest discover -s tests -v
+    ```
+8. If the verifier exercises the orchestrated maintainer pipeline or example shell scripts, decide whether it belongs in the supplemental Ubuntu CI job in `.github/workflows/ci.yml`.
 
 ### Adding a New Extractor
 
