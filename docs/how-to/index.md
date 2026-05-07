@@ -1,19 +1,19 @@
 # How-To Section Guide
 
- **Evidence:** Operational guidance
- **Last Updated:** 2026-05-03
+**Evidence:** Operational guidance
+**Last Updated:** 2026-05-03
 
- ## Scope
+## Scope
 
- This hub routes readers to focused operational recipes. Use how-to pages when
- you already know the outcome you want.
+This hub routes readers to focused operational recipes. Use how-to pages when
+you already know the outcome you want.
 
- ## Read First
+## Read First
 
- - [Monitor Execution](monitor-execution.md) for execution tracking patterns
- - [Add Custom Routes](add-custom-routes.md) for extension-owned HTTP endpoints
+- [Monitor Execution](monitor-execution.md) for execution tracking patterns
+- [Add Custom Routes](add-custom-routes.md) for extension-owned HTTP endpoints
 
- ## Choose by job
+## Choose by job
 
 | Goal | Page |
 |------|------|

@@ -31,6 +31,9 @@ jobs:
       - name: Publish reference artifacts
         run: python scripts/generate/publish_reference_artifacts.py
 
+      - name: Run blocking verification wrapper
+        run: python scripts/verify/run_all.py --skip-mkdocs
+
       - name: Build MkDocs site
         run: python -m mkdocs build
 

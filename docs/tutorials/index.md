@@ -1,19 +1,19 @@
 # Tutorials Section Guide
 
- **Evidence:** Operational guidance
- **Last Updated:** 2026-05-03
+**Evidence:** Operational guidance
+**Last Updated:** 2026-05-03
 
- ## Scope
+## Scope
 
- This hub routes readers to guided, multi-step pages. Use tutorials when you
- want to build something in order, not when you only need one fact.
+This hub routes readers to guided, multi-step pages. Use tutorials when you
+want to build something in order, not when you only need one fact.
 
- ## Read First
+## Read First
 
- - [Building Your First Node](building-first-node.md) for a first custom-node walkthrough
- - [Extending the Server](extending-server.md) for backend extension work
+- [Building Your First Node](building-first-node.md) for a first custom-node walkthrough
+- [Extending the Server](extending-server.md) for backend extension work
 
- ## Choose by job
+## Choose by job
 
  | Goal | Page |
  |------|------|

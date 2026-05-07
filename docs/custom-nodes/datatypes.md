@@ -1,7 +1,7 @@
 # Datatypes
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-05-07
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/datatypes
 
 ## Primary Sources
@@ -19,6 +19,10 @@ ComfyUI datatypes serve two roles at once:
 
 For most node authors, the key rule is simple: choose the narrowest
 correct datatype and understand the real Python value behind it.
+
+This page was re-reviewed against the current pinned repository baseline on
+2026-05-07. The datatype guidance below still matches the repo's current core
+`v0.20.1` and frontend `v1.44.13` reference set at this page's level of detail.
 
 ## Standard Types
 

@@ -1,12 +1,12 @@
 # Custom Nodes Section Guide
 
- **Evidence:** Operational guidance
- **Last Updated:** 2026-05-05
+**Evidence:** Operational guidance
+**Last Updated:** 2026-05-05
 
- ## Scope
+## Scope
 
- This hub routes readers through custom node authoring docs. Use it to choose a
- starting page based on whether you are learning, implementing, or migrating.
+This hub routes readers through custom node authoring docs. Use it to choose a
+starting page based on whether you are learning, implementing, or migrating.
 
 ## Read First
 
@@ -16,7 +16,7 @@
 - [V1 Custom Node Reference](v1-reference.md) when you need the legacy V1
   contract, placement rules, and minimal STRING example in one page
 
- ## Choose by job
+## Choose by job
 
 | Goal | Page |
 |------|------|

@@ -24,7 +24,7 @@
       "path": "start-here/author.md",
       "nav_section": "Start Here",
       "audience": "consumer",
-      "evidence": "Source-backed from pinned snapshots",
+      "evidence": "Operational guidance",
       "summary": null
     },
     {
@@ -280,7 +280,7 @@
       "path": "extensions/patterns.md",
       "nav_section": "Extensions",
       "audience": null,
-      "evidence": "Source-backed from pinned snapshots",
+      "evidence": "Official docs-backed from docs.comfy.org",
       "summary": "This page documents the most common ComfyUI extension architecture patterns and the tradeoffs between them. It covers frontend-only, backend-only, route-backed, and hybrid approaches."
     },
     {
@@ -464,7 +464,7 @@
       "path": "reference/version-pin-status.md",
       "nav_section": "Reference",
       "audience": null,
-      "evidence": "Scaffold",
+      "evidence": "Operational guidance",
       "summary": null
     },
     {
@@ -472,7 +472,7 @@
       "path": "reference/version-history.md",
       "nav_section": "Reference",
       "audience": null,
-      "evidence": "Official docs-backed from docs.comfy.org",
+      "evidence": "Official docs-backed from docs.comfy.org; Operational guidance",
       "summary": "This page is not a full release log. It is a compatibility-focused summary for custom node and extension authors who need to track changes that can alter:"
     },
     {

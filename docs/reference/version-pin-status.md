@@ -1,7 +1,7 @@
 # Version Pin Status
 
-**Evidence:** Scaffold
-**Last Updated:** 2026-04-30
+**Evidence:** Operational guidance
+**Last Updated:** 2026-05-07
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.

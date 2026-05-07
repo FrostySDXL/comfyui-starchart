@@ -1,7 +1,7 @@
 # Extension Patterns
 
-**Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-05
+**Evidence:** Official docs-backed from docs.comfy.org
+**Last Updated:** 2026-05-07
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
 
 ## Primary Sources

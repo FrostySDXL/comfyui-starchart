@@ -1,6 +1,7 @@
 """Tests for scripts/verify/shell_examples_syntax.py."""
 
 import importlib.util
+import os
 import subprocess
 import sys
 import tempfile
@@ -68,6 +69,26 @@ class ShellExamplesSyntaxUnitTests(unittest.TestCase):
         self.assertEqual(args[0][:2], ["/bin/bash", "-n"])
         self.assertEqual(kwargs["cwd"], str(REPO_ROOT))
 
+    def test_find_bash_executable_uses_explicit_override_first(self):
+        module = _load_module()
+
+        with patch.object(module.shutil, "which", side_effect=lambda value: None):
+            with patch.dict(os.environ, {"COMFYUI_KB_BASH": "/env/bash"}, clear=False):
+                with patch.object(module.Path, "exists", return_value=True):
+                    result = module.find_bash_executable("/explicit/bash")
+
+        self.assertEqual(result, str(module.Path("/explicit/bash")))
+
+    def test_find_bash_executable_uses_env_var_when_no_override(self):
+        module = _load_module()
+
+        with patch.object(module.shutil, "which", side_effect=lambda value: None):
+            with patch.dict(os.environ, {"COMFYUI_KB_BASH": "/env/bash"}, clear=False):
+                with patch.object(module.Path, "exists", return_value=True):
+                    result = module.find_bash_executable()
+
+        self.assertEqual(result, str(module.Path("/env/bash")))
+
     def test_validate_shell_scripts_fails_when_bash_missing(self):
         module = _load_module()
 
@@ -107,6 +128,7 @@ class ShellExamplesSyntaxScriptTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertIn("examples", result.stdout)
         self.assertIn("bash -n", result.stdout)
+        self.assertIn("--bash-executable", result.stdout)
 
 
 if __name__ == "__main__":

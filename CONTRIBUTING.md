@@ -1,8 +1,14 @@
 # Contributing
 
+**Last Updated:** 2026-05-07
+
 Thank you for contributing to the ComfyUI Knowledge Base. This guide covers
 maintainer-grade repo workflows for making changes safely and getting them
 merged.
+
+Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before participating in
+public discussion or review, and use [SECURITY.md](SECURITY.md) for private
+vulnerability reporting.
 
 If you are new to documentation contributions or only need the lighter
 editorial path, start with
@@ -13,8 +19,9 @@ into maintainer-owned surfaces such as scripts, CI, extracted data, published
 artifacts, or repo-local operational guidance.
 
 For issue intake, use the bug-report template for repo bugs, the docs-request
-template for documentation gaps, and the upstream-refresh template only for
-maintainer version-refresh tracking.
+template for documentation gaps, the feature-request template for proposed repo
+enhancements, and the upstream-refresh template only for maintainer
+version-refresh tracking.
 
 `CONTRIBUTING.md` is the authoritative repo-local guide for maintainer-grade
 workflows that are not fully duplicated in the published docs site.
@@ -57,7 +64,9 @@ on both Ubuntu and Windows in GitHub Actions. Advisory CI checks remain
 separate and non-blocking in normal push/PR CI, so you only need to run them
 locally when your change touches that surface. The blocking path now includes
 docs-index freshness verification and artifact-integrity verification for the
-canonical published JSON artifacts.
+canonical published JSON artifacts. The blocking path also rejects leading
+spaces before top-level markdown headings and metadata labels in hand-authored
+docs because those lines render incorrectly in MkDocs.
 
 Two supplemental verification commands sit outside `run_all.py`:
 
@@ -69,7 +78,8 @@ python scripts/verify/shell_examples_syntax.py
 Use `pipeline_smoke.py` when you want one subprocess-level end-to-end pass
 through `run_all.py` without recursively rerunning unit tests. Use
 `shell_examples_syntax.py` when your change touches shell examples under
-`examples/`; it validates them with `bash -n`.
+`examples/`; it validates them with `bash -n`. The script resolves `bash` from
+`--bash-executable`, then `COMFYUI_KB_BASH`, then `PATH`.
 
 ---
 
@@ -375,6 +385,7 @@ python scripts/verify/cross_references.py              # [BLOCKING]
 python scripts/verify/docs_index_freshness.py          # [BLOCKING]
 python scripts/verify/validate_schema.py               # [BLOCKING]
 python scripts/verify/verify_artifact_integrity.py     # [BLOCKING]
+python scripts/verify/markdown_top_level_spacing.py    # [BLOCKING]
 python scripts/verify/community_generated_freshness.py # [BLOCKING]
 python scripts/verify/community_page_coverage.py       # [BLOCKING]
 python scripts/verify/stale_content.py                 # [non-blocking]

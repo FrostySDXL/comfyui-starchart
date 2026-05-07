@@ -1,0 +1,47 @@
+name: Feature Request
+description: Propose a repo enhancement, new workflow, or tooling improvement
+title: "feature: "
+labels:
+  - enhancement
+body:
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Target surface
+      description: Which repo surface should change?
+      options:
+        - Documentation or start-here path
+        - Example or tutorial surface
+        - Extractor / generator / verifier script
+        - Published artifact contract
+        - CI or workflow behavior
+        - Contributor or maintainer workflow
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: What is missing, slow, confusing, or currently unsupported?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the improvement you want, including affected files or workflows if known.
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: Why this is worth doing
+      description: Explain the user, maintainer, or consumer value.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence, references, or constraints
+      description: Link related issues, upstream docs, pinned snapshot paths, or explain any verification constraints.
+      placeholder: docs.comfy.org page, references/snapshots/... path, related issue, or maintainer workflow note

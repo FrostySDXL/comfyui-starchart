@@ -58,7 +58,7 @@ fetch stored outputs and metadata.
 
 **Verified in:** current repo-published artifact contract and runtime-capture guidance for the pinned core v0.20.1 / frontend v1.44.13 baseline
 
-**Status:** Publication boundary
+**Status:** Repo-local publication boundary
 
 **Description:** The repo's canonical published artifact set is intentionally
 bounded to the three extracted JSON artifacts documented under

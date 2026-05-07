@@ -1,19 +1,19 @@
 # Hooks Section Guide
 
- **Evidence:** Operational guidance
- **Last Updated:** 2026-05-03
+**Evidence:** Operational guidance
+**Last Updated:** 2026-05-03
 
- ## Scope
+## Scope
 
- This hub routes readers through ComfyUI hook surfaces. Start here when you know
- you need extension points but have not yet narrowed the layer.
+This hub routes readers through ComfyUI hook surfaces. Start here when you know
+you need extension points but have not yet narrowed the layer.
 
- ## Read First
+## Read First
 
- - [JavaScript Hooks](javascript-hooks.md) for browser and editor behavior
- - [Server Hooks](server-hooks.md) for Python execution and lifecycle callbacks
+- [JavaScript Hooks](javascript-hooks.md) for browser and editor behavior
+- [Server Hooks](server-hooks.md) for Python execution and lifecycle callbacks
 
- ## Choose by job
+## Choose by job
 
  | Goal | Page |
  |------|------|

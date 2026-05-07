@@ -163,5 +163,34 @@ class ValidateSchemaTests(unittest.TestCase):
         self.assertTrue(hasattr(module, "validate_io_types"))
 
 
+class MarkdownTopLevelSpacingTests(unittest.TestCase):
+    """Test that markdown_top_level_spacing.py runs and reports clean docs."""
+
+    def test_markdown_top_level_spacing_script_runs(self):
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(REPO_ROOT / "scripts" / "verify" / "markdown_top_level_spacing.py"),
+            ],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+        )
+        self.assertEqual(result.returncode, 0, msg=result.stderr or result.stdout)
+        self.assertIn("No leading-space top-level markdown issues found.", result.stdout)
+
+    def test_markdown_top_level_spacing_imports(self):
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location(
+            "markdown_top_level_spacing",
+            REPO_ROOT / "scripts" / "verify" / "markdown_top_level_spacing.py",
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        self.assertTrue(hasattr(module, "find_leading_space_issues"))
+        self.assertTrue(hasattr(module, "verify_docs_directory"))
+
+
 if __name__ == "__main__":
     unittest.main()

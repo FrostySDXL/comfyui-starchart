@@ -8,9 +8,10 @@ cross-platform CI blocking path (ubuntu-latest and windows-latest):
     3. docs_index_freshness.py
     4. validate_schema.py
     5. verify_artifact_integrity.py
-    6. community_generated_freshness.py
-    7. community_page_coverage.py
-    8. mkdocs build
+    6. markdown_top_level_spacing.py
+    7. community_generated_freshness.py
+    8. community_page_coverage.py
+    9. mkdocs build
 
 Advisory/non-blocking checks remain separate and are not included here.
 
@@ -101,6 +102,13 @@ def main() -> int:
         (
             [sys.executable, str(SCRIPTS_VERIFY_DIR / "verify_artifact_integrity.py")],
             "Artifact integrity verification",
+        )
+    )
+
+    steps.append(
+        (
+            [sys.executable, str(SCRIPTS_VERIFY_DIR / "markdown_top_level_spacing.py")],
+            "Markdown top-level spacing verification",
         )
     )
 

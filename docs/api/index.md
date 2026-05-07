@@ -1,20 +1,20 @@
 # API Section Guide
 
- **Evidence:** Operational guidance
- **Last Updated:** 2026-05-03
+**Evidence:** Operational guidance
+**Last Updated:** 2026-05-03
 
- ## Scope
+## Scope
 
- This hub routes readers through the API section. Use it to choose the first API
- page to read, not as a replacement for the route reference.
+This hub routes readers through the API section. Use it to choose the first API
+page to read, not as a replacement for the route reference.
 
- ## Read First
+## Read First
 
- - [API Endpoints](endpoints.md) if you need the full HTTP route inventory
- - [Prompt Submission](prompt-submission.md) if you are sending workflows
- - [WebSocket](websocket.md) if you need live execution events
+- [API Endpoints](endpoints.md) if you need the full HTTP route inventory
+- [Prompt Submission](prompt-submission.md) if you are sending workflows
+- [WebSocket](websocket.md) if you need live execution events
 
- ## Choose by job
+## Choose by job
 
  | Goal | Page |
  |------|------|

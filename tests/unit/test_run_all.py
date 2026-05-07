@@ -56,6 +56,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("docs_index_freshness.py" in str(c) for c in call_order))
         self.assertTrue(any("validate_schema.py" in str(c) for c in call_order))
         self.assertTrue(any("verify_artifact_integrity.py" in str(c) for c in call_order))
+        self.assertTrue(any("markdown_top_level_spacing.py" in str(c) for c in call_order))
         self.assertTrue(any("community_generated_freshness.py" in str(c) for c in call_order))
         self.assertTrue(any("community_page_coverage.py" in str(c) for c in call_order))
         self.assertTrue(any("mkdocs" in str(c) for c in call_order))
@@ -66,6 +67,7 @@ class RunAllUnitTests(unittest.TestCase):
         docs_index_idx = next(i for i, c in enumerate(call_order) if "docs_index_freshness.py" in str(c))
         validate_idx = next(i for i, c in enumerate(call_order) if "validate_schema.py" in str(c))
         integrity_idx = next(i for i, c in enumerate(call_order) if "verify_artifact_integrity.py" in str(c))
+        spacing_idx = next(i for i, c in enumerate(call_order) if "markdown_top_level_spacing.py" in str(c))
         freshness_idx = next(i for i, c in enumerate(call_order) if "community_generated_freshness.py" in str(c))
         coverage_idx = next(i for i, c in enumerate(call_order) if "community_page_coverage.py" in str(c))
         mkdocs_idx = next(i for i, c in enumerate(call_order) if "mkdocs" in str(c))
@@ -74,7 +76,9 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertLess(cross_idx, docs_index_idx)
         self.assertLess(docs_index_idx, validate_idx)
         self.assertLess(validate_idx, integrity_idx)
+        self.assertLess(integrity_idx, spacing_idx)
         self.assertLess(integrity_idx, freshness_idx)
+        self.assertLess(spacing_idx, freshness_idx)
         self.assertLess(freshness_idx, coverage_idx)
         self.assertLess(coverage_idx, mkdocs_idx)
 
@@ -113,6 +117,7 @@ class RunAllUnitTests(unittest.TestCase):
 
         self.assertEqual(result, 1)
         self.assertTrue(any("verify_artifact_integrity.py" in str(c) for c in call_order))
+        self.assertFalse(any("markdown_top_level_spacing.py" in str(c) for c in call_order))
         self.assertFalse(any("community_generated_freshness.py" in str(c) for c in call_order))
 
     def test_skip_tests_flag(self):

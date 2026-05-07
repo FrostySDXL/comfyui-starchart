@@ -1,7 +1,7 @@
 # Start Here: Custom Node Author
 
-**Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-05
+**Evidence:** Operational guidance
+**Last Updated:** 2026-05-07
 
 ## Who This Path Is For
 

@@ -56,6 +56,9 @@ jobs:
       - name: Verify artifact integrity
         run: python scripts/verify/verify_artifact_integrity.py
 
+      - name: Verify markdown top-level spacing
+        run: python scripts/verify/markdown_top_level_spacing.py
+
       - name: Verify generated community pages are fresh
         run: python scripts/verify/community_generated_freshness.py
 
@@ -145,7 +148,7 @@ jobs:
         run: python -m pip install -r requirements.lock
 
       - name: Configure git for clone operations
-        run: git config --global user.email "ci@comfyui-kb.local" && git config --global user.name "CI Bot"
+        run: git config --global user.email "ci@comfyui-kb.invalid" && git config --global user.name "CI Bot"
 
       - name: Refresh snapshots
         run: |

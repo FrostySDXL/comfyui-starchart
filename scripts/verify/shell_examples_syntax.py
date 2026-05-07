@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import subprocess
 import sys
@@ -18,23 +19,38 @@ def discover_example_shell_scripts(repo_root: Path) -> list[Path]:
     return sorted(path.relative_to(repo_root) for path in examples_dir.rglob("*.sh"))
 
 
-def find_bash_executable() -> str | None:
-    candidates = [
-        shutil.which("bash"),
-        r"C:\Program Files\Git\bin\bash.exe",
-        r"C:\Program Files\Git\usr\bin\bash.exe",
-    ]
-    for candidate in candidates:
-        if candidate and Path(candidate).exists():
-            return str(candidate)
+def _validate_bash_candidate(candidate: str | None) -> str | None:
+    if not candidate:
+        return None
+
+    resolved = shutil.which(candidate) or candidate
+    path = Path(resolved)
+    if path.exists():
+        return str(path)
     return None
 
 
-def validate_shell_scripts(repo_root: Path, scripts: list[Path]) -> int:
-    bash_executable = find_bash_executable()
+def find_bash_executable(explicit_bash: str | None = None) -> str | None:
+    candidates = [
+        explicit_bash,
+        os.environ.get("COMFYUI_KB_BASH"),
+        shutil.which("bash"),
+    ]
+    for candidate in candidates:
+        resolved = _validate_bash_candidate(candidate)
+        if resolved is not None:
+            return resolved
+    return None
+
+
+def validate_shell_scripts(
+    repo_root: Path, scripts: list[Path], bash_executable_override: str | None = None
+) -> int:
+    bash_executable = find_bash_executable(bash_executable_override)
     if bash_executable is None:
         print(
-            "FAILED: unable to find a bash executable for shell example validation.",
+            "FAILED: unable to find a bash executable for shell example validation. "
+            "Provide --bash-executable, set COMFYUI_KB_BASH, or ensure bash is on PATH.",
             file=sys.stderr,
         )
         return 1
@@ -69,8 +85,17 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Validate example shell scripts under examples/ with bash -n."
     )
-    parser.parse_args()
-    return validate_shell_scripts(REPO_ROOT, discover_example_shell_scripts(REPO_ROOT))
+    parser.add_argument(
+        "--bash-executable",
+        default=None,
+        help="Explicit bash executable path. Falls back to COMFYUI_KB_BASH, then PATH.",
+    )
+    args = parser.parse_args()
+    return validate_shell_scripts(
+        REPO_ROOT,
+        discover_example_shell_scripts(REPO_ROOT),
+        bash_executable_override=args.bash_executable,
+    )
 
 
 if __name__ == "__main__":

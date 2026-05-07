@@ -1,7 +1,7 @@
 # Custom Node Development Guide
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-05-07
 **Primary Source:** https://docs.comfy.org/custom-nodes/overview
 
 ## Primary Sources
@@ -28,6 +28,10 @@ The official overview groups custom nodes into four broad patterns:
 Most custom nodes are server-side Python nodes. Those define inputs,
 outputs, and an execution function so the graph can pass data through
 them like any built-in Comfy node.
+
+This page was re-reviewed against the current pinned repository baseline on
+2026-05-07. The guidance here still matches the repo's current core `v0.20.1`
+and frontend `v1.44.13` orientation at the level this page intends to cover.
 
 For current development, V3 is the recommended mental model: declare a
 schema with `io.Schema`, implement execution with `execute`, and expose

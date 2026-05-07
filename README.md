@@ -1,6 +1,6 @@
 # ComfyUI Knowledge Base
 
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-07
 **ComfyUI Version Pin:** Core `v0.20.1` (`64b8457f55cd7fb54ca7a956d9c73b505e903e0c`) with official frontend `v1.44.13` (`389ff8ba49468cc3afa11aec5778224689a8f9b9`) for the current pinned snapshots and extracted reference data
 
 **Evidence:** Operational guidance
@@ -24,6 +24,11 @@ This repo serves three bounded audiences:
 - **Contributors** editing docs, examples, or other hand-authored repo content
 - **Maintainers** running snapshot refreshes, generators, verifiers, CI-facing
   workflow changes, or published artifact updates
+
+## Repository Health Files
+
+- [SECURITY.md](SECURITY.md) -- private vulnerability reporting guidance
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) -- participation expectations for public collaboration
 
 This repository covers:
 - server API endpoints and WebSocket behavior
@@ -189,6 +194,7 @@ python scripts/verify/cross_references.py
 python scripts/verify/docs_index_freshness.py
 python scripts/verify/validate_schema.py
 python scripts/verify/verify_artifact_integrity.py
+python scripts/verify/markdown_top_level_spacing.py
 python scripts/verify/community_generated_freshness.py
 python scripts/verify/community_page_coverage.py
 python -m mkdocs build
@@ -207,6 +213,10 @@ python scripts/verify/community_metadata.py
 python scripts/verify/community_staleness.py
 ```
 
+`shell_examples_syntax.py` requires a `bash` executable. Use `bash` on `PATH`,
+set `COMFYUI_KB_BASH` to an explicit executable path, or pass
+`--bash-executable <path>` when running the script directly.
+
 Use targeted commands while iterating on a narrow surface. Run
 `python scripts/verify/run_all.py` before opening a PR when you need the same
 blocking verification path that CI runs on both Ubuntu and Windows. Advisory
@@ -214,25 +224,27 @@ checks remain separate from this local wrapper and from PR-blocking status.
 
 For issue intake, use the repository's bug-report template for behavior or
 artifact problems, the docs-request template for documentation gaps or
-discoverability requests, and the upstream-refresh template for maintainer-run
-version watch follow-up.
+discoverability requests, the feature-request template for proposed repo
+enhancements, and the upstream-refresh template for maintainer-run version watch
+follow-up.
 
 ## CI
 
 ### CPU-safe workflows (blocking, supplemental, and non-blocking)
 
-- **`.github/workflows/ci.yml`** -- runs on push/PR to main: the blocking verification path runs on both `ubuntu-latest` and `windows-latest` (tests, cross-references, schema validation, artifact integrity verification for canonical published artifacts, generated community freshness, community page coverage, and MkDocs build). A supplemental Ubuntu job then runs `python scripts/verify/pipeline_smoke.py` to exercise the `run_all.py` wrapper end-to-end without rerunning unit tests, plus `python scripts/verify/shell_examples_syntax.py` to validate hand-authored shell examples with `bash -n`. Advisory checks (`stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py`) still run in CI but remain non-blocking there. Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
+- **`.github/workflows/ci.yml`** -- runs on push/PR to main: the blocking verification path runs on both `ubuntu-latest` and `windows-latest` (tests, cross-references, docs-index freshness, schema validation, artifact integrity verification for canonical published artifacts, top-level markdown spacing verification for hand-authored docs, generated community freshness, community page coverage, and MkDocs build). A supplemental Ubuntu job then runs `python scripts/verify/pipeline_smoke.py` to exercise the `run_all.py` wrapper end-to-end without rerunning unit tests, plus `python scripts/verify/shell_examples_syntax.py` to validate hand-authored shell examples with `bash -n`. Advisory checks (`stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py`) still run in CI but remain non-blocking there. Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
 - **`.github/workflows/advisory-checks.yml`** -- scheduled weekly and available via `workflow_dispatch`: reruns the current advisory scripts as blocking so advisory failures remain visible without turning normal PR CI into a noisy blocker.
 - **`.github/workflows/weekly-pin-check.yml`** -- runs every Monday at 09:00 UTC and on manual dispatch: checks that pinned commits and tags still resolve in upstream repos.
 - **`.github/workflows/upstream-watch.yml`** -- runs every Monday at 10:00 UTC: detects newer upstream versions and creates or updates tracking issues.
 
 ### Site deployment
 
-- **`.github/workflows/deploy-pages.yml`** -- builds and deploys the MkDocs site
-  (including packaged artifacts under `docs/artifacts/`) to GitHub Pages.
-  Triggers on push to `main`/`master` and on `workflow_dispatch`.
-  Requires the repository Pages source to be set to **GitHub Actions** in
-  repository settings.
+- **`.github/workflows/deploy-pages.yml`** -- republishes canonical artifacts,
+  reruns the blocking local verification wrapper (without the final duplicate
+  MkDocs build), then builds and deploys the MkDocs site (including packaged
+  artifacts under `docs/artifacts/`) to GitHub Pages. Triggers on push to
+  `main`/`master` and on `workflow_dispatch`. Requires the repository Pages
+  source to be set to **GitHub Actions** in repository settings.
 
 ### Opt-in runtime workflows
 

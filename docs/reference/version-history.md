@@ -1,7 +1,7 @@
 # Version History
 
-**Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-04-24
+**Evidence:** Official docs-backed from docs.comfy.org; Operational guidance
+**Last Updated:** 2026-05-07
 **Primary Source:** https://docs.comfy.org/changelog
 
 ## Primary Sources
@@ -29,48 +29,51 @@ and more as moving layers:
 
 When upgrading, check both the official changelog and the GitHub releases page.
 The changelog is easier to scan for themes; the releases page is better for
-exact commit ranges and raw notes.
+exact tags, dates, and raw notes. Treat the sections below as review priorities
+surfaced by those official release summaries, not as a pinned behavioral ledger.
 
-## Breaking Changes
+## Compatibility Review Priorities
 
-Recent author-relevant themes from the official changelog and release notes:
+The following sections summarize themes that appear in the official changelog
+and release notes. Use them to decide what to re-test first when upgrading.
 
 ### v0.19.x
 
-- rapid patch cadence means extension authors should verify against exact patch
-  versions, not just the minor line
-- `v0.19.0` added `has_intermediate_output` for interactive UI nodes, expanded
-  CURVE-related functionality, and continued frontend/version bumps
-- releases in this line continue to add and rename nodes quickly, so docs that
-  depend on exact node names or display names can go stale fast
+- official release notes in this line show frequent patch releases, so extension
+  authors should verify against exact patch versions rather than the minor line alone
+- `v0.19.0` release notes call out additions such as `has_intermediate_output`,
+  CURVE-related work, and continued frontend-version movement
+- when this line changes node names, display names, or UI-facing metadata,
+  downstream docs can go stale quickly
 
 ### v0.18.x
 
-- `v0.18.0` introduced `--fp16-intermediates`, additional Essentials-category
-  support, asset/API alignment changes, and more Manager/frontend bumps
-- memory-management and dtype behavior changed materially in this line, which
-  matters for custom nodes that assume specific tensor precision or device flow
+- `v0.18.0` release notes highlight `--fp16-intermediates`, additional
+  Essentials-category support, asset/API alignment changes, and more
+  Manager/frontend bumps
+- this line is a good place to re-check dtype, precision, and device-flow
+  assumptions in custom nodes
 
 ### v0.17.x
 
-- `v0.17.0` brought larger architectural changes including asset architecture
-  work, frontend updates, and more explicit Manager/version reporting
-- patch releases in this line were mostly stabilization, but that still matters
-  if your extension relied on unstable internal behavior
+- `v0.17.0` release notes highlight larger architectural work, frontend updates,
+  and more explicit Manager/version reporting
+- later patches in this line are still worth re-testing if an extension relied
+  on unstable or lightly documented internal behavior
 
 ### v0.16.x to v0.15.x
 
-- these releases continued broad V3-schema rollout, new widget/datatype
-  surfaces, and API-node/platform expansion
-- if you maintain older V1-style examples, this is where drift becomes more
-  obvious because official patterns increasingly assume V3 concepts
+- official changelog entries across these lines continue the V3-schema rollout,
+  add widget/datatype surfaces, and expand API-node/platform coverage
+- older V1-style examples are more likely to drift here because official
+  patterns increasingly assume V3 concepts
 
 ### v0.8.x to v0.3.x
 
 - official changelog entries in these ranges show repeated V3 migration work,
   new dynamic UI/input features, and frontend evolution
-- examples include DynamicCombo, Autogrow, MatchType support and migration of
-  more built-in node categories to V3 schema
+- examples called out in the official notes include DynamicCombo, Autogrow,
+  MatchType support, and migration of more built-in node categories to V3 schema
 
 The practical takeaway: compatibility breaks are often not one dramatic API
 removal. They are cumulative drift across schema, frontend packaging, runtime
