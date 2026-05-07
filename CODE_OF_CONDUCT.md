@@ -28,9 +28,10 @@ requests, or other contributions that violate this code of conduct.
 
 ## Reporting
 
-For conduct concerns related to repository participation, open a private
-maintainer contact path where available. For security-sensitive reports, follow
-the process in [SECURITY.md](SECURITY.md).
+For conduct concerns related to repository participation, start with the
+repository issue templates so maintainers can route the report consistently. Do
+not post sensitive exploit details in public conduct reports; for
+security-sensitive issues, follow the process in [SECURITY.md](SECURITY.md).
 
 ## Attribution
 

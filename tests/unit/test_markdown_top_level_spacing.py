@@ -1,11 +1,13 @@
 """Tests for scripts/verify/markdown_top_level_spacing.py."""
 
+import contextlib
 import importlib.util
-import subprocess
+import io
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "verify" / "markdown_top_level_spacing.py"
@@ -37,6 +39,31 @@ class MarkdownTopLevelSpacingUnitTests(unittest.TestCase):
         issues = module.find_leading_space_issues(content)
         self.assertEqual(issues, [])
 
+    def test_empty_file_has_no_issues(self):
+        module = _load_module()
+        self.assertEqual(module.find_leading_space_issues(""), [])
+
+    def test_fenced_block_only_file_has_no_issues(self):
+        module = _load_module()
+        content = "```python\n   ## Scope\n   **Last Updated:** no\n```\n"
+        self.assertEqual(module.find_leading_space_issues(content), [])
+
+    def test_multiple_fenced_blocks_toggle_cleanly(self):
+        module = _load_module()
+        content = (
+            "```md\n ## Scope\n```\n"
+            "\n"
+            "```text\n **Last Updated:** nope\n```\n"
+            "\n"
+            "  ## Real issue\n"
+        )
+        self.assertEqual(module.find_leading_space_issues(content), [(9, "  ## Real issue")])
+
+    def test_detects_deeply_indented_heading(self):
+        module = _load_module()
+        issues = module.find_leading_space_issues("# Title\n\n   ### Deep heading\n")
+        self.assertEqual(issues, [(3, "   ### Deep heading")])
+
     def test_verify_directory_reports_repo_relative_paths(self):
         module = _load_module()
 
@@ -56,15 +83,16 @@ class MarkdownTopLevelSpacingScriptTests(unittest.TestCase):
     """CLI tests for markdown_top_level_spacing.py."""
 
     def test_help_flag(self):
-        result = subprocess.run(
-            [sys.executable, str(SCRIPT), "--help"],
-            capture_output=True,
-            text=True,
-            cwd=str(REPO_ROOT),
-        )
+        module = _load_module()
+        stdout = io.StringIO()
 
-        self.assertEqual(result.returncode, 0)
-        self.assertIn("top-level markdown", result.stdout)
+        with patch.object(sys, "argv", [str(SCRIPT), "--help"]):
+            with contextlib.redirect_stdout(stdout):
+                with self.assertRaises(SystemExit) as exc:
+                    module.main()
+
+        self.assertEqual(exc.exception.code, 0)
+        self.assertIn("top-level markdown", stdout.getvalue())
 
 
 if __name__ == "__main__":

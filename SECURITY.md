@@ -4,9 +4,12 @@
 
 Please do not open public issues for suspected security vulnerabilities.
 
-Instead, use GitHub's private vulnerability reporting flow for this repository.
-If that option is unavailable, open a normal issue only for non-sensitive
-security hardening suggestions that do not expose an exploitable detail.
+If GitHub private vulnerability reporting is enabled for this repository, use
+that path. Otherwise, use the issue templates only for non-sensitive security
+hardening suggestions that do not expose an exploitable detail. If you need a
+maintainer response on a potentially sensitive issue and no private reporting
+path is available, open a minimal public issue that asks maintainers for a safe
+contact route without posting the exploit details.
 
 ## Scope
 
@@ -17,5 +20,4 @@ sensitive-data exposure in tracked files.
 
 ## Response Expectations
 
-Maintainers will review private reports, confirm whether the issue is in scope,
-and coordinate any needed remediation before public disclosure.
+Maintainers will review in-scope reports and coordinate any needed remediation.
