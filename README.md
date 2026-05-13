@@ -1,6 +1,6 @@
 # ComfyUI Knowledge Base
 
-**Last Updated:** 2026-05-07
+**Last Updated:** 2026-05-13
 **ComfyUI Version Pin:** Core `v0.20.1` (`64b8457f55cd7fb54ca7a956d9c73b505e903e0c`) with official frontend `v1.44.13` (`389ff8ba49468cc3afa11aec5778224689a8f9b9`) for the current pinned snapshots and extracted reference data
 
 **Evidence:** Operational guidance
@@ -73,7 +73,7 @@ For editorial standards and evidence rules, use these files together:
 - **Contributors**
   - Start with [`docs/start-here/docs-contributor.md`](docs/start-here/docs-contributor.md) for the lighter editorial path
 - **Maintainers**
-  - Use [`CONTRIBUTING.md`](CONTRIBUTING.md) for repo-local operational workflows, verification, refresh, and release-style tasks
+  - Use [`CONTRIBUTING.md`](CONTRIBUTING.md) as the canonical repo-local maintainer workflow source for verification, refresh, artifact publication, CI-adjacent, and release-style tasks
 
 ### Machine-readable references
 
@@ -116,18 +116,17 @@ Serve locally: `python -m mkdocs serve`
 - Do not hand-edit `requirements.lock`; regenerate it after dependency changes.
 - `requirements.txt` is a compatibility shim that points to `requirements.lock`.
 
-Refresh the lockfile from a Python 3.11+ environment with `pip-tools` installed:
-
-```bash
-python -m pip install pip-tools
-python -m piptools compile --strip-extras requirements.in --output-file requirements.lock
-```
-
 Before pushing maintainer-grade workflow, script, or verifier changes, run:
 
 ```bash
 python scripts/verify/run_all.py
 ```
+
+Use `run_all.py` as the default maintainer-grade before-push check. It mirrors
+the CI job's blocking path. For lockfile regeneration, extractor/generator
+workflows, snapshot refreshes, runtime capture, community metadata pipelines,
+and the full maintainer verification matrix, use
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ### Self-hosting
 
@@ -136,91 +135,17 @@ Build the site with `python -m mkdocs build`, then serve the `site/` directory
 with any static file server. The artifact files under `docs/artifacts/` are
 included in the built output.
 
-### Extracting references
+## Maintainer Workflow Entry Points
 
-```bash
-python scripts/extract/parse_server.py path/to/server.py --version v0.20.1 --commit 64b8457f55cd7fb54ca7a956d9c73b505e903e0c
-python scripts/extract/parse_hooks.py path/to/app.ts path/to/comfy.ts path/to/litegraphService.ts --version v1.44.13 --commit 389ff8ba49468cc3afa11aec5778224689a8f9b9
-python scripts/extract/parse_node_api_schema.py path/to/server.py path/to/_io.py path/to/basic_types.py --version v0.20.1 --commit 64b8457f55cd7fb54ca7a956d9c73b505e903e0c
-python scripts/generate/md_from_json.py
-python scripts/generate/publish_reference_artifacts.py
-```
-
-### Generating community pages
-
-```bash
-python scripts/generate/generate_community_pages.py
-```
-
-### Comparing artifact baselines
-
-When comparing two pinned baselines after a refresh, use the auto-created
-`references/raw_backup_TIMESTAMP/` directory that `refresh_snapshots.py`
-prints before it overwrites the canonical raw artifacts in place. The same
-refresh run also writes `docs/artifacts/refresh-provenance.json` with the
-requested versions, resolved commits, backup path, and runtime-enrichment
-intent.
-
-```bash
-python scripts/generate/generate_snapshot_delta_summary.py --old references/raw_backup_TIMESTAMP --new references/raw --output docs/artifacts/delta-summary.json
-```
-
-### Refreshing upstream versions
-
-Replace the example versions below with the actual target versions for the
-refresh you are performing.
-
-```bash
-python scripts/refresh_snapshots.py --core-version <new-core-version>
-python scripts/refresh_snapshots.py --frontend-version <new-frontend-version>
-python scripts/refresh_snapshots.py --core-version <new-core-version> --frontend-version <new-frontend-version>
-python scripts/generate/publish_reference_artifacts.py
-```
-
-The refresh script now creates a repo-local backup automatically when
-`references/raw/` already exists, prints the exact backup path to reuse for
-delta generation, and writes `docs/artifacts/refresh-provenance.json`. It does
-not auto-generate `delta-summary.json`, auto-clean backups, or auto-commit.
-
-## Verification
-
-```bash
-# One-command wrapper (runs the current CI-blocking local checks)
-python scripts/verify/run_all.py
-
-# CI-blocking local checks
-python -m unittest discover -s tests -v
-python scripts/verify/cross_references.py
-python scripts/verify/docs_index_freshness.py
-python scripts/verify/validate_schema.py
-python scripts/verify/verify_artifact_integrity.py
-python scripts/verify/markdown_top_level_spacing.py
-python scripts/verify/community_generated_freshness.py
-python scripts/verify/community_page_coverage.py
-python -m mkdocs build
-
-# Additional checks (non-blocking in CI)
-python scripts/verify/stale_content.py
-python scripts/verify/extraction_idempotency.py
-python scripts/verify/upstream_pins.py
-
-# Supplemental integration/example checks
-python scripts/verify/pipeline_smoke.py
-python scripts/verify/shell_examples_syntax.py
-
-# Community metadata checks (non-blocking in CI)
-python scripts/verify/community_metadata.py
-python scripts/verify/community_staleness.py
-```
-
-`shell_examples_syntax.py` requires a `bash` executable. Use `bash` on `PATH`,
-set `COMFYUI_KB_BASH` to an explicit executable path, or pass
-`--bash-executable <path>` when running the script directly.
-
-Use targeted commands while iterating on a narrow surface. Run
-`python scripts/verify/run_all.py` before opening a PR when you need the same
-blocking verification path that CI runs on both Ubuntu and Windows. Advisory
-checks remain separate from this local wrapper and from PR-blocking status.
+- `python scripts/verify/run_all.py` is the default maintainer-grade local gate
+  and mirrors the blocking CI path.
+- Use targeted commands while iterating on a narrow surface, then use
+  [`CONTRIBUTING.md`](CONTRIBUTING.md) for the canonical maintainer workflows,
+  verification matrix, extractor/generator procedures, snapshot refresh steps,
+  community metadata pipeline, and CI-adjacent guidance.
+- For runtime-only capture and validation against a live ComfyUI instance, use
+  [`CONTRIBUTING.md`](CONTRIBUTING.md) and
+  [`docs/reference/runtime-ci-operations.md`](docs/reference/runtime-ci-operations.md).
 
 For issue intake, use the repository's bug-report template for behavior or
 artifact problems, the docs-request template for documentation gaps or
@@ -252,23 +177,12 @@ follow-up.
 
 ## Runtime Extraction
 
-The repo supports optional runtime capture from a live ComfyUI instance:
-
-```bash
-# Capture runtime object_info
-python scripts/extract/parse_from_api.py --url http://127.0.0.1:8188 --version v0.20.1 --commit <sha> --output references/raw/object_info_runtime.json
-
-# Hybrid refresh (source + runtime)
-python scripts/refresh_snapshots.py --core-version v0.20.1 --runtime-object-info-url http://127.0.0.1:8188
-
-# Runtime smoke checks
-python scripts/verify/runtime_smoke.py --url http://127.0.0.1:8188
-```
-
-Runtime extraction is opt-in and separate from standard CPU-safe verification.
-Runtime-only `object_info` capture is not part of the canonical published
-artifact surface. See `docs/reference/runtime-ci-operations.md` for the full
-operating model.
+Optional runtime capture from a live ComfyUI instance stays outside the default
+CPU-safe verification path. Runtime-only `object_info` capture is not part of
+the canonical published artifact surface. Use
+[`CONTRIBUTING.md`](CONTRIBUTING.md) and
+[`docs/reference/runtime-ci-operations.md`](docs/reference/runtime-ci-operations.md)
+for the full operating model and commands.
 
 ## Scope Boundaries
 

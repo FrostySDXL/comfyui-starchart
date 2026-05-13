@@ -1,10 +1,10 @@
 # Contributing
 
-**Last Updated:** 2026-05-07
+**Last Updated:** 2026-05-13
 
-Thank you for contributing to the ComfyUI Knowledge Base. This guide covers
-maintainer-grade repo workflows for making changes safely and getting them
-merged.
+Thank you for contributing to the ComfyUI Knowledge Base. This guide is the
+canonical repo-local maintainer workflow authority for making maintainer-grade
+changes safely and getting them merged.
 
 Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before participating in
 public discussion or review, and use [SECURITY.md](SECURITY.md) for private
@@ -24,7 +24,10 @@ enhancements, and the upstream-refresh template only for maintainer
 version-refresh tracking.
 
 `CONTRIBUTING.md` is the authoritative repo-local guide for maintainer-grade
-workflows that are not fully duplicated in the published docs site.
+workflows. Use it as the durable owner for deeper operating playbooks,
+verification expectations, refresh procedures, and CI-adjacent guidance that
+should not be duplicated across the other top-level files or the published docs
+site.
 
 ---
 
@@ -67,6 +70,9 @@ docs-index freshness verification and artifact-integrity verification for the
 canonical published JSON artifacts. The blocking path also rejects leading
 spaces before top-level markdown headings and metadata labels in hand-authored
 docs because those lines render incorrectly in MkDocs.
+
+Use targeted checks while iterating. Use supplemental commands only when the
+touched surface requires them.
 
 Two supplemental verification commands sit outside `run_all.py`:
 

@@ -91,6 +91,11 @@ These files are packaged into the built site under `docs/artifacts/`.
 Consumer-facing docs describe the published artifact surface, while repo-local
 maintainer workflows intentionally remain in `AGENTS.md` and `CONTRIBUTING.md`.
 
+Use `AGENTS.md` as the startup-critical quick-reference for session setup,
+constraints, repo map, and key commands. Use `CONTRIBUTING.md` as the
+authoritative home for deeper maintainer playbooks and longer operating
+procedures.
+
 Non-goals: official docs replacement, community wiki, package registry.
 
 ## 2. Hard Rules
@@ -200,61 +205,24 @@ on hardcoded Windows install paths.
 
 ## 5. Task Playbooks
 
-### Updating extracted references
+Use this section as a routing aid, not a second full maintainer handbook.
+`CONTRIBUTING.md` owns the deeper step-by-step playbooks and longer operating
+procedures.
 
-1. Edit source in `references/snapshots/` or run `refresh_snapshots.py`
-2. Run the matching extractor with `--version` and `--commit` flags
-3. Optionally run `parse_from_api.py` with `--url` for runtime enrichment
-4. Run `md_from_json.py` to regenerate markdown
-5. If published JSON artifacts or `docs/artifacts/manifest.json` changed, rerun `python scripts/generate/publish_reference_artifacts.py` before verification so manifest hashes stay in sync
-6. Run `cross_references.py` and `validate_schema.py` to verify
-
-### Refreshing upstream baselines
-
-1. Run `python scripts/refresh_snapshots.py --core-version <v> --frontend-version <v>` and note the printed `references/raw_backup_TIMESTAMP` path plus `docs/artifacts/refresh-provenance.json`
-2. Run `python scripts/generate/publish_reference_artifacts.py`
-3. Run `python scripts/verify/verify_artifact_integrity.py`
-4. If comparing two baselines, run `python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output docs/artifacts/delta-summary.json`
-5. Remove the temporary backup after confirming the delta output if you no longer need it
-6. Run `python scripts/verify/run_all.py`
-
-### Editing prose documentation
-
-1. Read the target page and the closest adjacent pages first
-2. Read `docs/reference/source-evidence-policy.md` before changing evidence labels or trust framing
-3. Read `docs/reference/writing-style-guide.md` before rewriting structure or tone
-4. Use `docs/reference/doc-quality-checklist.md` before calling the edit complete
-5. For new pages, copy from `templates/docs/` or use `scripts/new_doc.py`
-6. Run `python scripts/verify/cross_references.py`
-7. Run `python -m mkdocs build`
-
-### Updating community metadata
-
-1. Edit `references/community/ecosystem_packages.json` for catalog changes
-2. Edit `references/community/community_pages.json` for page review metadata
-3. Run `python scripts/verify/validate_schema.py`
-4. Run `python scripts/verify/community_metadata.py`
-5. Run `python scripts/verify/community_staleness.py`
-6. Run `python scripts/generate/generate_community_pages.py`
-7. Run `python scripts/verify/community_generated_freshness.py`
-8. Run `python scripts/verify/community_page_coverage.py`
-9. Run `python scripts/verify/cross_references.py`
-10. Run `python -m mkdocs build`
-
-### Adding a new verification script
-
-1. Create `scripts/verify/<name>.py` -- exit 0 on pass, exit 1 on fail
-2. Add test in `tests/unit/test_<name>.py` -- import check, smoke test, edge cases
-3. Add it to `scripts/verify/run_all.py` if it should be part of the default local blocking gate
-4. Add step to `.github/workflows/ci.yml` with an explicit blocking vs advisory choice
-
-### Adding a new extractor
-
-1. Create `scripts/extract/<name>.py` -- reads source, writes JSON to `references/raw/`
-2. Include `--version` and `--commit` flags in metadata
-3. Normalize all file paths to forward slashes in output JSON
-4. Add test in `tests/unit/`
-5. Add generator step in `scripts/generate/` if markdown output is needed
+- **Editing prose documentation:** read the target page plus the editorial
+  policy stack, then run `python scripts/verify/cross_references.py` and
+  `python -m mkdocs build`.
+- **Updating extracted references:** use the matching extractor/generator flow
+  from `CONTRIBUTING.md`, then verify with the required schema and cross-link
+  checks.
+- **Refreshing upstream baselines:** use `scripts/refresh_snapshots.py`, note
+  the printed backup path and `docs/artifacts/refresh-provenance.json`, then use
+  the republish and verification sequence in `CONTRIBUTING.md`.
+- **Updating community metadata:** edit the JSON source, regenerate downstream
+  output, and use the community verification pipeline from `CONTRIBUTING.md`.
+- **Adding extractors or verifiers:** keep them test-backed, wire them into
+  `run_all.py` or CI intentionally, and use `CONTRIBUTING.md` for exact
+  placement rules.
 
 ## 6. Common Pitfalls
 
