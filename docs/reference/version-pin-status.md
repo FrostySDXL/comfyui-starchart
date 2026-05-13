@@ -1,7 +1,7 @@
 # Version Pin Status
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-07
+**Last Updated:** 2026-05-13
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.
@@ -76,4 +76,5 @@ The current published versioned artifact directory is
   capture time and should not be treated as canonical baselines
 
 When exact version behavior matters, prefer the pinned snapshot files first,
-then reconcile against official docs and release notes.
+then reconcile against official docs and release notes. For release-line
+upgrade context, see [Version History](version-history.md).
