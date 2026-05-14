@@ -548,7 +548,31 @@
       "summary": null
     },
     {
-      "title": "Deep Dive: ComfyUI-Manager",
+      "title": "Deep Dive: Workflow JSON as an Interchange Surface",
+      "path": "deep-dives/workflow-json-schema.md",
+      "nav_section": "Deep Dives",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org",
+      "summary": "This page explains why the official workflow JSON specification matters as an interchange surface for ComfyUI tooling. It is not a field-by-field schema reference and not a tutorial for hand-authoring workflows."
+    },
+    {
+      "title": "Deep Dive: Execution Model Inversion",
+      "path": "deep-dives/execution-model-inversion.md",
+      "nav_section": "Deep Dives",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org",
+      "summary": "This page explains the official execution-model inversion guidance for advanced custom-node and tooling authors. It focuses on what the guide changes about validation, lazy evaluation, node expansion, and migration expectations. It is not a reverse-engineered engine internals page."
+    },
+    {
+      "title": "Deep Dive: Registry Packaging and Compatibility",
+      "path": "deep-dives/registry-packaging-and-compatibility.md",
+      "nav_section": "Deep Dives",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org",
+      "summary": "This page explains the official registry packaging model for ComfyUI custom nodes. It focuses on metadata, compatibility fields, and the distribution model those fields support. It is not a repackaged step-by-step publishing guide."
+    },
+    {
+      "title": "Deep Dive: ComfyUI-Manager (Community Pattern Study)",
       "path": "deep-dives/comfyui-manager.md",
       "nav_section": "Deep Dives",
       "audience": null,

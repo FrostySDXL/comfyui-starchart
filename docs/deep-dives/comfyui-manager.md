@@ -1,8 +1,8 @@
-# Deep Dive: ComfyUI-Manager
+# Deep Dive: ComfyUI-Manager (Community Pattern Study)
 
 **Evidence:** Community pattern study based on pinned external version
 **Package:** [ltdrdata/ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager/tree/491f847bbc286588175695ea43fa4e13cd14a437)
-**Last Updated:** 2026-04-22
+**Last Updated:** 2026-05-13
 
 ## Scope
 
@@ -10,6 +10,10 @@ This page is a conservative package-layout study of the public
 `ltdrdata/ComfyUI-Manager` repository at pinned commit
 `491f847bbc286588175695ea43fa4e13cd14a437`, verified on 2026-04-22. It does
 not attempt a route-by-route or lifecycle-by-lifecycle source audit.
+
+For official Manager behavior, installation, and supported node-management
+flows, use the `docs.comfy.org` Manager documentation rather than this pinned
+community repo study.
 
 Verified repo signals used here:
 

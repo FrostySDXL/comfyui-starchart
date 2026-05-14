@@ -112,7 +112,10 @@ nav:
   - Ecosystem:
       - ecosystem/map.md
   - Deep Dives:
-      - deep-dives/comfyui-manager.md
+      - deep-dives/workflow-json-schema.md
+      - deep-dives/execution-model-inversion.md
+      - deep-dives/registry-packaging-and-compatibility.md
+      - "ComfyUI-Manager (Community)": "deep-dives/comfyui-manager.md"
       - "ComfyUI-Impact-Pack (Community)": "deep-dives/comfyui-impact-pack.md"
 
 markdown_extensions:
