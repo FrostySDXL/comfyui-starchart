@@ -58,6 +58,7 @@ nav:
       - hooks/javascript-hooks.md
       - hooks/server-hooks.md
       - hooks/extension-points.md
+      - hooks/subgraph-extension-behavior.md
   - Custom Nodes:
       - Custom Nodes Section Guide: custom-nodes/index.md
       - custom-nodes/development-guide.md

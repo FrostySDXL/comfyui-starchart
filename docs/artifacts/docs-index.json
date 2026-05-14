@@ -169,7 +169,7 @@
       "nav_section": "Hooks / Hooks Section Guide",
       "audience": null,
       "evidence": "Operational guidance",
-      "summary": "This hub routes readers through ComfyUI hook surfaces. Start here when you know you need extension points but have not yet narrowed the layer."
+      "summary": "This hub routes readers through ComfyUI hook and extension-boundary pages. Start here when you know you need an extension surface but have not yet picked the right layer."
     },
     {
       "title": "JavaScript Hooks",
@@ -184,7 +184,7 @@
       "path": "hooks/server-hooks.md",
       "nav_section": "Hooks",
       "audience": null,
-      "evidence": "Source-backed from pinned snapshots",
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
       "summary": "The current ComfyUI server exposes a small number of meaningful server-side hook surfaces directly in Python. The most explicit one is the prompt preprocessing hook chain stored in `self.on_prompt_handlers`. Execution also exposes progress and lifecycle messaging through the executor and WebSocket path, which is the main observability surface for server-side integrations."
     },
     {
@@ -194,6 +194,14 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
       "summary": "ComfyUI extension work splits across a few distinct surfaces rather than one universal plugin API. In practice, you choose between frontend hooks, server-hook callbacks, custom routes, and custom nodes depending on what you are trying to change."
+    },
+    {
+      "title": "Subgraph Extension Behavior",
+      "path": "hooks/subgraph-extension-behavior.md",
+      "nav_section": "Hooks",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org",
+      "summary": "This page covers subgraph-related extension behavior that is exposed at the frontend hooks surface. It focuses on node identifiers, root-versus-active graph distinctions, traversal patterns, subgraph events, widget-promotion behavior, and cleanup concerns."
     },
     {
       "title": "Custom Nodes Section Guide",
