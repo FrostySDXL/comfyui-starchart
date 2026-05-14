@@ -1,7 +1,7 @@
 # ComfyUI Knowledge Base
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-03
+**Last Updated:** 2026-05-13
 
 ## Scope
 
@@ -47,6 +47,8 @@ change reaches scripts, CI, extracted references, or published artifacts.
 
 - [Glossary](reference/glossary.md) -- repeated repo and artifact terms used
   across the docs
+- [Architecture Overview](architecture/overview.md) -- bounded conceptual map of
+  the client, server, workflow, and tooling surfaces
 - [What's New](whats-new/index.md) -- notable repo-visible changes that affect
   readers and contributors
 - [Troubleshooting](troubleshooting/index.md) -- bounded confusion-reduction
@@ -60,6 +62,8 @@ This documentation is organized as follows:
 - **Orientation** (`whats-new/`, `reference/glossary.md`, `troubleshooting/`,
   `known-limitations/`) -- Discoverability pages for repo terms, recent reader-
   visible changes, bounded troubleshooting, and verified limitations
+- **Architecture** (`architecture/`) -- Bounded conceptual overview pages for
+  system shape and major tooling surfaces
 - **Section Guides** (`api/index.md`, `hooks/index.md`, `custom-nodes/index.md`,
   `tutorials/index.md`, `how-to/index.md`) -- Short hub pages for choosing the
   right page within a family

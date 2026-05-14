@@ -56,8 +56,8 @@
       "path": "start-here/tooling-builder.md",
       "nav_section": "Start Here",
       "audience": "consumer",
-      "evidence": "Operational guidance",
-      "summary": null
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance for repo-local artifact routing",
+      "summary": "This page is a start-here route for builders. It helps you choose the right ComfyUI tooling surface, then points you to the next page. It does not try to reteach the full API, Manager, or extension architecture."
     },
     {
       "title": "What's New",
@@ -72,7 +72,7 @@
       "path": "reference/glossary.md",
       "nav_section": "Orientation / Glossary",
       "audience": null,
-      "evidence": "Operational guidance",
+      "evidence": "Official docs-backed from docs.comfy.org; Operational guidance for repo-local artifact terms",
       "summary": "This glossary defines repeated repository and artifact terms that appear across the docs. It is an orientation aid, not a tutorial or a second reference set."
     },
     {
@@ -114,6 +114,14 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance for repo-local publication boundaries",
       "summary": "This page is intentionally small. It only keeps limitations that can be verified against the repo's pinned ComfyUI snapshots or official docs."
+    },
+    {
+      "title": "Architecture Overview",
+      "path": "architecture/overview.md",
+      "nav_section": "Architecture",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
+      "summary": "This page is a bounded conceptual overview of ComfyUI architecture for readers who need the system shape before diving into detailed reference pages."
     },
     {
       "title": "API Section Guide",

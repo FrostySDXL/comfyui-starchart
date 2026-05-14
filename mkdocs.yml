@@ -46,6 +46,8 @@ nav:
           - troubleshooting/custom-node-and-extension-boundaries.md
           - troubleshooting/docs-authoring-and-site-build.md
       - Known Limitations: known-limitations/index.md
+  - Architecture:
+      - architecture/overview.md
   - API Reference:
       - API Section Guide: api/index.md
       - api/endpoints.md
