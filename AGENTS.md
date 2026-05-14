@@ -136,7 +136,7 @@ Non-goals: official docs replacement, community wiki, package registry.
 - `tests/unit/` -- Unit tests for all scripts
 - `examples/` -- Hand-authored pattern examples, API calls, and workflows
 - `.github/workflows/` -- CI (`ci.yml`), advisory replay (`advisory-checks.yml`),
-  weekly pin check (`weekly-pin-check.yml`), upstream version watch (`upstream-watch.yml`), and docs deployment (`deploy-pages.yml`)
+  weekly pin check (`weekly-pin-check.yml`), upstream version watch (`upstream-watch.yml`, temporarily manual-only with cron removed), and docs deployment (`deploy-pages.yml`)
   - includes opt-in runtime workflows such as `runtime-smoke.yml` and `headless-runtime-metadata.yml`
 
 ## 4. Key Commands

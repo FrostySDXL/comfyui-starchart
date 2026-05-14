@@ -1,8 +1,8 @@
 name: Upstream Watch
 
 on:
-  schedule:
-    - cron: "0 10 * * 1"  # Every Monday at 10:00 UTC (one hour after weekly-pin-check)
+  # Temporarily manual-only while the scheduled upstream watch is disabled.
+  # Previous cron: "0 10 * * 1" (every Monday at 10:00 UTC).
   workflow_dispatch:
 
 jobs:
