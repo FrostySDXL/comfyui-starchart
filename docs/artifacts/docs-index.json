@@ -356,6 +356,54 @@
       "summary": "This hub routes readers to focused operational recipes. Use how-to pages when you already know the outcome you want."
     },
     {
+      "title": "Install Custom Nodes Safely",
+      "path": "how-to/install-custom-nodes-safely.md",
+      "nav_section": "How-To",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org",
+      "summary": "Use this page when you want to install a custom node and choose the safest supported path for your ComfyUI setup."
+    },
+    {
+      "title": "Enable and Use Manager on Manual or Portable Installs",
+      "path": "how-to/enable-and-use-manager-on-manual-or-portable-installs.md",
+      "nav_section": "How-To",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org",
+      "summary": "Use this page when Manager is missing or disabled on a manual or portable ComfyUI install."
+    },
+    {
+      "title": "Integrate with Manager",
+      "path": "how-to/integrate-with-manager.md",
+      "nav_section": "How-To",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version",
+      "summary": "Use this page when you are deciding how a custom node should fit the current Manager and registry ecosystem."
+    },
+    {
+      "title": "Update ComfyUI with Version Awareness",
+      "path": "how-to/update-comfyui-with-version-awareness.md",
+      "nav_section": "How-To",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org",
+      "summary": "Use this page when you want to update ComfyUI without mixing together install mode, release line, code updates, and dependency updates."
+    },
+    {
+      "title": "Publish a Custom Node to the Registry",
+      "path": "how-to/publish-a-custom-node-to-registry.md",
+      "nav_section": "How-To",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org",
+      "summary": "Use this page when you are ready to publish a custom node through the ComfyUI registry flow that powers Manager discovery."
+    },
+    {
+      "title": "Troubleshoot Custom Node Breakage",
+      "path": "how-to/troubleshoot-custom-node-breakage.md",
+      "nav_section": "How-To",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org",
+      "summary": "Use this page when ComfyUI breaks after adding or updating custom nodes and you need an official-docs-backed way to identify, isolate, confirm, and recover."
+    },
+    {
       "title": "Monitor Execution",
       "path": "how-to/monitor-execution.md",
       "nav_section": "How-To",
@@ -370,14 +418,6 @@
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
       "summary": "Add a custom route when your extension needs explicit client-to-server communication that does not fit naturally into prompt submission, WebSocket status, or existing built-in endpoints."
-    },
-    {
-      "title": "Integrate with Manager",
-      "path": "how-to/integrate-with-manager.md",
-      "nav_section": "How-To",
-      "audience": null,
-      "evidence": "Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version",
-      "summary": "ComfyUI Manager is the main distribution path most users expect for custom node packs. Publishing through the Manager makes installation, upgrades, disable/enable operations, and dependency setup easier than asking users to clone a repository by hand."
     },
     {
       "title": "Consumer Starter Examples",

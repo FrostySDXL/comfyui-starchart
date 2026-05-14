@@ -1,31 +1,76 @@
 # Integrate with Manager
 
 **Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version
-**Last Updated:** 2026-04-22
-**Primary Source:** https://docs.comfy.org/custom-nodes/backend/manager
+**Last Updated:** 2026-05-13
+**Primary Source:** https://docs.comfy.org/manager/pack-management
 
 ## Primary Sources
 
-- https://docs.comfy.org/custom-nodes/backend/manager
 - https://docs.comfy.org/manager/pack-management
+- https://docs.comfy.org/registry/publishing
+- https://docs.comfy.org/registry/specifications
 - `https://github.com/ltdrdata/ComfyUI-Manager/tree/491f847bbc286588175695ea43fa4e13cd14a437` (community repo state verified 2026-04-22)
 
 ## Scope
 
-ComfyUI Manager is the main distribution path most users expect for custom
-node packs. Publishing through the Manager makes installation, upgrades,
-disable/enable operations, and dependency setup easier than asking users to
-clone a repository by hand.
+Use this page when you are deciding how a custom node should fit the current
+Manager and registry ecosystem.
 
-Two distinct paths matter:
+This page is author-facing. It explains the boundary between Manager-compatible
+distribution and registry-backed publication. It does not reteach end-user
+installation, and it does not replace the step-by-step registry publishing
+workflow.
 
-- author-facing publication: make your pack discoverable through Manager
-- user-facing management: install, update, and inspect packs from the Manager UI
+## 1. Decide which outcome you are targeting
 
-The official author docs say a pack must live in a git repository and be added
-to the Manager list so users can discover it. The newer Manager UI docs also
-make an important compatibility point: the new UI installs packs from the
-registry-backed Manager flow, not arbitrary git URLs.
+1. If you want users to install, update, and uninstall your pack through the
+   **new Manager UI**, plan for the **registry-backed flow**.
+2. If you only want to document a repository that advanced users can clone by
+   hand, keep that as a **manual install path** and document it separately.
+3. Do not imply those two outcomes are interchangeable. The official docs say
+   the new Manager UI does not install arbitrary git URLs.
+
+## 2. Prepare the repository for Manager-adjacent distribution
+
+The official docs describe these integration points:
+
+- keep the custom node in a git repository
+- add `requirements.txt` when Python dependencies need installation
+- add `install.py` or `uninstall.py` only when lifecycle automation is useful
+- add `disable.py` or `enable.py` only when you need explicit disable/re-enable
+  behavior
+- add `node_list.json` only when your node package does not follow the standard
+  discovery pattern
+
+Keep `requirements.txt` as loose as possible. The official guidance calls this
+out to reduce dependency conflicts.
+
+## 3. Match your claims to the Manager UI boundary
+
+1. Treat **registry-backed installation** as the supported new-UI path.
+2. Treat **manual git install** as a separate fallback for packs that are not in
+   the registry-backed flow.
+3. If your pack is not yet in the registry-backed flow, say that clearly in your
+   README or docs instead of implying the new UI can install it directly.
+
+For end users, the official pack-management page says the new UI supports:
+
+- search by node pack or individual node
+- selected-version install
+- updates for installed packs
+- missing-node pack discovery from workflows
+- uninstall for installed packs
+
+## 4. Use registry publication when you want new-UI discoverability
+
+1. Add the required `pyproject.toml` and compatibility metadata.
+2. Create a publisher and publishing API key.
+3. Publish through the registry flow documented by ComfyUI.
+4. Test the package in the supported Manager-facing path after publication.
+
+The detailed step sequence lives on [Publish a Custom Node to the Registry](publish-a-custom-node-to-registry.md).
+
+## 5. Keep community-pattern observations secondary
 
 The pinned community repo verification is used more narrowly here: it confirms
 that the current public Manager repository still exposes the legacy discovery
@@ -33,49 +78,12 @@ list (`custom-node-list.json`) and the expected split between frontend and
 backend code (`js/comfyui-manager.js`, `glob/manager_server.py`,
 `glob/manager_core.py`).
 
-## Required Metadata
-
-The official Manager publication page describes these integration points:
-
-- repository: your custom node should be in a git repository, typically GitHub
-- Manager registration: submit a pull request to the ComfyUI-Manager repository
-  that adds your pack to `custom-node-list.json`
-- `requirements.txt`: optional, but used by Manager for Python dependency
-  installation
-- `install.py` / `uninstall.py`: optional lifecycle scripts for install and
-  uninstall
-- `disable.py` / `enable.py`: optional lifecycle scripts for disable and
-  re-enable operations
-- `node_list.json`: only needed when your node package does not follow the
-  conventional node discovery pattern
-
-Update expectations from the docs:
-
-- keep `requirements.txt` as loose as possible to reduce dependency conflicts
-- treat lifecycle scripts as optional helpers, not the only cleanup path,
-  because users can still delete the directory directly
-- if you depend on disable/enable behavior, remember disabled pack folders get
-  `.disabled` appended and Comfy ignores them
-- if you want the new Manager UI to surface your pack cleanly, make sure the
-  package is registered through the supported Manager/registry flow
-
-For end users, the new UI supports:
-
-- searching by node pack or individual node
-- installing a selected version
-- updating packs with available updates
-- finding missing node packs from workflows
-- uninstalling installed packs
-
-The same page also notes two limits that affect authors:
-
-- the new UI only supports nodes available through the registry-backed flow
-- installing via arbitrary git URL is not offered in the new UI for security
-  and stability reasons
+Use that community repo state as a secondary implementation observation. Do not
+use it to overstate what the new official UI promises.
 
 ## Validation Steps
 
-Use this checklist before claiming Manager support:
+Use this checklist before claiming Manager-compatible distribution:
 
 - confirm the repo can be cloned cleanly into `ComfyUI/custom_nodes`
 - confirm `requirements.txt` installs successfully and does not pin more than
@@ -84,8 +92,8 @@ Use this checklist before claiming Manager support:
   package root
 - confirm the package still loads if lifecycle scripts are skipped
 - add `node_list.json` only if your node mappings are non-standard
-- register the pack through the Manager submission path instead of assuming a
-  raw git URL is enough
+- publish through the supported Manager/registry path instead of assuming a raw
+  git URL is enough for the new UI
 - test a fresh install, update, disable/re-enable, and uninstall path on a
   clean ComfyUI instance if possible
 
@@ -95,6 +103,8 @@ install it directly.
 
 ## Read Next
 
+- [Publish a Custom Node to the Registry](publish-a-custom-node-to-registry.md)
+- [Install Custom Nodes Safely](install-custom-nodes-safely.md)
 - [ComfyUI Manager Deep Dive](../deep-dives/comfyui-manager.md)
 - [Ecosystem Map](../ecosystem/map.md)
 - Worked example: `examples/custom-nodes/example-5-full-extension-package/` --

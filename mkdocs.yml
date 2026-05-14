@@ -82,9 +82,14 @@ nav:
       - "API to Workflow: Execution Events": "tutorials/api-to-workflow-execution-events.md"
   - How-To:
       - How-To Section Guide: how-to/index.md
+      - how-to/install-custom-nodes-safely.md
+      - how-to/enable-and-use-manager-on-manual-or-portable-installs.md
+      - how-to/integrate-with-manager.md
+      - how-to/update-comfyui-with-version-awareness.md
+      - how-to/publish-a-custom-node-to-registry.md
+      - how-to/troubleshoot-custom-node-breakage.md
       - how-to/monitor-execution.md
       - how-to/add-custom-routes.md
-      - how-to/integrate-with-manager.md
       - how-to/consumer-starter-examples.md
   - Decision Trees:
       - decision-trees/api-integration.md
