@@ -87,6 +87,19 @@ through `run_all.py` without recursively rerunning unit tests. Use
 `examples/`; it validates them with `bash -n`. The script resolves `bash` from
 `--bash-executable`, then `COMFYUI_KB_BASH`, then `PATH`.
 
+A third supplemental verifier targets example-surface integrity:
+
+```bash
+python scripts/verify/example_surface_integrity.py
+```
+
+This is a purely static check: it confirms expected example families exist,
+that user-facing example directories contain `README.md`, that routed example
+paths referenced in consumer-facing docs resolve, that JSON files under
+`examples/` parse, and that bounded local README links are not broken. Run it
+when your change touches the example surface or its routing references. It is
+not part of `run_all.py` and remains targeted/manual.
+
 ---
 
 ## What This Repository Is
