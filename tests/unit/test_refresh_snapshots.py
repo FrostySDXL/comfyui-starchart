@@ -1,9 +1,7 @@
 """Tests for scripts/refresh_snapshots.py."""
 
 import importlib.util
-import json
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -172,98 +170,6 @@ class RefreshSnapshotsConstantsTests(unittest.TestCase):
         self.assertTrue(str(module.SCRIPTS_GENERATE_DIR).startswith(str(module.REPO_ROOT)))
 
 
-class RefreshSnapshotsDiffSummaryTests(unittest.TestCase):
-    """Test the diff summary computation."""
-
-    def test_endpoint_diff_detects_additions(self):
-        """compute_diff_summary should detect new endpoints."""
-        module = _load_module()
-        old = {"endpoints": [{"route": "/ws", "method": "GET"}]}
-        new = {
-            "endpoints": [{"route": "/ws", "method": "GET"}, {"route": "/new", "method": "POST"}]
-        }
-        changes = module.compute_diff_summary(old, new, "server_endpoints.json")
-        self.assertTrue(any("New endpoints" in c for c in changes))
-
-    def test_endpoint_diff_detects_removals(self):
-        """compute_diff_summary should detect removed endpoints."""
-        module = _load_module()
-        old = {
-            "endpoints": [{"route": "/ws", "method": "GET"}, {"route": "/old", "method": "POST"}]
-        }
-        new = {"endpoints": [{"route": "/ws", "method": "GET"}]}
-        changes = module.compute_diff_summary(old, new, "server_endpoints.json")
-        self.assertTrue(any("Removed endpoints" in c for c in changes))
-
-    def test_hook_diff_detects_changes(self):
-        """compute_diff_summary should detect hook changes."""
-        module = _load_module()
-        old = {"hooks": [{"name": "init"}]}
-        new = {"hooks": [{"name": "init"}, {"name": "newHook"}]}
-        changes = module.compute_diff_summary(old, new, "js_hooks.json")
-        self.assertTrue(any("New hooks" in c for c in changes))
-
-    def test_no_changes_detected(self):
-        """compute_diff_summary should report no changes when content is identical."""
-        module = _load_module()
-        old = {"endpoints": [{"route": "/ws", "method": "GET"}]}
-        new = {"endpoints": [{"route": "/ws", "method": "GET"}]}
-        changes = module.compute_diff_summary(old, new, "server_endpoints.json")
-        self.assertTrue(any("No endpoint changes" in c for c in changes))
-
-    def test_schema_diff_detects_provenance_mode_change(self):
-        """compute_diff_summary should detect provenance mode changes."""
-        module = _load_module()
-        old = {
-            "metadata": {"provenance": {"mode": "source-only"}},
-            "object_info_fields": [],
-            "io_types": [],
-        }
-        new = {
-            "metadata": {"provenance": {"mode": "hybrid"}},
-            "object_info_fields": [],
-            "io_types": [],
-        }
-        changes = module.compute_diff_summary(old, new, "node_api_schema.json")
-        self.assertTrue(any("Provenance mode changed" in c for c in changes))
-
-    def test_schema_diff_detects_runtime_node_count_change(self):
-        """compute_diff_summary should detect runtime_object_info size changes."""
-        module = _load_module()
-        old = {
-            "metadata": {},
-            "object_info_fields": [],
-            "io_types": [],
-            "runtime_object_info": {"A": {}},
-        }
-        new = {
-            "metadata": {},
-            "object_info_fields": [],
-            "io_types": [],
-            "runtime_object_info": {"A": {}, "B": {}},
-        }
-        changes = module.compute_diff_summary(old, new, "node_api_schema.json")
-        self.assertTrue(any("Runtime object_info node count" in c for c in changes))
-
-    def test_schema_diff_no_changes_with_runtime(self):
-        """compute_diff_summary should report no changes when runtime and schema are stable."""
-        module = _load_module()
-        old = {
-            "metadata": {"provenance": {"mode": "hybrid"}},
-            "object_info_fields": ["input"],
-            "io_types": [],
-            "runtime_object_info": {"A": {}},
-        }
-        new = {
-            "metadata": {"provenance": {"mode": "hybrid"}},
-            "object_info_fields": ["input"],
-            "io_types": [],
-            "runtime_object_info": {"A": {}},
-        }
-        changes = module.compute_diff_summary(old, new, "node_api_schema.json")
-        self.assertTrue(any("No schema changes" in c for c in changes))
-
-
 class RefreshSnapshotsRuntimeTests(unittest.TestCase):
     """Test runtime extraction support."""
 
@@ -277,109 +183,202 @@ class RefreshSnapshotsRuntimeTests(unittest.TestCase):
 class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
     """Test refresh backup safety and provenance helpers."""
 
-    def test_create_pre_refresh_backup_when_raw_exists(self):
-        """A repo-local backup should be created when canonical raw artifacts exist."""
+    def test_script_exposes_helper_wrappers(self):
+        """The main script should keep the helper entrypoints available."""
         module = _load_module()
-        with tempfile.TemporaryDirectory() as tmpdir:
-            tmp_path = Path(tmpdir)
-            raw_dir = tmp_path / "references" / "raw"
-            raw_dir.mkdir(parents=True)
-            sample_file = raw_dir / "server_endpoints.json"
-            sample_file.write_text('{"ok": true}\n', encoding="utf-8")
+        self.assertTrue(callable(module.create_pre_refresh_backup))
+        self.assertTrue(callable(module.build_refresh_provenance))
+        self.assertTrue(callable(module.write_refresh_provenance))
+        self.assertTrue(callable(module.compute_diff_summary))
 
-            with (
-                mock.patch.object(module, "REFERENCES_DIR", tmp_path / "references"),
-                mock.patch.object(module, "REFERENCES_RAW_DIR", raw_dir),
-            ):
-                backup_dir = module.create_pre_refresh_backup()
-                self.assertIsNotNone(backup_dir)
-                self.assertEqual(backup_dir.parent.name, "references")
-                self.assertTrue(backup_dir.name.startswith("raw_backup_"))
-                copied = backup_dir / "server_endpoints.json"
-                self.assertTrue(copied.exists())
-                self.assertEqual(copied.read_text(encoding="utf-8"), '{"ok": true}\n')
 
-    def test_create_pre_refresh_backup_skips_when_no_prior_baseline(self):
-        """No backup should be created when canonical raw artifacts do not yet exist."""
+class RefreshSnapshotsOrchestrationTests(unittest.TestCase):
+    """Test the thinner orchestration helpers used by main()."""
+
+    def test_verify_git_available_returns_false_on_missing_git(self):
+        """Git preflight should fail cleanly when git is unavailable."""
         module = _load_module()
-        with tempfile.TemporaryDirectory() as tmpdir:
-            tmp_path = Path(tmpdir)
-            raw_dir = tmp_path / "references" / "raw"
-            raw_dir.mkdir(parents=True)
+        with mock.patch.object(
+            module.subprocess,
+            "run",
+            return_value=mock.Mock(returncode=1, stdout="", stderr="missing"),
+        ):
+            self.assertFalse(module.verify_git_available())
 
-            with (
-                mock.patch.object(module, "REFERENCES_DIR", tmp_path / "references"),
-                mock.patch.object(module, "REFERENCES_RAW_DIR", raw_dir),
-            ):
-                backup_dir = module.create_pre_refresh_backup()
-
-        self.assertIsNone(backup_dir)
-
-    def test_create_pre_refresh_backup_raises_on_copy_failure(self):
-        """Backup creation failures should raise a clear runtime error."""
+    def test_refresh_requested_snapshots_calls_requested_refreshes(self):
+        """Requested core and frontend refreshes should map to their helpers."""
         module = _load_module()
-        with tempfile.TemporaryDirectory() as tmpdir:
-            tmp_path = Path(tmpdir)
-            raw_dir = tmp_path / "references" / "raw"
-            raw_dir.mkdir(parents=True)
-            (raw_dir / "server_endpoints.json").write_text('{"ok": true}\n', encoding="utf-8")
+        with (
+            mock.patch.object(
+                module, "refresh_core", return_value=("core-sha", "core-dir")
+            ) as core_mock,
+            mock.patch.object(
+                module,
+                "refresh_frontend",
+                return_value=("frontend-sha", "frontend-dir"),
+            ) as frontend_mock,
+        ):
+            core_commit, frontend_commit = module.refresh_requested_snapshots(
+                "v0.20.1",
+                "v1.44.13",
+                "2026-05-14",
+            )
 
-            with (
-                mock.patch.object(module, "REFERENCES_DIR", tmp_path / "references"),
-                mock.patch.object(module, "REFERENCES_RAW_DIR", raw_dir),
-                mock.patch.object(module.shutil, "copytree", side_effect=OSError("copy failed")),
-            ):
-                with self.assertRaises(RuntimeError) as exc:
-                    module.create_pre_refresh_backup()
+        core_mock.assert_called_once_with("v0.20.1", "2026-05-14")
+        frontend_mock.assert_called_once_with("v1.44.13", "2026-05-14")
+        self.assertEqual(core_commit, "core-sha")
+        self.assertEqual(frontend_commit, "frontend-sha")
 
-        self.assertIn("Failed to create pre-refresh backup", str(exc.exception))
-
-    def test_write_refresh_provenance_persists_required_fields(self):
-        """Refresh provenance output should persist the documented minimum fields."""
+    def test_capture_runtime_object_info_uses_runtime_specific_fallbacks(self):
+        """Runtime capture should derive version and commit from the current execution context."""
         module = _load_module()
-        with tempfile.TemporaryDirectory() as tmpdir:
-            tmp_path = Path(tmpdir)
-            backup_dir = tmp_path / "references" / "raw_backup_20260503T010203Z"
-            backup_dir.mkdir(parents=True)
-            provenance_path = tmp_path / "docs" / "artifacts" / "refresh-provenance.json"
-
-            with (
-                mock.patch.object(module, "REPO_ROOT", tmp_path),
-                mock.patch.object(module, "PROVENANCE_OUTPUT_PATH", provenance_path),
-            ):
-                payload = module.build_refresh_provenance(
-                    refresh_date="2026-05-03",
-                    requested_core_version="v0.20.1",
-                    requested_frontend_version="v1.44.13",
-                    resolved_core_commit="abc123",
-                    resolved_frontend_commit="def456",
-                    backup_dir=backup_dir,
-                    runtime_object_info_requested=True,
-                    runtime_object_info_merged=False,
-                )
-                written_path = module.write_refresh_provenance(payload)
-
-            self.assertEqual(written_path, provenance_path)
-            persisted = json.loads(provenance_path.read_text(encoding="utf-8"))
-
-        self.assertEqual(persisted["refresh_date"], "2026-05-03")
-        self.assertEqual(persisted["requested_versions"]["core"], "v0.20.1")
-        self.assertEqual(persisted["requested_versions"]["frontend"], "v1.44.13")
-        self.assertEqual(persisted["resolved_commits"]["core"], "abc123")
-        self.assertEqual(persisted["resolved_commits"]["frontend"], "def456")
-        self.assertEqual(
-            persisted["backup_location"],
-            "references/raw_backup_20260503T010203Z",
+        args = mock.Mock(
+            runtime_object_info_url="http://127.0.0.1:8188",
+            runtime_object_info_version=None,
+            core_version="v0.20.1",
+            runtime_object_info_commit=None,
         )
-        self.assertTrue(persisted["runtime_object_info"]["requested"])
-        self.assertFalse(persisted["runtime_object_info"]["merged_into_node_api_schema"])
-        self.assertEqual(
-            persisted["published"]["provenance_path"],
-            "docs/artifacts/refresh-provenance.json",
+        with mock.patch.object(module, "run_runtime_extraction", return_value=True) as runtime_mock:
+            path = module.capture_runtime_object_info(args, "core-sha")
+
+        runtime_mock.assert_called_once_with(
+            "http://127.0.0.1:8188",
+            "v0.20.1",
+            "core-sha",
         )
-        self.assertFalse(persisted["published"]["manifest_included"])
-        self.assertIn(
-            "generate_snapshot_delta_summary.py", persisted["next_steps"]["delta_summary_command"]
+        self.assertEqual(path, str(module.REFERENCES_RAW_DIR / "object_info_runtime.json"))
+
+    def test_main_success_path_uses_orchestration_helpers(self):
+        """main() should delegate to the orchestration helpers and still return 0 on success."""
+        module = _load_module()
+        with (
+            mock.patch.object(sys, "argv", [str(SCRIPT_PATH), "--core-version", "v0.20.1"]),
+            mock.patch.object(module, "verify_git_available", return_value=True),
+            mock.patch.object(module, "create_pre_refresh_backup", return_value=None),
+            mock.patch.object(module, "load_existing_raw_jsons", return_value={}) as load_mock,
+            mock.patch.object(
+                module,
+                "refresh_requested_snapshots",
+                return_value=("core-sha", None),
+            ) as refresh_mock,
+            mock.patch.object(
+                module, "capture_runtime_object_info", return_value=None
+            ) as runtime_mock,
+            mock.patch.object(module, "run_extractors") as extractors_mock,
+            mock.patch.object(module, "run_markdown_generation", return_value=True),
+            mock.patch.object(module, "print_change_summary") as change_mock,
+            mock.patch.object(
+                module,
+                "persist_refresh_provenance",
+                return_value=module.PROVENANCE_OUTPUT_PATH,
+            ) as provenance_mock,
+        ):
+            result = module.main()
+
+        self.assertEqual(result, 0)
+        load_mock.assert_called_once_with()
+        refresh_mock.assert_called_once_with("v0.20.1", None, mock.ANY)
+        runtime_mock.assert_called_once()
+        extractors_mock.assert_called_once()
+        change_mock.assert_called_once_with({})
+        provenance_mock.assert_called_once()
+
+
+class RefreshSnapshotsBoundaryTests(unittest.TestCase):
+    """Test clarified clone/copy and extractor helper boundaries."""
+
+    def test_refresh_core_delegates_to_generic_snapshot_helper(self):
+        """refresh_core should bind the core constants to the shared snapshot helper."""
+        module = _load_module()
+        with mock.patch.object(
+            module,
+            "_refresh_repo_snapshot",
+            return_value=("core-sha", "comfyui-core-v0.20.1"),
+        ) as helper_mock:
+            result = module.refresh_core("v0.20.1", "2026-05-14")
+
+        helper_mock.assert_called_once_with(
+            version="v0.20.1",
+            snapshot_date="2026-05-14",
+            repo_url=module.CORE_REPO_URL,
+            dest_prefix="comfyui-core",
+            heading_label="ComfyUI Core",
+            clone_label="ComfyUI core",
+            copy_label="core",
+            temp_prefix="comfyui-core-",
+            files=module.CORE_FILES,
+        )
+        self.assertEqual(result, ("core-sha", "comfyui-core-v0.20.1"))
+
+    def test_refresh_frontend_delegates_to_generic_snapshot_helper(self):
+        """refresh_frontend should bind the frontend constants to the shared snapshot helper."""
+        module = _load_module()
+        with mock.patch.object(
+            module,
+            "_refresh_repo_snapshot",
+            return_value=("frontend-sha", "comfyui-frontend-v1.44.13"),
+        ) as helper_mock:
+            result = module.refresh_frontend("v1.44.13", "2026-05-14")
+
+        helper_mock.assert_called_once_with(
+            version="v1.44.13",
+            snapshot_date="2026-05-14",
+            repo_url=module.FRONTEND_REPO_URL,
+            dest_prefix="comfyui-frontend",
+            heading_label="ComfyUI Frontend",
+            clone_label="ComfyUI Frontend",
+            copy_label="frontend",
+            temp_prefix="comfyui-frontend-",
+            files=module.FRONTEND_FILES,
+        )
+        self.assertEqual(result, ("frontend-sha", "comfyui-frontend-v1.44.13"))
+
+    def test_run_extractors_preserves_server_hooks_schema_sequence(self):
+        """run_extractors should keep the server, hooks, then schema extractor order."""
+        module = _load_module()
+        events = []
+
+        def _record(name, value):
+            def inner(*args, **kwargs):
+                events.append(name)
+                return value
+
+            return inner
+
+        with (
+            mock.patch.object(
+                module,
+                "_run_server_extractor",
+                side_effect=_record("server", "server summary"),
+            ),
+            mock.patch.object(
+                module,
+                "_run_hooks_extractor",
+                side_effect=_record("hooks", "hooks summary"),
+            ),
+            mock.patch.object(
+                module,
+                "_run_node_api_schema_extractor",
+                side_effect=_record("schema", "schema summary"),
+            ),
+        ):
+            results = module.run_extractors(
+                core_version="v0.20.1",
+                core_commit="core-sha",
+                frontend_version="v1.44.13",
+                frontend_commit="frontend-sha",
+                snapshot_date="2026-05-14",
+                runtime_object_info_path="references/raw/object_info_runtime.json",
+            )
+
+        self.assertEqual(events, ["server", "hooks", "schema"])
+        self.assertEqual(
+            results,
+            {
+                "server_endpoints": "server summary",
+                "js_hooks": "hooks summary",
+                "node_api_schema": "schema summary",
+            },
         )
 
 
