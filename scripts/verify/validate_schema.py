@@ -22,7 +22,6 @@ if str(REPO_ROOT) not in sys.path:
 
 from scripts.common.path_normalization import has_backslashes
 
-
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 REFERENCES_COMMUNITY_DIR = REPO_ROOT / "references" / "community"
 PUBLISHED_SCHEMA_DIR = REPO_ROOT / "docs" / "artifacts" / "schemas"
@@ -349,23 +348,17 @@ def validate_metadata(data: dict, filename: str) -> list[str]:
 
     if filename in {"server_endpoints.json", "js_hooks.json", "node_api_schema.json"}:
         if "source" in metadata:
-            errors.append(
-                f"{filename}: metadata.source is not allowed; use metadata.sources list"
-            )
+            errors.append(f"{filename}: metadata.source is not allowed; use metadata.sources list")
 
     # Check that version starts with 'v'
     version = metadata.get("version", "")
     if version and version != "unversioned" and not version.startswith("v"):
-        errors.append(
-            f"{filename}: metadata.version '{version}' should start with 'v'"
-        )
+        errors.append(f"{filename}: metadata.version '{version}' should start with 'v'")
 
     # Check that commit is a hex string of reasonable length
     commit = metadata.get("commit", "")
     if commit and not all(c in "0123456789abcdef" for c in commit.lower()):
-        errors.append(
-            f"{filename}: metadata.commit '{commit}' should be a hex SHA hash"
-        )
+        errors.append(f"{filename}: metadata.commit '{commit}' should be a hex SHA hash")
 
     # Check that source/sources use forward slashes
     sources = metadata.get("sources", [])
@@ -413,11 +406,7 @@ def validate_coverage(data: dict, filename: str) -> list[str]:
     if not isinstance(coverage, dict):
         return [f"{filename}: coverage expected dict, got {type(coverage).__name__}"]
 
-    schema = (
-        NODE_API_COVERAGE_SCHEMA
-        if filename == "node_api_schema.json"
-        else COVERAGE_SCHEMA
-    )
+    schema = NODE_API_COVERAGE_SCHEMA if filename == "node_api_schema.json" else COVERAGE_SCHEMA
     for key, (expected_type, required) in schema.items():
         if key not in coverage:
             if required:
@@ -506,7 +495,9 @@ def validate_parameter_details(parameters: list, filename: str, path: str) -> li
 
         traceability = parameter.get("traceability")
         if isinstance(traceability, dict):
-            errors.extend(validate_traceability(traceability, filename, f"{path}[{i}].traceability"))
+            errors.extend(
+                validate_traceability(traceability, filename, f"{path}[{i}].traceability")
+            )
     return errors
 
 
@@ -595,7 +586,9 @@ def validate_endpoints(data: dict, filename: str) -> list[str]:
 
         parameters = ep.get("parameters")
         if isinstance(parameters, list):
-            errors.extend(validate_parameter_details(parameters, filename, f"endpoints[{i}].parameters"))
+            errors.extend(
+                validate_parameter_details(parameters, filename, f"endpoints[{i}].parameters")
+            )
 
     return errors
 
@@ -674,7 +667,9 @@ def validate_io_types(data: dict, filename: str) -> list[str]:
         for detail_key in ("input_parameter_details", "output_parameter_details"):
             details = entry.get(detail_key)
             if isinstance(details, list):
-                errors.extend(validate_parameter_details(details, filename, f"io_types[{i}].{detail_key}"))
+                errors.extend(
+                    validate_parameter_details(details, filename, f"io_types[{i}].{detail_key}")
+                )
     return errors
 
 
@@ -802,7 +797,9 @@ def _validate_json_schema_instance(instance, schema: dict, path: str) -> list[st
             if additional_properties is False:
                 errors.append(f"{path}: unexpected key '{key}'")
             elif isinstance(additional_properties, dict):
-                errors.extend(_validate_json_schema_instance(value, additional_properties, child_path))
+                errors.extend(
+                    _validate_json_schema_instance(value, additional_properties, child_path)
+                )
 
     if isinstance(instance, list) and "items" in schema:
         for index, item in enumerate(instance):
@@ -929,9 +926,7 @@ def validate_packages(data: dict, filename: str) -> list[str]:
 
         source_type = package.get("source_type")
         if isinstance(source_type, str) and source_type not in ALLOWED_PACKAGE_SOURCE_TYPES:
-            errors.append(
-                f"{filename}: packages[{i}] has invalid source_type '{source_type}'"
-            )
+            errors.append(f"{filename}: packages[{i}] has invalid source_type '{source_type}'")
 
     return errors
 
@@ -979,9 +974,7 @@ def validate_pages(data: dict, filename: str) -> list[str]:
 
         source_type = page.get("source_type")
         if isinstance(source_type, str) and source_type not in ALLOWED_PAGE_SOURCE_TYPES:
-            errors.append(
-                f"{filename}: pages[{i}] has invalid source_type '{source_type}'"
-            )
+            errors.append(f"{filename}: pages[{i}] has invalid source_type '{source_type}'")
 
     return errors
 
@@ -1046,7 +1039,7 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
         all_errors.extend(errors)
 
     if not errors:
-        print(f"  OK: schema valid")
+        print("  OK: schema valid")
 
 
 def main():

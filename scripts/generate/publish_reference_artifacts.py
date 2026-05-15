@@ -17,8 +17,8 @@ Usage:
     python scripts/generate/publish_reference_artifacts.py
 """
 
-import json
 import hashlib
+import json
 import shutil
 from datetime import date, datetime
 from pathlib import Path

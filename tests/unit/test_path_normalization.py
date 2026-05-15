@@ -2,7 +2,6 @@ import importlib.util
 import unittest
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MODULE_PATH = REPO_ROOT / "scripts" / "common" / "path_normalization.py"
 
@@ -38,7 +37,9 @@ class PathNormalizationTests(unittest.TestCase):
         module = _load_module()
         repo_root = Path(r"C:\repo")
         self.assertEqual(
-            module.normalize_repo_relative_path(Path(r"C:\repo\references\raw\file.json"), repo_root),
+            module.normalize_repo_relative_path(
+                Path(r"C:\repo\references\raw\file.json"), repo_root
+            ),
             "references/raw/file.json",
         )
 

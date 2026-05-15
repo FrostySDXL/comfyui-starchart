@@ -1,12 +1,11 @@
 """Tests for scripts/verify/upstream_pins.py."""
 
 import importlib.util
-import json
 import subprocess
 import sys
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "verify" / "upstream_pins.py"
@@ -54,8 +53,12 @@ class UpstreamPinsMetadataTests(unittest.TestCase):
         self.assertEqual(len(pins), 1)
         pin = pins[0]
         self.assertEqual(pin["source"], "server_endpoints.json")
-        self.assertTrue(pin["version"].startswith("v"), f"Version should start with 'v': {pin['version']}")
-        self.assertTrue(len(pin["commit"]) >= 40, f"Commit hash should be full SHA: {pin['commit']}")
+        self.assertTrue(
+            pin["version"].startswith("v"), f"Version should start with 'v': {pin['version']}"
+        )
+        self.assertTrue(
+            len(pin["commit"]) >= 40, f"Commit hash should be full SHA: {pin['commit']}"
+        )
 
     def test_extract_pins_from_js_hooks(self):
         """extract_pins_from_json should read version and commit from js_hooks.json."""
@@ -68,7 +71,9 @@ class UpstreamPinsMetadataTests(unittest.TestCase):
         self.assertEqual(len(pins), 1)
         pin = pins[0]
         self.assertEqual(pin["source"], "js_hooks.json")
-        self.assertTrue(pin["version"].startswith("v"), f"Version should start with 'v': {pin['version']}")
+        self.assertTrue(
+            pin["version"].startswith("v"), f"Version should start with 'v': {pin['version']}"
+        )
 
     def test_extract_pins_from_node_api_schema(self):
         """extract_pins_from_json should read version and commit from node_api_schema.json."""
@@ -124,19 +129,33 @@ class UpstreamPinsMockTests(unittest.TestCase):
         module = _load_module()
 
         # Mock the HTTP check to return 404
-        with patch.object(module, "_check_commit_via_github_api", return_value=(False, "commit abc NOT FOUND in Comfy-Org/ComfyUI")):
-            with patch.object(module, "_check_tag_via_github_api", return_value=(False, "tag v99.99.99 NOT FOUND in Comfy-Org/ComfyUI")):
+        with patch.object(
+            module,
+            "_check_commit_via_github_api",
+            return_value=(False, "commit abc NOT FOUND in Comfy-Org/ComfyUI"),
+        ):
+            with patch.object(
+                module,
+                "_check_tag_via_github_api",
+                return_value=(False, "tag v99.99.99 NOT FOUND in Comfy-Org/ComfyUI"),
+            ):
                 results = module.verify_pins(use_cache=False)
 
         # At least one result should be invalid
         has_invalid = any(not valid for valid, _ in results)
-        self.assertTrue(has_invalid, "Expected at least one invalid pin result when GitHub returns 404")
+        self.assertTrue(
+            has_invalid, "Expected at least one invalid pin result when GitHub returns 404"
+        )
 
     def test_valid_pin_returns_true(self):
         """When a pin is valid (200 from GitHub), the check should return True."""
         module = _load_module()
 
-        with patch.object(module, "_check_commit_via_github_api", return_value=(True, "commit abc resolves in Comfy-Org/ComfyUI")):
+        with patch.object(
+            module,
+            "_check_commit_via_github_api",
+            return_value=(True, "commit abc resolves in Comfy-Org/ComfyUI"),
+        ):
             result = module._check_commit_via_github_api("Comfy-Org", "ComfyUI", "abc123")
 
         self.assertTrue(result[0])

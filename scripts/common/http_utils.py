@@ -29,7 +29,9 @@ def get_json(url: str, timeout: int = 30, headers: dict | None = None) -> object
     return payload
 
 
-def get_json_with_bytes(url: str, timeout: int = 30, headers: dict | None = None) -> tuple[object, bytes]:
+def get_json_with_bytes(
+    url: str, timeout: int = 30, headers: dict | None = None
+) -> tuple[object, bytes]:
     request = Request(url, headers=headers or {"Accept": "application/json"})
     payload, raw_bytes, _ = _read_json_response(request, timeout)
     return payload, raw_bytes

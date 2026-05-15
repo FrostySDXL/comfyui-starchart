@@ -84,7 +84,9 @@ def socket():
         self.assertEqual(data["endpoints"][0]["description"], "History listing.")
 
         validate_schema = _load_validate_schema()
-        errors = validate_schema.validate_top_level(data, validate_schema.SCHEMAS["server_endpoints.json"], "server_endpoints.json")
+        errors = validate_schema.validate_top_level(
+            data, validate_schema.SCHEMAS["server_endpoints.json"], "server_endpoints.json"
+        )
         errors.extend(validate_schema.validate_metadata(data, "server_endpoints.json"))
         errors.extend(validate_schema.validate_coverage(data, "server_endpoints.json"))
         errors.extend(validate_schema.validate_endpoints(data, "server_endpoints.json"))
@@ -98,11 +100,11 @@ def socket():
             self.assertIn("returns", ep)
 
     def test_metadata_sources_are_repo_relative_when_input_is_in_repo(self):
-        sample = '''
+        sample = """
 @routes.get("/history")
 def history():
     return None
-'''
+"""
 
         with tempfile.TemporaryDirectory(dir=REPO_ROOT) as tmp:
             tmp_path = Path(tmp)
@@ -120,7 +122,7 @@ def history():
             )
 
     def test_json_response_extraction(self):
-        sample = '''
+        sample = """
 @routes.get("/models")
 def list_models(request):
     models = ["a", "b"]
@@ -129,7 +131,7 @@ def list_models(request):
 @routes.post("/prompt")
 def queue_prompt(request):
     return web.json_response({"prompt_id": "abc", "number": 1})
-'''
+"""
 
         endpoints = _extract_single_sample(sample)
 
@@ -143,53 +145,53 @@ def queue_prompt(request):
         self.assertIn("number", fields)
 
     def test_websocket_route_detection(self):
-        sample = '''
+        sample = """
 @routes.get("/ws")
 async def websocket_handler(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
     return ws
-'''
+"""
 
         endpoint = _extract_single_sample(sample)[0]
         self.assertEqual(endpoint["returns"]["kind"], "websocket")
         self.assertIn(101, endpoint["returns"]["status_codes"])
 
     def test_empty_acknowledgement_route(self):
-        sample = '''
+        sample = """
 @routes.post("/interrupt")
 async def post_interrupt(request):
     nodes.interrupt_processing()
     return web.Response(status=200)
-'''
+"""
 
         endpoint = _extract_single_sample(sample)[0]
         self.assertEqual(endpoint["returns"]["kind"], "empty")
         self.assertIn(200, endpoint["returns"]["status_codes"])
 
     def test_file_response_detection(self):
-        sample = '''
+        sample = """
 @routes.get("/")
 async def get_root(request):
     return web.FileResponse(os.path.join(root, "index.html"))
-'''
+"""
 
         endpoint = _extract_single_sample(sample)[0]
         self.assertEqual(endpoint["returns"]["kind"], "file")
 
     def test_unknown_fallback(self):
-        sample = '''
+        sample = """
 @routes.get("/legacy")
 def legacy(request):
     result = some_old_function()
     return result
-'''
+"""
 
         endpoint = _extract_single_sample(sample)[0]
         self.assertEqual(endpoint["returns"]["kind"], "unknown")
 
     def test_helper_delegation(self):
-        sample = '''
+        sample = """
 def image_upload(post):
     if not post.get("image"):
         return web.Response(status=400)
@@ -200,7 +202,7 @@ def image_upload(post):
 async def upload_image(request):
     post = await request.post()
     return image_upload(post)
-'''
+"""
 
         endpoint = _extract_single_sample(sample)[0]
         self.assertEqual(endpoint["returns"]["kind"], "json")
@@ -208,7 +210,7 @@ async def upload_image(request):
 
     def test_nested_function_ignored(self):
         """Nested function definitions should not confuse response inference."""
-        sample = '''
+        sample = """
 @routes.post("/upload/mask")
 async def upload_mask(request):
     post = await request.post()
@@ -220,7 +222,7 @@ async def upload_mask(request):
             f.write(image.file.read())
 
     return image_upload(post, image_save_function)
-'''
+"""
 
         endpoint = _extract_single_sample(sample)[0]
         # The nested Response should be ignored; since image_upload is not defined
@@ -230,7 +232,7 @@ async def upload_mask(request):
     def test_json_response_with_error_response_elsewhere(self):
         """When a handler has both web.Response(status=404) and a json_response,
         the endpoint contract should preserve both success and explicit error codes."""
-        sample = '''
+        sample = """
 @routes.get("/models/{folder}")
 async def get_models(request):
     folder = request.match_info.get("folder", None)
@@ -238,7 +240,7 @@ async def get_models(request):
         return web.Response(status=404)
     files = folder_paths.get_filename_list(folder)
     return web.json_response(files)
-'''
+"""
 
         endpoint = _extract_single_sample(sample)[0]
         # The json_response has no explicit status, so it defaults to 200,
@@ -250,14 +252,14 @@ async def get_models(request):
     def test_json_response_with_explicit_error_status(self):
         """When a json_response has an explicit error status in its argument,
         that status should be reflected in the output."""
-        sample = '''
+        sample = """
 @routes.post("/resource")
 def create_resource(request):
     data = await request.json()
     if not data.get("name"):
         return web.json_response({"error": "name required"}, status=400)
     return web.json_response({"id": "123"})
-'''
+"""
 
         endpoint = _extract_single_sample(sample)[0]
         # Should prefer the success response (more fields)
@@ -267,14 +269,14 @@ def create_resource(request):
 
     def test_json_response_variable_payload_and_augmented_fields(self):
         """Variable-backed dict payloads should expose literal and augmented keys."""
-        sample = '''
+        sample = """
 @routes.post("/upload/image")
 async def upload_image(request):
     resp = {"name": "file.png", "subfolder": "", "type": "input"}
     if request.query.get("asset"):
         resp["asset"] = {"id": "123"}
     return web.json_response(resp)
-'''
+"""
 
         endpoint = _extract_single_sample(sample)[0]
         fields = {f["name"] for f in endpoint["returns"]["fields"]}
@@ -285,7 +287,7 @@ async def upload_image(request):
         )
 
     def test_extracts_route_and_query_parameter_details(self):
-        sample = '''
+        sample = """
 @routes.get("/models/{folder}")
 async def get_models(request):
     folder = request.match_info.get("folder", None)
@@ -296,7 +298,7 @@ async def get_models(request):
     if folder not in folder_paths.folder_names_and_paths:
         return web.Response(status=404)
     return web.json_response({"items": []})
-'''
+"""
 
         endpoint = _extract_single_sample(sample)[0]
         params = {(param["name"], param["location"]): param for param in endpoint["parameters"]}
@@ -309,7 +311,7 @@ async def get_models(request):
         )
 
     def test_extracts_form_parameters_from_helper(self):
-        sample = '''
+        sample = """
 def image_upload(post):
     image = post.get("image")
     overwrite = post.get("overwrite", False)
@@ -319,7 +321,7 @@ def image_upload(post):
 async def upload_image(request):
     post = await request.post()
     return image_upload(post)
-'''
+"""
 
         endpoint = _extract_single_sample(sample)[0]
         params = {(param["name"], param["location"]): param for param in endpoint["parameters"]}
@@ -327,20 +329,20 @@ async def upload_image(request):
         self.assertEqual(params[("overwrite", "form")]["default"], False)
 
     def test_return_traceability_added(self):
-        sample = '''
+        sample = """
 @routes.get("/ws")
 async def websocket_handler(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
     return ws
-'''
+"""
         endpoint = _extract_single_sample(sample)[0]
         returns = endpoint["returns"]
         self.assertEqual(returns["traceability"]["strategy"], "web.WebSocketResponse")
 
     def test_sibling_helper_definitions_do_not_contaminate_route(self):
         """Top-level helpers after a route should not leak fields into that route."""
-        sample = '''
+        sample = """
 @routes.get("/extensions")
 def get_extensions(request):
     extensions = ["/a.js"]
@@ -350,7 +352,7 @@ def image_upload(post):
     resp = {"name": "file.png", "subfolder": "", "type": "input"}
     resp["asset"] = {"id": "123"}
     return web.json_response(resp)
-'''
+"""
 
         endpoint = _extract_single_sample(sample)[0]
         returns = endpoint["returns"]

@@ -6,7 +6,6 @@ import sys
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 

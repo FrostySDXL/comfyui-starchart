@@ -47,14 +47,19 @@ def wait_for_runtime(url: str, timeout: int, interval: float, require_non_empty:
             last_error = str(exc)
 
         if time.monotonic() >= deadline:
-            print(f"ERROR: {url} not ready within {timeout}s. Last error: {last_error}", file=sys.stderr)
+            print(
+                f"ERROR: {url} not ready within {timeout}s. Last error: {last_error}",
+                file=sys.stderr,
+            )
             return 1
 
         time.sleep(interval)
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Wait for a ComfyUI JSON endpoint to become ready.")
+    parser = argparse.ArgumentParser(
+        description="Wait for a ComfyUI JSON endpoint to become ready."
+    )
     parser.add_argument("--url", required=True, help="Full endpoint URL to poll")
     parser.add_argument("--timeout", type=int, default=120, help="Total wait timeout in seconds")
     parser.add_argument("--interval", type=float, default=2.0, help="Polling interval in seconds")

@@ -9,7 +9,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "verify" / "verify_artifact_integrity.py"
 ARTIFACT_FILES = [
@@ -146,7 +145,9 @@ class VerifyArtifactIntegrityUnitTests(unittest.TestCase):
                 }
 
             manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-            self.assertEqual(module.verify_integrity(manifest_path, canonical_dir, published_dir), [])
+            self.assertEqual(
+                module.verify_integrity(manifest_path, canonical_dir, published_dir), []
+            )
 
     def test_missing_manifest_entry(self):
         module = _load_module()
@@ -158,7 +159,9 @@ class VerifyArtifactIntegrityUnitTests(unittest.TestCase):
 
             errors = module.verify_integrity(manifest_path, canonical_dir, published_dir)
 
-            self.assertTrue(any("Missing manifest entry for js_hooks.json" == error for error in errors))
+            self.assertTrue(
+                any("Missing manifest entry for js_hooks.json" == error for error in errors)
+            )
 
     def test_missing_manifest_file(self):
         module = _load_module()

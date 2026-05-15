@@ -103,9 +103,7 @@ def validate_pages(data: dict, filename: str) -> list[str]:
         if generated_from is not None:
             source_path = REPO_ROOT / generated_from
             if not source_path.exists():
-                errors.append(
-                    f"{prefix} generated_from points to missing file '{generated_from}'"
-                )
+                errors.append(f"{prefix} generated_from points to missing file '{generated_from}'")
 
     return errors
 

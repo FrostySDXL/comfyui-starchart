@@ -20,6 +20,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.common import http_utils
+
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 
 CORE_TAGS_URL = "https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=100"
@@ -96,16 +97,23 @@ def _is_newer_version(current_version: str, latest_version: str | None) -> bool:
         return latest_parsed > current_parsed
 
 
-def _build_summary(core_pinned: dict, core_latest: str | None, frontend_pinned: dict, frontend_latest: str | None) -> dict:
+def _build_summary(
+    core_pinned: dict, core_latest: str | None, frontend_pinned: dict, frontend_latest: str | None
+) -> dict:
     """Build a machine-readable summary dict."""
+
     def component_summary(pinned: dict, latest: str | None, name: str) -> dict:
         update_available = _is_newer_version(pinned["version"], latest)
         suggested_refresh_command = ""
         if update_available:
             if name == "ComfyUI Core" and latest:
-                suggested_refresh_command = f"python scripts/refresh_snapshots.py --core-version {latest}"
+                suggested_refresh_command = (
+                    f"python scripts/refresh_snapshots.py --core-version {latest}"
+                )
             elif name == "ComfyUI Frontend" and latest:
-                suggested_refresh_command = f"python scripts/refresh_snapshots.py --frontend-version {latest}"
+                suggested_refresh_command = (
+                    f"python scripts/refresh_snapshots.py --frontend-version {latest}"
+                )
         return {
             "name": name,
             "current_version": pinned["version"],
@@ -121,8 +129,8 @@ def _build_summary(core_pinned: dict, core_latest: str | None, frontend_pinned: 
             component_summary(frontend_pinned, frontend_latest, "ComfyUI Frontend"),
         ],
         "any_update_available": (
-            _is_newer_version(core_pinned["version"], core_latest) or
-            _is_newer_version(frontend_pinned["version"], frontend_latest)
+            _is_newer_version(core_pinned["version"], core_latest)
+            or _is_newer_version(frontend_pinned["version"], frontend_latest)
         ),
     }
 
@@ -143,7 +151,7 @@ def _build_markdown(summary: dict) -> str:
         lines.append(f"- **Current pinned commit:** `{comp['current_commit'] or 'n/a'}`")
         lines.append(f"- **Latest upstream version:** {comp['latest_version']}")
         lines.append(f"- **Update available:** {'Yes' if comp['update_available'] else 'No'}")
-        if comp['suggested_refresh_command']:
+        if comp["suggested_refresh_command"]:
             lines.append(f"- **Suggested refresh command:** `{comp['suggested_refresh_command']}`")
         lines.append("")
 
@@ -151,7 +159,9 @@ def _build_markdown(summary: dict) -> str:
         lines.append("## Next Actions")
         lines.append("")
         lines.append("One or more components have a newer upstream version available.")
-        lines.append("Review the changelog, run the suggested refresh command, and verify the extracted output before updating pins.")
+        lines.append(
+            "Review the changelog, run the suggested refresh command, and verify the extracted output before updating pins."
+        )
     else:
         lines.append("## Status")
         lines.append("")
@@ -165,8 +175,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Compare pinned upstream versions against latest upstream tags."
     )
-    parser.add_argument("--output-json", default=None, help="Path to write machine-readable JSON summary")
-    parser.add_argument("--output-md", default=None, help="Path to write human-readable markdown summary")
+    parser.add_argument(
+        "--output-json", default=None, help="Path to write machine-readable JSON summary"
+    )
+    parser.add_argument(
+        "--output-md", default=None, help="Path to write human-readable markdown summary"
+    )
     parser.add_argument("--timeout", type=int, default=30, help="HTTP timeout in seconds")
     args = parser.parse_args()
 
@@ -174,7 +188,9 @@ def main() -> int:
     frontend_pinned = _read_pinned_version(REFERENCES_RAW_DIR / "js_hooks.json")
 
     if not core_pinned:
-        print("ERROR: Could not read pinned core version from server_endpoints.json", file=sys.stderr)
+        print(
+            "ERROR: Could not read pinned core version from server_endpoints.json", file=sys.stderr
+        )
         return 1
     if not frontend_pinned:
         print("ERROR: Could not read pinned frontend version from js_hooks.json", file=sys.stderr)

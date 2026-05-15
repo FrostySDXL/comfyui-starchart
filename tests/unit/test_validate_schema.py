@@ -1,8 +1,6 @@
 """Tests for scripts/verify/validate_schema.py."""
 
 import json
-import subprocess
-import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -16,6 +14,7 @@ class ValidateSchemaUnitTests(unittest.TestCase):
 
     def _import_module(self):
         import importlib.util
+
         spec = importlib.util.spec_from_file_location("validate_schema", SCRIPT)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
@@ -74,7 +73,11 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                         "summary": "Prompt queued with ID and any node errors.",
                         "status_codes": [200, 400],
                         "fields": [
-                            {"name": "prompt_id", "type_hint": "str", "description": "UUID of the queued prompt"},
+                            {
+                                "name": "prompt_id",
+                                "type_hint": "str",
+                                "description": "UUID of the queued prompt",
+                            },
                             {"name": "number", "type_hint": "int"},
                             {"name": "node_errors", "type_hint": "dict"},
                         ],
@@ -189,7 +192,9 @@ class ValidateSchemaUnitTests(unittest.TestCase):
     def test_valid_server_endpoints_pass(self):
         module = self._import_module()
         data = self._valid_server_endpoints_data()
-        errors = module.validate_top_level(data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json")
+        errors = module.validate_top_level(
+            data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json"
+        )
         errors.extend(module.validate_metadata(data, "server_endpoints.json"))
         errors.extend(module.validate_coverage(data, "server_endpoints.json"))
         errors.extend(module.validate_endpoints(data, "server_endpoints.json"))
@@ -233,7 +238,9 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         module = self._import_module()
         data = self._valid_server_endpoints_data()
         del data["coverage"]
-        errors = module.validate_top_level(data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json")
+        errors = module.validate_top_level(
+            data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json"
+        )
         self.assertTrue(any("missing required key 'coverage'" in e for e in errors))
 
     def test_server_endpoints_rejects_invalid_coverage_shape(self):
@@ -329,7 +336,9 @@ class ValidateSchemaUnitTests(unittest.TestCase):
     def test_valid_node_api_schema_passes(self):
         module = self._import_module()
         data = self._valid_node_api_schema_data()
-        errors = module.validate_top_level(data, module.SCHEMAS["node_api_schema.json"], "node_api_schema.json")
+        errors = module.validate_top_level(
+            data, module.SCHEMAS["node_api_schema.json"], "node_api_schema.json"
+        )
         errors.extend(module.validate_metadata(data, "node_api_schema.json"))
         errors.extend(module.validate_coverage(data, "node_api_schema.json"))
         errors.extend(module.validate_io_types(data, "node_api_schema.json"))
@@ -383,9 +392,7 @@ class ValidateSchemaUnitTests(unittest.TestCase):
             "typed_input_shapes": {
                 "AudioInput": {
                     "description": "audio",
-                    "fields": {
-                        "waveform": {}
-                    },
+                    "fields": {"waveform": {}},
                 }
             },
             "coverage": {
@@ -411,7 +418,9 @@ class ValidateSchemaUnitTests(unittest.TestCase):
             "io_types": [],
             "basic_input_shapes": {},
         }
-        errors = module.validate_top_level(data, module.SCHEMAS["node_api_schema.json"], "node_api_schema.json")
+        errors = module.validate_top_level(
+            data, module.SCHEMAS["node_api_schema.json"], "node_api_schema.json"
+        )
         self.assertTrue(any("missing required key 'coverage'" in e for e in errors))
 
     def test_malformed_io_type_missing_class_name_fails(self):
@@ -453,7 +462,9 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                 }
             },
         }
-        errors = module.validate_top_level(data, module.SCHEMAS["object_info_runtime.json"], "object_info_runtime.json")
+        errors = module.validate_top_level(
+            data, module.SCHEMAS["object_info_runtime.json"], "object_info_runtime.json"
+        )
         errors.extend(module.validate_metadata(data, "object_info_runtime.json"))
         errors.extend(module.validate_object_info_runtime(data, "object_info_runtime.json"))
         self.assertEqual(errors, [])
@@ -519,7 +530,9 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                 }
             ],
         }
-        errors = module.validate_top_level(data, module.COMMUNITY_SCHEMAS["ecosystem_packages.json"], "ecosystem_packages.json")
+        errors = module.validate_top_level(
+            data, module.COMMUNITY_SCHEMAS["ecosystem_packages.json"], "ecosystem_packages.json"
+        )
         errors.extend(module.validate_community_metadata(data, "ecosystem_packages.json"))
         errors.extend(module.validate_packages(data, "ecosystem_packages.json"))
         self.assertEqual(errors, [])
@@ -639,7 +652,9 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                 }
             ],
         }
-        errors = module.validate_top_level(data, module.COMMUNITY_SCHEMAS["community_pages.json"], "community_pages.json")
+        errors = module.validate_top_level(
+            data, module.COMMUNITY_SCHEMAS["community_pages.json"], "community_pages.json"
+        )
         errors.extend(module.validate_community_metadata(data, "community_pages.json"))
         errors.extend(module.validate_pages(data, "community_pages.json"))
         self.assertEqual(errors, [])
@@ -759,6 +774,7 @@ class ValidateSchemaScriptTests(unittest.TestCase):
 
     def _import_module(self):
         import importlib.util
+
         spec = importlib.util.spec_from_file_location("validate_schema", SCRIPT)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)

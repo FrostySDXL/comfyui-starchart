@@ -5,7 +5,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "generate" / "md_from_json.py"
 
@@ -21,13 +20,13 @@ class MarkdownGenerationTests(unittest.TestCase):
                         "metadata": {
                             "sources": ["sample server.py", "extra/source.py"],
                             "extracted_date": "2026-04-19",
-                            "version": "test"
+                            "version": "test",
                         },
                         "coverage": {
                             "description": "contract",
                             "guaranteed_fields": [],
                             "best_effort_fields": [],
-                            "deferred": []
+                            "deferred": [],
                         },
                         "endpoints": [
                             {
@@ -45,9 +44,9 @@ class MarkdownGenerationTests(unittest.TestCase):
                                         {"name": "node_errors"},
                                     ],
                                     "notes": ["Returns 400 for validation failures."],
-                                }
+                                },
                             }
-                        ]
+                        ],
                     },
                     indent=2,
                 ),
@@ -55,7 +54,14 @@ class MarkdownGenerationTests(unittest.TestCase):
             )
 
             result = subprocess.run(
-                [sys.executable, str(SCRIPT), "--input", str(input_path), "--output", str(output_path)],
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--input",
+                    str(input_path),
+                    "--output",
+                    str(output_path),
+                ],
                 capture_output=True,
                 text=True,
                 cwd=REPO_ROOT,
@@ -69,9 +75,15 @@ class MarkdownGenerationTests(unittest.TestCase):
             self.assertIn("sample server.py", rendered)
             self.assertIn("extra/source.py", rendered)
             self.assertIn("| POST | /prompt | Submit prompt |", rendered)
-            self.assertIn("| /prompt | json | 200, 400 | Prompt queued with ID and any node errors. |", rendered)
+            self.assertIn(
+                "| /prompt | json | 200, 400 | Prompt queued with ID and any node errors. |",
+                rendered,
+            )
             self.assertIn("## Structured Return Details", rendered)
-            self.assertIn("| /prompt | prompt_id, number, node_errors | Returns 400 for validation failures. |", rendered)
+            self.assertIn(
+                "| /prompt | prompt_id, number, node_errors | Returns 400 for validation failures. |",
+                rendered,
+            )
 
     def test_writes_placeholder_when_no_endpoints_exist(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -83,15 +95,15 @@ class MarkdownGenerationTests(unittest.TestCase):
                         "metadata": {
                             "sources": ["sample server.py"],
                             "extracted_date": "2026-04-19",
-                            "version": "test"
+                            "version": "test",
                         },
                         "coverage": {
                             "description": "contract",
                             "guaranteed_fields": [],
                             "best_effort_fields": [],
-                            "deferred": []
+                            "deferred": [],
                         },
-                        "endpoints": []
+                        "endpoints": [],
                     },
                     indent=2,
                 ),
@@ -99,7 +111,14 @@ class MarkdownGenerationTests(unittest.TestCase):
             )
 
             result = subprocess.run(
-                [sys.executable, str(SCRIPT), "--input", str(input_path), "--output", str(output_path)],
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--input",
+                    str(input_path),
+                    "--output",
+                    str(output_path),
+                ],
                 capture_output=True,
                 text=True,
                 cwd=REPO_ROOT,

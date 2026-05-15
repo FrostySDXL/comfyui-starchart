@@ -15,6 +15,7 @@ class CommunityStalenessUnitTests(unittest.TestCase):
 
     def _import_module(self):
         import importlib.util
+
         spec = importlib.util.spec_from_file_location("community_staleness", SCRIPT)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
@@ -64,9 +65,7 @@ class CommunityStalenessUnitTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             community_dir = Path(tmpdir)
             (community_dir / "ecosystem_packages.json").write_text("{", encoding="utf-8")
-            (
-                community_dir / "community_pages.json"
-            ).write_text('{"pages": []}', encoding="utf-8")
+            (community_dir / "community_pages.json").write_text('{"pages": []}', encoding="utf-8")
 
             old_dir = module.COMMUNITY_DIR
             try:

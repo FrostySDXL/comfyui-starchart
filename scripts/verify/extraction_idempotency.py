@@ -21,7 +21,6 @@ if str(REPO_ROOT) not in sys.path:
 
 from scripts.common.path_normalization import normalize_repo_path, normalize_repo_relative_path
 
-
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 SCRIPTS_EXTRACT_DIR = REPO_ROOT / "scripts" / "extract"
 
@@ -108,7 +107,6 @@ def verify_idempotency(json_path: Path) -> list[str]:
     # Run the extractor, capturing output to a temp location
     # The extractors write to the same JSON file, so we need to save and restore
     import tempfile
-    import shutil
 
     with tempfile.TemporaryDirectory() as tmpdir:
         # Back up current content
@@ -169,9 +167,7 @@ def verify_idempotency(json_path: Path) -> list[str]:
                 )
 
     if not differences:
-        differences.append(
-            f"Normalized content differs after re-running {script_name}"
-        )
+        differences.append(f"Normalized content differs after re-running {script_name}")
 
     return differences
 
@@ -189,7 +185,7 @@ def main():
                 print(f"  DIFF: {diff}")
             all_differences.extend([(json_file.name, d) for d in diffs])
         else:
-            print(f"  OK: output matches")
+            print("  OK: output matches")
 
     print()
     if not all_differences:

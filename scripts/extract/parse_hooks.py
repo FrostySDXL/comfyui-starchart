@@ -5,17 +5,15 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.common.path_normalization import normalize_repo_relative_path
 
-
 OUTPUT_PATH = REPO_ROOT / "references" / "raw" / "js_hooks.json"
 INVOKE_RE = re.compile(r'invokeExtensions(Async)?\(\s*["\']([^"\']+)["\']')
-HOOK_NAME_RE = re.compile(r'^\s*([A-Za-z0-9_]+)\?\(')
+HOOK_NAME_RE = re.compile(r"^\s*([A-Za-z0-9_]+)\?\(")
 KNOWN_HOOKS = ["beforeRegisterNodeDef", "nodeCreated", "init", "setup"]
 
 HOOK_COVERAGE = {
@@ -89,7 +87,7 @@ def _extract_typed_signature(lines: list[str], start_index: int) -> tuple[dict |
         paren_depth += candidate.count("(") - candidate.count(")")
         combined = " ".join(signature_lines)
         if paren_depth <= 0 and "?" in combined and "):" in combined:
-            match = re.match(r'^([A-Za-z0-9_]+)\?\((.*)\)\s*:\s*(.+)$', combined)
+            match = re.match(r"^([A-Za-z0-9_]+)\?\((.*)\)\s*:\s*(.+)$", combined)
             if match:
                 name, argument_text, return_type = match.groups()
                 return {
@@ -105,8 +103,8 @@ def _extract_typed_signature(lines: list[str], start_index: int) -> tuple[dict |
 
 def _looks_like_known_hook_implementation(source_text: str, hook_name: str) -> bool:
     patterns = [
-        rf'\b(?:async\s+)?{re.escape(hook_name)}\s*\(',
-        rf'\b{re.escape(hook_name)}\s*:',
+        rf"\b(?:async\s+)?{re.escape(hook_name)}\s*\(",
+        rf"\b{re.escape(hook_name)}\s*:",
     ]
     return any(re.search(pattern, source_text) for pattern in patterns)
 
@@ -269,7 +267,9 @@ def main() -> int:
 
     source_paths = [Path(path) for path in args.source_paths]
     source_map = {
-        normalize_repo_relative_path(source_path, REPO_ROOT): source_path.read_text(encoding="utf-8")
+        normalize_repo_relative_path(source_path, REPO_ROOT): source_path.read_text(
+            encoding="utf-8"
+        )
         for source_path in source_paths
     }
     hooks = extract_hooks(source_map)

@@ -5,7 +5,6 @@ import argparse
 import json
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = REPO_ROOT / "docs" / "artifacts" / "delta-summary.json"
 CANONICAL_ARTIFACTS = [
@@ -37,7 +36,9 @@ def _compare_mapping(old_map: dict, new_map: dict) -> dict:
     old_keys = set(old_map)
     new_keys = set(new_map)
     shared_keys = old_keys & new_keys
-    changed = sorted(key for key in shared_keys if _json_key(old_map[key]) != _json_key(new_map[key]))
+    changed = sorted(
+        key for key in shared_keys if _json_key(old_map[key]) != _json_key(new_map[key])
+    )
     return {
         "old_count": len(old_map),
         "new_count": len(new_map),
@@ -69,7 +70,9 @@ def _node_sections(data: dict) -> dict[str, dict]:
     }
 
 
-def build_delta_summary(old_artifacts: dict[str, dict], new_artifacts: dict[str, dict], old_label: str, new_label: str) -> dict:
+def build_delta_summary(
+    old_artifacts: dict[str, dict], new_artifacts: dict[str, dict], old_label: str, new_label: str
+) -> dict:
     old_node = _node_sections(old_artifacts["node_api_schema.json"])
     new_node = _node_sections(new_artifacts["node_api_schema.json"])
     return {
@@ -91,9 +94,13 @@ def build_delta_summary(old_artifacts: dict[str, dict], new_artifacts: dict[str,
                 _hook_map(new_artifacts["js_hooks.json"]),
             ),
             "node_api_schema": {
-                "object_info_fields": _compare_mapping(old_node["object_info_fields"], new_node["object_info_fields"]),
+                "object_info_fields": _compare_mapping(
+                    old_node["object_info_fields"], new_node["object_info_fields"]
+                ),
                 "io_types": _compare_mapping(old_node["io_types"], new_node["io_types"]),
-                "typed_input_shapes": _compare_mapping(old_node["typed_input_shapes"], new_node["typed_input_shapes"]),
+                "typed_input_shapes": _compare_mapping(
+                    old_node["typed_input_shapes"], new_node["typed_input_shapes"]
+                ),
             },
         },
     }
@@ -112,7 +119,9 @@ def main() -> int:
         required=True,
         help="Directory containing the old baseline artifacts (typically the auto-created references/raw_backup_<timestamp> path)",
     )
-    parser.add_argument("--new", required=True, help="Directory containing the new baseline artifacts")
+    parser.add_argument(
+        "--new", required=True, help="Directory containing the new baseline artifacts"
+    )
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT), help="Output JSON path")
     args = parser.parse_args()
 
@@ -122,10 +131,14 @@ def main() -> int:
 
     old_artifacts = _artifact_map(old_dir)
     new_artifacts = _artifact_map(new_dir)
-    summary = build_delta_summary(old_artifacts, new_artifacts, old_dir.as_posix(), new_dir.as_posix())
+    summary = build_delta_summary(
+        old_artifacts, new_artifacts, old_dir.as_posix(), new_dir.as_posix()
+    )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    output_path.write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     print(f"Generated snapshot delta summary at {output_path}")
     return 0
 

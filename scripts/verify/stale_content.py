@@ -8,7 +8,6 @@ Exits 0 if no stale content found, exits 1 with a report of stale items.
 """
 
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -35,14 +34,18 @@ def find_stale_in_json() -> list[tuple[str, int, str]]:
     return stale
 
 
-def _find_stale_in_json_value(
-    json_file: Path, value, stale: list, path: str = ""
-):
+def _find_stale_in_json_value(json_file: Path, value, stale: list, path: str = ""):
     """Recursively search JSON values for stale markers."""
     if isinstance(value, str):
         for marker in STALE_MARKERS:
             if marker in value:
-                stale.append((str(json_file.relative_to(Path.cwd())), 0, f"{path}: {marker} in \"{value[:80]}\""))
+                stale.append(
+                    (
+                        str(json_file.relative_to(Path.cwd())),
+                        0,
+                        f'{path}: {marker} in "{value[:80]}"',
+                    )
+                )
                 break
     elif isinstance(value, dict):
         for k, v in value.items():
@@ -70,18 +73,16 @@ def find_stale_in_markdown() -> list[tuple[str, int, str]]:
                         continue
                     # Allow the word TODO in explanatory text only if it's clearly a task marker
                     # (not in a JSON value or code sample)
-                    if marker == "TODO" and ("returns" in line.lower() or "description" in line.lower()):
-                        stale.append((
-                            str(md_file.relative_to(Path.cwd())),
-                            line_num,
-                            stripped[:100]
-                        ))
+                    if marker == "TODO" and (
+                        "returns" in line.lower() or "description" in line.lower()
+                    ):
+                        stale.append(
+                            (str(md_file.relative_to(Path.cwd())), line_num, stripped[:100])
+                        )
                     elif marker != "TODO":
-                        stale.append((
-                            str(md_file.relative_to(Path.cwd())),
-                            line_num,
-                            stripped[:100]
-                        ))
+                        stale.append(
+                            (str(md_file.relative_to(Path.cwd())), line_num, stripped[:100])
+                        )
                     break
     return stale
 

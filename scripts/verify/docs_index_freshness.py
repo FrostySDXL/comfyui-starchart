@@ -46,7 +46,9 @@ def verify_freshness() -> int:
         print(f"ERROR: Committed file not found at {COMMITTED_PATH}")
         return 1
 
-    generated = render_docs_index_text(generate_docs_index.build_docs_index(generate_docs_index.REPO_ROOT))
+    generated = render_docs_index_text(
+        generate_docs_index.build_docs_index(generate_docs_index.REPO_ROOT)
+    )
     committed = COMMITTED_PATH.read_text(encoding="utf-8")
 
     if generated == committed:

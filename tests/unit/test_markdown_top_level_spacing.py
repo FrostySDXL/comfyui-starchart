@@ -51,11 +51,7 @@ class MarkdownTopLevelSpacingUnitTests(unittest.TestCase):
     def test_multiple_fenced_blocks_toggle_cleanly(self):
         module = _load_module()
         content = (
-            "```md\n ## Scope\n```\n"
-            "\n"
-            "```text\n **Last Updated:** nope\n```\n"
-            "\n"
-            "  ## Real issue\n"
+            "```md\n ## Scope\n```\n\n```text\n **Last Updated:** nope\n```\n\n  ## Real issue\n"
         )
         self.assertEqual(module.find_leading_space_issues(content), [(9, "  ## Real issue")])
 

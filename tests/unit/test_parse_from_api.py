@@ -59,7 +59,9 @@ class ParseFromApiUnitTests(unittest.TestCase):
         fake_payload = {"KSampler": {"input": {}}}
         fake_bytes = json.dumps(fake_payload).encode("utf-8")
 
-        with patch.object(module.http_utils, "get_json_with_bytes", return_value=(fake_payload, fake_bytes)) as mock_get_json:
+        with patch.object(
+            module.http_utils, "get_json_with_bytes", return_value=(fake_payload, fake_bytes)
+        ) as mock_get_json:
             result, raw_bytes = module.fetch_object_info("http://127.0.0.1:8188", timeout=10)
 
         self.assertEqual(result, fake_payload)
@@ -71,7 +73,9 @@ class ParseFromApiUnitTests(unittest.TestCase):
         with patch.object(
             module.http_utils,
             "get_json_with_bytes",
-            side_effect=RuntimeError("HTTP error 500 from http://127.0.0.1:8188/object_info: Internal Server Error"),
+            side_effect=RuntimeError(
+                "HTTP error 500 from http://127.0.0.1:8188/object_info: Internal Server Error"
+            ),
         ):
             with self.assertRaises(RuntimeError) as ctx:
                 module.fetch_object_info("http://127.0.0.1:8188", timeout=10)
@@ -82,7 +86,9 @@ class ParseFromApiUnitTests(unittest.TestCase):
         with patch.object(
             module.http_utils,
             "get_json_with_bytes",
-            side_effect=RuntimeError("Invalid JSON from http://127.0.0.1:8188/object_info: bad payload"),
+            side_effect=RuntimeError(
+                "Invalid JSON from http://127.0.0.1:8188/object_info: bad payload"
+            ),
         ):
             with self.assertRaises(RuntimeError) as ctx:
                 module.fetch_object_info("http://127.0.0.1:8188", timeout=10)
@@ -111,7 +117,9 @@ class HttpUtilsBehaviorTests(unittest.TestCase):
         with patch.object(module, "urlopen", side_effect=TimeoutError):
             with self.assertRaises(RuntimeError) as ctx:
                 module.get_json("http://127.0.0.1:8188/object_info", timeout=5)
-        self.assertIn("Timeout reaching http://127.0.0.1:8188/object_info after 5s", str(ctx.exception))
+        self.assertIn(
+            "Timeout reaching http://127.0.0.1:8188/object_info after 5s", str(ctx.exception)
+        )
 
 
 class ParseFromApiScriptTests(unittest.TestCase):
@@ -134,14 +142,23 @@ class ParseFromApiScriptTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = Path(tmpdir) / "object_info_runtime_test.json"
 
-            with patch.object(module.http_utils, "get_json_with_bytes", return_value=(fake_payload, fake_bytes)):
-                with patch("sys.argv", [
-                    "parse_from_api.py",
-                    "--url", "http://127.0.0.1:8188",
-                    "--version", "v0.19.3",
-                    "--commit", "3086026401180c9216bcb6ace442a4e3587d2c66",
-                    "--output", str(output_path),
-                ]):
+            with patch.object(
+                module.http_utils, "get_json_with_bytes", return_value=(fake_payload, fake_bytes)
+            ):
+                with patch(
+                    "sys.argv",
+                    [
+                        "parse_from_api.py",
+                        "--url",
+                        "http://127.0.0.1:8188",
+                        "--version",
+                        "v0.19.3",
+                        "--commit",
+                        "3086026401180c9216bcb6ace442a4e3587d2c66",
+                        "--output",
+                        str(output_path),
+                    ],
+                ):
                     result = module.main()
 
             self.assertEqual(result, 0)

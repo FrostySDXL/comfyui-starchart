@@ -10,7 +10,6 @@ from pathlib import Path
 
 import yaml
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MKDOCS_CONFIG = REPO_ROOT / "mkdocs.yml"
 DOCS_ROOT = REPO_ROOT / "docs"
@@ -53,7 +52,9 @@ def _flatten_nav(items: list, section_path: list[str] | None = None) -> list[dic
             pages.append(
                 {
                     "nav_label": Path(normalized_path).stem,
-                    "nav_section": " / ".join(section_path) if section_path else Path(normalized_path).stem,
+                    "nav_section": " / ".join(section_path)
+                    if section_path
+                    else Path(normalized_path).stem,
                     "path": normalized_path,
                 }
             )
@@ -163,12 +164,20 @@ def build_docs_index(repo_root: Path = REPO_ROOT) -> dict[str, object]:
 
 def write_docs_index(docs_index: dict[str, object], output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(docs_index, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    output_path.write_text(
+        json.dumps(docs_index, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate docs/artifacts/docs-index.json from the MkDocs nav and published docs pages.")
-    parser.add_argument("--output", default=str(OUTPUT_PATH), help="Output JSON path (defaults to docs/artifacts/docs-index.json)")
+    parser = argparse.ArgumentParser(
+        description="Generate docs/artifacts/docs-index.json from the MkDocs nav and published docs pages."
+    )
+    parser.add_argument(
+        "--output",
+        default=str(OUTPUT_PATH),
+        help="Output JSON path (defaults to docs/artifacts/docs-index.json)",
+    )
     args = parser.parse_args()
 
     docs_index = build_docs_index(REPO_ROOT)

@@ -4,14 +4,15 @@
 Runs the default local pre-push sequence in the same blocking order as the
 cross-platform CI blocking path (ubuntu-latest and windows-latest):
     1. Unit tests
-    2. cross_references.py
-    3. docs_index_freshness.py
-    4. validate_schema.py
-    5. verify_artifact_integrity.py
-    6. markdown_top_level_spacing.py
-    7. community_generated_freshness.py
-    8. community_page_coverage.py
-    9. mkdocs build
+    2. python_style.py
+    3. cross_references.py
+    4. docs_index_freshness.py
+    5. validate_schema.py
+    6. verify_artifact_integrity.py
+    7. markdown_top_level_spacing.py
+    8. community_generated_freshness.py
+    9. community_page_coverage.py
+    10. mkdocs build
 
 Advisory/non-blocking checks remain separate and are not included here.
 
@@ -37,7 +38,7 @@ def run_step(cmd: list[str], description: str, cwd: str | None = None) -> bool:
     print(f"\n=== {description} ===")
     result = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
     if result.stdout:
-        print(result.stdout)
+        print(result.stdout.rstrip())
     if result.returncode != 0:
         print(f"FAILED: {description}", file=sys.stderr)
         if result.stderr:
@@ -76,6 +77,13 @@ def main() -> int:
                 "Unit tests",
             )
         )
+
+    steps.append(
+        (
+            [sys.executable, str(SCRIPTS_VERIFY_DIR / "python_style.py")],
+            "Python style verification",
+        )
+    )
 
     steps.append(
         (

@@ -1,0 +1,31 @@
+target-version = "py311"
+line-length = 100
+# Scope intentionally targets the maintainer-owned Python surface.
+# Hand-authored examples stay outside this first gate to avoid churn on
+# consumer-facing pattern files that are not part of the default CI wrapper.
+include = ["scripts/**/*.py", "tests/**/*.py"]
+
+[lint]
+# Conservative first gate: import hygiene, syntax/runtime correctness, and
+# deterministic import ordering. Deliberately omits broader style/complexity
+# rules so the initial enforcement surface stays low-churn.
+select = [
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    "I",
+]
+
+[lint.per-file-ignores]
+# Files that conditionally add REPO_ROOT to sys.path before local imports
+"scripts/check_upstream_versions.py" = ["E402"]
+"scripts/extract/parse_from_api.py" = ["E402"]
+"scripts/extract/parse_hooks.py" = ["E402"]
+"scripts/extract/parse_node_api_schema.py" = ["E402"]
+"scripts/extract/parse_server.py" = ["E402"]
+"scripts/verify/community_page_coverage.py" = ["E402"]
+"scripts/verify/cross_references.py" = ["E402"]
+"scripts/verify/extraction_idempotency.py" = ["E402"]
+"scripts/verify/runtime_smoke.py" = ["E402"]
+"scripts/verify/validate_schema.py" = ["E402"]

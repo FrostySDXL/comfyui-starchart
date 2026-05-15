@@ -48,7 +48,7 @@ class ParseNodeApiSchemaTests(unittest.TestCase):
         self.assertIn("usage", (result.stdout + result.stderr).lower())
 
     def test_extracts_object_info_and_io_types(self):
-        server_sample = '''
+        server_sample = """
 def node_info(node_class):
     info = {}
     info['input'] = obj_class.INPUT_TYPES()
@@ -57,9 +57,9 @@ def node_info(node_class):
     info['category'] = 'sd'
     info['search_aliases'] = []
     return info
-'''
+"""
 
-        io_sample = '''
+        io_sample = """
 @comfytype(io_type="BOOLEAN")
 class Boolean(ComfyTypeIO):
     Type = bool
@@ -98,7 +98,7 @@ class Histogram(ComfyTypeIO):
 
     def __init__(self, unique_id: str, prompt: object):
         pass
-'''
+"""
 
         basic_types_sample = '''
 ImageInput = torch.Tensor
@@ -149,10 +149,16 @@ class AudioInput(TypedDict):
                         "runtime_sections": [],
                     },
                 },
-                "object_info_fields": parse_node_api_schema.extract_object_info_fields(server_sample),
+                "object_info_fields": parse_node_api_schema.extract_object_info_fields(
+                    server_sample
+                ),
                 "io_types": parse_node_api_schema.extract_io_types(io_sample, str(io_path)),
-                "basic_input_shapes": parse_node_api_schema.extract_basic_input_shapes(basic_types_sample),
-                "typed_input_shapes": parse_node_api_schema.extract_typed_input_shapes(basic_types_sample, str(basic_types_path)),
+                "basic_input_shapes": parse_node_api_schema.extract_basic_input_shapes(
+                    basic_types_sample
+                ),
+                "typed_input_shapes": parse_node_api_schema.extract_typed_input_shapes(
+                    basic_types_sample, str(basic_types_path)
+                ),
                 "coverage": {
                     "description": (
                         "Extracted from pinned source files only. "
@@ -184,21 +190,40 @@ class AudioInput(TypedDict):
             self.assertEqual(io_types["BOOLEAN"]["defined_in"], str(io_path).replace("\\", "/"))
 
             self.assertEqual(io_types["STRING"]["type_hint"], "str")
-            self.assertEqual(io_types["STRING"]["output_parameters"], ["display_name", "tooltip", "is_output_list"])
+            self.assertEqual(
+                io_types["STRING"]["output_parameters"],
+                ["display_name", "tooltip", "is_output_list"],
+            )
             self.assertEqual(io_types["LOAD_3D_ANIMATION"]["type_hint"], "Model3DDict")
             self.assertEqual(io_types["POINT"]["type_hint"], "Any")
             self.assertEqual(io_types["HISTOGRAM"]["input_class"], None)
             self.assertEqual(io_types["HISTOGRAM"]["input_parameters"], [])
 
-            self.assertEqual(data["basic_input_shapes"]["ImageInput"], "An image in format [B, H, W, C]")
-            self.assertIn("AudioInput", data["typed_input_shapes"])
-            self.assertEqual(data["typed_input_shapes"]["AudioInput"]["description"], "TypedDict representing audio input.")
-            self.assertEqual(data["typed_input_shapes"]["AudioInput"]["defined_in"], str(basic_types_path).replace("\\", "/"))
-            self.assertIn("waveform", data["typed_input_shapes"]["AudioInput"]["fields"])
-            self.assertEqual(data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["type"], "torch.Tensor")
-            self.assertIn("Tensor in format [B, C, T].", data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["description"])
             self.assertEqual(
-                data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["traceability"]["strategy"],
+                data["basic_input_shapes"]["ImageInput"], "An image in format [B, H, W, C]"
+            )
+            self.assertIn("AudioInput", data["typed_input_shapes"])
+            self.assertEqual(
+                data["typed_input_shapes"]["AudioInput"]["description"],
+                "TypedDict representing audio input.",
+            )
+            self.assertEqual(
+                data["typed_input_shapes"]["AudioInput"]["defined_in"],
+                str(basic_types_path).replace("\\", "/"),
+            )
+            self.assertIn("waveform", data["typed_input_shapes"]["AudioInput"]["fields"])
+            self.assertEqual(
+                data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["type"],
+                "torch.Tensor",
+            )
+            self.assertIn(
+                "Tensor in format [B, C, T].",
+                data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["description"],
+            )
+            self.assertEqual(
+                data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["traceability"][
+                    "strategy"
+                ],
                 "typed_dict_field",
             )
 
@@ -231,17 +256,17 @@ class AudioInput(TypedDict):
                 self.assertIn("defined_in", entry)
 
     def test_metadata_sources_and_defined_in_are_repo_relative_when_inputs_are_in_repo(self):
-        server_sample = '''
+        server_sample = """
 def node_info(node_class):
     info = {}
     info['input'] = obj_class.INPUT_TYPES()
     return info
-'''
-        io_sample = '''
+"""
+        io_sample = """
 @comfytype(io_type="BOOLEAN")
 class Boolean(ComfyTypeIO):
     Type = bool
-'''
+"""
         basic_types_sample = '''
 ImageInput = torch.Tensor
 """An image tensor."""
@@ -300,9 +325,15 @@ ImageInput = torch.Tensor
             # Optional with Union
             ("value: Optional[Union[str, int]]", ["value"]),
             # Realistic signature from CurveInput
-            ("display_name: str, default: CurveInput_=None, socketless: bool=False, optional: bool=False, tooltip: str=None", ["display_name", "default", "socketless", "optional", "tooltip"]),
+            (
+                "display_name: str, default: CurveInput_=None, socketless: bool=False, optional: bool=False, tooltip: str=None",
+                ["display_name", "default", "socketless", "optional", "tooltip"],
+            ),
             # This is the actual bug case - float]] should not appear
-            ("display_name: str, default: CurveInput_=None, socketless: bool=True", ["display_name", "default", "socketless"]),
+            (
+                "display_name: str, default: CurveInput_=None, socketless: bool=True",
+                ["display_name", "default", "socketless"],
+            ),
         ]
 
         for sig_text, expected in test_cases:
@@ -312,7 +343,7 @@ ImageInput = torch.Tensor
     def test_match_type_without_top_level_type_remains_null(self):
         module = _load_parse_node_api_schema()
 
-        io_sample = '''
+        io_sample = """
 @comfytype(io_type="COMFY_MATCHTYPE_V3")
 class MatchType(ComfyTypeIO):
     class Template:
@@ -322,7 +353,7 @@ class MatchType(ComfyTypeIO):
     class Input(Input):
         def __init__(self, id: str, template: MatchType.Template):
             pass
-'''
+"""
 
         io_types = module.extract_io_types(io_sample, "sample/_io.py")
         self.assertEqual(io_types[0]["type_hint"], None)
@@ -338,20 +369,20 @@ class MatchType(ComfyTypeIO):
         self.assertEqual(details[0]["default"], "first")
 
     def test_hybrid_mode_merges_runtime_snapshot(self):
-        server_sample = '''
+        server_sample = """
 def node_info(node_class):
     info = {}
     info['input'] = obj_class.INPUT_TYPES()
     return info
-'''
-        io_sample = '''
+"""
+        io_sample = """
 @comfytype(io_type="BOOLEAN")
 class Boolean(ComfyTypeIO):
     Type = bool
     class Input(WidgetInput):
         def __init__(self, id: str, default: bool=None):
             pass
-'''
+"""
         basic_types_sample = '''
 ImageInput = torch.Tensor
 """An image tensor."""
@@ -388,10 +419,14 @@ ImageInput = torch.Tensor
                 server_path,
                 io_path,
                 basic_types_path,
-                "--version", "v-test",
-                "--commit", "abc123",
-                "--object-info-runtime-path", str(runtime_path),
-                "--output", str(out_path),
+                "--version",
+                "v-test",
+                "--commit",
+                "abc123",
+                "--object-info-runtime-path",
+                str(runtime_path),
+                "--output",
+                str(out_path),
             )
 
             self.assertEqual(exit_code, 0, msg=stderr)
@@ -423,20 +458,20 @@ ImageInput = torch.Tensor
             self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
 
     def test_source_only_mode_no_runtime_sections(self):
-        server_sample = '''
+        server_sample = """
 def node_info(node_class):
     info = {}
     info['input'] = obj_class.INPUT_TYPES()
     return info
-'''
-        io_sample = '''
+"""
+        io_sample = """
 @comfytype(io_type="BOOLEAN")
 class Boolean(ComfyTypeIO):
     Type = bool
     class Input(WidgetInput):
         def __init__(self, id: str, default: bool=None):
             pass
-'''
+"""
         basic_types_sample = '''
 ImageInput = torch.Tensor
 """An image tensor."""
@@ -456,9 +491,12 @@ ImageInput = torch.Tensor
                 server_path,
                 io_path,
                 basic_types_path,
-                "--version", "v-test",
-                "--commit", "abc123",
-                "--output", str(out_path),
+                "--version",
+                "v-test",
+                "--commit",
+                "abc123",
+                "--output",
+                str(out_path),
             )
 
             self.assertEqual(exit_code, 0, msg=stderr)
@@ -469,17 +507,17 @@ ImageInput = torch.Tensor
             self.assertFalse(data["coverage"]["runtime_enriched"])
 
     def test_hybrid_mode_with_runtime_snapshot_missing_object_info_stays_bounded(self):
-        server_sample = '''
+        server_sample = """
 def node_info(node_class):
     info = {}
     info['input'] = obj_class.INPUT_TYPES()
     return info
-'''
-        io_sample = '''
+"""
+        io_sample = """
 @comfytype(io_type="BOOLEAN")
 class Boolean(ComfyTypeIO):
     Type = bool
-'''
+"""
         basic_types_sample = '''
 ImageInput = torch.Tensor
 """An image tensor."""
@@ -511,8 +549,10 @@ ImageInput = torch.Tensor
                 server_path,
                 io_path,
                 basic_types_path,
-                "--object-info-runtime-path", str(runtime_path),
-                "--output", str(out_path),
+                "--object-info-runtime-path",
+                str(runtime_path),
+                "--output",
+                str(out_path),
             )
 
             self.assertEqual(exit_code, 0, msg=stderr)
@@ -522,20 +562,20 @@ ImageInput = torch.Tensor
             self.assertEqual(data["runtime_object_info"], {})
 
     def test_custom_output_path_writes_outside_canonical_reference(self):
-        server_sample = '''
+        server_sample = """
 def node_info(node_class):
     info = {}
     info['input'] = obj_class.INPUT_TYPES()
     return info
-'''
-        io_sample = '''
+"""
+        io_sample = """
 @comfytype(io_type="BOOLEAN")
 class Boolean(ComfyTypeIO):
     Type = bool
     class Input(WidgetInput):
         def __init__(self, id: str, default: bool=None):
             pass
-'''
+"""
         basic_types_sample = '''
 ImageInput = torch.Tensor
 """An image tensor."""
@@ -555,9 +595,12 @@ ImageInput = torch.Tensor
                 server_path,
                 io_path,
                 basic_types_path,
-                "--version", "v-test",
-                "--commit", "abc123",
-                "--output", str(output_path),
+                "--version",
+                "v-test",
+                "--commit",
+                "abc123",
+                "--output",
+                str(output_path),
             )
 
             self.assertEqual(exit_code, 0, msg=stderr)

@@ -1,6 +1,5 @@
 """Edge case tests for extractors and schema validator."""
 
-import importlib.util
 import json
 import tempfile
 import unittest
@@ -13,6 +12,7 @@ PARSE_SERVER = REPO_ROOT / "scripts" / "extract" / "parse_server.py"
 PARSE_HOOKS = REPO_ROOT / "scripts" / "extract" / "parse_hooks.py"
 PARSE_NODE_API = REPO_ROOT / "scripts" / "extract" / "parse_node_api_schema.py"
 VALIDATE_SCHEMA = REPO_ROOT / "scripts" / "verify" / "validate_schema.py"
+
 
 def _load_parse_server():
     return load_module("parse_server", PARSE_SERVER)
@@ -35,7 +35,9 @@ def _load_parse_node_api():
     return load_module("parse_node_api_schema", PARSE_NODE_API)
 
 
-def _run_parse_node_api_main(server_path: Path, io_path: Path, basic_types_path: Path, *extra_args: str):
+def _run_parse_node_api_main(
+    server_path: Path, io_path: Path, basic_types_path: Path, *extra_args: str
+):
     return call_main(
         _load_parse_node_api(),
         str(server_path),
@@ -65,11 +67,11 @@ class ParseServerEdgeCases(unittest.TestCase):
 
     def test_decorators_without_docstrings(self):
         """Routes with decorators but no docstrings should still be extracted."""
-        sample = '''
+        sample = """
 @routes.get("/test")
 def test_route():
     return None
-'''
+"""
         endpoints = _load_parse_server().extract_endpoints(sample)
         self.assertEqual(len(endpoints), 1)
         self.assertEqual(endpoints[0]["route"], "/test")
@@ -95,8 +97,7 @@ def test_route():
             self.assertNotIn("source", data["metadata"])
             self.assertIsInstance(data["metadata"]["sources"], list)
             for source in data["metadata"]["sources"]:
-                self.assertNotIn("\\", source,
-                                 "Source path should not contain backslashes")
+                self.assertNotIn("\\", source, "Source path should not contain backslashes")
 
     def test_unicode_in_docstring(self):
         """Unicode characters in docstrings should be handled correctly."""
@@ -111,12 +112,12 @@ def status():
 
     def test_variable_payload_without_literal_assignment_stays_conservative(self):
         """Unknown variable-backed payloads should not invent response fields."""
-        sample = '''
+        sample = """
 @routes.get("/legacy")
 def legacy_route():
     response = build_response()
     return web.json_response(response)
-'''
+"""
         returns = _load_parse_server().extract_endpoints(sample)[0]["returns"]
         self.assertEqual(returns["kind"], "json")
         self.assertEqual(returns["fields"], [])
@@ -134,9 +135,12 @@ class ParseHooksEdgeCases(unittest.TestCase):
             app_path.write_text("", encoding="utf-8")
             exit_code, _stdout, stderr = _run_parse_hooks_main(
                 str(app_path),
-                "--version", "v0.0.1",
-                "--commit", "abc123",
-                "--output", str(out_path),
+                "--version",
+                "v0.0.1",
+                "--commit",
+                "abc123",
+                "--output",
+                str(out_path),
             )
             self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
@@ -151,28 +155,32 @@ class ParseHooksEdgeCases(unittest.TestCase):
             app_path.write_text("invokeExtensions('setup')", encoding="utf-8")
             exit_code, _stdout, stderr = _run_parse_hooks_main(
                 str(app_path),
-                "--version", "v0.0.1",
-                "--commit", "abc123",
-                "--output", str(out_path),
+                "--version",
+                "v0.0.1",
+                "--commit",
+                "abc123",
+                "--output",
+                str(out_path),
             )
             self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             for source in data["metadata"]["sources"]:
-                self.assertNotIn("\\", source,
-                                 "Source paths should not contain backslashes")
+                self.assertNotIn("\\", source, "Source paths should not contain backslashes")
 
     def test_known_hook_names_in_comments_do_not_seed_entries(self):
         """Fallback seeding should ignore comment-only mentions of known hook names."""
-        sample = '''
+        sample = """
 // init should not create a hook entry here
 // setup should not create a hook entry here either
 const note = "nodeCreated is mentioned as plain text";
-'''
+"""
         with tempfile.TemporaryDirectory() as tmp:
             app_path = Path(tmp) / "app.ts"
             out_path = Path(tmp) / "js_hooks.json"
             app_path.write_text(sample, encoding="utf-8")
-            exit_code, _stdout, stderr = _run_parse_hooks_main(str(app_path), "--output", str(out_path))
+            exit_code, _stdout, stderr = _run_parse_hooks_main(
+                str(app_path), "--output", str(out_path)
+            )
             self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             self.assertEqual(data["hooks"], [])
@@ -196,9 +204,12 @@ class ParseNodeApiSchemaEdgeCases(unittest.TestCase):
                 server_path,
                 io_path,
                 basic_types_path,
-                "--version", "v0.0.1",
-                "--commit", "abc123",
-                "--output", str(out_path),
+                "--version",
+                "v0.0.1",
+                "--commit",
+                "abc123",
+                "--output",
+                str(out_path),
             )
             self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
@@ -221,15 +232,17 @@ class ParseNodeApiSchemaEdgeCases(unittest.TestCase):
                 server_path,
                 io_path,
                 basic_types_path,
-                "--version", "v0.0.1",
-                "--commit", "abc123",
-                "--output", str(out_path),
+                "--version",
+                "v0.0.1",
+                "--commit",
+                "abc123",
+                "--output",
+                str(out_path),
             )
             self.assertEqual(exit_code, 0, msg=stderr)
             data = json.loads(out_path.read_text(encoding="utf-8"))
             for source in data["metadata"]["sources"]:
-                self.assertNotIn("\\", source,
-                                 "Source paths should not contain backslashes")
+                self.assertNotIn("\\", source, "Source paths should not contain backslashes")
 
     def test_missing_runtime_snapshot_warns_without_name_error(self):
         """Missing runtime snapshot should warn predictably and stay source-only."""
@@ -247,8 +260,10 @@ class ParseNodeApiSchemaEdgeCases(unittest.TestCase):
                 server_path,
                 io_path,
                 basic_types_path,
-                "--object-info-runtime-path", str(missing_runtime_path),
-                "--output", str(out_path),
+                "--object-info-runtime-path",
+                str(missing_runtime_path),
+                "--output",
+                str(out_path),
             )
             self.assertEqual(exit_code, 0, msg=stderr)
             self.assertIn("WARNING: runtime snapshot not found", stderr)
@@ -288,7 +303,9 @@ class ValidateSchemaTests(unittest.TestCase):
             },
             "endpoints": [],
         }
-        errors = module.validate_top_level(data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json")
+        errors = module.validate_top_level(
+            data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json"
+        )
         errors.extend(module.validate_metadata(data, "server_endpoints.json"))
         errors.extend(module.validate_coverage(data, "server_endpoints.json"))
         errors.extend(module.validate_endpoints(data, "server_endpoints.json"))
@@ -297,10 +314,24 @@ class ValidateSchemaTests(unittest.TestCase):
     def test_detects_missing_required_key(self):
         """The validator should detect a missing required top-level key."""
         module = _load_module("validate_schema", VALIDATE_SCHEMA)
-        data = {"metadata": {"sources": ["test"], "extracted_date": "2026-01-01",
-                             "version": "v1", "commit": "abc"}, "coverage": {"description": "contract", "guaranteed_fields": [], "best_effort_fields": [], "deferred": []}}
+        data = {
+            "metadata": {
+                "sources": ["test"],
+                "extracted_date": "2026-01-01",
+                "version": "v1",
+                "commit": "abc",
+            },
+            "coverage": {
+                "description": "contract",
+                "guaranteed_fields": [],
+                "best_effort_fields": [],
+                "deferred": [],
+            },
+        }
         # Missing "endpoints" key
-        errors = module.validate_top_level(data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json")
+        errors = module.validate_top_level(
+            data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json"
+        )
         self.assertTrue(any("missing required key 'endpoints'" in e for e in errors))
 
     def test_detects_backslashes_in_metadata(self):
@@ -313,7 +344,12 @@ class ValidateSchemaTests(unittest.TestCase):
                 "version": "v1",
                 "commit": "abc123",
             },
-            "coverage": {"description": "contract", "guaranteed_fields": [], "best_effort_fields": [], "deferred": []},
+            "coverage": {
+                "description": "contract",
+                "guaranteed_fields": [],
+                "best_effort_fields": [],
+                "deferred": [],
+            },
             "endpoints": [],
         }
         errors = module.validate_metadata(data, "server_endpoints.json")
@@ -329,7 +365,12 @@ class ValidateSchemaTests(unittest.TestCase):
                 "version": "0.19.3",
                 "commit": "abc123",
             },
-            "coverage": {"description": "contract", "guaranteed_fields": [], "best_effort_fields": [], "deferred": []},
+            "coverage": {
+                "description": "contract",
+                "guaranteed_fields": [],
+                "best_effort_fields": [],
+                "deferred": [],
+            },
             "endpoints": [],
         }
         errors = module.validate_metadata(data, "server_endpoints.json")
@@ -345,7 +386,12 @@ class ValidateSchemaTests(unittest.TestCase):
                 "version": "v1",
                 "commit": "not-a-hex-string!",
             },
-            "coverage": {"description": "contract", "guaranteed_fields": [], "best_effort_fields": [], "deferred": []},
+            "coverage": {
+                "description": "contract",
+                "guaranteed_fields": [],
+                "best_effort_fields": [],
+                "deferred": [],
+            },
             "endpoints": [],
         }
         errors = module.validate_metadata(data, "server_endpoints.json")

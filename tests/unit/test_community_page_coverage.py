@@ -18,6 +18,7 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
 
     def _import_module(self):
         import importlib.util
+
         spec = importlib.util.spec_from_file_location("community_page_coverage", SCRIPT)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
@@ -51,10 +52,16 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             docs_dir = Path(tmpdir) / "docs"
             docs_dir.mkdir()
-            (docs_dir / "page1.md").write_text("**Evidence:** Community pattern study\n", encoding="utf-8")
-            (docs_dir / "page2.md").write_text("**Evidence:** Official docs-backed\n", encoding="utf-8")
+            (docs_dir / "page1.md").write_text(
+                "**Evidence:** Community pattern study\n", encoding="utf-8"
+            )
+            (docs_dir / "page2.md").write_text(
+                "**Evidence:** Official docs-backed\n", encoding="utf-8"
+            )
             (docs_dir / "sub").mkdir(parents=True)
-            (docs_dir / "sub" / "page3.md").write_text("**Evidence:** Community pattern study based on pinned version\n", encoding="utf-8")
+            (docs_dir / "sub" / "page3.md").write_text(
+                "**Evidence:** Community pattern study based on pinned version\n", encoding="utf-8"
+            )
 
             # Monkey-patch REPO_ROOT so relative paths resolve correctly
             old_repo_root = module.REPO_ROOT
@@ -105,7 +112,9 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
             repo_root = Path(tmpdir)
             docs_dir = repo_root / "docs"
             docs_dir.mkdir()
-            (docs_dir / "page1.md").write_text("**Evidence:** Community pattern study\n", encoding="utf-8")
+            (docs_dir / "page1.md").write_text(
+                "**Evidence:** Community pattern study\n", encoding="utf-8"
+            )
 
             json_path = repo_root / "community_pages.json"
             data = {
@@ -138,7 +147,9 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
             repo_root = Path(tmpdir)
             docs_dir = repo_root / "docs"
             docs_dir.mkdir()
-            (docs_dir / "page1.md").write_text("**Evidence:** Community pattern study\n", encoding="utf-8")
+            (docs_dir / "page1.md").write_text(
+                "**Evidence:** Community pattern study\n", encoding="utf-8"
+            )
 
             json_path = repo_root / "community_pages.json"
             data = {"pages": []}
@@ -193,9 +204,7 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
             repo_root = Path(tmpdir)
             docs_dir = repo_root / "docs"
             docs_dir.mkdir()
-            (
-                docs_dir / "page1.md"
-            ).write_text(
+            (docs_dir / "page1.md").write_text(
                 "**Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version\n",
                 encoding="utf-8",
             )

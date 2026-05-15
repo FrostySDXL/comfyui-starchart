@@ -53,9 +53,7 @@ def parse_args():
         action="store_true",
         help="Allow a mode/output path combination outside the usual docs folders",
     )
-    parser.add_argument(
-        "--overwrite", action="store_true", help="Overwrite existing file"
-    )
+    parser.add_argument("--overwrite", action="store_true", help="Overwrite existing file")
     return parser.parse_args()
 
 
@@ -73,14 +71,10 @@ def resolve_output_path(output_arg: str):
         ) from exc
 
     if relative_output.suffix != ".md":
-        raise ValueError(
-            f"Output path must end with .md under docs/: {relative_output.as_posix()}"
-        )
+        raise ValueError(f"Output path must end with .md under docs/: {relative_output.as_posix()}")
 
     if not relative_output.parts or relative_output.parts[0] != "docs":
-        raise ValueError(
-            f"Output path must start with docs/: {relative_output.as_posix()}"
-        )
+        raise ValueError(f"Output path must start with docs/: {relative_output.as_posix()}")
 
     return relative_output, output_path
 

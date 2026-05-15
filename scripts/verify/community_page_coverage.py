@@ -25,7 +25,6 @@ if str(REPO_ROOT) not in sys.path:
 
 from scripts.common.path_normalization import normalize_repo_path
 
-
 DOCS_DIR = REPO_ROOT / "docs"
 COMMUNITY_PAGES_JSON = REPO_ROOT / "references" / "community" / "community_pages.json"
 
@@ -77,15 +76,16 @@ def load_tracked_pages(json_path: Path) -> dict[str, dict]:
     data = json.loads(json_path.read_text(encoding="utf-8"))
     pages = data.get("pages", [])
     return {
-        page["page_path"]: page
-        for page in pages
-        if isinstance(page, dict) and "page_path" in page
+        page["page_path"]: page for page in pages if isinstance(page, dict) and "page_path" in page
     }
 
 
 def is_intentionally_tracked_without_community_label(metadata: dict) -> bool:
     """Return True for repo-local policy pages tracked for review scheduling."""
-    return metadata.get("source_type") == "repo_local" or metadata.get("page_kind") == "hand_authored_policy"
+    return (
+        metadata.get("source_type") == "repo_local"
+        or metadata.get("page_kind") == "hand_authored_policy"
+    )
 
 
 def main() -> int:
@@ -137,9 +137,7 @@ def main() -> int:
             warnings.append(f"  {path}")
 
     if missing_files:
-        errors.append(
-            f"Found {len(missing_files)} tracked page(s) that do not exist on disk:"
-        )
+        errors.append(f"Found {len(missing_files)} tracked page(s) that do not exist on disk:")
         for path in sorted(missing_files):
             errors.append(f"  {path}")
 

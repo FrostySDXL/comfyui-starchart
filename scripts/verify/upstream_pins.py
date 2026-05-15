@@ -67,8 +67,8 @@ def _check_commit_via_github_api(owner: str, repo: str, commit: str) -> tuple[bo
     Uses urllib.request from stdlib (no external deps).
     Returns (is_valid, detail_message).
     """
-    import urllib.request
     import urllib.error
+    import urllib.request
 
     url = f"https://api.github.com/repos/{owner}/{repo}/git/commits/{commit}"
     req = urllib.request.Request(url, headers={"User-Agent": "comfyui-kb-pin-checker/1.0"})
@@ -96,8 +96,8 @@ def _check_tag_via_github_api(owner: str, repo: str, tag: str) -> tuple[bool, st
 
     Returns (is_valid, detail_message).
     """
-    import urllib.request
     import urllib.error
+    import urllib.request
 
     url = f"https://api.github.com/repos/{owner}/{repo}/git/refs/tags/{tag}"
     req = urllib.request.Request(url, headers={"User-Agent": "comfyui-kb-pin-checker/1.0"})
@@ -173,11 +173,7 @@ def verify_pins(use_cache: bool = True) -> list[tuple[bool, str]]:
             if commit:
                 cache_key = f"{owner}/{repo}/commit/{commit}"
                 cached = cache.get(cache_key)
-                if (
-                    use_cache
-                    and cached
-                    and (now - cached.get("timestamp", 0)) < CACHE_TTL_SECONDS
-                ):
+                if use_cache and cached and (now - cached.get("timestamp", 0)) < CACHE_TTL_SECONDS:
                     is_valid = cached["valid"]
                     detail = cached["detail"]
                     print(f"  CACHED: {detail}")
@@ -196,11 +192,7 @@ def verify_pins(use_cache: bool = True) -> list[tuple[bool, str]]:
             if version and version != "unversioned":
                 cache_key = f"{owner}/{repo}/tag/{version}"
                 cached = cache.get(cache_key)
-                if (
-                    use_cache
-                    and cached
-                    and (now - cached.get("timestamp", 0)) < CACHE_TTL_SECONDS
-                ):
+                if use_cache and cached and (now - cached.get("timestamp", 0)) < CACHE_TTL_SECONDS:
                     is_valid = cached["valid"]
                     detail = cached["detail"]
                     print(f"  CACHED: {detail}")

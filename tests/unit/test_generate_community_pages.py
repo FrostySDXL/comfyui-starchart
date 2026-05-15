@@ -1,6 +1,5 @@
 """Tests for scripts/generate/generate_community_pages.py."""
 
-import json
 import subprocess
 import sys
 import tempfile
@@ -18,6 +17,7 @@ class GenerateCommunityPagesUnitTests(unittest.TestCase):
 
     def _import_module(self):
         import importlib.util
+
         spec = importlib.util.spec_from_file_location("generate_community_pages", SCRIPT)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
@@ -170,11 +170,17 @@ class GenerateCommunityPagesScriptTests(unittest.TestCase):
 
             # Copy generator script and input JSON
             import shutil
+
             shutil.copy(SCRIPT, tmp_root / "scripts" / "generate" / "generate_community_pages.py")
-            shutil.copy(INPUT_PATH, tmp_root / "references" / "community" / "ecosystem_packages.json")
+            shutil.copy(
+                INPUT_PATH, tmp_root / "references" / "community" / "ecosystem_packages.json"
+            )
 
             result = subprocess.run(
-                [sys.executable, str(tmp_root / "scripts" / "generate" / "generate_community_pages.py")],
+                [
+                    sys.executable,
+                    str(tmp_root / "scripts" / "generate" / "generate_community_pages.py"),
+                ],
                 capture_output=True,
                 text=True,
                 cwd=str(tmp_root),

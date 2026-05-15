@@ -80,13 +80,17 @@ class CheckUpstreamVersionsUnitTests(unittest.TestCase):
         module = _load_module()
         fake_response = [{"name": "v0.20.0"}]
         with patch.object(module, "_fetch_json", return_value=fake_response):
-            result = module._latest_tag_from_github("https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=1")
+            result = module._latest_tag_from_github(
+                "https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=1"
+            )
         self.assertEqual(result, "v0.20.0")
 
     def test_latest_tag_from_github_empty(self):
         module = _load_module()
         with patch.object(module, "_fetch_json", return_value=[]):
-            result = module._latest_tag_from_github("https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=1")
+            result = module._latest_tag_from_github(
+                "https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=1"
+            )
         self.assertIsNone(result)
 
     def test_latest_tag_from_github_picks_highest_semver_tag(self):
@@ -99,7 +103,9 @@ class CheckUpstreamVersionsUnitTests(unittest.TestCase):
             {"name": "v0.20.0"},
         ]
         with patch.object(module, "_fetch_json", return_value=fake_response):
-            result = module._latest_tag_from_github("https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=1")
+            result = module._latest_tag_from_github(
+                "https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=1"
+            )
         self.assertEqual(result, "v0.20.1")
 
     def test_build_summary_update_available(self):
@@ -159,7 +165,11 @@ class CheckUpstreamVersionsUnitTests(unittest.TestCase):
 
     def test_fetch_json_http_error(self):
         module = _load_module()
-        with patch.object(module.http_utils, "get_json", side_effect=RuntimeError("HTTP error 500 from http://example.com/tags: Error")):
+        with patch.object(
+            module.http_utils,
+            "get_json",
+            side_effect=RuntimeError("HTTP error 500 from http://example.com/tags: Error"),
+        ):
             with self.assertRaises(RuntimeError) as ctx:
                 module._fetch_json("http://example.com/tags")
         self.assertIn("HTTP error 500", str(ctx.exception))

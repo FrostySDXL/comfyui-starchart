@@ -88,7 +88,7 @@ def build_delta_summary_command(backup_dir: Path | None) -> str | None:
     if backup_dir is None:
         return None
     return (
-        f'{sys.executable} scripts/generate/generate_snapshot_delta_summary.py '
+        f"{sys.executable} scripts/generate/generate_snapshot_delta_summary.py "
         f'--old "{_repo_relative_path(backup_dir)}" '
         f'--new "references/raw" '
         f'--output "docs/artifacts/delta-summary.json"'
@@ -147,7 +147,9 @@ def write_refresh_provenance(payload: dict) -> Path:
     return PROVENANCE_OUTPUT_PATH
 
 
-def _run_cmd(cmd: list[str], description: str, cwd: str | None = None) -> subprocess.CompletedProcess:
+def _run_cmd(
+    cmd: list[str], description: str, cwd: str | None = None
+) -> subprocess.CompletedProcess:
     """Run a command and exit on failure."""
     print(f"  Running: {' '.join(cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
@@ -174,7 +176,9 @@ def _resolve_commit(clone_dir: str) -> str:
     return result.stdout.strip()
 
 
-def _copy_source_files(clone_dir: str, dest_dir: Path, files: list[str], repo_label: str) -> list[str]:
+def _copy_source_files(
+    clone_dir: str, dest_dir: Path, files: list[str], repo_label: str
+) -> list[str]:
     """Copy source files from clone into snapshot directory.
 
     Returns a list of copied file paths (relative to dest_dir).
@@ -266,30 +270,38 @@ def run_runtime_extraction(url: str, version: str, commit: str) -> bool:
 
     Returns True if successful.
     """
-    print(f"\n--- Running parse_from_api.py ---")
+    print("\n--- Running parse_from_api.py ---")
     result = _run_cmd(
         [
             sys.executable,
             str(SCRIPTS_EXTRACT_DIR / "parse_from_api.py"),
-            "--url", url,
-            "--version", version,
-            "--commit", commit,
-            "--output", str(REFERENCES_RAW_DIR / "object_info_runtime.json"),
+            "--url",
+            url,
+            "--version",
+            version,
+            "--commit",
+            commit,
+            "--output",
+            str(REFERENCES_RAW_DIR / "object_info_runtime.json"),
         ],
         "runtime object_info extraction",
         cwd=str(REPO_ROOT),
     )
     if result.returncode != 0:
-        print(f"  parse_from_api.py failed")
+        print("  parse_from_api.py failed")
         return False
-    print(f"  Runtime object_info captured")
+    print("  Runtime object_info captured")
     return True
 
 
-def run_extractors(core_version: str = None, core_commit: str = None,
-                   frontend_version: str = None, frontend_commit: str = None,
-                   snapshot_date: str = None,
-                   runtime_object_info_path: str = None) -> dict:
+def run_extractors(
+    core_version: str = None,
+    core_commit: str = None,
+    frontend_version: str = None,
+    frontend_commit: str = None,
+    snapshot_date: str = None,
+    runtime_object_info_path: str = None,
+) -> dict:
     """Re-run all extractors against the new snapshot files.
 
     Returns a dict with extraction results (counts of endpoints, hooks, etc.).
@@ -302,20 +314,22 @@ def run_extractors(core_version: str = None, core_commit: str = None,
         core_dir = snapshot_base / f"comfyui-core-{core_version}"
         server_path = core_dir / "server.py"
         if server_path.exists():
-            print(f"\n--- Running parse_server.py ---")
+            print("\n--- Running parse_server.py ---")
             result = _run_cmd(
                 [
                     sys.executable,
                     str(SCRIPTS_EXTRACT_DIR / "parse_server.py"),
                     str(server_path),
-                    "--version", core_version,
-                    "--commit", core_commit,
+                    "--version",
+                    core_version,
+                    "--commit",
+                    core_commit,
                 ],
                 "parse_server.py extraction",
                 cwd=str(REPO_ROOT),
             )
             if result.returncode != 0:
-                print(f"  parse_server.py failed")
+                print("  parse_server.py failed")
                 sys.exit(1)
             # Count endpoints from output
             for line in result.stdout.strip().splitlines():
@@ -333,20 +347,24 @@ def run_extractors(core_version: str = None, core_commit: str = None,
         ]
         existing_sources = [str(p) for p in source_paths if p.exists()]
         if existing_sources:
-            print(f"\n--- Running parse_hooks.py ---")
+            print("\n--- Running parse_hooks.py ---")
             result = _run_cmd(
                 [
                     sys.executable,
                     str(SCRIPTS_EXTRACT_DIR / "parse_hooks.py"),
-                ] + existing_sources + [
-                    "--version", frontend_version,
-                    "--commit", frontend_commit,
+                ]
+                + existing_sources
+                + [
+                    "--version",
+                    frontend_version,
+                    "--commit",
+                    frontend_commit,
                 ],
                 "parse_hooks.py extraction",
                 cwd=str(REPO_ROOT),
             )
             if result.returncode != 0:
-                print(f"  parse_hooks.py failed")
+                print("  parse_hooks.py failed")
                 sys.exit(1)
             for line in result.stdout.strip().splitlines():
                 if "Extracted" in line and "hooks" in line:
@@ -360,15 +378,17 @@ def run_extractors(core_version: str = None, core_commit: str = None,
         io_path = core_dir / "comfy_api" / "latest" / "_io.py"
         basic_types_path = core_dir / "comfy_api" / "latest" / "_input" / "basic_types.py"
         if server_path.exists() and io_path.exists() and basic_types_path.exists():
-            print(f"\n--- Running parse_node_api_schema.py ---")
+            print("\n--- Running parse_node_api_schema.py ---")
             cmd = [
                 sys.executable,
                 str(SCRIPTS_EXTRACT_DIR / "parse_node_api_schema.py"),
                 str(server_path),
                 str(io_path),
                 str(basic_types_path),
-                "--version", core_version,
-                "--commit", core_commit,
+                "--version",
+                core_version,
+                "--commit",
+                core_commit,
             ]
             if runtime_object_info_path:
                 cmd += ["--object-info-runtime-path", runtime_object_info_path]
@@ -378,7 +398,7 @@ def run_extractors(core_version: str = None, core_commit: str = None,
                 cwd=str(REPO_ROOT),
             )
             if result.returncode != 0:
-                print(f"  parse_node_api_schema.py failed")
+                print("  parse_node_api_schema.py failed")
                 sys.exit(1)
             for line in result.stdout.strip().splitlines():
                 if "Extracted" in line:
@@ -393,14 +413,14 @@ def run_markdown_generation() -> bool:
 
     Returns True if successful.
     """
-    print(f"\n--- Running md_from_json.py ---")
+    print("\n--- Running md_from_json.py ---")
     result = _run_cmd(
         [sys.executable, str(SCRIPTS_GENERATE_DIR / "md_from_json.py")],
         "markdown generation",
         cwd=str(REPO_ROOT),
     )
     if result.returncode != 0:
-        print(f"  md_from_json.py failed")
+        print("  md_from_json.py failed")
         return False
     print(f"  {result.stdout.strip()}")
     return True
@@ -468,8 +488,15 @@ def compute_diff_summary(old_json: dict, new_json: dict, json_name: str) -> list
         if old_count != new_count:
             changes.append(f"  Runtime object_info node count: {old_count} -> {new_count}")
 
-        if not added and not removed and not added_types and not removed_types and old_mode == new_mode and old_count == new_count:
-            changes.append(f"  No schema changes")
+        if (
+            not added
+            and not removed
+            and not added_types
+            and not removed_types
+            and old_mode == new_mode
+            and old_count == new_count
+        ):
+            changes.append("  No schema changes")
 
     return changes
 
@@ -517,7 +544,9 @@ def main():
 
     if not args.core_version and not args.frontend_version and not args.runtime_object_info_url:
         parser.print_usage()
-        print("\nError: at least one of --core-version, --frontend-version, or --runtime-object-info-url is required")
+        print(
+            "\nError: at least one of --core-version, --frontend-version, or --runtime-object-info-url is required"
+        )
         return 1
 
     # Pre-flight: verify git is available
@@ -574,7 +603,7 @@ def main():
         runtime_object_info_path = str(REFERENCES_RAW_DIR / "object_info_runtime.json")
 
     # Re-run extractors
-    extraction_results = run_extractors(
+    run_extractors(
         core_version=args.core_version,
         core_commit=core_commit,
         frontend_version=args.frontend_version,
@@ -589,7 +618,7 @@ def main():
         return 1
 
     # Compute diff summary
-    print(f"\n=== Change Summary ===")
+    print("\n=== Change Summary ===")
     for json_file in sorted(REFERENCES_RAW_DIR.glob("*.json")):
         try:
             new_data = json.loads(json_file.read_text(encoding="utf-8"))
@@ -611,7 +640,9 @@ def main():
         resolved_frontend_commit=frontend_commit,
         backup_dir=backup_dir,
         runtime_object_info_requested=bool(args.runtime_object_info_url),
-        runtime_object_info_merged=bool(args.runtime_object_info_url and not args.skip_runtime_merge),
+        runtime_object_info_merged=bool(
+            args.runtime_object_info_url and not args.skip_runtime_merge
+        ),
     )
     try:
         provenance_path = write_refresh_provenance(provenance_payload)
@@ -619,7 +650,7 @@ def main():
         print(f"Error: {exc}")
         return 1
 
-    print(f"\n=== Refresh Complete ===")
+    print("\n=== Refresh Complete ===")
     print(f"Snapshot date: {snapshot_date}")
     if args.core_version:
         print(f"Core version: {args.core_version} (commit: {core_commit})")

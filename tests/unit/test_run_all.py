@@ -52,6 +52,7 @@ class RunAllUnitTests(unittest.TestCase):
 
         self.assertEqual(result, 0)
         self.assertTrue(any("unittest" in str(c) for c in call_order))
+        self.assertTrue(any("python_style.py" in str(c) for c in call_order))
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
         self.assertTrue(any("docs_index_freshness.py" in str(c) for c in call_order))
         self.assertTrue(any("validate_schema.py" in str(c) for c in call_order))
@@ -61,18 +62,31 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("community_page_coverage.py" in str(c) for c in call_order))
         self.assertTrue(any("mkdocs" in str(c) for c in call_order))
 
-        # Verify order: tests first, then blocking verifiers, then mkdocs
+        # Verify order: tests first, then Python style, then blocking verifiers, then mkdocs
         unittest_idx = next(i for i, c in enumerate(call_order) if "unittest" in str(c))
+        python_style_idx = next(i for i, c in enumerate(call_order) if "python_style.py" in str(c))
         cross_idx = next(i for i, c in enumerate(call_order) if "cross_references.py" in str(c))
-        docs_index_idx = next(i for i, c in enumerate(call_order) if "docs_index_freshness.py" in str(c))
+        docs_index_idx = next(
+            i for i, c in enumerate(call_order) if "docs_index_freshness.py" in str(c)
+        )
         validate_idx = next(i for i, c in enumerate(call_order) if "validate_schema.py" in str(c))
-        integrity_idx = next(i for i, c in enumerate(call_order) if "verify_artifact_integrity.py" in str(c))
-        spacing_idx = next(i for i, c in enumerate(call_order) if "markdown_top_level_spacing.py" in str(c))
-        freshness_idx = next(i for i, c in enumerate(call_order) if "community_generated_freshness.py" in str(c))
-        coverage_idx = next(i for i, c in enumerate(call_order) if "community_page_coverage.py" in str(c))
+        integrity_idx = next(
+            i for i, c in enumerate(call_order) if "verify_artifact_integrity.py" in str(c)
+        )
+        spacing_idx = next(
+            i for i, c in enumerate(call_order) if "markdown_top_level_spacing.py" in str(c)
+        )
+        freshness_idx = next(
+            i for i, c in enumerate(call_order) if "community_generated_freshness.py" in str(c)
+        )
+        coverage_idx = next(
+            i for i, c in enumerate(call_order) if "community_page_coverage.py" in str(c)
+        )
         mkdocs_idx = next(i for i, c in enumerate(call_order) if "mkdocs" in str(c))
 
         self.assertLess(unittest_idx, cross_idx)
+        self.assertLess(unittest_idx, python_style_idx)
+        self.assertLess(python_style_idx, cross_idx)
         self.assertLess(cross_idx, docs_index_idx)
         self.assertLess(docs_index_idx, validate_idx)
         self.assertLess(validate_idx, integrity_idx)
@@ -88,8 +102,8 @@ class RunAllUnitTests(unittest.TestCase):
 
         def fake_run(cmd, **kwargs):
             call_order.append(cmd)
-            if "cross_references.py" in str(cmd):
-                return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="fail")
+            if "python_style.py" in str(cmd):
+                return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="style fail")
             return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
         with patch("scripts.verify.run_all.subprocess.run", side_effect=fake_run):
@@ -97,7 +111,8 @@ class RunAllUnitTests(unittest.TestCase):
                 result = module.main()
 
         self.assertEqual(result, 1)
-        self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
+        self.assertTrue(any("python_style.py" in str(c) for c in call_order))
+        self.assertFalse(any("cross_references.py" in str(c) for c in call_order))
         self.assertFalse(any("docs_index_freshness.py" in str(c) for c in call_order))
         self.assertFalse(any("validate_schema.py" in str(c) for c in call_order))
 
@@ -134,6 +149,7 @@ class RunAllUnitTests(unittest.TestCase):
 
         self.assertEqual(result, 0)
         self.assertFalse(any("unittest" in str(c) for c in call_order))
+        self.assertTrue(any("python_style.py" in str(c) for c in call_order))
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
         self.assertTrue(any("docs_index_freshness.py" in str(c) for c in call_order))
 

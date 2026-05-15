@@ -11,7 +11,6 @@ Usage:
 Exits 0 if generated output matches committed file, exits 1 with a diff report.
 """
 
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -37,8 +36,8 @@ def main() -> int:
         # The generator hardcodes its output path, so we need to run it in a way
         # that captures output without overwriting the committed file.
         # We import and call build_markdown directly instead.
-        import json
         import importlib.util
+        import json
 
         spec = importlib.util.spec_from_file_location("generate_community_pages", GENERATOR)
         module = importlib.util.module_from_spec(spec)

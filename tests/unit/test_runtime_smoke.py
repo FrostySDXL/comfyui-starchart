@@ -1,7 +1,6 @@
 """Tests for scripts/verify/runtime_smoke.py."""
 
 import importlib.util
-import json
 import subprocess
 import sys
 import unittest
@@ -55,16 +54,22 @@ class RuntimeSmokeUnitTests(unittest.TestCase):
 
     def test_check_post_prompt_missing_file_skips(self):
         module = _load_module()
-        self.assertTrue(module.check_post_prompt("http://127.0.0.1:8188", Path("/nonexistent.json"), 10))
+        self.assertTrue(
+            module.check_post_prompt("http://127.0.0.1:8188", Path("/nonexistent.json"), 10)
+        )
 
     def test_main_runs_all_checks(self):
         module = _load_module()
         with patch.object(module.http_utils, "get_json", return_value={"test": 1}):
-            with patch("sys.argv", [
-                "runtime_smoke.py",
-                "--url", "http://127.0.0.1:8188",
-                "--skip-prompt",
-            ]):
+            with patch(
+                "sys.argv",
+                [
+                    "runtime_smoke.py",
+                    "--url",
+                    "http://127.0.0.1:8188",
+                    "--skip-prompt",
+                ],
+            ):
                 result = module.main()
 
         self.assertEqual(result, 0)
@@ -72,11 +77,15 @@ class RuntimeSmokeUnitTests(unittest.TestCase):
     def test_main_failure_exits_nonzero(self):
         module = _load_module()
         with patch.object(module.http_utils, "get_json", return_value=[]):
-            with patch("sys.argv", [
-                "runtime_smoke.py",
-                "--url", "http://127.0.0.1:8188",
-                "--skip-prompt",
-            ]):
+            with patch(
+                "sys.argv",
+                [
+                    "runtime_smoke.py",
+                    "--url",
+                    "http://127.0.0.1:8188",
+                    "--skip-prompt",
+                ],
+            ):
                 result = module.main()
 
         self.assertEqual(result, 1)

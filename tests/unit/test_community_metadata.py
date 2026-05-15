@@ -1,6 +1,5 @@
 """Tests for scripts/verify/community_metadata.py."""
 
-import json
 import subprocess
 import sys
 import unittest
@@ -15,6 +14,7 @@ class CommunityMetadataUnitTests(unittest.TestCase):
 
     def _import_module(self):
         import importlib.util
+
         spec = importlib.util.spec_from_file_location("community_metadata", SCRIPT)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)

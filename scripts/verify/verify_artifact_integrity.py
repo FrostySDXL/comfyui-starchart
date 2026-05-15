@@ -14,7 +14,6 @@ import json
 import sys
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST_PATH = REPO_ROOT / "docs" / "artifacts" / "manifest.json"
 DEFAULT_CANONICAL_DIR = REPO_ROOT / "references" / "raw"

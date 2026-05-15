@@ -157,34 +157,36 @@ def build_markdown(data: dict) -> str:
     # Keep this curated list aligned with the current intended follow-up study
     # set when Plan AC-style ecosystem expansion changes the strongest teaching
     # examples. The generated banner points maintainers here on purpose.
-    lines.extend([
-        "## Deep-Dive Candidates",
-        "",
-        "For learning extension and node pack architecture, these three packages are",
-        "the most instructive follow-up studies in the current catalog:",
-        "",
-        "1. **ComfyUI-Manager** -- hybrid extension architecture, custom routes, server",
-        "   hooks, and frontend panel integration",
-        "2. **comfyui_controlnet_aux** -- large-scale preprocessor wrapper design,",
-        "   structured pose-data outputs, and extension-friendly annotator packaging",
-        "3. **ComfyUI-AnimateDiff-Evolved** -- advanced animation scheduling,",
-        "   sliding context windows, and motion-module workflow design",
-        "",
-        "## Scope Notes",
-        "",
-        "This map covers packages that appear in ComfyUI-Manager's distribution list or",
-        "that are frequently referenced in official docs and community discussions. It",
-        "does not attempt to catalog every custom node repo -- there are thousands.",
-        "",
-        "Package status reflects publicly observable signals only. A \"Community",
-        "Supported\" label does not guarantee responsiveness. Verify directly before",
-        "building production dependencies.",
-        "",
-        "This map is repo-local and not automatically refreshed. When adding a new",
-        "package as a dependency, verify its current status rather than relying on this",
-        "page.",
-        "",
-    ])
+    lines.extend(
+        [
+            "## Deep-Dive Candidates",
+            "",
+            "For learning extension and node pack architecture, these three packages are",
+            "the most instructive follow-up studies in the current catalog:",
+            "",
+            "1. **ComfyUI-Manager** -- hybrid extension architecture, custom routes, server",
+            "   hooks, and frontend panel integration",
+            "2. **comfyui_controlnet_aux** -- large-scale preprocessor wrapper design,",
+            "   structured pose-data outputs, and extension-friendly annotator packaging",
+            "3. **ComfyUI-AnimateDiff-Evolved** -- advanced animation scheduling,",
+            "   sliding context windows, and motion-module workflow design",
+            "",
+            "## Scope Notes",
+            "",
+            "This map covers packages that appear in ComfyUI-Manager's distribution list or",
+            "that are frequently referenced in official docs and community discussions. It",
+            "does not attempt to catalog every custom node repo -- there are thousands.",
+            "",
+            'Package status reflects publicly observable signals only. A "Community',
+            'Supported" label does not guarantee responsiveness. Verify directly before',
+            "building production dependencies.",
+            "",
+            "This map is repo-local and not automatically refreshed. When adding a new",
+            "package as a dependency, verify its current status rather than relying on this",
+            "page.",
+            "",
+        ]
+    )
 
     return "\n".join(lines) + "\n"
 

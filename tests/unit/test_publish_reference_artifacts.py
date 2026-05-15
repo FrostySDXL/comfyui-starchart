@@ -1,7 +1,7 @@
 """Tests for scripts/generate/publish_reference_artifacts.py."""
 
-import json
 import hashlib
+import json
 import shutil
 import subprocess
 import sys
@@ -21,6 +21,7 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
 
     def _import_module(self):
         import importlib.util
+
         spec = importlib.util.spec_from_file_location("publish_reference_artifacts", SCRIPT)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
@@ -53,9 +54,7 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
                     "version": "v0.19.3",
                     "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
                     "extracted_date": "2026-04-23",
-                    "sources": [
-                        "references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py"
-                    ],
+                    "sources": ["references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py"],
                 },
                 "object_info": {},
             },
@@ -82,9 +81,7 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
         module = self._import_module()
         old_date = (datetime.now() - timedelta(days=60)).strftime("%Y-%m-%d")
         artifacts = {
-            "server_endpoints.json": {
-                "metadata": {"extracted_date": old_date}
-            },
+            "server_endpoints.json": {"metadata": {"extracted_date": old_date}},
             "js_hooks.json": {"metadata": {"extracted_date": old_date}},
             "node_api_schema.json": {"metadata": {"extracted_date": old_date}},
         }
@@ -104,8 +101,7 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
         module = self._import_module()
         artifacts = self._sample_artifacts()
         artifact_hashes = {
-            name: hashlib.sha256(name.encode("utf-8")).hexdigest()
-            for name in module.ARTIFACT_FILES
+            name: hashlib.sha256(name.encode("utf-8")).hexdigest() for name in module.ARTIFACT_FILES
         }
         manifest = module.build_manifest(
             artifacts,
@@ -148,8 +144,7 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
         module = self._import_module()
         artifacts = self._sample_artifacts()
         artifact_hashes = {
-            name: hashlib.sha256(name.encode("utf-8")).hexdigest()
-            for name in module.ARTIFACT_FILES
+            name: hashlib.sha256(name.encode("utf-8")).hexdigest() for name in module.ARTIFACT_FILES
         }
         manifest = module.build_manifest(artifacts, "test-key", artifact_hashes)
         self.assertEqual(manifest["artifacts"]["server_endpoints.json"]["version"], "v0.19.3")
@@ -159,8 +154,7 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
         module = self._import_module()
         artifacts = self._sample_artifacts()
         artifact_hashes = {
-            name: hashlib.sha256(name.encode("utf-8")).hexdigest()
-            for name in module.ARTIFACT_FILES
+            name: hashlib.sha256(name.encode("utf-8")).hexdigest() for name in module.ARTIFACT_FILES
         }
         manifest = module.build_manifest(artifacts, "test-key", artifact_hashes)
         self.assertIsInstance(manifest["artifacts"]["server_endpoints.json"]["sources"], list)
@@ -178,8 +172,7 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
         module = self._import_module()
         artifacts = self._sample_artifacts()
         artifact_hashes = {
-            name: hashlib.sha256(name.encode("utf-8")).hexdigest()
-            for name in module.ARTIFACT_FILES
+            name: hashlib.sha256(name.encode("utf-8")).hexdigest() for name in module.ARTIFACT_FILES
         }
 
         first = module.build_manifest(artifacts, "test-key", artifact_hashes)
@@ -225,9 +218,13 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
             (tmp_root / "scripts" / "generate").mkdir(parents=True)
 
             # Copy generator script
-            shutil.copy(SCRIPT, tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py")
+            shutil.copy(
+                SCRIPT, tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py"
+            )
             for schema_path in SCHEMAS_DIR.glob("*.schema.json"):
-                shutil.copy(schema_path, tmp_root / "docs" / "artifacts" / "schemas" / schema_path.name)
+                shutil.copy(
+                    schema_path, tmp_root / "docs" / "artifacts" / "schemas" / schema_path.name
+                )
 
             # Write minimal artifact JSONs
             artifacts = {
@@ -266,7 +263,10 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
 
             # Run script
             result = subprocess.run(
-                [sys.executable, str(tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py")],
+                [
+                    sys.executable,
+                    str(tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py"),
+                ],
                 capture_output=True,
                 text=True,
                 cwd=str(tmp_root),
@@ -278,10 +278,18 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
                 current_path = tmp_root / "docs" / "artifacts" / "current" / name
                 self.assertTrue(current_path.exists(), f"Missing current copy: {name}")
                 loaded = json.loads(current_path.read_text(encoding="utf-8"))
-                self.assertEqual(loaded["metadata"]["version"], artifacts[name]["metadata"]["version"])
+                self.assertEqual(
+                    loaded["metadata"]["version"], artifacts[name]["metadata"]["version"]
+                )
 
             # Verify versioned copies
-            versioned_dir = tmp_root / "docs" / "artifacts" / "versions" / "core-v0.19.3_frontend-v1.42.11_2026-04-19"
+            versioned_dir = (
+                tmp_root
+                / "docs"
+                / "artifacts"
+                / "versions"
+                / "core-v0.19.3_frontend-v1.42.11_2026-04-19"
+            )
             for name in artifacts:
                 versioned_path = versioned_dir / name
                 self.assertTrue(versioned_path.exists(), f"Missing versioned copy: {name}")
@@ -309,7 +317,10 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
                 ).hexdigest()
                 self.assertEqual(manifest["artifacts"][name]["sha256"], expected_hash)
             self.assertTrue(
-                all(isinstance(entry.get("sources", []), list) for entry in manifest["artifacts"].values())
+                all(
+                    isinstance(entry.get("sources", []), list)
+                    for entry in manifest["artifacts"].values()
+                )
             )
 
     def test_script_fails_when_artifact_missing(self):
@@ -318,16 +329,24 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
             (tmp_root / "references" / "raw").mkdir(parents=True)
             (tmp_root / "docs" / "artifacts").mkdir(parents=True)
             (tmp_root / "scripts" / "generate").mkdir(parents=True)
-            shutil.copy(SCRIPT, tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py")
+            shutil.copy(
+                SCRIPT, tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py"
+            )
 
             # Only write one artifact, omitting the others
-            data = {"metadata": {"version": "v0.19.3", "extracted_date": "2026-04-23"}, "endpoints": []}
+            data = {
+                "metadata": {"version": "v0.19.3", "extracted_date": "2026-04-23"},
+                "endpoints": [],
+            }
             (tmp_root / "references" / "raw" / "server_endpoints.json").write_text(
                 json.dumps(data), encoding="utf-8"
             )
 
             result = subprocess.run(
-                [sys.executable, str(tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py")],
+                [
+                    sys.executable,
+                    str(tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py"),
+                ],
                 capture_output=True,
                 text=True,
                 cwd=str(tmp_root),
@@ -340,7 +359,9 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
             (tmp_root / "references" / "raw").mkdir(parents=True)
             (tmp_root / "docs" / "artifacts").mkdir(parents=True)
             (tmp_root / "scripts" / "generate").mkdir(parents=True)
-            shutil.copy(SCRIPT, tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py")
+            shutil.copy(
+                SCRIPT, tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py"
+            )
 
             artifacts = {
                 "server_endpoints.json": {
@@ -377,7 +398,10 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
                 )
 
             result = subprocess.run(
-                [sys.executable, str(tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py")],
+                [
+                    sys.executable,
+                    str(tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py"),
+                ],
                 capture_output=True,
                 text=True,
                 cwd=str(tmp_root),

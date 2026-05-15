@@ -6,18 +6,16 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.common.path_normalization import normalize_repo_relative_path
 
-
 OUTPUT_PATH = REPO_ROOT / "references" / "raw" / "server_endpoints.json"
 DECORATOR_RE = re.compile(r'@routes\.(route|get|post|ws)\(\s*["\']([^"\']+)["\']')
 DOCSTRING_RE = re.compile(r'\s*[rubfRUBF]*(["\']{3})(.*?)\1', re.DOTALL)
-STATUS_RE = re.compile(r'status\s*=\s*(\d+)')
+STATUS_RE = re.compile(r"status\s*=\s*(\d+)")
 
 ENDPOINT_COVERAGE = {
     "description": "Static extraction of ComfyUI HTTP and WebSocket endpoint structure.",
@@ -116,14 +114,18 @@ def _parameter_traceability(strategy: str, detail: str) -> dict:
 def _extract_aliases(body: str, expression_patterns: list[str]) -> list[str]:
     aliases = []
     for expression_pattern in expression_patterns:
-        for match in re.finditer(rf"\b([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?:await\s+)?{expression_pattern}", body):
+        for match in re.finditer(
+            rf"\b([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?:await\s+)?{expression_pattern}", body
+        ):
             alias = match.group(1)
             if alias not in aliases:
                 aliases.append(alias)
     return aliases
 
 
-def _extract_mapping_parameters(body: str, aliases: list[str], location: str, strategy_prefix: str) -> tuple[list[dict], dict[str, tuple[str, str]]]:
+def _extract_mapping_parameters(
+    body: str, aliases: list[str], location: str, strategy_prefix: str
+) -> tuple[list[dict], dict[str, tuple[str, str]]]:
     parameters: list[dict] = []
     variable_map: dict[str, tuple[str, str]] = {}
 
@@ -137,11 +139,15 @@ def _extract_mapping_parameters(body: str, aliases: list[str], location: str, st
                     "name": name,
                     "location": location,
                     "required": True,
-                    "traceability": _parameter_traceability(f"{strategy_prefix}.subscription", alias),
+                    "traceability": _parameter_traceability(
+                        f"{strategy_prefix}.subscription", alias
+                    ),
                 },
             )
 
-        for match in re.finditer(rf"{alias_pattern}\.get\(\s*['\"]([^'\"]+)['\"](?:\s*,\s*([^\)]+))?\)", body):
+        for match in re.finditer(
+            rf"{alias_pattern}\.get\(\s*['\"]([^'\"]+)['\"](?:\s*,\s*([^\)]+))?\)", body
+        ):
             name = match.group(1)
             default_text = match.group(2)
             parameter = {
@@ -157,9 +163,13 @@ def _extract_mapping_parameters(body: str, aliases: list[str], location: str, st
                     parameter["default"] = default_value
             _maybe_append_parameter(parameters, parameter)
 
-        for match in re.finditer(rf"\b([A-Za-z_][A-Za-z0-9_]*)\s*=\s*{alias_pattern}\[\s*['\"]([^'\"]+)['\"]\s*\]", body):
+        for match in re.finditer(
+            rf"\b([A-Za-z_][A-Za-z0-9_]*)\s*=\s*{alias_pattern}\[\s*['\"]([^'\"]+)['\"]\s*\]", body
+        ):
             variable_map[match.group(1)] = (match.group(2), location)
-        for match in re.finditer(rf"\b([A-Za-z_][A-Za-z0-9_]*)\s*=\s*{alias_pattern}\.get\(\s*['\"]([^'\"]+)['\"]", body):
+        for match in re.finditer(
+            rf"\b([A-Za-z_][A-Za-z0-9_]*)\s*=\s*{alias_pattern}\.get\(\s*['\"]([^'\"]+)['\"]", body
+        ):
             variable_map[match.group(1)] = (match.group(2), location)
 
     for variable_name, (parameter_name, parameter_location) in variable_map.items():
@@ -205,7 +215,9 @@ def extract_parameters(route: str, block: str, full_source: str = "") -> list[di
         )
 
     query_aliases = ["request.rel_url.query", "request.query"]
-    query_aliases.extend(_extract_aliases(combined_body, [r"request\.rel_url\.query", r"request\.query"]))
+    query_aliases.extend(
+        _extract_aliases(combined_body, [r"request\.rel_url\.query", r"request\.query"])
+    )
     path_aliases = ["request.match_info"]
     path_aliases.extend(_extract_aliases(combined_body, [r"request\.match_info"]))
     form_aliases = _extract_aliases(combined_body, [r"request\.post\(\)"])
@@ -239,7 +251,7 @@ def _get_function_block(lines: list[str], start_index: int, end_index: int) -> s
 
 def _get_helper_body(source_text: str, func_name: str) -> str:
     """Extract the body of a helper function defined in source_text."""
-    pattern = rf'^\s*def\s+{re.escape(func_name)}\s*\([^)]*\):'
+    pattern = rf"^\s*def\s+{re.escape(func_name)}\s*\([^)]*\):"
     lines = source_text.splitlines()
     for i, line in enumerate(lines):
         if re.match(pattern, line):
@@ -247,7 +259,7 @@ def _get_helper_body(source_text: str, func_name: str) -> str:
             body_lines = []
             for j in range(i + 1, len(lines)):
                 next_line = lines[j]
-                if next_line.strip() == '':
+                if next_line.strip() == "":
                     body_lines.append(next_line)
                     continue
                 next_indent = len(next_line) - len(next_line.lstrip())
@@ -264,7 +276,7 @@ def _extract_main_body(block: str) -> str:
     start_idx = None
     for i, line in enumerate(lines):
         stripped = line.lstrip()
-        if stripped.startswith('def ') or stripped.startswith('async def '):
+        if stripped.startswith("def ") or stripped.startswith("async def "):
             start_idx = i
             break
     if start_idx is None:
@@ -276,7 +288,7 @@ def _extract_main_body(block: str) -> str:
     result = []
     skip_depth = 0
 
-    for line in lines[start_idx + 1:]:
+    for line in lines[start_idx + 1 :]:
         if not line.strip():
             if skip_depth == 0:
                 result.append(line)
@@ -285,10 +297,12 @@ def _extract_main_body(block: str) -> str:
         line_indent = len(line) - len(line.lstrip())
         stripped = line.lstrip()
 
-        if (stripped.startswith('def ') or stripped.startswith('async def ')) and line_indent <= handler_indent:
+        if (
+            stripped.startswith("def ") or stripped.startswith("async def ")
+        ) and line_indent <= handler_indent:
             break
 
-        if stripped.startswith('def ') or stripped.startswith('async def '):
+        if stripped.startswith("def ") or stripped.startswith("async def "):
             if line_indent >= body_indent:
                 skip_depth += 1
                 continue
@@ -302,7 +316,7 @@ def _extract_main_body(block: str) -> str:
         else:
             result.append(line)
 
-    return '\n'.join(result)
+    return "\n".join(result)
 
 
 def _extract_json_fields(payload_text: str) -> list[dict]:
@@ -332,27 +346,27 @@ def _find_all_json_response_args(block: str) -> list[tuple[str, int]]:
     args = []
     start = 0
     while True:
-        call_index = block.find('web.json_response(', start)
+        call_index = block.find("web.json_response(", start)
         if call_index == -1:
             break
-        pos = call_index + len('web.json_response(')
+        pos = call_index + len("web.json_response(")
         depth = 1
         idx = pos
         while idx < len(block) and depth > 0:
             ch = block[idx]
-            if ch == '(':
+            if ch == "(":
                 depth += 1
-            elif ch == ')':
+            elif ch == ")":
                 depth -= 1
-            elif ch in '"\'':
+            elif ch in "\"'":
                 quote = ch
                 idx += 1
                 while idx < len(block) and block[idx] != quote:
-                    if block[idx] == '\\':
+                    if block[idx] == "\\":
                         idx += 1
                     idx += 1
             idx += 1
-        arg_text = block[pos:idx - 1]
+        arg_text = block[pos : idx - 1]
         args.append((arg_text, call_index))
         start = idx
     return args
@@ -360,7 +374,7 @@ def _find_all_json_response_args(block: str) -> list[tuple[str, int]]:
 
 def _extract_dict_literal_from_assignment(block: str, variable_name: str, cutoff: int) -> str:
     prefix = block[:cutoff]
-    pattern = re.compile(rf'\b{re.escape(variable_name)}\s*=\s*\{{')
+    pattern = re.compile(rf"\b{re.escape(variable_name)}\s*=\s*\{{")
     matches = list(pattern.finditer(prefix))
     if not matches:
         return ""
@@ -370,17 +384,17 @@ def _extract_dict_literal_from_assignment(block: str, variable_name: str, cutoff
     idx = brace_start
     while idx < len(prefix):
         char = prefix[idx]
-        if char == '{':
+        if char == "{":
             depth += 1
-        elif char == '}':
+        elif char == "}":
             depth -= 1
             if depth == 0:
-                return prefix[brace_start:idx + 1]
-        elif char in '"\'':
+                return prefix[brace_start : idx + 1]
+        elif char in "\"'":
             quote = char
             idx += 1
             while idx < len(prefix) and prefix[idx] != quote:
-                if prefix[idx] == '\\':
+                if prefix[idx] == "\\":
                     idx += 1
                 idx += 1
         idx += 1
@@ -390,7 +404,9 @@ def _extract_dict_literal_from_assignment(block: str, variable_name: str, cutoff
 def _extract_augmented_dict_fields(block: str, variable_name: str, cutoff: int) -> list[dict]:
     fields = []
     seen = set()
-    pattern = re.compile(rf'{re.escape(variable_name)}\["([^"\\]+)"\]\s*=|{re.escape(variable_name)}\[\'([^\'\\]+)\'\]\s*=')
+    pattern = re.compile(
+        rf'{re.escape(variable_name)}\["([^"\\]+)"\]\s*=|{re.escape(variable_name)}\[\'([^\'\\]+)\'\]\s*='
+    )
     for match in pattern.finditer(block[:cutoff]):
         name = match.group(1) or match.group(2)
         if name and name not in seen:
@@ -405,13 +421,13 @@ def _extract_json_fields_from_arg(block: str, arg_text: str, call_index: int) ->
     if direct_fields:
         return direct_fields
 
-    if re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', stripped):
+    if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", stripped):
         dict_literal = _extract_dict_literal_from_assignment(block, stripped, call_index)
         fields = _extract_json_fields(dict_literal)
-        seen = {field['name'] for field in fields}
+        seen = {field["name"] for field in fields}
         for field in _extract_augmented_dict_fields(block, stripped, call_index):
-            if field['name'] not in seen:
-                seen.add(field['name'])
+            if field["name"] not in seen:
+                seen.add(field["name"])
                 fields.append(field)
         return fields
 
@@ -426,7 +442,7 @@ def _infer_json_response(block: str) -> dict:
     best_arg = ""
     best_count = -1
     for arg, _call_index in calls:
-        if 'status=4' in arg:
+        if "status=4" in arg:
             continue
         count = len(_extract_json_fields_from_arg(block, arg, _call_index))
         if count > best_count:
@@ -434,7 +450,7 @@ def _infer_json_response(block: str) -> dict:
             best_arg = arg
             best_call_index = _call_index
 
-    if 'best_call_index' not in locals():
+    if "best_call_index" not in locals():
         best_call_index = -1
 
     # If every call looks like an error response, fall back to the one with the most fields.
@@ -450,7 +466,7 @@ def _infer_json_response(block: str) -> dict:
     # Determine effective status codes based on the selected call.
     # If the selected json_response has an explicit status= in its argument,
     # use those codes. Otherwise, default to [200] since json_response returns 200 by default.
-    if best_arg and 'status=' in best_arg:
+    if best_arg and "status=" in best_arg:
         # Extract explicit status codes from the selected call's argument
         effective_codes = set()
         for m in STATUS_RE.finditer(best_arg):
@@ -495,7 +511,7 @@ def _infer_plain_response(block: str) -> dict:
     status_codes = _extract_status_codes(block)
     kind = "empty"
     summary = "Empty acknowledgement response."
-    if 'body=' in block:
+    if "body=" in block:
         kind = "binary"
         summary = "Binary or raw body response with explicit content type."
 
@@ -524,7 +540,7 @@ def infer_returns(block: str, full_source: str = "") -> dict:
     """Inspect a handler block and infer structured return metadata."""
     main_body = _extract_main_body(block)
 
-    if 'web.WebSocketResponse(' in main_body:
+    if "web.WebSocketResponse(" in main_body:
         return {
             "kind": "websocket",
             "summary": "WebSocket connection upgrade.",
@@ -537,7 +553,7 @@ def infer_returns(block: str, full_source: str = "") -> dict:
             },
         }
 
-    if 'web.FileResponse(' in main_body:
+    if "web.FileResponse(" in main_body:
         return {
             "kind": "file",
             "summary": "File response with inferred content type.",
@@ -550,14 +566,14 @@ def infer_returns(block: str, full_source: str = "") -> dict:
             },
         }
 
-    if 'web.json_response(' in main_body:
+    if "web.json_response(" in main_body:
         return _infer_json_response(main_body)
 
-    if 'web.Response(' in main_body:
+    if "web.Response(" in main_body:
         return _infer_plain_response(main_body)
 
     # Check for delegation to a local helper function
-    helper_match = re.search(r'return\s+(\w+)\s*\(', main_body)
+    helper_match = re.search(r"return\s+(\w+)\s*\(", main_body)
     if helper_match and full_source:
         helper_name = helper_match.group(1)
         helper_body = _get_helper_body(full_source, helper_name)

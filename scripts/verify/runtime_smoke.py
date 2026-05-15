@@ -21,6 +21,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.common import http_utils
+
 DEFAULT_PROMPT_PATH = REPO_ROOT / "examples" / "api-calls" / "post-prompt.json"
 
 
@@ -113,7 +114,10 @@ def main() -> int:
 
     if not args.skip_prompt:
         checks.append(
-            ("POST /prompt", lambda: check_post_prompt(args.url, Path(args.prompt_path), args.timeout))
+            (
+                "POST /prompt",
+                lambda: check_post_prompt(args.url, Path(args.prompt_path), args.timeout),
+            )
         )
 
     for name, check in checks:

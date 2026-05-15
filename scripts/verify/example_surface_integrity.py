@@ -52,7 +52,9 @@ def check_expected_example_families(repo_root: Path) -> list[str]:
     for family in EXPECTED_EXAMPLE_FAMILIES:
         family_path = repo_root / "examples" / family
         if not family_path.is_dir():
-            errors.append(f"Missing example family directory: {family_path.relative_to(repo_root).as_posix()}")
+            errors.append(
+                f"Missing example family directory: {family_path.relative_to(repo_root).as_posix()}"
+            )
     return errors
 
 
@@ -62,8 +64,14 @@ def check_readme_coverage(repo_root: Path) -> list[str]:
 
     for family in EXPECTED_EXAMPLE_FAMILIES:
         family_path = examples_dir / family
-        if family_path.exists() and family_requires_readme(family_path) and not (family_path / "README.md").is_file():
-            errors.append(f"Missing README.md: {family_path.relative_to(repo_root).as_posix()}/README.md")
+        if (
+            family_path.exists()
+            and family_requires_readme(family_path)
+            and not (family_path / "README.md").is_file()
+        ):
+            errors.append(
+                f"Missing README.md: {family_path.relative_to(repo_root).as_posix()}/README.md"
+            )
 
     for family in README_REQUIRED_FAMILIES:
         family_path = examples_dir / family
@@ -71,7 +79,9 @@ def check_readme_coverage(repo_root: Path) -> list[str]:
             continue
         for child in sorted(path for path in family_path.iterdir() if path.is_dir()):
             if not (child / "README.md").is_file():
-                errors.append(f"Missing README.md: {child.relative_to(repo_root).as_posix()}/README.md")
+                errors.append(
+                    f"Missing README.md: {child.relative_to(repo_root).as_posix()}/README.md"
+                )
 
     return errors
 
@@ -155,14 +165,18 @@ def normalize_reference_token(token: str) -> str | None:
         return None
     if reference.startswith("GET ") or reference.startswith("POST "):
         return None
-    if reference.startswith("/") and not reference.startswith("./") and not reference.startswith("../"):
+    if (
+        reference.startswith("/")
+        and not reference.startswith("./")
+        and not reference.startswith("../")
+    ):
         return None
     if "://" in reference:
         return None
 
-    looks_like_path = any(reference.startswith(prefix) for prefix in KNOWN_REPO_ROOT_PREFIXES) or reference.startswith(
-        ("./", "../")
-    )
+    looks_like_path = any(
+        reference.startswith(prefix) for prefix in KNOWN_REPO_ROOT_PREFIXES
+    ) or reference.startswith(("./", "../"))
     if not looks_like_path:
         return None
 

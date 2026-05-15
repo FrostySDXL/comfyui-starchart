@@ -74,13 +74,15 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
             root = Path(tmpdir)
             self._build_valid_fixture(root)
             (root / "examples" / "workflows" / "demo.json").write_text(
-                "{\n  \"broken\": true,\n",
+                '{\n  "broken": true,\n',
                 encoding="utf-8",
             )
 
             errors = module.validate_example_surface(root)
 
-        self.assertTrue(any(error.startswith("Invalid JSON: examples/workflows/demo.json") for error in errors))
+        self.assertTrue(
+            any(error.startswith("Invalid JSON: examples/workflows/demo.json") for error in errors)
+        )
 
     def test_validate_example_surface_reports_broken_local_readme_link(self):
         module = _load_module()

@@ -65,14 +65,22 @@ Use `run_all.py` as the default maintainer-grade before-push check. It mirrors
 the CI job's blocking checks in the same order, and that blocking path now runs
 on both Ubuntu and Windows in GitHub Actions. Advisory CI checks remain
 separate and non-blocking in normal push/PR CI, so you only need to run them
-locally when your change touches that surface. The blocking path now includes
-docs-index freshness verification and artifact-integrity verification for the
-canonical published JSON artifacts. The blocking path also rejects leading
-spaces before top-level markdown headings and metadata labels in hand-authored
-docs because those lines render incorrectly in MkDocs.
+locally when your change touches that surface. The blocking path now runs the
+Ruff-based Python style gate immediately after unit tests, before the existing
+repo-content verifiers. It also includes docs-index freshness verification and
+artifact-integrity verification for the canonical published JSON artifacts. The
+blocking path rejects leading spaces before top-level markdown headings and
+metadata labels in hand-authored docs because those lines render incorrectly in
+MkDocs.
 
 Use targeted checks while iterating. Use supplemental commands only when the
 touched surface requires them.
+
+For focused Python gate iteration, run:
+
+```bash
+python scripts/verify/python_style.py
+```
 
 Two supplemental verification commands sit outside `run_all.py`:
 
@@ -365,6 +373,7 @@ Keep the deeper workflow-specific detail in
 ### Essential (run these for almost every change)
 
 ```bash
+python scripts/verify/python_style.py
 python scripts/verify/cross_references.py
 python scripts/verify/docs_index_freshness.py
 python scripts/verify/verify_artifact_integrity.py
@@ -400,6 +409,7 @@ Scripts marked **[BLOCKING]** will fail CI and prevent merge. Scripts marked
 the same advisory scripts are replayed separately in `.github/workflows/advisory-checks.yml` as a scheduled/manual blocking escalation path.
 
 ```bash
+python scripts/verify/python_style.py                  # [BLOCKING]
 python scripts/verify/cross_references.py              # [BLOCKING]
 python scripts/verify/docs_index_freshness.py          # [BLOCKING]
 python scripts/verify/validate_schema.py               # [BLOCKING]

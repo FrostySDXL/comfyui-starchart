@@ -152,6 +152,7 @@ python -m unittest discover -s tests -v
 python -m mkdocs build
 
 # Verification scripts (all should exit 0 on clean repo)
+python scripts/verify/python_style.py
 python scripts/verify/cross_references.py
 python scripts/verify/docs_index_freshness.py
 python scripts/verify/community_generated_freshness.py
@@ -230,7 +231,7 @@ procedures.
 - **Cross-platform artifact hashes**: The three published artifact checksums are for textual JSON files and must be stable across Windows and Linux checkouts. Hash them after normalizing `CRLF` to `LF`; do not use this normalization rule for future binary artifacts.
 - **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
 - **Structured returns and traceability are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`. The `kind` field is reliable; `fields`, `summary`, and `traceability` details are best-effort from static analysis.
-- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, and `community_staleness` use `continue-on-error: true` in normal push/PR CI. `cross_references`, `validate_schema`, `verify_artifact_integrity`, `markdown_top_level_spacing`, `community_generated_freshness`, and `community_page_coverage` block the pipeline, and the advisory scripts also replay in `advisory-checks.yml` as a scheduled/manual blocking escalation path.
+- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, and `community_staleness` use `continue-on-error: true` in normal push/PR CI. `python_style`, `cross_references`, `validate_schema`, `verify_artifact_integrity`, `markdown_top_level_spacing`, `community_generated_freshness`, and `community_page_coverage` block the pipeline, and the advisory scripts also replay in `advisory-checks.yml` as a scheduled/manual blocking escalation path.
 - **MkDocs-sensitive markdown spacing**: leading spaces before top-level markdown headings or metadata labels in hand-authored docs can render raw markdown in the browser output. `scripts/verify/markdown_top_level_spacing.py` blocks that drift.
 - **Supplemental CI checks are intentionally outside `run_all.py`**: `pipeline_smoke.py` reruns the blocking wrapper end-to-end without recursive unit tests, and `shell_examples_syntax.py` depends on a `bash` executable for `examples/**/*.sh` validation resolved from `--bash-executable`, `COMFYUI_KB_BASH`, or `PATH`.
 - **Generated community pages must not be hand-edited**: `docs/ecosystem/map.md` is generated from `references/community/ecosystem_packages.json`. Edit the JSON and rerun the generator.

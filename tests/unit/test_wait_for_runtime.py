@@ -7,7 +7,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "verify" / "wait_for_runtime.py"
 
@@ -39,7 +38,9 @@ class WaitForRuntimeUnitTests(unittest.TestCase):
     def test_wait_for_runtime_retries_until_ready(self):
         module = _load_module()
 
-        with patch.object(module, "fetch_json", side_effect=[RuntimeError("still booting"), {"KSampler": {}}]):
+        with patch.object(
+            module, "fetch_json", side_effect=[RuntimeError("still booting"), {"KSampler": {}}]
+        ):
             with patch.object(module.time, "monotonic", side_effect=[0, 1, 2]):
                 with patch.object(module.time, "sleep") as mock_sleep:
                     result = module.wait_for_runtime(

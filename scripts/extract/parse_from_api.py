@@ -41,7 +41,9 @@ def compute_sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def build_snapshot(url: str, version: str | None, commit: str | None, object_info: dict, raw_bytes: bytes) -> dict:
+def build_snapshot(
+    url: str, version: str | None, commit: str | None, object_info: dict, raw_bytes: bytes
+) -> dict:
     """Build a deterministic runtime snapshot payload."""
     return {
         "metadata": {
@@ -62,7 +64,9 @@ def main() -> int:
     parser.add_argument("--url", required=True, help="Base URL of the running ComfyUI instance")
     parser.add_argument("--version", default=None, help="Pinned upstream version or tag")
     parser.add_argument("--commit", default=None, help="Pinned upstream commit hash")
-    parser.add_argument("--output", default="references/raw/object_info_runtime.json", help="Output JSON path")
+    parser.add_argument(
+        "--output", default="references/raw/object_info_runtime.json", help="Output JSON path"
+    )
     parser.add_argument("--timeout", type=int, default=30, help="HTTP request timeout in seconds")
     args = parser.parse_args()
 

@@ -6,13 +6,11 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.common.path_normalization import normalize_repo_relative_path
-
 
 OUTPUT_PATH = REPO_ROOT / "references" / "raw" / "node_api_schema.json"
 
@@ -100,7 +98,6 @@ def parse_parameter_details(signature_text: str) -> list[dict]:
         type_hint = None
         default = None
         literal_values = None
-        tail = remainder if sep else item[len(name_part):]
         if sep:
             type_part, default_sep, default_part = remainder.partition("=")
             type_hint = type_part.strip() or None
@@ -164,7 +161,7 @@ def _extract_nested_class_block(block: str, class_name: str) -> str | None:
     class_indent = None
 
     for index, line in enumerate(lines):
-        match = re.match(rf'^(\s*)class\s+{re.escape(class_name)}\([^)]*\):', line)
+        match = re.match(rf"^(\s*)class\s+{re.escape(class_name)}\([^)]*\):", line)
         if match:
             class_index = index
             class_indent = len(match.group(1))
@@ -174,7 +171,7 @@ def _extract_nested_class_block(block: str, class_name: str) -> str | None:
         return None
 
     collected = [lines[class_index]]
-    for line in lines[class_index + 1:]:
+    for line in lines[class_index + 1 :]:
         if not line.strip():
             collected.append(line)
             continue
@@ -207,14 +204,14 @@ def _extract_class_level_type_hint(block: str) -> str | None:
                 continue
             skip_indent = None
 
-        if re.match(r'^\s+class\s+\w+', line):
+        if re.match(r"^\s+class\s+\w+", line):
             skip_indent = indent
             continue
 
         visible_lines.append(line)
 
     for line in visible_lines:
-        match = re.match(r'^\s+Type\s*=\s*(.+)$', line)
+        match = re.match(r"^\s+Type\s*=\s*(.+)$", line)
         if match:
             type_hint = _strip_inline_comment(match.group(1).strip())
             return type_hint or None
@@ -288,7 +285,9 @@ def extract_io_types(io_text: str, io_path: str) -> list[dict]:
         output_parameter_details: list[dict] = []
         output_class_match = OUTPUT_CLASS_RE.search(block)
         if output_class_match:
-            output_block = _extract_nested_class_block(block, "Output") or block[output_class_match.start():]
+            output_block = (
+                _extract_nested_class_block(block, "Output") or block[output_class_match.start() :]
+            )
             output_init_match = OUTPUT_INIT_RE.search(output_block)
             if output_init_match:
                 output_parameter_details = parse_parameter_details(output_init_match.group(1))
@@ -331,7 +330,7 @@ def extract_typed_input_shapes(basic_types_text: str, basic_types_path: str) -> 
     lines = basic_types_text.splitlines()
     i = 0
     while i < len(lines):
-        match = re.match(r'class\s+(\w+)\(TypedDict\):', lines[i])
+        match = re.match(r"class\s+(\w+)\(TypedDict\):", lines[i])
         if match:
             name = match.group(1)
             i += 1
@@ -354,7 +353,7 @@ def extract_typed_input_shapes(basic_types_text: str, basic_types_path: str) -> 
                 indent = len(line) - len(line.lstrip())
                 if indent == 0:
                     break
-                field_match = re.match(r'\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*([^#\n]+)', line)
+                field_match = re.match(r"\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*([^#\n]+)", line)
                 if field_match:
                     field_name = field_match.group(1)
                     type_hint = field_match.group(2).strip()
@@ -467,8 +466,8 @@ def main() -> int:
         "coverage": {
             "description": (
                 "Extracted from pinned source files with runtime /object_info enrichment."
-                if runtime_snapshot else
-                "Extracted from pinned source files only. "
+                if runtime_snapshot
+                else "Extracted from pinned source files only. "
                 "Runtime-only data such as per-node INPUT_TYPES schemas and custom node types are deferred beyond pinned-snapshot extraction."
             ),
             "sources_covered": [
@@ -480,7 +479,9 @@ def main() -> int:
             "deferred": [
                 "custom node definitions",
                 "per-node INPUT_TYPES schemas",
-            ] if runtime_snapshot else [
+            ]
+            if runtime_snapshot
+            else [
                 "runtime /object_info response",
                 "custom node definitions",
                 "per-node INPUT_TYPES schemas",

@@ -2,7 +2,6 @@ import argparse
 import json
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT = REPO_ROOT / "references" / "raw" / "server_endpoints.json"
 DEFAULT_OUTPUT = REPO_ROOT / "docs" / "reference" / "server-py-summary.md"
@@ -128,12 +127,10 @@ def build_markdown(data: dict) -> str:
         )
 
     detailed_endpoints = [
-        endpoint for endpoint in endpoints
+        endpoint
+        for endpoint in endpoints
         if isinstance(endpoint.get("returns"), dict)
-        and (
-            endpoint["returns"].get("fields")
-            or endpoint["returns"].get("notes")
-        )
+        and (endpoint["returns"].get("fields") or endpoint["returns"].get("notes"))
     ]
 
     if detailed_endpoints:
@@ -152,12 +149,16 @@ def build_markdown(data: dict) -> str:
                 f"| {_escape_cell(endpoint.get('route', ''))} | {_escape_cell(_format_fields(returns.get('fields', [])))} | {_escape_cell(_format_notes(returns.get('notes', [])))} |"
             )
 
-    lines.extend(["", "## Update Process", "", "Regenerate this page after refreshing endpoint JSON."])
+    lines.extend(
+        ["", "## Update Process", "", "Regenerate this page after refreshing endpoint JSON."]
+    )
     return "\n".join(lines) + "\n"
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate markdown reference pages from extracted JSON")
+    parser = argparse.ArgumentParser(
+        description="Generate markdown reference pages from extracted JSON"
+    )
     parser.add_argument("--input", default=str(DEFAULT_INPUT), help="Input JSON path")
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT), help="Output markdown path")
     args = parser.parse_args()

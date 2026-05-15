@@ -7,13 +7,20 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "generate" / "generate_snapshot_delta_summary.py"
 
 
 class GenerateSnapshotDeltaSummaryTests(unittest.TestCase):
-    def _write_baseline(self, root: Path, server_endpoints: list, hooks: list, io_types: list, object_info_fields: list, typed_input_shapes: dict) -> None:
+    def _write_baseline(
+        self,
+        root: Path,
+        server_endpoints: list,
+        hooks: list,
+        io_types: list,
+        object_info_fields: list,
+        typed_input_shapes: dict,
+    ) -> None:
         (root / "server_endpoints.json").write_text(
             json.dumps({"metadata": {}, "coverage": {}, "endpoints": server_endpoints}),
             encoding="utf-8",
@@ -56,11 +63,18 @@ class GenerateSnapshotDeltaSummaryTests(unittest.TestCase):
             self._write_baseline(
                 new_dir,
                 server_endpoints=[
-                    {"method": "GET", "route": "/a", "returns": {"kind": "json", "summary": "changed"}},
+                    {
+                        "method": "GET",
+                        "route": "/a",
+                        "returns": {"kind": "json", "summary": "changed"},
+                    },
                     {"method": "POST", "route": "/b", "returns": {"kind": "json"}},
                 ],
                 hooks=[{"name": "setup"}, {"name": "nodeCreated"}],
-                io_types=[{"io_type": "BOOLEAN", "class_name": "Boolean"}, {"io_type": "FLOAT", "class_name": "Float"}],
+                io_types=[
+                    {"io_type": "BOOLEAN", "class_name": "Boolean"},
+                    {"io_type": "FLOAT", "class_name": "Float"},
+                ],
                 object_info_fields=["input", "output"],
                 typed_input_shapes={"AudioInput": {"description": "audio changed", "fields": {}}},
             )
@@ -86,9 +100,16 @@ class GenerateSnapshotDeltaSummaryTests(unittest.TestCase):
             self.assertEqual(data["artifacts"]["server_endpoints"]["added"], ["POST /b"])
             self.assertEqual(data["artifacts"]["server_endpoints"]["changed"], ["GET /a"])
             self.assertEqual(data["artifacts"]["js_hooks"]["added"], ["nodeCreated"])
-            self.assertEqual(data["artifacts"]["node_api_schema"]["object_info_fields"]["added"], ["output"])
-            self.assertEqual(data["artifacts"]["node_api_schema"]["io_types"]["added"], ["FLOAT:Float"])
-            self.assertEqual(data["artifacts"]["node_api_schema"]["typed_input_shapes"]["changed"], ["AudioInput"])
+            self.assertEqual(
+                data["artifacts"]["node_api_schema"]["object_info_fields"]["added"], ["output"]
+            )
+            self.assertEqual(
+                data["artifacts"]["node_api_schema"]["io_types"]["added"], ["FLOAT:Float"]
+            )
+            self.assertEqual(
+                data["artifacts"]["node_api_schema"]["typed_input_shapes"]["changed"],
+                ["AudioInput"],
+            )
 
 
 if __name__ == "__main__":

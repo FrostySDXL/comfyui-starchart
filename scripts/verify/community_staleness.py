@@ -38,9 +38,7 @@ def check_stale(data: dict, filename: str, entry_key: str) -> list[str]:
             try:
                 review_date = _parse_date(needs_review)
                 if review_date < TODAY:
-                    stale.append(
-                        f"{filename}: {name} (needs review after {needs_review})"
-                    )
+                    stale.append(f"{filename}: {name} (needs review after {needs_review})")
             except ValueError:
                 stale.append(
                     f"{filename}: {name} has invalid needs_review_after date '{needs_review}'"

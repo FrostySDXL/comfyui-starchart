@@ -8,7 +8,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "generate" / "generate_docs_index.py"
 
@@ -18,7 +17,9 @@ spec.loader.exec_module(generate_docs_index)
 
 
 class GenerateDocsIndexTests(unittest.TestCase):
-    def _write_page(self, root: Path, relative_path: str, title: str, evidence: str, scope: str) -> None:
+    def _write_page(
+        self, root: Path, relative_path: str, title: str, evidence: str, scope: str
+    ) -> None:
         page_path = root / "docs" / Path(relative_path)
         page_path.parent.mkdir(parents=True, exist_ok=True)
         page_path.write_text(
@@ -62,7 +63,13 @@ class GenerateDocsIndexTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            self._write_page(root, "index.md", "Docs Home", "Source-backed from pinned snapshots", "Home summary.")
+            self._write_page(
+                root,
+                "index.md",
+                "Docs Home",
+                "Source-backed from pinned snapshots",
+                "Home summary.",
+            )
             self._write_page(
                 root,
                 "start-here/tooling-builder.md",

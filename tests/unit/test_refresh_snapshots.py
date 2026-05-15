@@ -56,7 +56,9 @@ class RefreshSnapshotsArgumentTests(unittest.TestCase):
             cwd=str(REPO_ROOT),
             timeout=10,
         )
-        self.assertNotEqual(result.returncode, 0, "Should exit non-zero when no version args provided")
+        self.assertNotEqual(
+            result.returncode, 0, "Should exit non-zero when no version args provided"
+        )
         self.assertIn("at least one", result.stderr.lower() + result.stdout.lower())
 
     def test_help_flag_works(self):
@@ -80,27 +82,32 @@ class RefreshSnapshotsArgumentTests(unittest.TestCase):
     def test_runtime_url_only_works(self):
         """Running with only --runtime-object-info-url should not fail argument validation."""
         module = _load_module()
-        with mock.patch.object(
-            sys,
-            "argv",
-            [
-                str(SCRIPT_PATH),
-                "--runtime-object-info-url",
-                "http://127.0.0.1:8188",
-            ],
-        ), mock.patch.object(
-            module.subprocess,
-            "run",
-            return_value=mock.Mock(returncode=0, stdout="git version 2.0.0\n", stderr=""),
-        ), mock.patch.object(
-            module,
-            "create_pre_refresh_backup",
-            return_value=None,
-        ), mock.patch.object(
-            module,
-            "run_runtime_extraction",
-            return_value=False,
-        ) as runtime_mock:
+        with (
+            mock.patch.object(
+                sys,
+                "argv",
+                [
+                    str(SCRIPT_PATH),
+                    "--runtime-object-info-url",
+                    "http://127.0.0.1:8188",
+                ],
+            ),
+            mock.patch.object(
+                module.subprocess,
+                "run",
+                return_value=mock.Mock(returncode=0, stdout="git version 2.0.0\n", stderr=""),
+            ),
+            mock.patch.object(
+                module,
+                "create_pre_refresh_backup",
+                return_value=None,
+            ),
+            mock.patch.object(
+                module,
+                "run_runtime_extraction",
+                return_value=False,
+            ) as runtime_mock,
+        ):
             result = module.main()
 
         self.assertEqual(result, 1)
@@ -172,14 +179,18 @@ class RefreshSnapshotsDiffSummaryTests(unittest.TestCase):
         """compute_diff_summary should detect new endpoints."""
         module = _load_module()
         old = {"endpoints": [{"route": "/ws", "method": "GET"}]}
-        new = {"endpoints": [{"route": "/ws", "method": "GET"}, {"route": "/new", "method": "POST"}]}
+        new = {
+            "endpoints": [{"route": "/ws", "method": "GET"}, {"route": "/new", "method": "POST"}]
+        }
         changes = module.compute_diff_summary(old, new, "server_endpoints.json")
         self.assertTrue(any("New endpoints" in c for c in changes))
 
     def test_endpoint_diff_detects_removals(self):
         """compute_diff_summary should detect removed endpoints."""
         module = _load_module()
-        old = {"endpoints": [{"route": "/ws", "method": "GET"}, {"route": "/old", "method": "POST"}]}
+        old = {
+            "endpoints": [{"route": "/ws", "method": "GET"}, {"route": "/old", "method": "POST"}]
+        }
         new = {"endpoints": [{"route": "/ws", "method": "GET"}]}
         changes = module.compute_diff_summary(old, new, "server_endpoints.json")
         self.assertTrue(any("Removed endpoints" in c for c in changes))
@@ -203,24 +214,52 @@ class RefreshSnapshotsDiffSummaryTests(unittest.TestCase):
     def test_schema_diff_detects_provenance_mode_change(self):
         """compute_diff_summary should detect provenance mode changes."""
         module = _load_module()
-        old = {"metadata": {"provenance": {"mode": "source-only"}}, "object_info_fields": [], "io_types": []}
-        new = {"metadata": {"provenance": {"mode": "hybrid"}}, "object_info_fields": [], "io_types": []}
+        old = {
+            "metadata": {"provenance": {"mode": "source-only"}},
+            "object_info_fields": [],
+            "io_types": [],
+        }
+        new = {
+            "metadata": {"provenance": {"mode": "hybrid"}},
+            "object_info_fields": [],
+            "io_types": [],
+        }
         changes = module.compute_diff_summary(old, new, "node_api_schema.json")
         self.assertTrue(any("Provenance mode changed" in c for c in changes))
 
     def test_schema_diff_detects_runtime_node_count_change(self):
         """compute_diff_summary should detect runtime_object_info size changes."""
         module = _load_module()
-        old = {"metadata": {}, "object_info_fields": [], "io_types": [], "runtime_object_info": {"A": {}}}
-        new = {"metadata": {}, "object_info_fields": [], "io_types": [], "runtime_object_info": {"A": {}, "B": {}}}
+        old = {
+            "metadata": {},
+            "object_info_fields": [],
+            "io_types": [],
+            "runtime_object_info": {"A": {}},
+        }
+        new = {
+            "metadata": {},
+            "object_info_fields": [],
+            "io_types": [],
+            "runtime_object_info": {"A": {}, "B": {}},
+        }
         changes = module.compute_diff_summary(old, new, "node_api_schema.json")
         self.assertTrue(any("Runtime object_info node count" in c for c in changes))
 
     def test_schema_diff_no_changes_with_runtime(self):
         """compute_diff_summary should report no changes when runtime and schema are stable."""
         module = _load_module()
-        old = {"metadata": {"provenance": {"mode": "hybrid"}}, "object_info_fields": ["input"], "io_types": [], "runtime_object_info": {"A": {}}}
-        new = {"metadata": {"provenance": {"mode": "hybrid"}}, "object_info_fields": ["input"], "io_types": [], "runtime_object_info": {"A": {}}}
+        old = {
+            "metadata": {"provenance": {"mode": "hybrid"}},
+            "object_info_fields": ["input"],
+            "io_types": [],
+            "runtime_object_info": {"A": {}},
+        }
+        new = {
+            "metadata": {"provenance": {"mode": "hybrid"}},
+            "object_info_fields": ["input"],
+            "io_types": [],
+            "runtime_object_info": {"A": {}},
+        }
         changes = module.compute_diff_summary(old, new, "node_api_schema.json")
         self.assertTrue(any("No schema changes" in c for c in changes))
 
@@ -248,8 +287,10 @@ class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
             sample_file = raw_dir / "server_endpoints.json"
             sample_file.write_text('{"ok": true}\n', encoding="utf-8")
 
-            with mock.patch.object(module, "REFERENCES_DIR", tmp_path / "references"), \
-                 mock.patch.object(module, "REFERENCES_RAW_DIR", raw_dir):
+            with (
+                mock.patch.object(module, "REFERENCES_DIR", tmp_path / "references"),
+                mock.patch.object(module, "REFERENCES_RAW_DIR", raw_dir),
+            ):
                 backup_dir = module.create_pre_refresh_backup()
                 self.assertIsNotNone(backup_dir)
                 self.assertEqual(backup_dir.parent.name, "references")
@@ -266,8 +307,10 @@ class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
             raw_dir = tmp_path / "references" / "raw"
             raw_dir.mkdir(parents=True)
 
-            with mock.patch.object(module, "REFERENCES_DIR", tmp_path / "references"), \
-                 mock.patch.object(module, "REFERENCES_RAW_DIR", raw_dir):
+            with (
+                mock.patch.object(module, "REFERENCES_DIR", tmp_path / "references"),
+                mock.patch.object(module, "REFERENCES_RAW_DIR", raw_dir),
+            ):
                 backup_dir = module.create_pre_refresh_backup()
 
         self.assertIsNone(backup_dir)
@@ -281,9 +324,11 @@ class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
             raw_dir.mkdir(parents=True)
             (raw_dir / "server_endpoints.json").write_text('{"ok": true}\n', encoding="utf-8")
 
-            with mock.patch.object(module, "REFERENCES_DIR", tmp_path / "references"), \
-                 mock.patch.object(module, "REFERENCES_RAW_DIR", raw_dir), \
-                 mock.patch.object(module.shutil, "copytree", side_effect=OSError("copy failed")):
+            with (
+                mock.patch.object(module, "REFERENCES_DIR", tmp_path / "references"),
+                mock.patch.object(module, "REFERENCES_RAW_DIR", raw_dir),
+                mock.patch.object(module.shutil, "copytree", side_effect=OSError("copy failed")),
+            ):
                 with self.assertRaises(RuntimeError) as exc:
                     module.create_pre_refresh_backup()
 
@@ -298,8 +343,10 @@ class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
             backup_dir.mkdir(parents=True)
             provenance_path = tmp_path / "docs" / "artifacts" / "refresh-provenance.json"
 
-            with mock.patch.object(module, "REPO_ROOT", tmp_path), \
-                 mock.patch.object(module, "PROVENANCE_OUTPUT_PATH", provenance_path):
+            with (
+                mock.patch.object(module, "REPO_ROOT", tmp_path),
+                mock.patch.object(module, "PROVENANCE_OUTPUT_PATH", provenance_path),
+            ):
                 payload = module.build_refresh_provenance(
                     refresh_date="2026-05-03",
                     requested_core_version="v0.20.1",
@@ -331,7 +378,9 @@ class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
             "docs/artifacts/refresh-provenance.json",
         )
         self.assertFalse(persisted["published"]["manifest_included"])
-        self.assertIn("generate_snapshot_delta_summary.py", persisted["next_steps"]["delta_summary_command"])
+        self.assertIn(
+            "generate_snapshot_delta_summary.py", persisted["next_steps"]["delta_summary_command"]
+        )
 
 
 if __name__ == "__main__":

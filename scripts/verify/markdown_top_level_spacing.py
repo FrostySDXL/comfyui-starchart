@@ -19,9 +19,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DOCS_DIR = REPO_ROOT / "docs"
 
-LEADING_SPACE_PATTERN = re.compile(
-    r"^\s+(?:#{1,6}\s|\*\*[A-Za-z][^*]{0,120}:\*\*)"
-)
+LEADING_SPACE_PATTERN = re.compile(r"^\s+(?:#{1,6}\s|\*\*[A-Za-z][^*]{0,120}:\*\*)")
 
 
 def find_leading_space_issues(content: str) -> list[tuple[int, str]]:
@@ -50,7 +48,9 @@ def verify_docs_directory(repo_root: Path, docs_dir: Path) -> list[tuple[str, in
     for md_file in sorted(docs_dir.rglob("*.md")):
         content = md_file.read_text(encoding="utf-8")
         for line_number, line in find_leading_space_issues(content):
-            issues.append((str(md_file.relative_to(repo_root)).replace("\\", "/"), line_number, line))
+            issues.append(
+                (str(md_file.relative_to(repo_root)).replace("\\", "/"), line_number, line)
+            )
     return issues
 
 

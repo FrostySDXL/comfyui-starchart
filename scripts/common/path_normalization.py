@@ -13,5 +13,5 @@ def normalize_repo_relative_path(value: str | Path, repo_root: str | Path) -> st
     normalized = normalize_repo_path(value)
     repo_prefix = normalize_repo_path(repo_root).rstrip("/") + "/"
     if normalized.startswith(repo_prefix):
-        return normalized[len(repo_prefix):]
+        return normalized[len(repo_prefix) :]
     return normalized
