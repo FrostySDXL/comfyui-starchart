@@ -106,7 +106,8 @@ that user-facing example directories contain `README.md`, that routed example
 paths referenced in consumer-facing docs resolve, that JSON files under
 `examples/` parse, and that bounded local README links are not broken. Run it
 when your change touches the example surface or its routing references. It is
-not part of `run_all.py` and remains targeted/manual.
+not part of `run_all.py`, but it now also runs in advisory CI so example-surface
+drift stays visible without widening the default blocking path.
 
 ---
 

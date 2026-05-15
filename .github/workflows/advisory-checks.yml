@@ -36,3 +36,6 @@ jobs:
 
       - name: Check community staleness
         run: python scripts/verify/community_staleness.py
+
+      - name: Check example surface integrity
+        run: python scripts/verify/example_surface_integrity.py

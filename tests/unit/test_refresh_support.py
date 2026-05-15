@@ -177,6 +177,20 @@ class RefreshSupportProvenanceTests(unittest.TestCase):
             persisted["next_steps"]["delta_summary_command"],
         )
 
+    def test_write_refresh_provenance_raises_clear_runtime_error_on_write_failure(self):
+        """Write failures should be wrapped in a clear runtime error."""
+        module = _load_module()
+        repo_root = Path("D:/repo")
+        provenance_path = repo_root / "docs" / "artifacts" / "refresh-provenance.json"
+        payload = {"refresh_date": "2026-05-14"}
+
+        with mock.patch.object(Path, "write_text", side_effect=OSError("disk full")):
+            with self.assertRaises(RuntimeError) as exc:
+                module.write_refresh_provenance(payload, provenance_path, repo_root)
+
+        self.assertIn("Failed to write refresh provenance", str(exc.exception))
+        self.assertIn("docs/artifacts/refresh-provenance.json", str(exc.exception))
+
 
 class RefreshSupportDiffSummaryTests(unittest.TestCase):
     """Test the diff summary computation."""
