@@ -24,7 +24,7 @@ from scripts.common.path_normalization import has_backslashes
 
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 REFERENCES_COMMUNITY_DIR = REPO_ROOT / "references" / "community"
-PUBLISHED_SCHEMA_DIR = REPO_ROOT / "docs" / "artifacts" / "schemas"
+PUBLISHED_SCHEMA_DIR = REPO_ROOT / "public" / "artifacts" / "schemas"
 
 PUBLISHED_ARTIFACT_SCHEMAS = {
     "server_endpoints.json": "server_endpoints.schema.json",
@@ -733,7 +733,7 @@ def validate_typed_input_shapes(data: dict, filename: str) -> list[str]:
 
 
 def load_published_artifact_schema(filename: str) -> dict | None:
-    """Load a published artifact JSON Schema from docs/artifacts/schemas/."""
+    """Load a published artifact JSON Schema from public/artifacts/schemas/."""
     schema_name = PUBLISHED_ARTIFACT_SCHEMAS.get(filename)
     if not schema_name:
         return None

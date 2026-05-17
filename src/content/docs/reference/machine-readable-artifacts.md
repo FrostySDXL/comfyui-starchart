@@ -1,0 +1,493 @@
+---
+title: "Machine-Readable Artifacts"
+---
+
+# Machine-Readable Artifacts
+
+**Evidence:** Operational guidance
+**Last Updated:** 2026-05-06
+
+## Scope
+
+This page documents the machine-readable JSON artifacts this repository publishes.
+It covers what artifacts exist, what they contain, and how tooling authors can
+consume them from the static site or from the repo directly.
+
+The published contract is intentionally bounded. These artifacts are a pinned
+companion reference for tooling and analysis, not a full OpenAPI-grade or fully
+typed description of every ComfyUI behavior.
+
+## Who This Page Is For
+
+- Tooling authors building ComfyUI integrations, SDKs, or analysis tools
+- Extension developers who want to validate assumptions against a pinned API surface
+- CI or automation pipelines that need a stable, cited baseline for ComfyUI behavior
+
+## What Artifacts Exist
+
+The repository publishes three canonical artifacts extracted from pinned upstream
+snapshots. All paths below are site-relative to the built documentation.
+
+| Artifact | Source | Stable URL |
+|----------|--------|------------|
+| `server_endpoints.json` | Pinned `server.py` | `artifacts/current/server_endpoints.json` |
+| `js_hooks.json` | Pinned frontend TypeScript | `artifacts/current/js_hooks.json` |
+| `node_api_schema.json` | Pinned `server.py`, `_io.py`, `basic_types.py` | `artifacts/current/node_api_schema.json` |
+
+Each artifact also has a versioned copy under `artifacts/versions/<key>/`, where
+the key includes the pinned core version, frontend version, and extraction date.
+
+The repo also publishes non-canonical support artifacts:
+
+| Artifact | Purpose | Stable URL |
+|----------|---------|------------|
+| `docs-index.json` | Bounded page-level index for routing tools and agents to the right published docs page without full-site scraping | `artifacts/docs-index.json` |
+| `delta-summary.json` | Deterministic comparison summary between two artifact baselines | `artifacts/delta-summary.json` |
+| `refresh-provenance.json` | Durable evidence about the most recent refresh run, including requested versions, resolved commits, backup path, and runtime-enrichment intent | `artifacts/refresh-provenance.json` |
+
+The repo also publishes bounded JSON Schema files for the three canonical
+artifacts:
+
+| Schema file | Covers | Stable URL |
+|-------------|--------|------------|
+| `server_endpoints.schema.json` | `server_endpoints.json` guaranteed structure | `artifacts/schemas/server_endpoints.schema.json` |
+| `js_hooks.schema.json` | `js_hooks.json` guaranteed structure | `artifacts/schemas/js_hooks.schema.json` |
+| `node_api_schema.schema.json` | `node_api_schema.json` guaranteed structure | `artifacts/schemas/node_api_schema.schema.json` |
+
+## Contract Tiers
+
+Read each artifact through these tiers:
+
+- **Guaranteed structure**: fields explicitly listed in each artifact's
+  `coverage.guaranteed_fields` block.
+- **Best-effort fields**: inferred or descriptive fields listed in
+  `coverage.best_effort_fields`.
+- **Deferred areas**: fidelity gaps listed in `coverage.deferred` that are not
+  promised by the current contract.
+
+Tooling can depend on guaranteed structure. Treat best-effort fields as useful
+helpers, not strict contracts.
+
+The published JSON Schema files intentionally encode only the guaranteed
+structure. They do not hard-contract every descriptive or inferred field that
+may appear in the current artifacts.
+
+## Minimum Consumer Contract
+
+If you are building strict tooling against the published artifact surface, keep
+to these minimum rules:
+
+- start from `artifacts/manifest.json` and the canonical published artifacts it
+  points to instead of hardcoding versioned artifact paths
+- verify the manifest metadata before trusting a download; at minimum, compare
+  the artifact bytes against the manifest `sha256` for canonical current-copy
+  URLs
+- build strict logic only against guaranteed fields and the published schema
+  files; treat best-effort summaries, traceability, and other descriptive fields
+  as optional helpers
+- do not expect the artifacts to encode HTTP transport setup such as the ComfyUI
+  base URL, port, or request headers; for direct local use, the practical
+  default is `http://127.0.0.1:8188`, and JSON `POST` calls such as `/prompt`
+  should send `Content-Type: application/json`
+- treat `docs-index.json`, `delta-summary.json`, and
+  `refresh-provenance.json` as support artifacts with narrower guarantees than
+  the three canonical extracted artifacts
+- treat runtime-only captures such as `object_info_runtime.json` as optional,
+  instance-specific inputs rather than part of the canonical published contract
+
+This contract is intentionally lightweight. It defines safe consumption
+behavior for this repo's published artifacts. It does not promise an SDK,
+OpenAPI-grade semantics, or a full runtime truth layer.
+
+### server_endpoints.json
+
+Contains HTTP routes, methods, return kinds, and limited inferred response
+details from the pinned ComfyUI server source. Useful for:
+
+- building route inventories, request scaffolding, or bounded client helpers
+- checking that route and response-kind coverage matches the pinned baseline
+- verifying that a ComfyUI instance exposes the expected surface
+
+Guaranteed fields follow the artifact's `coverage.guaranteed_fields` block.
+Return summaries, parameter details, response field details, and traceability
+markers remain best-effort static analysis rather than full semantic contracts.
+
+When present, `parameters[]` entries may include:
+
+- `location` such as `path`, `query`, `form`, or `json`
+- `required` and `default` when the access pattern makes them obvious
+- `allowed_values` when a small literal constraint is directly visible nearby
+- `traceability` showing whether the detail came from a route token, request
+  access pattern, or another bounded static rule
+
+For mutation endpoints, treat `parameters[].required` as a bounded
+source-access requiredness hint, not a full API-level requiredness contract. The
+current extractor can reliably see route tokens, direct subscripting,
+`.get(...)` calls, defaults, and small literal checks, but it does not prove
+every branch-conditioned request rule. `POST /prompt` is the clearest example:
+the pinned handler only hard-fails when `prompt` is missing, while fields such
+as `number`, `front`, `extra_data`, `client_id`, and
+`partial_execution_targets` are conditionally consumed. Use the artifact for
+route scaffolding and then read the matching prose API page when you need
+precise mutation-request semantics.
+
+### js_hooks.json
+
+Contains JavaScript and frontend extension hooks, their signatures, and where
+they are defined and invoked in the pinned frontend source. Useful for:
+
+- building a hook explorer or IDE autocomplete data
+- validating that a custom extension registers against hooks that exist in the
+  pinned version
+- tracking frontend integration point changes across versions
+
+This artifact is more structured than the endpoint artifact, but descriptive and
+provenance-style fields such as `description`, `defined_in`, `signature`,
+`arguments`, and `invocation_style` should still be
+treated according to the artifact's `coverage` block.
+
+### node_api_schema.json
+
+Contains object info fields, I/O types, and basic input shapes from the pinned
+core source. Useful for:
+
+- validating node surface assumptions before running a workflow
+- building datatype-aware tooling or linting
+- comparing schema behavior across ComfyUI versions
+
+This is the strongest pinned-source-derived schema contract in the published
+artifact set. It still does not make runtime-only custom-node state canonical by
+default.
+
+Plan K extends this surface with richer typed detail where pinned source proves
+it, including:
+
+- `io_types[].input_parameter_details` / `output_parameter_details`
+- `typed_input_shapes[*].defined_in`
+- field-level `traceability` markers for extracted `TypedDict` fields
+
+These additions remain source-backed only. They do not imply full runtime node
+coverage.
+
+### delta-summary.json
+
+`delta-summary.json` is a deterministic structural comparison artifact. Its
+first version is intentionally narrow: keyed adds/removes/changes and count
+summaries for the canonical baseline artifacts.
+
+Use it to answer questions like:
+
+- which endpoint keys were added or removed between two baselines
+- which hook names changed
+- whether object-info fields, I/O types, or typed input shapes drifted
+
+Do not use it as runtime truth. It compares checked-in artifact baselines only.
+When generating this file after a refresh, preserve a copy of the pre-refresh
+`references/raw/` directory first and use that preserved copy as `--old`. The
+refresh script overwrites `references/raw/` in place.
+
+`delta-summary.json` also remains outside the canonical published contract. It
+is not discovered from `manifest.json`, and `verify_artifact_integrity.py` does
+not treat it as part of the canonical byte-identity guarantee.
+
+### refresh-provenance.json
+
+`refresh-provenance.json` records operator-facing evidence about the latest
+refresh run. It is published under `public/artifacts/` for auditability, but it
+is not part of the canonical manifest discovery surface.
+
+The current payload records at least:
+
+- `refresh_date`
+- requested core and frontend versions
+- resolved core and frontend commits
+- the repo-local backup path created before `references/raw/` was overwritten
+- whether runtime object-info enrichment was requested and merged
+- the next `generate_snapshot_delta_summary.py` command to run when a backup is available
+
+Use this file as refresh evidence and as a maintainer handoff aid. Do not treat
+it as a canonical artifact contract alongside the three primary published JSON
+artifacts.
+
+### docs-index.json
+
+`docs-index.json` is a bounded support artifact for tooling and agent consumers
+that need lightweight page discovery without scraping the full built site.
+
+It is intentionally narrower than the canonical extracted artifacts. The index
+may include only conservative, machine-derivable page metadata such as:
+
+- page title
+- repo-relative docs path
+- nav family or section
+- audience when the page path or repo-local start-here routing makes it obvious
+- evidence label
+- short scope line when it can be extracted deterministically from the page;
+  currently this is limited to the first non-empty paragraph under `## Scope`
+
+The source surface is intentionally limited to hand-authored published docs
+pages under `src/content/docs/`. It excludes generated markdown pages, the built
+`dist/` output, root-level repo workflow markdown, and any attempt at full-text
+page capture.
+
+Use this file to answer questions like:
+
+- which published docs page best fits a tooling or agent task
+- which page families exist in the current nav structure
+- which pages are reference, troubleshooting, start-here, or tutorial-style
+  entry points
+
+Do not treat it as:
+
+- full-text search
+- a guarantee that every prose nuance is machine-readable
+- a replacement for reading the pages themselves
+- a new canonical artifact contract alongside `server_endpoints.json`,
+  `js_hooks.json`, and `node_api_schema.json`
+
+The maintained generation path is:
+
+```bash
+python scripts/generate/generate_docs_index.py
+```
+
+`docs-index.json` is intentionally excluded from `manifest.json`. It is a
+published support artifact for routing and discovery, not part of the canonical
+schema-discovery contract. It remains outside the canonical-artifact
+byte-identity guarantee enforced for the three extracted JSON artifacts.
+
+## Repo Sources vs Published Copies
+
+The canonical extraction outputs live in `references/raw/` in the repository.
+The published copies live under `public/artifacts/` and are included in the
+built site.
+
+| Location | Purpose |
+|----------|---------|
+| `references/raw/` | Canonical extractor output; versioned in git |
+| `public/artifacts/current/` | Stable current-copy URL for web consumption |
+| `public/artifacts/versions/<key>/` | Immutable snapshot for reproducible builds |
+| `public/artifacts/manifest.json` | Discovery metadata with URLs, versions, commits, and SHA-256 checksums for canonical published artifacts |
+| `public/artifacts/docs-index.json` | Published support artifact for bounded docs-page discovery |
+| `public/artifacts/schemas/` | Checked-in bounded JSON Schema files for the canonical published artifacts |
+| `public/artifacts/delta-summary.json` | Deterministic baseline-to-baseline comparison output |
+| `public/artifacts/refresh-provenance.json` | Durable published record of the latest refresh run; intentionally outside manifest discovery |
+
+For the three canonical published artifacts, `references/raw/` remains the
+canonical repo-local source. `public/artifacts/current/` must stay byte-identical
+to those canonical files, and the manifest checksum must match the published
+current-copy bytes.
+
+If you need the exact commit, extraction date, or published checksum for an
+artifact, read its `metadata` object or consult `manifest.json`.
+
+## Manifest
+
+`public/artifacts/manifest.json` (served at `artifacts/manifest.json`) contains:
+
+- `artifact_schema_version` -- the version of this repo's published artifact
+  contract, independent from upstream ComfyUI version pins
+- `version_key` -- the deterministic key for the current versioned copy
+- `schemas` -- per-artifact schema discovery entries with `schema_url`
+- `artifacts` -- per-artifact entries with:
+  - `current_url` and `versioned_url` (relative to the site root, with no leading
+    slash, so they resolve correctly on GitHub Pages project sites)
+  - `sha256` for the bytes served from `current_url`
+  - `version`, `commit`, `extracted_date`
+  - `sources` -- the pinned snapshot file(s) the artifact was extracted from
+
+Maintainership note: `python scripts/verify/verify_artifact_integrity.py` is a
+blocking verifier. It proves the canonical `references/raw/` files, published
+`public/artifacts/current/` copies, and manifest `sha256` values remain aligned
+for the three canonical artifacts.
+
+`python scripts/verify/validate_schema.py` is the matching blocking verifier for
+the schema contract. It validates canonical artifacts against the checked-in
+published schema files under `public/artifacts/schemas/`.
+
+`refresh-provenance.json` is intentionally excluded from `manifest.json`. It is
+useful published operator evidence, but it is not a canonical extracted artifact
+and does not participate in the bounded schema-discovery contract.
+
+`docs-index.json` is also intentionally excluded from `manifest.json`. It is a
+published docs-routing aid rather than a canonical extracted artifact.
+
+## Versioning
+
+The published surface now exposes two separate version concepts:
+
+- `artifact_schema_version` tracks this repo's bounded artifact contract.
+- `version_key` and each artifact entry's `version` / `commit` track the pinned
+  upstream ComfyUI baseline used to extract the current files.
+
+Do not treat them as interchangeable. A new upstream pin can reuse the same
+`artifact_schema_version` if the guaranteed artifact structure is unchanged. A
+schema-version bump can happen without changing the upstream pin if the repo's
+guaranteed artifact contract changes.
+
+The `artifact_schema_version` follows semantic versioning for the bounded
+published contract:
+
+- increment **MAJOR** for breaking changes to guaranteed fields, required
+  structure, or schema-discovery semantics that a consumer must handle
+- increment **MINOR** for backward-compatible additions to guaranteed structure
+  or manifest-level schema discovery
+- increment **PATCH** for non-breaking corrections, clarifications, or schema
+  tightening that does not invalidate previously valid guaranteed-shape content
+
+Artifact content is still versioned by the upstream commit and tag they were
+extracted from. The version key format is:
+
+```
+core-<core-version>_frontend-<frontend-version>_<oldest-extracted-date>
+```
+
+When upstream snapshots are refreshed, running the packaging script generates a
+new version key and new versioned copies. The `current/` copies are overwritten,
+but the versioned copies are preserved until explicitly removed.
+
+## Schema Publication Approach
+
+The schema files under `public/artifacts/schemas/` are checked into the repo as
+deterministic source files rather than being generated from Python definitions.
+This keeps the published contract explicit, reviewable in diffs, and easy to
+inspect without adding a second schema-generation pipeline.
+
+This choice does not widen the contract. The checked-in schemas remain bounded
+to guaranteed structure only, while best-effort fields continue to evolve under
+the artifact `coverage` blocks and prose guidance.
+
+For baseline-to-baseline comparisons, the proven maintainer sequence is:
+
+1. run `scripts/refresh_snapshots.py` and note the printed repo-local backup directory plus `refresh-provenance.json` output
+2. run `scripts/generate/publish_reference_artifacts.py`
+3. run `scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output public/artifacts/delta-summary.json`
+
+## Bounded Usage Examples
+
+These examples show how tooling authors can consume the published artifacts.
+They are conceptual and lightweight. They demonstrate bounded consumption
+patterns, not full SDK or OpenAPI generation guarantees.
+
+If you want runnable starter patterns instead of inline conceptual snippets, use
+the self-contained consumer examples summarized on
+[Consumer Starter Examples](../how-to/consumer-starter-examples.md):
+
+- Python manifest reader - manifest-first canonical artifact loading with checksum validation
+- JavaScript docs-index routing example - optional `docs-index.json` routing plus separate manifest-based artifact discovery
+- Shell + jq artifact consumer - manifest-first endpoint discovery with optional live zero-parameter `GET` probing
+- Artifacts plus live API example - artifact discovery plus optional live `GET /queue` interaction
+
+Treat those directories as starter patterns, not a formal supported library
+surface.
+
+### Building a route inventory from endpoint metadata
+
+Read `server_endpoints.json` and map each entry to a lightweight request helper
+or audit report. The guaranteed route, method, and return-kind fields are stable
+enough for bounded tooling even when deeper parameter or response semantics are
+best-effort.
+
+```python
+import json, urllib.request
+
+base = "https://<your-site>"
+manifest = json.load(urllib.request.urlopen(f"{base}/artifacts/manifest.json"))
+url = manifest["artifacts"]["server_endpoints.json"]["current_url"]
+endpoints = json.load(urllib.request.urlopen(f"{base}/{url}"))
+
+for ep in endpoints["endpoints"]:
+    print(f"{ep['method']} {ep['route']} -> {ep['returns']['kind']}")
+```
+
+### Building a hook explorer from js_hooks.json
+
+Use `js_hooks.json` to populate an autocomplete list or documentation panel for
+frontend extension authors. Each hook entry includes `name`, `type`, `description`,
+and source locations.
+
+```python
+hooks = json.load(urllib.request.urlopen(
+    "https://<your-site>/artifacts/current/js_hooks.json"
+))
+
+for hook in hooks["hooks"]:
+    print(f"{hook['name']} ({hook['type']}): {hook['description']}")
+```
+
+### Validating node-surface assumptions from node_api_schema.json
+
+Before submitting a workflow to a ComfyUI instance, compare the node types and
+inputs your workflow uses against the pinned schema. This catches mismatches
+when the instance version differs from the pinned baseline.
+
+```python
+schema = json.load(urllib.request.urlopen(
+    "https://<your-site>/artifacts/current/node_api_schema.json"
+))
+
+# Example: verify a node type exists in the pinned schema
+node_type = "CheckpointLoaderSimple"
+assert node_type in schema.get("object_info", {}), f"{node_type} not in schema"
+```
+
+### Verifying a published artifact checksum from manifest.json
+
+Use the manifest checksum when you need to confirm a downloaded current artifact
+matches the bytes the site publishes.
+
+```python
+import hashlib, json, urllib.request
+
+base = "https://<your-site>"
+manifest = json.load(urllib.request.urlopen(f"{base}/artifacts/manifest.json"))
+entry = manifest["artifacts"]["server_endpoints.json"]
+artifact_bytes = urllib.request.urlopen(f"{base}/{entry['current_url']}").read()
+
+assert hashlib.sha256(artifact_bytes).hexdigest() == entry["sha256"]
+```
+
+## Runtime Artifacts
+
+The repository can also produce `object_info_runtime.json` via live ComfyUI
+capture. This file is explicitly excluded from the published artifact surface.
+It reflects the specific runtime configuration of the instance it was captured
+from and is not a reproducible baseline. Use it only when your workflow depends
+on live installed-node state or hybrid enrichment. See
+[Runtime and CI Operations](runtime-ci-operations.md) and
+[Object Info](object-info.md).
+
+This runtime-only surface remains optional by design. The canonical artifact
+publish step excludes it, `manifest.json` does not discover it, and its
+presence depends on whether someone ran the live runtime capture path at all.
+
+## Caveats
+
+- These artifacts are extracted from pinned source, not from live API responses.
+  They describe what the source declares, not what every runtime instance will
+  expose.
+- Manifest `sha256` fields prove byte integrity for the published canonical
+  current copies only. They do not provide signatures, provenance attestations,
+  or schema-compatibility guarantees by themselves.
+- Return shape inference is best-effort static analysis. Some endpoints return
+  variable structures that cannot be captured precisely without runtime data.
+- Traceability fields indicate where an extracted fact came from, not that the
+  repo now guarantees full request validation or runtime response behavior.
+- `server_endpoints.json` is suitable for route/method scaffolding and response
+  kind checks, not as a complete OpenAPI replacement.
+- `js_hooks.json` includes useful descriptive metadata, but some hook
+  descriptions and provenance details remain best-effort.
+- The `node_api_schema.json` artifact covers built-in types and common patterns.
+  Custom node packs may introduce types that do not appear in the pinned snapshot.
+- For authoritative human reference, use [docs.comfy.org](https://docs.comfy.org/).
+- This repo does not cover end-user workflow tutorials. For those, see community
+  resources such as [comfyui-wiki.com](https://comfyui-wiki.com/).
+
+## Read Next
+
+- [Start Here: Tooling Builder](../start-here/tooling-builder.md)
+- [Version Pin Status](version-pin-status.md)
+- [Runtime and CI Operations](runtime-ci-operations.md)
+- [Source Evidence Policy](source-evidence-policy.md)
+- [API Reference: Endpoints](../api/endpoints.md)
+- [Hooks: JavaScript Hooks](../hooks/javascript-hooks.md)

@@ -10,12 +10,12 @@ This directory tracks pages and packages that carry a community evidence
 component or that define operational policy for community content. That
 includes:
 
-- generated catalogs (`docs/ecosystem/map.md`)
-- pinned external repo studies (`docs/deep-dives/*.md`, case studies)
-- community extension case studies (`docs/extensions/profilerx-analysis.md`)
+- generated catalogs (`src/content/docs/ecosystem/map.md`)
+- pinned external repo studies (`src/content/docs/deep-dives/*.md`, case studies)
+- community extension case studies (`src/content/docs/extensions/profilerx-analysis.md`)
 - hybrid pages that mix official docs with community examples
 - operational policy pages that govern community content review and tiering
-  (`docs/reference/community-maintenance-policy.md`)
+  (`src/content/docs/reference/community-maintenance-policy.md`)
 
 It does **not** track purely official-docs-backed reference pages such as
 endpoint catalogs or hook lists. Those are source-backed and managed under
@@ -36,7 +36,7 @@ Using JSON here keeps the community metadata layer consistent with the rest of
 
 ## Generated consumers
 
-- `docs/ecosystem/map.md` is generated from `ecosystem_packages.json` by
+- `src/content/docs/ecosystem/map.md` is generated from `ecosystem_packages.json` by
   `scripts/generate/generate_community_pages.py`. Do not edit the markdown file
   directly; edit the JSON source and rerun the generator.
 

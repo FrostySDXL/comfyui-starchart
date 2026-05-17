@@ -13,7 +13,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "generate" / "publish_reference_artifacts.py"
 SOURCE_DIR = REPO_ROOT / "references" / "raw"
-SCHEMAS_DIR = REPO_ROOT / "docs" / "artifacts" / "schemas"
+SCHEMAS_DIR = REPO_ROOT / "public" / "artifacts" / "schemas"
 
 
 class PublishReferenceArtifactsUnitTests(unittest.TestCase):
@@ -182,7 +182,7 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
 
     def test_site_rel_uses_forward_slashes(self):
         module = self._import_module()
-        test_path = REPO_ROOT / "docs" / "artifacts" / "current" / "server_endpoints.json"
+        test_path = REPO_ROOT / "public" / "artifacts" / "current" / "server_endpoints.json"
         rel = module._site_rel(test_path)
         self.assertEqual(rel, "artifacts/current/server_endpoints.json")
         self.assertNotIn("\\", rel)
@@ -213,8 +213,8 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
             tmp_root = Path(tmpdir)
             # Create minimal directory structure
             (tmp_root / "references" / "raw").mkdir(parents=True)
-            (tmp_root / "docs" / "artifacts" / "current").mkdir(parents=True)
-            (tmp_root / "docs" / "artifacts" / "schemas").mkdir(parents=True)
+            (tmp_root / "public" / "artifacts" / "current").mkdir(parents=True)
+            (tmp_root / "public" / "artifacts" / "schemas").mkdir(parents=True)
             (tmp_root / "scripts" / "generate").mkdir(parents=True)
 
             # Copy generator script
@@ -223,7 +223,7 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
             )
             for schema_path in SCHEMAS_DIR.glob("*.schema.json"):
                 shutil.copy(
-                    schema_path, tmp_root / "docs" / "artifacts" / "schemas" / schema_path.name
+                    schema_path, tmp_root / "public" / "artifacts" / "schemas" / schema_path.name
                 )
 
             # Write minimal artifact JSONs
@@ -275,7 +275,7 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
 
             # Verify current copies
             for name in artifacts:
-                current_path = tmp_root / "docs" / "artifacts" / "current" / name
+                current_path = tmp_root / "public" / "artifacts" / "current" / name
                 self.assertTrue(current_path.exists(), f"Missing current copy: {name}")
                 loaded = json.loads(current_path.read_text(encoding="utf-8"))
                 self.assertEqual(
@@ -285,7 +285,7 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
             # Verify versioned copies
             versioned_dir = (
                 tmp_root
-                / "docs"
+                / "public"
                 / "artifacts"
                 / "versions"
                 / "core-v0.19.3_frontend-v1.42.11_2026-04-19"
@@ -295,7 +295,7 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
                 self.assertTrue(versioned_path.exists(), f"Missing versioned copy: {name}")
 
             # Verify manifest
-            manifest_path = tmp_root / "docs" / "artifacts" / "manifest.json"
+            manifest_path = tmp_root / "public" / "artifacts" / "manifest.json"
             self.assertTrue(manifest_path.exists())
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             self.assertEqual(manifest["artifact_schema_version"], "1.0.0")
@@ -311,7 +311,7 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
                 "artifacts/schemas/server_endpoints.schema.json",
             )
             for name in artifacts:
-                published_path = tmp_root / "docs" / "artifacts" / "current" / name
+                published_path = tmp_root / "public" / "artifacts" / "current" / name
                 expected_hash = hashlib.sha256(
                     published_path.read_bytes().replace(b"\r\n", b"\n")
                 ).hexdigest()
@@ -327,7 +327,7 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_root = Path(tmpdir)
             (tmp_root / "references" / "raw").mkdir(parents=True)
-            (tmp_root / "docs" / "artifacts").mkdir(parents=True)
+            (tmp_root / "public" / "artifacts").mkdir(parents=True)
             (tmp_root / "scripts" / "generate").mkdir(parents=True)
             shutil.copy(
                 SCRIPT, tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py"
@@ -357,7 +357,7 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_root = Path(tmpdir)
             (tmp_root / "references" / "raw").mkdir(parents=True)
-            (tmp_root / "docs" / "artifacts").mkdir(parents=True)
+            (tmp_root / "public" / "artifacts").mkdir(parents=True)
             (tmp_root / "scripts" / "generate").mkdir(parents=True)
             shutil.copy(
                 SCRIPT, tmp_root / "scripts" / "generate" / "publish_reference_artifacts.py"

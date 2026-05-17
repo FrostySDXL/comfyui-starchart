@@ -43,4 +43,4 @@ The scripts also work against a repo-local built site or docs directory through 
 `file://` base URL.
 
 For the contract and support-artifact boundaries this example assumes, read
-[`docs/reference/machine-readable-artifacts.md`](../../../docs/reference/machine-readable-artifacts.md).
+[`src/content/docs/reference/machine-readable-artifacts.md`](../../../src/content/docs/reference/machine-readable-artifacts.md).

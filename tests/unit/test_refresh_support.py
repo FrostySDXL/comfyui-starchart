@@ -139,7 +139,7 @@ class RefreshSupportProvenanceTests(unittest.TestCase):
             tmp_path = Path(tmpdir)
             backup_dir = tmp_path / "references" / "raw_backup_20260503T010203Z"
             backup_dir.mkdir(parents=True)
-            provenance_path = tmp_path / "docs" / "artifacts" / "refresh-provenance.json"
+            provenance_path = tmp_path / "public" / "artifacts" / "refresh-provenance.json"
 
             payload = module.build_refresh_provenance(
                 refresh_date="2026-05-03",
@@ -169,7 +169,7 @@ class RefreshSupportProvenanceTests(unittest.TestCase):
         self.assertFalse(persisted["runtime_object_info"]["merged_into_node_api_schema"])
         self.assertEqual(
             persisted["published"]["provenance_path"],
-            "docs/artifacts/refresh-provenance.json",
+            "public/artifacts/refresh-provenance.json",
         )
         self.assertFalse(persisted["published"]["manifest_included"])
         self.assertIn(
@@ -181,7 +181,7 @@ class RefreshSupportProvenanceTests(unittest.TestCase):
         """Write failures should be wrapped in a clear runtime error."""
         module = _load_module()
         repo_root = Path("D:/repo")
-        provenance_path = repo_root / "docs" / "artifacts" / "refresh-provenance.json"
+        provenance_path = repo_root / "public" / "artifacts" / "refresh-provenance.json"
         payload = {"refresh_date": "2026-05-14"}
 
         with mock.patch.object(Path, "write_text", side_effect=OSError("disk full")):
@@ -189,7 +189,7 @@ class RefreshSupportProvenanceTests(unittest.TestCase):
                 module.write_refresh_provenance(payload, provenance_path, repo_root)
 
         self.assertIn("Failed to write refresh provenance", str(exc.exception))
-        self.assertIn("docs/artifacts/refresh-provenance.json", str(exc.exception))
+        self.assertIn("public/artifacts/refresh-provenance.json", str(exc.exception))
 
 
 class RefreshSupportDiffSummaryTests(unittest.TestCase):

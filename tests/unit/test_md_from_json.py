@@ -71,6 +71,7 @@ class MarkdownGenerationTests(unittest.TestCase):
             self.assertIn("Generated reference pages from JSON", result.stdout)
 
             rendered = output_path.read_text(encoding="utf-8")
+            self.assertTrue(rendered.startswith('---\ntitle: "Server.py Summary"\n---\n\n'))
             self.assertIn("# Server.py Summary", rendered)
             self.assertIn("sample server.py", rendered)
             self.assertIn("extra/source.py", rendered)

@@ -2,7 +2,7 @@
 """Generate community-facing documentation pages from structured metadata.
 
 Reads references/community/ecosystem_packages.json and renders
-docs/ecosystem/map.md. Do not hand-edit the generated markdown file;
+src/content/docs/ecosystem/map.md. Do not hand-edit the generated markdown file;
 edit the JSON source and rerun this generator.
 
 Usage:
@@ -14,7 +14,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 INPUT_PATH = REPO_ROOT / "references" / "community" / "ecosystem_packages.json"
-OUTPUT_PATH = REPO_ROOT / "docs" / "ecosystem" / "map.md"
+OUTPUT_PATH = REPO_ROOT / "src" / "content" / "docs" / "ecosystem" / "map.md"
 
 CATEGORY_ORDER = [
     ("package_manager", "Package Managers and Distribution"),
@@ -90,6 +90,10 @@ def build_markdown(data: dict) -> str:
     packages = data.get("packages", [])
 
     lines = [
+        "---",
+        'title: "Ecosystem Map"',
+        "---",
+        "",
         GENERATED_BANNER,
         "",
         "# Ecosystem Map",
@@ -194,7 +198,7 @@ def build_markdown(data: dict) -> str:
 def main() -> int:
     data = json.loads(INPUT_PATH.read_text(encoding="utf-8"))
     OUTPUT_PATH.write_text(build_markdown(data), encoding="utf-8")
-    print("Generated docs/ecosystem/map.md from community metadata")
+    print("Generated src/content/docs/ecosystem/map.md from community metadata")
     return 0
 
 

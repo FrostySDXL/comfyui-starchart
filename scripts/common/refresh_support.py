@@ -51,7 +51,7 @@ def build_delta_summary_command(
         f"{python_executable} scripts/generate/generate_snapshot_delta_summary.py "
         f'--old "{backup_path}" '
         f'--new "references/raw" '
-        f'--output "docs/artifacts/delta-summary.json"'
+        f'--output "public/artifacts/delta-summary.json"'
     )
 
 

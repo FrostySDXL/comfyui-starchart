@@ -2,7 +2,7 @@
 """Verify that generated community pages match their JSON sources.
 
 Runs the ecosystem map generator and compares its output to the committed
- docs/ecosystem/map.md. Fails if they differ, which means someone edited the
+ src/content/docs/ecosystem/map.md. Fails if they differ, which means someone edited the
 markdown directly or forgot to regenerate after changing the JSON source.
 
 Usage:
@@ -17,7 +17,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GENERATOR = REPO_ROOT / "scripts" / "generate" / "generate_community_pages.py"
-COMMITTED_PATH = REPO_ROOT / "docs" / "ecosystem" / "map.md"
+COMMITTED_PATH = REPO_ROOT / "src" / "content" / "docs" / "ecosystem" / "map.md"
 
 
 def main() -> int:
@@ -53,7 +53,7 @@ def main() -> int:
             print("Generated community pages are fresh.")
             return 0
         else:
-            print("ERROR: docs/ecosystem/map.md is out of sync with its JSON source.")
+            print("ERROR: src/content/docs/ecosystem/map.md is out of sync with its JSON source.")
             print()
             print("Run the generator to fix:")
             print("  python scripts/generate/generate_community_pages.py")

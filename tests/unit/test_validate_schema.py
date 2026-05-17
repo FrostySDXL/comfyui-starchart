@@ -640,7 +640,7 @@ class ValidateSchemaUnitTests(unittest.TestCase):
             },
             "pages": [
                 {
-                    "page_path": "docs/ecosystem/map.md",
+                    "page_path": "src/content/docs/ecosystem/map.md",
                     "page_kind": "generated_catalog",
                     "evidence_label": "Community pattern study",
                     "source_type": "community_metadata",
@@ -669,7 +669,7 @@ class ValidateSchemaUnitTests(unittest.TestCase):
             },
             "pages": [
                 {
-                    "page_path": "docs/test.md",
+                    "page_path": "src/content/docs/test.md",
                     "page_kind": "hand_authored",
                 }
             ],
@@ -682,7 +682,7 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         data = {
             "pages": [
                 {
-                    "page_path": "docs/test.md",
+                    "page_path": "src/content/docs/test.md",
                     "page_kind": "wrong",
                     "evidence_label": "Operational guidance",
                     "source_type": "repo_local",
@@ -702,7 +702,7 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         data = {
             "pages": [
                 {
-                    "page_path": "docs/test.md",
+                    "page_path": "src/content/docs/test.md",
                     "page_kind": "hand_authored_policy",
                     "evidence_label": "Operational guidance",
                     "source_type": "repo_local",
@@ -713,7 +713,7 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                     "notes": None,
                 },
                 {
-                    "page_path": "docs/test.md",
+                    "page_path": "src/content/docs/test.md",
                     "page_kind": "hand_authored_guide",
                     "evidence_label": "Community pattern study",
                     "source_type": "hybrid",
@@ -726,14 +726,14 @@ class ValidateSchemaUnitTests(unittest.TestCase):
             ]
         }
         errors = module.validate_pages(data, "community_pages.json")
-        self.assertTrue(any("duplicate page_path 'docs/test.md'" in e for e in errors))
+        self.assertTrue(any("duplicate page_path 'src/content/docs/test.md'" in e for e in errors))
 
     def test_page_path_with_backslashes_is_rejected(self):
         module = self._import_module()
         data = {
             "pages": [
                 {
-                    "page_path": "docs\\reference\\community-maintenance-policy.md",
+                    "page_path": "src/content/docs\\reference\\community-maintenance-policy.md",
                     "page_kind": "hand_authored_policy",
                     "evidence_label": "Operational guidance",
                     "source_type": "repo_local",
@@ -753,7 +753,7 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         data = {
             "pages": [
                 {
-                    "page_path": "docs/ecosystem/map.md",
+                    "page_path": "src/content/docs/ecosystem/map.md",
                     "page_kind": "generated_catalog",
                     "evidence_label": "Community pattern study",
                     "source_type": "community_metadata",

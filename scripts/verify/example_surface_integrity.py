@@ -20,12 +20,13 @@ EXPECTED_EXAMPLE_FAMILIES = (
 )
 README_REQUIRED_FAMILIES = ("consumers", "custom-nodes", "extensions")
 ROUTED_DOC_RELATIVE_PATHS = (
-    Path("docs/how-to/consumer-starter-examples.md"),
-    Path("docs/start-here/tooling-builder.md"),
+    Path("src/content/docs/how-to/consumer-starter-examples.md"),
+    Path("src/content/docs/start-here/tooling-builder.md"),
 )
 KNOWN_REPO_ROOT_PREFIXES = (
     ".github/",
     "docs/",
+    "src/content/docs/",
     "examples/",
     "references/",
     "scripts/",
@@ -186,7 +187,7 @@ def normalize_reference_token(token: str) -> str | None:
 def resolve_reference(repo_root: Path, base_dir: Path, reference: str) -> Path | None:
     if any(reference.startswith(prefix) for prefix in KNOWN_REPO_ROOT_PREFIXES):
         return repo_root / reference
-    if reference in {"README.md", "CONTRIBUTING.md", "AGENTS.md", "mkdocs.yml"}:
+    if reference in {"README.md", "CONTRIBUTING.md", "AGENTS.md"}:
         return repo_root / reference
     return (base_dir / reference).resolve()
 

@@ -4,22 +4,24 @@
 Runs the default local pre-push sequence in the same blocking order as the
 cross-platform CI blocking path (ubuntu-latest and windows-latest):
     1. Unit tests
-    2. python_style.py
-    3. cross_references.py
-    4. docs_index_freshness.py
-    5. validate_schema.py
-    6. verify_artifact_integrity.py
-    7. markdown_top_level_spacing.py
-    8. community_generated_freshness.py
-    9. community_page_coverage.py
-    10. mkdocs build
+    2. Node-side tests
+    3. python_style.py
+    4. cross_references.py
+    5. docs_index_freshness.py
+    6. validate_schema.py
+    7. verify_artifact_integrity.py
+    8. markdown_top_level_spacing.py
+    9. community_generated_freshness.py
+    10. community_page_coverage.py
+    11. sidebar_navigation_coverage.py
+    12. astro check
+    13. astro build
 
 Advisory/non-blocking checks remain separate and are not included here.
 
 Usage:
     python scripts/verify/run_all.py
     python scripts/verify/run_all.py --skip-tests
-    python scripts/verify/run_all.py --skip-mkdocs
 
 Exits 0 on success, exits 1 on the first blocking failure.
 """
@@ -31,6 +33,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS_VERIFY_DIR = REPO_ROOT / "scripts" / "verify"
+NPM_EXECUTABLE = "npm.cmd" if sys.platform == "win32" else "npm"
 
 
 def run_step(cmd: list[str], description: str, cwd: str | None = None) -> bool:
@@ -59,12 +62,7 @@ def main() -> int:
     parser.add_argument(
         "--skip-tests",
         action="store_true",
-        help="Skip unit tests during focused iteration; rerun the full wrapper before push.",
-    )
-    parser.add_argument(
-        "--skip-mkdocs",
-        action="store_true",
-        help="Skip the docs build during focused iteration; rerun the full wrapper before push.",
+        help="Skip Python and Node test suites during focused iteration; rerun the full wrapper before push.",
     )
     args = parser.parse_args()
 
@@ -75,6 +73,12 @@ def main() -> int:
             (
                 [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
                 "Unit tests",
+            )
+        )
+        steps.append(
+            (
+                [NPM_EXECUTABLE, "test"],
+                "Node-side tests",
             )
         )
 
@@ -134,13 +138,26 @@ def main() -> int:
         )
     )
 
-    if not args.skip_mkdocs:
-        steps.append(
-            (
-                [sys.executable, "-m", "mkdocs", "build"],
-                "MkDocs build",
-            )
+    steps.append(
+        (
+            [sys.executable, str(SCRIPTS_VERIFY_DIR / "sidebar_navigation_coverage.py")],
+            "Sidebar navigation coverage",
         )
+    )
+
+    steps.append(
+        (
+            [NPM_EXECUTABLE, "run", "check"],
+            "Astro check",
+        )
+    )
+
+    steps.append(
+        (
+            [NPM_EXECUTABLE, "run", "build"],
+            "Astro build",
+        )
+    )
 
     for cmd, description in steps:
         if not run_step(cmd, description, cwd=str(REPO_ROOT)):

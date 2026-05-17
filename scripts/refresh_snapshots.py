@@ -34,7 +34,7 @@ REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 SNAPSHOTS_DIR = REPO_ROOT / "references" / "snapshots"
 SCRIPTS_EXTRACT_DIR = REPO_ROOT / "scripts" / "extract"
 SCRIPTS_GENERATE_DIR = REPO_ROOT / "scripts" / "generate"
-PROVENANCE_OUTPUT_PATH = REPO_ROOT / "docs" / "artifacts" / "refresh-provenance.json"
+PROVENANCE_OUTPUT_PATH = REPO_ROOT / "public" / "artifacts" / "refresh-provenance.json"
 
 # Source files to copy from each repo
 CORE_FILES = [
@@ -558,7 +558,7 @@ def main():
         description=(
             "Fetch new upstream versions and refresh snapshots, extractors, and docs. "
             "Creates an automatic repo-local backup before overwriting canonical raw artifacts "
-            "and writes refresh provenance to docs/artifacts/refresh-provenance.json."
+            "and writes refresh provenance to public/artifacts/refresh-provenance.json."
         )
     )
     parser.add_argument(

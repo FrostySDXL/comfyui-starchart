@@ -9,7 +9,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "generate" / "generate_community_pages.py"
 INPUT_PATH = REPO_ROOT / "references" / "community" / "ecosystem_packages.json"
-OUTPUT_PATH = REPO_ROOT / "docs" / "ecosystem" / "map.md"
+OUTPUT_PATH = REPO_ROOT / "src" / "content" / "docs" / "ecosystem" / "map.md"
 
 
 class GenerateCommunityPagesUnitTests(unittest.TestCase):
@@ -30,6 +30,7 @@ class GenerateCommunityPagesUnitTests(unittest.TestCase):
             "packages": [],
         }
         result = module.build_markdown(data)
+        self.assertTrue(result.startswith('---\ntitle: "Ecosystem Map"\n---\n\n'))
         self.assertIn("GENERATED FILE: do not edit directly", result)
 
     def test_build_markdown_groups_by_category(self):
@@ -160,12 +161,12 @@ class GenerateCommunityPagesScriptTests(unittest.TestCase):
 
     def test_script_runs_and_generates_output(self):
         # Run the script in a temporary directory with a copy of the repo structure
-        # to avoid overwriting the tracked docs/ecosystem/map.md during tests.
+        # to avoid overwriting the tracked src/content/docs/ecosystem/map.md during tests.
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_root = Path(tmpdir)
             # Create minimal directory structure
             (tmp_root / "references" / "community").mkdir(parents=True)
-            (tmp_root / "docs" / "ecosystem").mkdir(parents=True)
+            (tmp_root / "src" / "content" / "docs" / "ecosystem").mkdir(parents=True)
             (tmp_root / "scripts" / "generate").mkdir(parents=True)
 
             # Copy generator script and input JSON
@@ -187,9 +188,10 @@ class GenerateCommunityPagesScriptTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, msg=result.stderr or result.stdout)
 
-            output_path = tmp_root / "docs" / "ecosystem" / "map.md"
+            output_path = tmp_root / "src" / "content" / "docs" / "ecosystem" / "map.md"
             self.assertTrue(output_path.exists())
             content = output_path.read_text(encoding="utf-8")
+            self.assertTrue(content.startswith('---\ntitle: "Ecosystem Map"\n---\n\n'))
             self.assertIn("GENERATED FILE: do not edit directly", content)
             self.assertIn("# Ecosystem Map", content)
 

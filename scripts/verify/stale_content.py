@@ -13,7 +13,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
-DOCS_DIR = REPO_ROOT / "docs"
+DOCS_DIR = REPO_ROOT / "src" / "content" / "docs"
 
 STALE_MARKERS = ["TODO", "PLACEHOLDER", "FILL IN", "TBD", "FIXME", "HACK"]
 

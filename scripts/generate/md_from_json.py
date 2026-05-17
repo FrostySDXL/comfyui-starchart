@@ -4,7 +4,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT = REPO_ROOT / "references" / "raw" / "server_endpoints.json"
-DEFAULT_OUTPUT = REPO_ROOT / "docs" / "reference" / "server-py-summary.md"
+DEFAULT_OUTPUT = REPO_ROOT / "src" / "content" / "docs" / "reference" / "server-py-summary.md"
 
 
 def _format_returns(returns: dict) -> str:
@@ -67,6 +67,10 @@ def build_markdown(data: dict) -> str:
     endpoints = data.get("endpoints", [])
 
     lines = [
+        "---",
+        'title: "Server.py Summary"',
+        "---",
+        "",
         "# Server.py Summary",
         "",
         f"**Last Synced:** {metadata.get('extracted_date', 'unknown')}",

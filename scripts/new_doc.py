@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-DOCS_ROOT = (REPO_ROOT / "docs").resolve()
+DOCS_ROOT = (REPO_ROOT / "src" / "content" / "docs").resolve()
 TEMPLATES_DIR = REPO_ROOT / "templates" / "docs"
 
 MODE_TO_TEMPLATE = {
@@ -21,10 +21,15 @@ MODE_TO_TEMPLATE = {
 }
 
 MODE_TO_ALLOWED_PREFIXES = {
-    "reference": ["docs/reference/", "docs/api/", "docs/hooks/", "docs/custom-nodes/"],
-    "tutorial": ["docs/tutorials/", "docs/how-to/"],
-    "decision-guide": ["docs/decision-trees/", "docs/start-here/"],
-    "community-pattern": ["docs/extensions/", "docs/ecosystem/"],
+    "reference": [
+        "src/content/docs/reference/",
+        "src/content/docs/api/",
+        "src/content/docs/hooks/",
+        "src/content/docs/custom-nodes/",
+    ],
+    "tutorial": ["src/content/docs/tutorials/", "src/content/docs/how-to/"],
+    "decision-guide": ["src/content/docs/decision-trees/", "src/content/docs/start-here/"],
+    "community-pattern": ["src/content/docs/extensions/", "src/content/docs/ecosystem/"],
 }
 
 
@@ -34,7 +39,9 @@ def normalize_output_argument(output_arg: str) -> Path:
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Create a new doc page from a template")
-    parser.add_argument("--output", required=True, help="Output markdown path under docs/")
+    parser.add_argument(
+        "--output", required=True, help="Output markdown path under src/content/docs/"
+    )
     parser.add_argument(
         "--mode",
         required=True,
@@ -60,21 +67,34 @@ def parse_args():
 def resolve_output_path(output_arg: str):
     relative_output = normalize_output_argument(output_arg)
     if relative_output.is_absolute():
-        raise ValueError("Output path must be a repo-relative markdown path under docs/.")
+        raise ValueError(
+            "Output path must be a repo-relative markdown path under src/content/docs/."
+        )
 
     output_path = (REPO_ROOT / relative_output).resolve()
     try:
         output_path.relative_to(DOCS_ROOT)
     except ValueError as exc:
         raise ValueError(
-            f"Output path must stay under docs/: {relative_output.as_posix()}"
+            f"Output path must stay under src/content/docs/: {relative_output.as_posix()}"
         ) from exc
 
     if relative_output.suffix != ".md":
-        raise ValueError(f"Output path must end with .md under docs/: {relative_output.as_posix()}")
+        raise ValueError(
+            f"Output path must end with .md under src/content/docs/: {relative_output.as_posix()}"
+        )
 
-    if not relative_output.parts or relative_output.parts[0] != "docs":
-        raise ValueError(f"Output path must start with docs/: {relative_output.as_posix()}")
+    legacy_prefix = Path("docs")
+    if relative_output == legacy_prefix or relative_output.is_relative_to(legacy_prefix):
+        raise ValueError(
+            f"Legacy docs/ output paths are not allowed; use src/content/docs/: {relative_output.as_posix()}"
+        )
+
+    expected_prefix = Path("src") / "content" / "docs"
+    if not relative_output.parts or relative_output.parts[:3] != expected_prefix.parts:
+        raise ValueError(
+            f"Output path must start with src/content/docs/: {relative_output.as_posix()}"
+        )
 
     return relative_output, output_path
 
@@ -85,7 +105,7 @@ def validate_mode_path(mode: str, relative_output: Path, allow_path_mismatch: bo
         return
 
     output_posix = relative_output.as_posix()
-    if relative_output.parent.as_posix() == "docs":
+    if relative_output.parent.as_posix() == "src/content/docs":
         return
 
     if any(output_posix.startswith(prefix) for prefix in allowed_prefixes):
@@ -104,6 +124,9 @@ def validate_mode_path(mode: str, relative_output: Path, allow_path_mismatch: bo
 def apply_metadata(
     content: str, title: str, evidence: str | None, primary_source: str | None
 ) -> tuple[str, bool]:
+    frontmatter = f'---\ntitle: "{title}"\n---\n\n'
+    if not content.startswith("---\n"):
+        content = frontmatter + content
     content = content.replace("# Page Title", f"# {title}")
     content = content.replace("YYYY-MM-DD", datetime.date.today().isoformat())
 

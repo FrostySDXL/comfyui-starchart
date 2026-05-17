@@ -11,8 +11,8 @@ This repository is a version-pinned, source-extracted companion reference for
 ComfyUI developers. It is not the official ComfyUI documentation; authoritative
 human reference remains at [docs.comfy.org](https://docs.comfy.org/).
 
-The repo publishes extracted JSON artifacts alongside a self-hostable MkDocs
-site. It is designed for extension developers, tooling authors, and integrators
+The repo publishes extracted JSON artifacts alongside a self-hostable Astro
+Starlight site. It is designed for extension developers, tooling authors, and integrators
 who need a stable, cited baseline for selected ComfyUI API surfaces, hooks, and
 node schema behavior. Because everything is pinned to exact upstream commits,
 the reference baseline is reproducible and forkable.
@@ -51,27 +51,27 @@ by an official docs page or a pinned upstream source citation.
 
 For editorial standards and evidence rules, use these files together:
 
-- `docs/reference/source-evidence-policy.md`
-- `docs/reference/writing-style-guide.md`
-- `docs/reference/doc-quality-checklist.md`
+- `src/content/docs/reference/source-evidence-policy.md`
+- `src/content/docs/reference/writing-style-guide.md`
+- `src/content/docs/reference/doc-quality-checklist.md`
 
 ## Documentation Layers
 
 ### Human-readable docs
 
-- Source lives in `docs/`
-- Preview locally with `mkdocs serve`
-- New pages should start from `templates/docs/` or use `scripts/new_doc.py`
+- Source lives in `src/content/docs/`
+- Preview locally with `npm run dev`
+- New pages should start from `templates/docs/` or use `scripts/new_doc.py --output src/content/docs/...`
 
 ### Where to Start
 
 - **Consumers**
-  - Building custom nodes: [`docs/start-here/author.md`](docs/start-here/author.md)
-  - Extending ComfyUI: [`docs/start-here/extension-developer.md`](docs/start-here/extension-developer.md)
-  - Integrating ComfyUI into a service: [`docs/start-here/service-integration.md`](docs/start-here/service-integration.md)
-  - Building tools or agents: [`docs/start-here/tooling-builder.md`](docs/start-here/tooling-builder.md)
+  - Building custom nodes: [`src/content/docs/start-here/author.md`](src/content/docs/start-here/author.md)
+  - Extending ComfyUI: [`src/content/docs/start-here/extension-developer.md`](src/content/docs/start-here/extension-developer.md)
+  - Integrating ComfyUI into a service: [`src/content/docs/start-here/service-integration.md`](src/content/docs/start-here/service-integration.md)
+  - Building tools or agents: [`src/content/docs/start-here/tooling-builder.md`](src/content/docs/start-here/tooling-builder.md)
 - **Contributors**
-  - Start with [`docs/start-here/docs-contributor.md`](docs/start-here/docs-contributor.md) for the lighter editorial path
+  - Start with [`src/content/docs/start-here/docs-contributor.md`](src/content/docs/start-here/docs-contributor.md) for the lighter editorial path
 - **Maintainers**
   - Use [`CONTRIBUTING.md`](CONTRIBUTING.md) as the canonical repo-local maintainer workflow source for verification, refresh, artifact publication, CI-adjacent, and release-style tasks
 
@@ -81,33 +81,39 @@ For editorial standards and evidence rules, use these files together:
 - Community metadata lives in `references/community/`
 - Snapshots live in `references/snapshots/`
 - Helper scripts live in `scripts/extract/` and `scripts/generate/`
-- Published artifact copies, manifest, delta summary, and refresh provenance live in `docs/artifacts/`
-- `docs/artifacts/docs-index.json` is a bounded support artifact for tooling and agent page discovery; it does not widen the canonical JSON artifact contract
-- See [Machine-Readable Artifacts](docs/reference/machine-readable-artifacts.md) for
+- Published artifact copies, manifest, delta summary, and refresh provenance live in `public/artifacts/`
+- `public/artifacts/docs-index.json` is a bounded support artifact for tooling and agent page discovery; it does not widen the canonical JSON artifact contract
+- See [Machine-Readable Artifacts](src/content/docs/reference/machine-readable-artifacts.md) for
   the canonical published artifact set, published JSON Schemas, bounded
   guarantees, the minimum consumer contract, and conceptual examples for tooling
   authors
 - Consumer starter examples for manifest-first artifact loading and docs-discovery
   patterns live under `examples/consumers/`; see
-  [Consumer Starter Examples](docs/how-to/consumer-starter-examples.md)
+  [Consumer Starter Examples](src/content/docs/how-to/consumer-starter-examples.md)
 
 ### Orientation aids
 
-- [Docs home](docs/index.md) for audience-based entry paths
-- [Glossary](docs/reference/glossary.md) for repeated artifact and repo terms
-- [What's New](docs/whats-new/index.md) for recent reader-visible changes
+- [Docs home](src/content/docs/index.md) for audience-based entry paths
+- [Glossary](src/content/docs/reference/glossary.md) for repeated artifact and repo terms
+- [What's New](src/content/docs/whats-new/index.md) for recent reader-visible changes
 
 ## Quick Start
 
 Supported Python: `3.11+`
 
+Supported Node.js for site-work and upcoming Starlight surfaces: `22.x`
+
 ```bash
 python -m pip install -r requirements.lock
+npm ci
 python -m unittest discover -s tests -v
-python -m mkdocs build
+npm run build
 ```
 
-Serve locally: `python -m mkdocs serve`
+Serve locally: `npm run dev`
+
+If you are touching site-framework or frontend-build surfaces, use Node.js
+`22.x` via `.nvmrc` or equivalent environment-specific tooling.
 
 ### Dependency reproducibility
 
@@ -131,8 +137,8 @@ and the full maintainer verification matrix, use
 ### Self-hosting
 
 The documentation site and published artifacts can be self-hosted or forked.
-Build the site with `python -m mkdocs build`, then serve the `site/` directory
-with any static file server. The artifact files under `docs/artifacts/` are
+Build the site with `npm run build`, then serve the `dist/` directory
+with any static file server. The artifact files under `public/artifacts/` are
 included in the built output.
 
 ## Maintainer Workflow Entry Points
@@ -145,7 +151,7 @@ included in the built output.
   community metadata pipeline, and CI-adjacent guidance.
 - For runtime-only capture and validation against a live ComfyUI instance, use
   [`CONTRIBUTING.md`](CONTRIBUTING.md) and
-  [`docs/reference/runtime-ci-operations.md`](docs/reference/runtime-ci-operations.md).
+  [`src/content/docs/reference/runtime-ci-operations.md`](src/content/docs/reference/runtime-ci-operations.md).
 
 For issue intake, use the repository's bug-report template for behavior or
 artifact problems, the docs-request template for documentation gaps or
@@ -157,7 +163,7 @@ follow-up.
 
 ### CPU-safe workflows (blocking, supplemental, and non-blocking)
 
-- **`.github/workflows/ci.yml`** -- runs on push/PR to main: the blocking verification path runs on both `ubuntu-latest` and `windows-latest` (tests, cross-references, docs-index freshness, schema validation, artifact integrity verification for canonical published artifacts, top-level markdown spacing verification for hand-authored docs, generated community freshness, community page coverage, and MkDocs build). A supplemental Ubuntu job then runs `python scripts/verify/pipeline_smoke.py` to exercise the `run_all.py` wrapper end-to-end without rerunning unit tests, plus `python scripts/verify/shell_examples_syntax.py` to validate hand-authored shell examples with `bash -n`. Advisory checks (`stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py`) still run in CI but remain non-blocking there. Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
+- **`.github/workflows/ci.yml`** -- runs on push/PR to main: the blocking verification path runs on both `ubuntu-latest` and `windows-latest` (Python unit tests, Node-side tests, Python style, cross-references, docs-index freshness, schema validation, artifact integrity verification for canonical published artifacts, top-level markdown spacing verification for hand-authored docs, generated community freshness, community page coverage, sidebar navigation coverage, `npm run check`, and `npm run build`). A supplemental Ubuntu job then runs `python scripts/verify/pipeline_smoke.py` to exercise the `run_all.py` wrapper end-to-end without rerunning unit tests, plus `python scripts/verify/shell_examples_syntax.py` to validate hand-authored shell examples with `bash -n`. Advisory checks (`stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py`) still run in CI but remain non-blocking there. Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
 - **`.github/workflows/advisory-checks.yml`** -- scheduled weekly and available via `workflow_dispatch`: reruns the current advisory scripts as blocking so advisory failures remain visible without turning normal PR CI into a noisy blocker.
 - **`.github/workflows/weekly-pin-check.yml`** -- runs every Monday at 09:00 UTC and on manual dispatch: checks that pinned commits and tags still resolve in upstream repos.
 - **`.github/workflows/upstream-watch.yml`** -- runs every Monday at 10:00 UTC: detects newer upstream versions and creates or updates tracking issues.
@@ -166,8 +172,8 @@ follow-up.
 
 - **`.github/workflows/deploy-pages.yml`** -- republishes canonical artifacts,
   reruns the blocking local verification wrapper (without the final duplicate
-  MkDocs build), then builds and deploys the MkDocs site (including packaged
-  artifacts under `docs/artifacts/`) to GitHub Pages. Triggers on push to
+  Starlight checks already covered by the wrapper), then deploys the Starlight site (including packaged
+  artifacts from `public/artifacts/`) to GitHub Pages. Triggers on push to
   `main`/`master` and on `workflow_dispatch`. Requires the repository Pages
   source to be set to **GitHub Actions** in repository settings.
 
@@ -181,7 +187,7 @@ Optional runtime capture from a live ComfyUI instance stays outside the default
 CPU-safe verification path. Runtime-only `object_info` capture is not part of
 the canonical published artifact surface. Use
 [`CONTRIBUTING.md`](CONTRIBUTING.md) and
-[`docs/reference/runtime-ci-operations.md`](docs/reference/runtime-ci-operations.md)
+[`src/content/docs/reference/runtime-ci-operations.md`](src/content/docs/reference/runtime-ci-operations.md)
 for the full operating model and commands.
 
 ## Scope Boundaries

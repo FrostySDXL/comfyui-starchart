@@ -18,7 +18,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from scripts.common.path_normalization import normalize_repo_path
 
-DOCS_DIR = REPO_ROOT / "docs"
+DOCS_DIR = REPO_ROOT / "src" / "content" / "docs"
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 REFERENCES_SNAPSHOTS_DIR = REPO_ROOT / "references" / "snapshots"
 

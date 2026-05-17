@@ -23,10 +23,10 @@ production profiler and it does not persist history.
 
 ## Primary Sources
 
-- `docs/how-to/add-custom-routes.md` - repo summary of the supported custom route pattern
-- `docs/tutorials/extending-server.md` - repo summary of route and message usage
-- `docs/hooks/server-hooks.md` - repo summary of prompt and execution surfaces
-- `docs/tutorials/adding-background-metrics.md` - repo guidance for small metrics extensions
+- `src/content/docs/how-to/add-custom-routes.md` - repo summary of the supported custom route pattern
+- `src/content/docs/tutorials/extending-server.md` - repo summary of route and message usage
+- `src/content/docs/hooks/server-hooks.md` - repo summary of prompt and execution surfaces
+- `src/content/docs/tutorials/adding-background-metrics.md` - repo guidance for small metrics extensions
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` - pinned route registration and `/api` mirroring behavior
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` - pinned execution path showing `reset_progress_state(...)` and `add_progress_handler(WebUIProgressHandler(self.server))`
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` - pinned `ProgressHandler` contract, registry behavior, and callback signatures

@@ -57,6 +57,6 @@ If you omit the runtime URL or the runtime is unreachable, the script stops afte
 the artifact phase and prints a clear note about the skipped live step.
 
 For the contract boundaries this example assumes, read
-[`docs/reference/machine-readable-artifacts.md`](../../../docs/reference/machine-readable-artifacts.md),
-[`docs/start-here/tooling-builder.md`](../../../docs/start-here/tooling-builder.md),
-and [`docs/how-to/consumer-starter-examples.md`](../../../docs/how-to/consumer-starter-examples.md).
+[`src/content/docs/reference/machine-readable-artifacts.md`](../../../src/content/docs/reference/machine-readable-artifacts.md),
+[`src/content/docs/start-here/tooling-builder.md`](../../../src/content/docs/start-here/tooling-builder.md),
+and [`src/content/docs/how-to/consumer-starter-examples.md`](../../../src/content/docs/how-to/consumer-starter-examples.md).

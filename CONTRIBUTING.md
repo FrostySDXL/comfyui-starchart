@@ -12,7 +12,7 @@ vulnerability reporting.
 
 If you are new to documentation contributions or only need the lighter
 editorial path, start with
-[`docs/start-here/docs-contributor.md`](docs/start-here/docs-contributor.md).
+[`src/content/docs/start-here/docs-contributor.md`](src/content/docs/start-here/docs-contributor.md).
 
 Move from that lighter path into `CONTRIBUTING.md` when your change crosses
 into maintainer-owned surfaces such as scripts, CI, extracted data, published
@@ -35,11 +35,12 @@ site.
 
 ```bash
 python -m pip install -r requirements.lock
+npm ci
 python -m unittest discover -s tests -v
-python -m mkdocs build
+npm run build
 ```
 
-Serve locally: `python -m mkdocs serve`
+Serve locally: `npm run dev`
 
 ### Dependency management
 
@@ -71,7 +72,7 @@ repo-content verifiers. It also includes docs-index freshness verification and
 artifact-integrity verification for the canonical published JSON artifacts. The
 blocking path rejects leading spaces before top-level markdown headings and
 metadata labels in hand-authored docs because those lines render incorrectly in
-MkDocs.
+the published site.
 
 Use targeted checks while iterating. Use supplemental commands only when the
 touched surface requires them.
@@ -129,7 +130,7 @@ guides, and tooling artifacts.
 
 | Path | What lives here | Can you edit it by hand? |
 |------|-----------------|--------------------------|
-| `docs/` | MkDocs pages (reference, tutorials, decision guides) | **Yes** -- this is the main human contribution surface |
+| `src/content/docs/` | Canonical published docs pages (reference, tutorials, decision guides) | **Yes** -- this is the main human contribution surface |
 | `examples/` | Hand-authored pattern examples, API calls, workflows | **Yes** |
 | `references/raw/` | Extracted JSON from upstream snapshots (endpoints, hooks, schemas) | **No** -- edit upstream snapshots in `references/snapshots/`, then re-run extractors |
 | `references/community/` | Human-editable metadata for community pages and ecosystem packages | **Yes** -- edit JSON directly, then regenerate downstream artifacts |
@@ -139,8 +140,8 @@ guides, and tooling artifacts.
 | `scripts/generate/` | Scripts that render markdown from JSON | **Yes** -- if you are adding or fixing a generator |
 | `scripts/verify/` | Validation scripts (blocking and non-blocking) | **Yes** -- if you are adding or fixing a verifier |
 | `tests/unit/` | Unit tests for scripts | **Yes** -- every new script needs tests |
-| `docs/artifacts/` | Published JSON artifacts, manifest, versioned copies, checked-in schema files, docs-index support artifact, delta summary, and refresh provenance | **Mixed** -- `docs/artifacts/schemas/` is hand-authored; `refresh-provenance.json` is written by `scripts/refresh_snapshots.py`; `docs-index.json` is produced by `scripts/generate/generate_docs_index.py`; other canonical published artifact outputs are produced by `scripts/generate/publish_reference_artifacts.py` |
-| `docs/ecosystem/map.md` | Generated community ecosystem page | **No** -- edit `references/community/ecosystem_packages.json`, then regenerate |
+| `public/artifacts/` | Published JSON artifacts, manifest, versioned copies, checked-in schema files, docs-index support artifact, delta summary, and refresh provenance | **Mixed** -- `public/artifacts/schemas/` is hand-authored; `refresh-provenance.json` is written by `scripts/refresh_snapshots.py`; `docs-index.json` is produced by `scripts/generate/generate_docs_index.py`; other canonical published artifact outputs are produced by `scripts/generate/publish_reference_artifacts.py` |
+| `src/content/docs/ecosystem/map.md` | Generated community ecosystem page | **No** -- edit `references/community/ecosystem_packages.json`, then regenerate |
 | `.github/workflows/` | CI and deployment automation | **Yes** -- but test locally first |
 
 
@@ -148,13 +149,13 @@ guides, and tooling artifacts.
 
 | I want to... | Start by reading... | Edit these files... | Run these checks... |
 |--------------|---------------------|---------------------|---------------------|
-| Fix or add a docs page | The target page + `docs/reference/source-evidence-policy.md` + `docs/reference/writing-style-guide.md` | `docs/<topic>/<page>.md`; use `templates/docs/` or `scripts/new_doc.py` | `python scripts/verify/cross_references.py` + `python -m mkdocs build` |
+| Fix or add a docs page | The target page + `src/content/docs/reference/source-evidence-policy.md` + `src/content/docs/reference/writing-style-guide.md` | `src/content/docs/<topic>/<page>.md`; use `templates/docs/` or `scripts/new_doc.py` | `python scripts/verify/cross_references.py` + `npm run build` |
 | Add or modify shell examples | Existing shell example under `examples/` + adjacent example README | The `.sh` file + any paired README guidance | `python scripts/verify/shell_examples_syntax.py` |
-| Update the community catalog | `references/community/ecosystem_packages.json` + `docs/reference/community-maintenance-policy.md` | The JSON source file | `validate_schema.py`, `community_metadata.py`, `community_staleness.py`, `generate_community_pages.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `cross_references.py`, `mkdocs build` |
+| Update the community catalog | `references/community/ecosystem_packages.json` + `src/content/docs/reference/community-maintenance-policy.md` | The JSON source file | `validate_schema.py`, `community_metadata.py`, `community_staleness.py`, `generate_community_pages.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `cross_references.py`, `npm run build` |
 | Update extracted references after a snapshot refresh | Matching extractor in `scripts/extract/` + snapshot files in `references/snapshots/<date>/` | Run the extractor script | `python scripts/verify/extraction_idempotency.py` + `validate_schema.py` |
 | Add a new extractor | An existing extractor in `scripts/extract/` + its test in `tests/unit/` | New script + new test | `python -m unittest discover -s tests -v` |
 | Add a verification script | An existing verifier in `scripts/verify/` + its test in `tests/unit/` | New script + new test + update `run_all.py` / `.github/workflows/ci.yml` intentionally | `python -m unittest discover -s tests -v` |
-| Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Run refresh, note the auto-created `references/raw_backup_TIMESTAMP` path plus `docs/artifacts/refresh-provenance.json`, republish artifacts, then regenerate the delta summary when comparing baselines | `publish_reference_artifacts.py` + `generate_snapshot_delta_summary.py` + `run_all.py` |
+| Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Run refresh, note the auto-created `references/raw_backup_TIMESTAMP` path plus `public/artifacts/refresh-provenance.json`, republish artifacts, then regenerate the delta summary when comparing baselines | `publish_reference_artifacts.py` + `generate_snapshot_delta_summary.py` + `run_all.py` |
 | Change CI behavior | Relevant workflow in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then inspect Ubuntu/Windows Actions runs and any advisory replay workflow after push |
 
 
@@ -164,27 +165,27 @@ guides, and tooling artifacts.
 
 1. **Read the target page** and the pages it links to or from.
 2. **Read the policy files** before changing evidence labels, tone, or structure:
-   - `docs/reference/source-evidence-policy.md`
-   - `docs/reference/writing-style-guide.md`
-   - `docs/reference/doc-quality-checklist.md`
+   - `src/content/docs/reference/source-evidence-policy.md`
+   - `src/content/docs/reference/writing-style-guide.md`
+   - `src/content/docs/reference/doc-quality-checklist.md`
 3. **Edit the page.** Keep claims tied to sources from `references/snapshots/` or
    `docs.comfy.org`. Do not write from memory.
 4. **For new pages**, prefer `scripts/new_doc.py` so the title, date, template mode, and path checks start in the right shape. Use the matching mode (`scaffold`, `tutorial`, `reference`, `decision-guide`, or `community-pattern`) and keep the output in the matching docs area when possible:
    ```bash
-   python scripts/new_doc.py --output docs/how-to/my-topic.md --mode tutorial --title "My Topic" --primary-source "docs.comfy.org/<page-or-section>"
+    python scripts/new_doc.py --output src/content/docs/how-to/my-topic.md --mode tutorial --title "My Topic" --primary-source "docs.comfy.org/<page-or-section>"
    ```
    If you intentionally need an unusual folder for that mode, add `--allow-path-mismatch` rather than bypassing the guardrails by hand. Copy a template directly only when you need a one-off draft outside the script's normal workflow.
 5. **Verify locally:**
    ```bash
    python scripts/verify/cross_references.py
-   python -m mkdocs build
+   npm run build
    ```
 6. **Review your diff** before committing. Ensure you did not accidentally edit
    generated files.
 
 ### Updating the Community Catalog
 
-The ecosystem map at `docs/ecosystem/map.md` is generated. Do not edit it by hand.
+The ecosystem map at `src/content/docs/ecosystem/map.md` is generated. Do not edit it by hand.
 
 1. Edit `references/community/ecosystem_packages.json` for catalog entries.
 2. Edit `references/community/community_pages.json` for page review metadata.
@@ -197,7 +198,7 @@ The ecosystem map at `docs/ecosystem/map.md` is generated. Do not edit it by han
    python scripts/verify/community_generated_freshness.py
    python scripts/verify/community_page_coverage.py
    python scripts/verify/cross_references.py
-   python -m mkdocs build
+   npm run build
    ```
    Each step validates a different layer: schema correctness, metadata rules,
    staleness, regeneration, freshness, coverage, cross-links, and final build.
@@ -238,7 +239,7 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    ```bash
    python scripts/refresh_snapshots.py --core-version <version> --frontend-version <version>
    ```
-2. Confirm that the script reported a repo-local `references/raw_backup_TIMESTAMP` path when a prior canonical baseline existed, and that it wrote `docs/artifacts/refresh-provenance.json`.
+2. Confirm that the script reported a repo-local `references/raw_backup_TIMESTAMP` path when a prior canonical baseline existed, and that it wrote `public/artifacts/refresh-provenance.json`.
 3. Republish the artifact surface:
    ```bash
    python scripts/generate/publish_reference_artifacts.py
@@ -250,7 +251,7 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    ```
 5. If you are comparing two baselines, generate the published delta summary from the auto-created backup:
    ```bash
-   python scripts/generate/generate_snapshot_delta_summary.py --old references/raw_backup_TIMESTAMP --new references/raw --output docs/artifacts/delta-summary.json
+   python scripts/generate/generate_snapshot_delta_summary.py --old references/raw_backup_TIMESTAMP --new references/raw --output public/artifacts/delta-summary.json
    ```
 6. Remove the temporary backup after confirming the delta output if you no longer need it.
 7. Run the maintainer verification gate:
@@ -297,11 +298,11 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
 
 Understanding this boundary prevents accidentally editing files that will be overwritten later.
 
-- **Hand-authored:** Pages under `docs/`, files under `examples/`, and editorial reference files.
-- **Generated:** `docs/ecosystem/map.md` is produced by `scripts/generate/generate_community_pages.py` from `references/community/ecosystem_packages.json`.
+- **Hand-authored:** Pages under `src/content/docs/`, files under `examples/`, and editorial reference files.
+- **Generated:** `src/content/docs/ecosystem/map.md` is produced by `scripts/generate/generate_community_pages.py` from `references/community/ecosystem_packages.json`.
 - **Extracted:** JSON files under `references/raw/` are produced by `scripts/extract/` from `references/snapshots/`.
-- **Published:** Files under `docs/artifacts/` are produced by `scripts/generate/publish_reference_artifacts.py`.
-- **Support-artifact exception:** `docs/artifacts/docs-index.json` is produced by `scripts/generate/generate_docs_index.py` and stays outside the canonical manifest-discovery contract.
+- **Published:** Files under `public/artifacts/` are produced by `scripts/generate/publish_reference_artifacts.py`.
+- **Support-artifact exception:** `public/artifacts/docs-index.json` is produced by `scripts/generate/generate_docs_index.py` and stays outside the canonical manifest-discovery contract.
 
 If a file is generated or extracted, change its source and rerun the pipeline rather than editing the output directly.
 
@@ -329,7 +330,7 @@ escalate through the dedicated advisory replay workflow.
 
 Use this section when a push or PR does not fail as one obvious script error.
 Keep the deeper workflow-specific detail in
-[`docs/reference/runtime-ci-operations.md`](docs/reference/runtime-ci-operations.md).
+[`src/content/docs/reference/runtime-ci-operations.md`](src/content/docs/reference/runtime-ci-operations.md).
 
 ### Broken pushes
 
@@ -378,7 +379,7 @@ python scripts/verify/python_style.py
 python scripts/verify/cross_references.py
 python scripts/verify/docs_index_freshness.py
 python scripts/verify/verify_artifact_integrity.py
-python -m mkdocs build
+npm run build
 python -m unittest discover -s tests -v
 ```
 
@@ -392,7 +393,7 @@ python scripts/generate/generate_community_pages.py
 python scripts/verify/community_generated_freshness.py
 python scripts/verify/community_page_coverage.py
 python scripts/verify/cross_references.py
-python -m mkdocs build
+npm run build
 ```
 
 ### Full local verification
@@ -431,7 +432,7 @@ python scripts/verify/community_staleness.py           # [non-blocking]
 python scripts/generate/md_from_json.py
 python scripts/generate/generate_community_pages.py
 python scripts/generate/publish_reference_artifacts.py
-python scripts/generate/generate_snapshot_delta_summary.py --old <dir> --new <dir> --output docs/artifacts/delta-summary.json
+python scripts/generate/generate_snapshot_delta_summary.py --old <dir> --new <dir> --output public/artifacts/delta-summary.json
 ```
 
 When generating a refresh delta from the live repo state, `--old` should point at the auto-created `references/raw_backup_TIMESTAMP/` directory printed by `refresh_snapshots.py` before it overwrites the canonical raw artifacts in place.
@@ -472,7 +473,7 @@ When maintainer work goes wrong, prefer a small revert or restore to leaving the
 repo in a half-updated state.
 
 - **Doc-only changes:** revert or restore the affected markdown files, then rerun
-  `python scripts/verify/cross_references.py` and `python -m mkdocs build`.
+  `python scripts/verify/cross_references.py` and `npm run build`.
 - **Canonical artifact publication changes:** restore the intended source of
   truth first (`references/raw/` or checked-in schema files), rerun
   `python scripts/generate/publish_reference_artifacts.py`, then rerun
@@ -481,22 +482,22 @@ repo in a half-updated state.
 - **Snapshot refresh changes:** use the repo-local `references/raw_backup_TIMESTAMP`
   directory created by `scripts/refresh_snapshots.py` when you need to restore
   the prior canonical raw baseline. After restore, republish artifacts, rerun
-  integrity verification, regenerate `docs/artifacts/delta-summary.json` if the
+  integrity verification, regenerate `public/artifacts/delta-summary.json` if the
   comparison record should stay current, and confirm the latest
-  `docs/artifacts/refresh-provenance.json` still tells the truth about what was
+  `public/artifacts/refresh-provenance.json` still tells the truth about what was
   attempted.
 
 For the full refresh closure, broken-push triage sequence, and workflow-level
 rollback posture, use
-[`docs/reference/runtime-ci-operations.md`](docs/reference/runtime-ci-operations.md).
+[`src/content/docs/reference/runtime-ci-operations.md`](src/content/docs/reference/runtime-ci-operations.md).
 
 ---
 
 ## Common Pitfalls
 
-- **Editing generated markdown directly:** `docs/ecosystem/map.md` looks like a normal markdown file, but it is produced by a generator. Always edit `references/community/ecosystem_packages.json` and rerun the generator instead.
+- **Editing generated markdown directly:** `src/content/docs/ecosystem/map.md` looks like a normal markdown file, but it is produced by a generator. Always edit `references/community/ecosystem_packages.json` and rerun the generator instead.
 - **Windows backslashes in JSON:** If you author or run extractors on Windows, paths written with `str(path)` will contain backslashes. Always normalize with `.replace("\\", "/")` before writing JSON metadata.
-- **Forgetting to regenerate after JSON changes:** If you edit `references/raw/` or `references/community/` JSON files, rerun the matching generator before running `cross_references.py` or `mkdocs build`.
+- **Forgetting to regenerate after JSON changes:** If you edit `references/raw/` or `references/community/` JSON files, rerun the matching generator before running `cross_references.py` or `npm run build`.
 - **Misunderstanding CI blocking behavior:** `cross_references.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `community_generated_freshness.py`, and `community_page_coverage.py` will block CI and prevent merge. `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py` run in CI but do not block the pipeline.
 - **Misreading semantic enrichment fields:** Plan K adds `traceability` markers and richer typed detail to endpoints, hooks, and node schema fields. These are best-effort from static analysis. The `kind` field is reliable; deeper fields should be treated as helpful signals, not strict runtime contracts.
 - **Writing from memory:** Claims about ComfyUI behavior must be traceable to a pinned snapshot or official docs. If you cannot find a source, mark the claim accordingly or leave it out.
@@ -513,7 +514,7 @@ Before opening a PR, confirm the following:
 - [ ] **Generated files were not hand-edited:** verify with `git diff --name-only` that you are not modifying generated outputs without changing their sources
 - [ ] **Verification passes:** the relevant checks from the Decision Tree above exit `0`
 - [ ] **Tests pass:** `python -m unittest discover -s tests -v` exits cleanly (required for script changes; recommended for docs changes)
-- [ ] **Docs build:** `python -m mkdocs build` completes without errors
+- [ ] **Docs build:** `npm run build` completes without errors
 - [ ] **Evidence labels are correct:** docs pages have the right evidence label per `source-evidence-policy.md`
 - [ ] **Style matches conventions:** page mode, tone, and structure follow `writing-style-guide.md`
 - [ ] **Cross-links are intentional:** links resolve to real pages; "Read Next" blocks contain deliberate next steps
@@ -526,8 +527,15 @@ For script or extractor changes, also include:
 
 ## Getting Help
 
-- Read `docs/start-here/docs-contributor.md` for an introduction to editorial standards.
-- Read `docs/reference/writing-style-guide.md` for page modes and tone.
-- Read `docs/reference/source-evidence-policy.md` for trust hierarchy and evidence labeling.
-- Read `docs/reference/doc-quality-checklist.md` for a pre-submit review step.
+- Read `src/content/docs/start-here/docs-contributor.md` for an introduction to editorial standards.
+- Read `src/content/docs/reference/writing-style-guide.md` for page modes and tone.
+- Read `src/content/docs/reference/source-evidence-policy.md` for trust hierarchy and evidence labeling.
+- Read `src/content/docs/reference/doc-quality-checklist.md` for a pre-submit review step.
+
+## Local Node.js Baseline
+
+Use Node.js `22.x` when touching site-framework or frontend-build surfaces. The
+repo will standardize on `.nvmrc` during the Starlight bootstrap task. Until
+that file lands, use equivalent environment-specific tooling to select Node.js
+`22.x`.
 - Review `AGENTS.md` for the full operational reference (machine-oriented, but comprehensive).

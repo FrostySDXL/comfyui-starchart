@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish canonical extracted JSON artifacts into a stable, web-served docs subtree.
+"""Publish canonical extracted JSON artifacts into a stable, web-served public subtree.
 
 Reads exactly three canonical artifacts from references/raw/:
 - server_endpoints.json
@@ -9,9 +9,9 @@ Reads exactly three canonical artifacts from references/raw/:
 Excludes runtime-only artifacts such as object_info_runtime.json.
 
 Writes:
-- docs/artifacts/current/<artifact>.json  (stable current copies)
-- docs/artifacts/versions/<key>/<artifact>.json  (versioned copies)
-- docs/artifacts/manifest.json  (discovery metadata)
+- public/artifacts/current/<artifact>.json  (stable current copies)
+- public/artifacts/versions/<key>/<artifact>.json  (versioned copies)
+- public/artifacts/manifest.json  (discovery metadata)
 
 Usage:
     python scripts/generate/publish_reference_artifacts.py
@@ -25,7 +25,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SOURCE_DIR = REPO_ROOT / "references" / "raw"
-OUTPUT_ROOT = REPO_ROOT / "docs" / "artifacts"
+OUTPUT_ROOT = REPO_ROOT / "public" / "artifacts"
 CURRENT_DIR = OUTPUT_ROOT / "current"
 VERSIONS_DIR = OUTPUT_ROOT / "versions"
 SCHEMAS_DIR = OUTPUT_ROOT / "schemas"
@@ -106,10 +106,10 @@ def _write_json(path: Path, data: dict) -> None:
 def _site_rel(file_path: Path) -> str:
     """Return a site-relative URL path using forward slashes.
 
-    Paths are relative to the docs root and omit a leading slash so they
+    Paths are relative to the public root and omit a leading slash so they
     resolve correctly on GitHub Pages project sites as well as custom domains.
     """
-    rel = file_path.relative_to(REPO_ROOT / "docs")
+    rel = file_path.relative_to(REPO_ROOT / "public")
     return rel.as_posix()
 
 

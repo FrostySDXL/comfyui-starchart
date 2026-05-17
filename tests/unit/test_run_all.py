@@ -52,6 +52,7 @@ class RunAllUnitTests(unittest.TestCase):
 
         self.assertEqual(result, 0)
         self.assertTrue(any("unittest" in str(c) for c in call_order))
+        self.assertTrue(any("test" in str(c) and module.NPM_EXECUTABLE in c for c in call_order))
         self.assertTrue(any("python_style.py" in str(c) for c in call_order))
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
         self.assertTrue(any("docs_index_freshness.py" in str(c) for c in call_order))
@@ -60,10 +61,15 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("markdown_top_level_spacing.py" in str(c) for c in call_order))
         self.assertTrue(any("community_generated_freshness.py" in str(c) for c in call_order))
         self.assertTrue(any("community_page_coverage.py" in str(c) for c in call_order))
-        self.assertTrue(any("mkdocs" in str(c) for c in call_order))
+        self.assertTrue(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
+        self.assertTrue(any(c == [module.NPM_EXECUTABLE, "run", "check"] for c in call_order))
+        self.assertTrue(any(c == [module.NPM_EXECUTABLE, "run", "build"] for c in call_order))
 
-        # Verify order: tests first, then Python style, then blocking verifiers, then mkdocs
+        # Verify order: tests first, then Python/style verifiers, then sidebar/check/build
         unittest_idx = next(i for i, c in enumerate(call_order) if "unittest" in str(c))
+        npm_test_idx = next(
+            i for i, c in enumerate(call_order) if c == [module.NPM_EXECUTABLE, "test"]
+        )
         python_style_idx = next(i for i, c in enumerate(call_order) if "python_style.py" in str(c))
         cross_idx = next(i for i, c in enumerate(call_order) if "cross_references.py" in str(c))
         docs_index_idx = next(
@@ -82,9 +88,19 @@ class RunAllUnitTests(unittest.TestCase):
         coverage_idx = next(
             i for i, c in enumerate(call_order) if "community_page_coverage.py" in str(c)
         )
-        mkdocs_idx = next(i for i, c in enumerate(call_order) if "mkdocs" in str(c))
+        sidebar_idx = next(
+            i for i, c in enumerate(call_order) if "sidebar_navigation_coverage.py" in str(c)
+        )
+        astro_check_idx = next(
+            i for i, c in enumerate(call_order) if c == [module.NPM_EXECUTABLE, "run", "check"]
+        )
+        astro_build_idx = next(
+            i for i, c in enumerate(call_order) if c == [module.NPM_EXECUTABLE, "run", "build"]
+        )
 
         self.assertLess(unittest_idx, cross_idx)
+        self.assertLess(unittest_idx, npm_test_idx)
+        self.assertLess(npm_test_idx, python_style_idx)
         self.assertLess(unittest_idx, python_style_idx)
         self.assertLess(python_style_idx, cross_idx)
         self.assertLess(cross_idx, docs_index_idx)
@@ -94,7 +110,9 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertLess(integrity_idx, freshness_idx)
         self.assertLess(spacing_idx, freshness_idx)
         self.assertLess(freshness_idx, coverage_idx)
-        self.assertLess(coverage_idx, mkdocs_idx)
+        self.assertLess(coverage_idx, sidebar_idx)
+        self.assertLess(sidebar_idx, astro_check_idx)
+        self.assertLess(astro_check_idx, astro_build_idx)
 
     def test_failure_stops_sequence(self):
         module = _load_module()
@@ -134,6 +152,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("verify_artifact_integrity.py" in str(c) for c in call_order))
         self.assertFalse(any("markdown_top_level_spacing.py" in str(c) for c in call_order))
         self.assertFalse(any("community_generated_freshness.py" in str(c) for c in call_order))
+        self.assertFalse(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
 
     def test_skip_tests_flag(self):
         module = _load_module()
@@ -149,25 +168,30 @@ class RunAllUnitTests(unittest.TestCase):
 
         self.assertEqual(result, 0)
         self.assertFalse(any("unittest" in str(c) for c in call_order))
+        self.assertFalse(any(c == [module.NPM_EXECUTABLE, "test"] for c in call_order))
         self.assertTrue(any("python_style.py" in str(c) for c in call_order))
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
         self.assertTrue(any("docs_index_freshness.py" in str(c) for c in call_order))
+        self.assertTrue(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
 
-    def test_skip_mkdocs_flag(self):
+    def test_sidebar_failure_stops_before_astro_steps(self):
         module = _load_module()
         call_order = []
 
         def fake_run(cmd, **kwargs):
             call_order.append(cmd)
+            if "sidebar_navigation_coverage.py" in str(cmd):
+                return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="sidebar fail")
             return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
         with patch("scripts.verify.run_all.subprocess.run", side_effect=fake_run):
-            with patch("sys.argv", ["run_all.py", "--skip-mkdocs"]):
+            with patch("sys.argv", ["run_all.py"]):
                 result = module.main()
 
-        self.assertEqual(result, 0)
-        self.assertTrue(any("unittest" in str(c) for c in call_order))
-        self.assertFalse(any("mkdocs" in str(c) for c in call_order))
+        self.assertEqual(result, 1)
+        self.assertTrue(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
+        self.assertFalse(any(c == [module.NPM_EXECUTABLE, "run", "check"] for c in call_order))
+        self.assertFalse(any(c == [module.NPM_EXECUTABLE, "run", "build"] for c in call_order))
 
 
 class RunAllScriptTests(unittest.TestCase):
@@ -182,7 +206,6 @@ class RunAllScriptTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0)
         self.assertIn("--skip-tests", result.stdout)
-        self.assertIn("--skip-mkdocs", result.stdout)
         self.assertIn("blocking local verification", result.stdout)
         self.assertIn("Advisory checks", result.stdout)
 

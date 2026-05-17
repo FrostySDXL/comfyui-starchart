@@ -6,7 +6,7 @@ Usage:
 
 Fails when a docs markdown file contains leading spaces before top-level markdown
 markers such as headings or metadata labels. These lines can render incorrectly
-in MkDocs and leak raw markdown into the browser output.
+in the published site and leak raw markdown into the browser output.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DOCS_DIR = REPO_ROOT / "docs"
+DOCS_DIR = REPO_ROOT / "src" / "content" / "docs"
 
 LEADING_SPACE_PATTERN = re.compile(r"^\s+(?:#{1,6}\s|\*\*[A-Za-z][^*]{0,120}:\*\*)")
 
@@ -56,7 +56,7 @@ def verify_docs_directory(repo_root: Path, docs_dir: Path) -> list[tuple[str, in
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Verify top-level markdown headings and metadata are not indented in docs/."
+        description="Verify top-level markdown headings and metadata are not indented in src/content/docs/."
     )
     parser.parse_args()
 

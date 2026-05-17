@@ -53,7 +53,7 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             self._build_valid_fixture(root)
-            doc_path = root / "docs" / "how-to" / "consumer-starter-examples.md"
+            doc_path = root / "src" / "content" / "docs" / "how-to" / "consumer-starter-examples.md"
             doc_path.write_text(
                 "Repo path: `examples/consumers/missing-example/`\n",
                 encoding="utf-8",
@@ -63,7 +63,7 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
 
         self.assertIn(
             "Missing routed example path: examples/consumers/missing-example/ "
-            "referenced in docs/how-to/consumer-starter-examples.md",
+            "referenced in src/content/docs/how-to/consumer-starter-examples.md",
             errors,
         )
 
@@ -92,14 +92,14 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
             self._build_valid_fixture(root)
             readme_path = root / "examples" / "consumers" / "alpha" / "README.md"
             readme_path.write_text(
-                "See [Missing Doc](../../../docs/how-to/missing.md).\n",
+                "See [Missing Doc](../../../src/content/docs/how-to/missing.md).\n",
                 encoding="utf-8",
             )
 
             errors = module.validate_example_surface(root)
 
         self.assertIn(
-            "Broken local reference: ../../../docs/how-to/missing.md in "
+            "Broken local reference: ../../../src/content/docs/how-to/missing.md in "
             "examples/consumers/alpha/README.md",
             errors,
         )
@@ -119,8 +119,8 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
     @staticmethod
     def _build_valid_fixture(root: Path) -> None:
         paths_to_create = [
-            root / "docs" / "how-to",
-            root / "docs" / "start-here",
+            root / "src" / "content" / "docs" / "how-to",
+            root / "src" / "content" / "docs" / "start-here",
             root / "examples" / "api-calls",
             root / "examples" / "consumers" / "alpha",
             root / "examples" / "custom-nodes" / "beta",
@@ -131,16 +131,16 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
             path.mkdir(parents=True, exist_ok=True)
 
         files = {
-            root / "docs" / "how-to" / "consumer-starter-examples.md": (
+            root / "src" / "content" / "docs" / "how-to" / "consumer-starter-examples.md": (
                 "Repo path: `examples/consumers/alpha/`\n"
             ),
-            root / "docs" / "start-here" / "tooling-builder.md": (
+            root / "src" / "content" / "docs" / "start-here" / "tooling-builder.md": (
                 "- `examples/consumers/alpha/`\n"
             ),
             root / "examples" / "api-calls" / "README.md": "# API calls\n",
             root / "examples" / "api-calls" / "payload.json": "{}\n",
             root / "examples" / "consumers" / "alpha" / "README.md": (
-                "See [Consumer Starter Examples](../../../docs/how-to/consumer-starter-examples.md).\n"
+                "See [Consumer Starter Examples](../../../src/content/docs/how-to/consumer-starter-examples.md).\n"
             ),
             root / "examples" / "custom-nodes" / "beta" / "README.md": "# Custom node\n",
             root / "examples" / "extensions" / "gamma" / "README.md": "# Extension\n",

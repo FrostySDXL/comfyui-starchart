@@ -30,7 +30,7 @@ class DocsIndexFreshnessUnitTests(unittest.TestCase):
             docs_index = {
                 "artifact": "docs-index.json",
                 "artifact_schema_version": "1.0.0",
-                "scope": {"surface": "test", "excludes": []},
+                "scope": {"surface": "test navigation", "excludes": []},
                 "pages": [{"title": "Docs Home", "path": "index.md"}],
             }
             committed_path.write_text(json.dumps(docs_index, indent=2) + "\n", encoding="utf-8")
@@ -65,7 +65,7 @@ class DocsIndexFreshnessUnitTests(unittest.TestCase):
             fresh_index = {
                 "artifact": "docs-index.json",
                 "artifact_schema_version": "1.0.0",
-                "scope": {"surface": "test", "excludes": []},
+                "scope": {"surface": "test navigation", "excludes": []},
                 "pages": [{"title": "Fresh", "path": "fresh.md"}],
             }
 

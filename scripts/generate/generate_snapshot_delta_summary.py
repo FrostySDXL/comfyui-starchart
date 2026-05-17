@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_OUTPUT = REPO_ROOT / "docs" / "artifacts" / "delta-summary.json"
+DEFAULT_OUTPUT = REPO_ROOT / "public" / "artifacts" / "delta-summary.json"
 CANONICAL_ARTIFACTS = [
     "server_endpoints.json",
     "js_hooks.json",

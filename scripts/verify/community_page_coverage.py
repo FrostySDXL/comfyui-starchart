@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Verify community page coverage completeness.
 
-Scans docs/**/*.md for pages carrying a community evidence label and compares
+Scans src/content/docs/**/*.md for pages carrying a community evidence label and compares
 the result against references/community/community_pages.json.
 
 Fails if:
@@ -25,7 +25,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from scripts.common.path_normalization import normalize_repo_path
 
-DOCS_DIR = REPO_ROOT / "docs"
+DOCS_DIR = REPO_ROOT / "src" / "content" / "docs"
 COMMUNITY_PAGES_JSON = REPO_ROOT / "references" / "community" / "community_pages.json"
 
 # Evidence label patterns that indicate a page has a community component.

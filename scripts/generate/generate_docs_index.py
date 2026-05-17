@@ -8,16 +8,19 @@ import json
 import re
 from pathlib import Path
 
-import yaml
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MKDOCS_CONFIG = REPO_ROOT / "mkdocs.yml"
-DOCS_ROOT = REPO_ROOT / "docs"
-OUTPUT_PATH = DOCS_ROOT / "artifacts" / "docs-index.json"
+SIDEBAR_DATA = REPO_ROOT / "src" / "site" / "sidebar-data.json"
+DEFAULT_NAV_SOURCE = SIDEBAR_DATA
+DOCS_ROOT = REPO_ROOT / "src" / "content" / "docs"
+OUTPUT_PATH = REPO_ROOT / "public" / "artifacts" / "docs-index.json"
 
 TITLE_RE = re.compile(r"^\s*#\s+(.+?)\s*$", re.MULTILINE)
 EVIDENCE_RE = re.compile(r"^\s*\*\*Evidence:\*\*\s*(.+?)\s*$", re.MULTILINE)
 GENERATED_BANNER_PREFIX = "<!-- GENERATED FILE:"
+GENERATED_PAGE_EXCLUSIONS = {
+    "ecosystem/map.md",
+    "reference/server-py-summary.md",
+}
 
 AUDIENCE_BY_PATH = {
     "start-here/author.md": "consumer",
@@ -28,51 +31,86 @@ AUDIENCE_BY_PATH = {
 }
 
 
-def _load_nav(repo_root: Path) -> list:
-    config = yaml.safe_load((repo_root / "mkdocs.yml").read_text(encoding="utf-8")) or {}
-    nav = config.get("nav")
+def _load_sidebar_nav(nav_source: Path) -> list:
+    if nav_source.suffix.lower() != ".json":
+        raise ValueError(f"Unsupported nav source type: {nav_source}")
+    nav = json.loads(nav_source.read_text(encoding="utf-8"))
     if not isinstance(nav, list):
-        raise ValueError("mkdocs.yml is missing a valid nav list")
+        raise ValueError(f"{nav_source.name} is missing a valid top-level sidebar list")
     return nav
 
 
 def _normalize_rel_doc_path(path: str) -> str:
     normalized = path.replace("\\", "/")
-    if normalized.startswith("docs/"):
+    if normalized.startswith("src/content/docs/"):
+        normalized = normalized[len("src/content/docs/") :]
+    elif normalized.startswith("docs/"):
         normalized = normalized[5:]
     return normalized
 
 
-def _flatten_nav(items: list, section_path: list[str] | None = None) -> list[dict[str, str]]:
+def _flatten_sidebar_nav(
+    items: list[dict[str, object]], section_path: list[str] | None = None
+) -> list[dict[str, str]]:
     section_path = section_path or []
     pages: list[dict[str, str]] = []
-    for item in items:
-        if isinstance(item, str):
-            normalized_path = _normalize_rel_doc_path(item)
+
+    for entry in items:
+        if not isinstance(entry, dict):
+            continue
+
+        label = entry.get("label")
+        path = entry.get("path")
+        child_items = entry.get("items")
+        docs_index_nav_section = entry.get("docs_index_nav_section")
+
+        if isinstance(path, str):
+            normalized_path = _normalize_rel_doc_path(path)
+            if isinstance(docs_index_nav_section, str) and docs_index_nav_section.strip():
+                nav_section = docs_index_nav_section.strip()
+            elif section_path:
+                nav_section = " / ".join(section_path)
+            elif isinstance(label, str) and label.strip():
+                nav_section = label.strip()
+            else:
+                nav_section = Path(normalized_path).stem
+
+            nav_label = (
+                label.strip()
+                if isinstance(label, str) and label.strip()
+                else Path(normalized_path).stem
+            )
             pages.append(
                 {
-                    "nav_label": Path(normalized_path).stem,
-                    "nav_section": " / ".join(section_path)
-                    if section_path
-                    else Path(normalized_path).stem,
+                    "nav_label": nav_label,
+                    "nav_section": nav_section,
                     "path": normalized_path,
                 }
             )
             continue
-        if not isinstance(item, dict) or len(item) != 1:
-            continue
-        label, value = next(iter(item.items()))
-        if isinstance(value, str):
-            pages.append(
-                {
-                    "nav_label": label,
-                    "nav_section": " / ".join(section_path + [label]) if section_path else label,
-                    "path": _normalize_rel_doc_path(value),
-                }
-            )
-        elif isinstance(value, list):
-            pages.extend(_flatten_nav(value, section_path + [label]))
+
+        if isinstance(child_items, list):
+            child_section_path = list(section_path)
+            if isinstance(label, str) and label.strip():
+                child_section_path.append(label.strip())
+            pages.extend(_flatten_sidebar_nav(child_items, child_section_path))
+
     return pages
+
+
+def _resolve_nav_source(repo_root: Path, nav_source: str | Path | None) -> Path:
+    candidate = Path(nav_source) if nav_source is not None else DEFAULT_NAV_SOURCE
+    if candidate.is_absolute():
+        return candidate
+    return repo_root / candidate
+
+
+def _flatten_nav_from_source(
+    repo_root: Path, nav_source: str | Path | None = None
+) -> list[dict[str, str]]:
+    resolved_nav_source = _resolve_nav_source(repo_root, nav_source)
+    raw_nav = _load_sidebar_nav(resolved_nav_source)
+    return _flatten_sidebar_nav(raw_nav)
 
 
 def _extract_title(text: str, fallback: str) -> str:
@@ -114,7 +152,10 @@ def _is_generated_page(text: str) -> bool:
 
 def _build_page_entry(repo_root: Path, nav_entry: dict[str, str]) -> dict[str, object] | None:
     relative_path = nav_entry["path"]
-    doc_path = repo_root / "docs" / relative_path
+    if relative_path in GENERATED_PAGE_EXCLUSIONS:
+        return None
+
+    doc_path = DOCS_ROOT / relative_path
     if not doc_path.exists() or doc_path.suffix.lower() != ".md":
         return None
 
@@ -132,8 +173,10 @@ def _build_page_entry(repo_root: Path, nav_entry: dict[str, str]) -> dict[str, o
     }
 
 
-def build_docs_index(repo_root: Path = REPO_ROOT) -> dict[str, object]:
-    nav_entries = _flatten_nav(_load_nav(repo_root))
+def build_docs_index(
+    repo_root: Path = REPO_ROOT, nav_source: str | Path | None = None
+) -> dict[str, object]:
+    nav_entries = _flatten_nav_from_source(repo_root, nav_source)
     pages = []
     seen_paths: set[str] = set()
 
@@ -150,7 +193,7 @@ def build_docs_index(repo_root: Path = REPO_ROOT) -> dict[str, object]:
         "artifact": "docs-index.json",
         "artifact_schema_version": "1.0.0",
         "scope": {
-            "surface": "hand-authored published docs pages included in mkdocs nav",
+            "surface": "hand-authored published docs pages included in the checked-in docs navigation",
             "excludes": [
                 "generated markdown pages",
                 "built site output",
@@ -171,16 +214,24 @@ def write_docs_index(docs_index: dict[str, object], output_path: Path) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Generate docs/artifacts/docs-index.json from the MkDocs nav and published docs pages."
+        description="Generate public/artifacts/docs-index.json from checked-in docs navigation data and published docs pages."
+    )
+    parser.add_argument(
+        "--nav-source",
+        default=str(DEFAULT_NAV_SOURCE),
+        help=(
+            "Navigation source path (defaults to src/site/sidebar-data.json and "
+            "must point to checked-in sidebar JSON data)"
+        ),
     )
     parser.add_argument(
         "--output",
         default=str(OUTPUT_PATH),
-        help="Output JSON path (defaults to docs/artifacts/docs-index.json)",
+        help="Output JSON path (defaults to public/artifacts/docs-index.json)",
     )
     args = parser.parse_args()
 
-    docs_index = build_docs_index(REPO_ROOT)
+    docs_index = build_docs_index(REPO_ROOT, args.nav_source)
     output_path = Path(args.output)
     write_docs_index(docs_index, output_path)
     print(f"Generated docs index at {output_path}")

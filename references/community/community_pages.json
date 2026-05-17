@@ -6,7 +6,7 @@
   },
   "pages": [
     {
-      "page_path": "docs/ecosystem/map.md",
+      "page_path": "src/content/docs/ecosystem/map.md",
       "page_kind": "generated_catalog",
       "evidence_label": "Community pattern study",
       "source_type": "community_metadata",
@@ -17,7 +17,7 @@
       "notes": "Generated from structured metadata; do not hand-edit directly"
     },
     {
-      "page_path": "docs/deep-dives/comfyui-manager.md",
+      "page_path": "src/content/docs/deep-dives/comfyui-manager.md",
       "page_kind": "hand_authored_study",
       "evidence_label": "Community pattern study based on pinned external version",
       "source_type": "pinned_external_repo",
@@ -28,7 +28,7 @@
       "notes": "Pinned commit study; update when external repo changes significantly"
     },
     {
-      "page_path": "docs/deep-dives/comfyui-impact-pack.md",
+      "page_path": "src/content/docs/deep-dives/comfyui-impact-pack.md",
       "page_kind": "hand_authored_study",
       "evidence_label": "Community pattern study based on pinned external version",
       "source_type": "pinned_external_repo",
@@ -39,7 +39,7 @@
       "notes": "Pinned commit study; update when external repo changes significantly"
     },
     {
-      "page_path": "docs/extensions/profilerx-analysis.md",
+      "page_path": "src/content/docs/extensions/profilerx-analysis.md",
       "page_kind": "hand_authored_study",
       "evidence_label": "Community pattern study based on pinned external version",
       "source_type": "pinned_external_repo",
@@ -50,7 +50,7 @@
       "notes": "Community extension case study; verify upstream repo state before updating"
     },
     {
-      "page_path": "docs/custom-nodes/v1-to-v3-case-study-pipe.md",
+      "page_path": "src/content/docs/custom-nodes/v1-to-v3-case-study-pipe.md",
       "page_kind": "hand_authored_study",
       "evidence_label": "Community pattern study based on pinned external version",
       "source_type": "pinned_external_repo",
@@ -61,7 +61,7 @@
       "notes": "Pinned commit study of Impact-Pack pipe.py; update when upstream changes"
     },
     {
-      "page_path": "docs/custom-nodes/v1-to-v3-case-study-segs.md",
+      "page_path": "src/content/docs/custom-nodes/v1-to-v3-case-study-segs.md",
       "page_kind": "hand_authored_study",
       "evidence_label": "Community pattern study based on pinned external version",
       "source_type": "pinned_external_repo",
@@ -72,7 +72,7 @@
       "notes": "Pinned commit study of Impact-Pack segs_nodes.py; update when upstream changes"
     },
     {
-      "page_path": "docs/tutorials/adding-background-metrics.md",
+      "page_path": "src/content/docs/tutorials/adding-background-metrics.md",
       "page_kind": "hand_authored_tutorial",
       "evidence_label": "Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version",
       "source_type": "hybrid",
@@ -83,7 +83,7 @@
       "notes": "Hybrid tutorial: official docs primary, ProfilerX used as community example"
     },
     {
-      "page_path": "docs/how-to/integrate-with-manager.md",
+      "page_path": "src/content/docs/how-to/integrate-with-manager.md",
       "page_kind": "hand_authored_guide",
       "evidence_label": "Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version",
       "source_type": "hybrid",
@@ -94,7 +94,7 @@
       "notes": "Hybrid guide: official Manager docs primary, pinned community repo used for narrow verification"
     },
     {
-      "page_path": "docs/custom-nodes/best-practices.md",
+      "page_path": "src/content/docs/custom-nodes/best-practices.md",
       "page_kind": "hand_authored_guide",
       "evidence_label": "Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version",
       "source_type": "hybrid",
@@ -105,7 +105,7 @@
       "notes": "Hybrid guide: official docs and registry guidance primary, community packs as illustrative examples"
     },
     {
-      "page_path": "docs/custom-nodes/v1-to-v3-migration.md",
+      "page_path": "src/content/docs/custom-nodes/v1-to-v3-migration.md",
       "page_kind": "hand_authored_guide",
       "evidence_label": "Official docs-backed (migration steps); Community pattern studies (case studies)",
       "source_type": "hybrid",
@@ -116,7 +116,7 @@
       "notes": "Hybrid guide: official migration docs primary, linked case studies are separate community pages"
     },
     {
-      "page_path": "docs/reference/community-maintenance-policy.md",
+      "page_path": "src/content/docs/reference/community-maintenance-policy.md",
       "page_kind": "hand_authored_policy",
       "evidence_label": "Operational guidance",
       "source_type": "repo_local",
@@ -127,7 +127,7 @@
       "notes": "Defines maintenance tiers and review cadence for community content"
     },
     {
-      "page_path": "docs/reference/community-generated-surfaces.md",
+      "page_path": "src/content/docs/reference/community-generated-surfaces.md",
       "page_kind": "hand_authored_policy",
       "evidence_label": "Operational guidance",
       "source_type": "repo_local",

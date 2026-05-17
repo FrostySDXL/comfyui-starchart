@@ -30,8 +30,8 @@ class VerifyArtifactIntegrityUnitTests(unittest.TestCase):
 
     def _write_fixture_tree(self, root: Path) -> tuple[Path, Path, Path]:
         canonical_dir = root / "references" / "raw"
-        published_dir = root / "docs" / "artifacts" / "current"
-        manifest_path = root / "docs" / "artifacts" / "manifest.json"
+        published_dir = root / "public" / "artifacts" / "current"
+        manifest_path = root / "public" / "artifacts" / "manifest.json"
         canonical_dir.mkdir(parents=True)
         published_dir.mkdir(parents=True)
 
@@ -121,8 +121,8 @@ class VerifyArtifactIntegrityUnitTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             canonical_dir = root / "references" / "raw"
-            published_dir = root / "docs" / "artifacts" / "current"
-            manifest_path = root / "docs" / "artifacts" / "manifest.json"
+            published_dir = root / "public" / "artifacts" / "current"
+            manifest_path = root / "public" / "artifacts" / "manifest.json"
             canonical_dir.mkdir(parents=True)
             published_dir.mkdir(parents=True)
             manifest = {"version_key": "test-key", "artifacts": {}}

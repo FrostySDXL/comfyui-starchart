@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Verify that docs-index.json matches the current docs nav and page metadata.
+"""Verify that docs-index.json matches current docs navigation and page metadata.
 
 Runs the docs-index generator in memory and compares the result to the checked-in
-docs/artifacts/docs-index.json file. Fails if they differ, which means someone
+public/artifacts/docs-index.json file. Fails if they differ, which means someone
 changed the published docs surface without regenerating the support artifact.
 
 Usage:
@@ -55,7 +55,9 @@ def verify_freshness() -> int:
         print("docs-index.json is fresh.")
         return 0
 
-    print("ERROR: docs/artifacts/docs-index.json is out of sync with the published docs surface.")
+    print(
+        "ERROR: public/artifacts/docs-index.json is out of sync with the checked-in published docs navigation or page metadata."
+    )
     print()
     print("Run the generator to fix:")
     print("  python scripts/generate/generate_docs_index.py")

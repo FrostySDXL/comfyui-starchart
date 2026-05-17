@@ -50,8 +50,8 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
     def test_finds_labeled_pages(self):
         module = self._import_module()
         with tempfile.TemporaryDirectory() as tmpdir:
-            docs_dir = Path(tmpdir) / "docs"
-            docs_dir.mkdir()
+            docs_dir = Path(tmpdir) / "src" / "content" / "docs"
+            docs_dir.mkdir(parents=True)
             (docs_dir / "page1.md").write_text(
                 "**Evidence:** Community pattern study\n", encoding="utf-8"
             )
@@ -68,9 +68,9 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
             try:
                 module.REPO_ROOT = Path(tmpdir)
                 labeled = module.find_community_labeled_pages(docs_dir)
-                self.assertIn("docs/page1.md", labeled)
-                self.assertIn("docs/sub/page3.md", labeled)
-                self.assertNotIn("docs/page2.md", labeled)
+                self.assertIn("src/content/docs/page1.md", labeled)
+                self.assertIn("src/content/docs/sub/page3.md", labeled)
+                self.assertNotIn("src/content/docs/page2.md", labeled)
             finally:
                 module.REPO_ROOT = old_repo_root
 
@@ -80,13 +80,13 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
             json_path = Path(tmpdir) / "community_pages.json"
             data = {
                 "pages": [
-                    {"page_path": "docs/a.md"},
-                    {"page_path": "docs/b.md"},
+                    {"page_path": "src/content/docs/a.md"},
+                    {"page_path": "src/content/docs/b.md"},
                 ]
             }
             json_path.write_text(json.dumps(data), encoding="utf-8")
             tracked = module.load_tracked_pages(json_path)
-            self.assertEqual(set(tracked), {"docs/a.md", "docs/b.md"})
+            self.assertEqual(set(tracked), {"src/content/docs/a.md", "src/content/docs/b.md"})
 
     def test_loads_page_metadata(self):
         module = self._import_module()
@@ -95,7 +95,7 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
             data = {
                 "pages": [
                     {
-                        "page_path": "docs/a.md",
+                        "page_path": "src/content/docs/a.md",
                         "evidence_label": "Community pattern study",
                         "page_kind": "hand_authored_study",
                         "source_type": "pinned_external_repo",
@@ -104,14 +104,16 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
             }
             json_path.write_text(json.dumps(data), encoding="utf-8")
             tracked = module.load_tracked_pages(json_path)
-            self.assertEqual(tracked["docs/a.md"]["evidence_label"], "Community pattern study")
+            self.assertEqual(
+                tracked["src/content/docs/a.md"]["evidence_label"], "Community pattern study"
+            )
 
     def test_coverage_passes_when_complete(self):
         module = self._import_module()
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = Path(tmpdir)
-            docs_dir = repo_root / "docs"
-            docs_dir.mkdir()
+            docs_dir = repo_root / "src" / "content" / "docs"
+            docs_dir.mkdir(parents=True)
             (docs_dir / "page1.md").write_text(
                 "**Evidence:** Community pattern study\n", encoding="utf-8"
             )
@@ -120,7 +122,7 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
             data = {
                 "pages": [
                     {
-                        "page_path": "docs/page1.md",
+                        "page_path": "src/content/docs/page1.md",
                         "evidence_label": "Community pattern study",
                     },
                 ]
@@ -145,8 +147,8 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
         module = self._import_module()
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = Path(tmpdir)
-            docs_dir = repo_root / "docs"
-            docs_dir.mkdir()
+            docs_dir = repo_root / "src" / "content" / "docs"
+            docs_dir.mkdir(parents=True)
             (docs_dir / "page1.md").write_text(
                 "**Evidence:** Community pattern study\n", encoding="utf-8"
             )
@@ -173,13 +175,13 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
         module = self._import_module()
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = Path(tmpdir)
-            docs_dir = repo_root / "docs"
-            docs_dir.mkdir()
+            docs_dir = repo_root / "src" / "content" / "docs"
+            docs_dir.mkdir(parents=True)
 
             json_path = repo_root / "community_pages.json"
             data = {
                 "pages": [
-                    {"page_path": "docs/missing.md"},
+                    {"page_path": "src/content/docs/missing.md"},
                 ]
             }
             json_path.write_text(json.dumps(data), encoding="utf-8")
@@ -202,8 +204,8 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
         module = self._import_module()
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = Path(tmpdir)
-            docs_dir = repo_root / "docs"
-            docs_dir.mkdir()
+            docs_dir = repo_root / "src" / "content" / "docs"
+            docs_dir.mkdir(parents=True)
             (docs_dir / "page1.md").write_text(
                 "**Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version\n",
                 encoding="utf-8",
@@ -213,7 +215,7 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
             data = {
                 "pages": [
                     {
-                        "page_path": "docs/page1.md",
+                        "page_path": "src/content/docs/page1.md",
                         "evidence_label": "Official docs-backed; Community pattern study",
                         "page_kind": "hand_authored_guide",
                         "source_type": "hybrid",
@@ -240,7 +242,7 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
         module = self._import_module()
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = Path(tmpdir)
-            docs_dir = repo_root / "docs" / "reference"
+            docs_dir = repo_root / "src" / "content" / "docs" / "reference"
             docs_dir.mkdir(parents=True)
             (docs_dir / "community-maintenance-policy.md").write_text(
                 "**Evidence:** Operational guidance\n", encoding="utf-8"
@@ -250,7 +252,7 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
             data = {
                 "pages": [
                     {
-                        "page_path": "docs/reference/community-maintenance-policy.md",
+                        "page_path": "src/content/docs/reference/community-maintenance-policy.md",
                         "evidence_label": "Operational guidance",
                         "page_kind": "hand_authored_policy",
                         "source_type": "repo_local",
@@ -264,7 +266,7 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
             old_json_path = module.COMMUNITY_PAGES_JSON
             try:
                 module.REPO_ROOT = repo_root
-                module.DOCS_DIR = repo_root / "docs"
+                module.DOCS_DIR = repo_root / "src" / "content" / "docs"
                 module.COMMUNITY_PAGES_JSON = json_path
                 stdout = io.StringIO()
                 with contextlib.redirect_stdout(stdout):
@@ -280,8 +282,8 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
         module = self._import_module()
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = Path(tmpdir)
-            docs_dir = repo_root / "docs"
-            docs_dir.mkdir()
+            docs_dir = repo_root / "src" / "content" / "docs"
+            docs_dir.mkdir(parents=True)
             (docs_dir / "guide.md").write_text(
                 "**Evidence:** Official docs-backed from docs.comfy.org\n", encoding="utf-8"
             )
@@ -290,7 +292,7 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
             data = {
                 "pages": [
                     {
-                        "page_path": "docs/guide.md",
+                        "page_path": "src/content/docs/guide.md",
                         "evidence_label": "Official docs-backed from docs.comfy.org",
                         "page_kind": "hand_authored_guide",
                         "source_type": "hybrid",
@@ -311,7 +313,7 @@ class CommunityPageCoverageUnitTests(unittest.TestCase):
                     result = module.main()
                 self.assertEqual(result, 0)
                 self.assertIn("Community page coverage warnings", stdout.getvalue())
-                self.assertIn("docs/guide.md", stdout.getvalue())
+                self.assertIn("src/content/docs/guide.md", stdout.getvalue())
             finally:
                 module.REPO_ROOT = old_repo_root
                 module.DOCS_DIR = old_docs_dir

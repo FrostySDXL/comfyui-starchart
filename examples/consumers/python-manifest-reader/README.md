@@ -51,4 +51,4 @@ Use one of these canonical artifact keys:
 - `node_api_schema.json`
 
 For the contract and support-artifact boundaries this example assumes, read
-[`docs/reference/machine-readable-artifacts.md`](../../../docs/reference/machine-readable-artifacts.md).
+[`src/content/docs/reference/machine-readable-artifacts.md`](../../../src/content/docs/reference/machine-readable-artifacts.md).

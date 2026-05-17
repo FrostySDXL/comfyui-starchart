@@ -17,10 +17,23 @@ spec.loader.exec_module(generate_docs_index)
 
 
 class GenerateDocsIndexTests(unittest.TestCase):
+    def _with_temp_repo_paths(self, root: Path):
+        old_docs_root = generate_docs_index.DOCS_ROOT
+        old_default_nav_source = generate_docs_index.DEFAULT_NAV_SOURCE
+        generate_docs_index.DOCS_ROOT = root / "src" / "content" / "docs"
+        generate_docs_index.DEFAULT_NAV_SOURCE = root / "src" / "site" / "sidebar-data.json"
+        self.addCleanup(setattr, generate_docs_index, "DOCS_ROOT", old_docs_root)
+        self.addCleanup(setattr, generate_docs_index, "DEFAULT_NAV_SOURCE", old_default_nav_source)
+
+    def _write_sidebar_data(self, root: Path, entries: list[dict[str, object]]) -> None:
+        sidebar_path = root / "src" / "site" / "sidebar-data.json"
+        sidebar_path.parent.mkdir(parents=True, exist_ok=True)
+        sidebar_path.write_text(json.dumps(entries, indent=2) + "\n", encoding="utf-8")
+
     def _write_page(
         self, root: Path, relative_path: str, title: str, evidence: str, scope: str
     ) -> None:
-        page_path = root / "docs" / Path(relative_path)
+        page_path = root / "src" / "content" / "docs" / Path(relative_path)
         page_path.parent.mkdir(parents=True, exist_ok=True)
         page_path.write_text(
             "\n".join(
@@ -46,21 +59,36 @@ class GenerateDocsIndexTests(unittest.TestCase):
     def test_build_docs_index_is_deterministic_and_extracts_expected_fields(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "mkdocs.yml").write_text(
-                "\n".join(
-                    [
-                        "nav:",
-                        "  - Home: index.md",
-                        "  - Start Here:",
-                        "      - start-here/tooling-builder.md",
-                        "  - Orientation:",
-                        "      - Troubleshooting:",
-                        "          - troubleshooting/index.md",
-                        "          - troubleshooting/api-integration.md",
-                    ]
-                )
-                + "\n",
-                encoding="utf-8",
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {"label": "Home", "path": "index.md"},
+                    {
+                        "label": "Start Here",
+                        "items": [
+                            {"label": "Tooling Builder", "path": "start-here/tooling-builder.md"}
+                        ],
+                    },
+                    {
+                        "label": "Orientation",
+                        "items": [
+                            {
+                                "label": "Troubleshooting",
+                                "items": [
+                                    {
+                                        "label": "Troubleshooting",
+                                        "path": "troubleshooting/index.md",
+                                    },
+                                    {
+                                        "label": "API Integration",
+                                        "path": "troubleshooting/api-integration.md",
+                                    },
+                                ],
+                            }
+                        ],
+                    },
+                ],
             )
 
             self._write_page(
@@ -118,8 +146,9 @@ class GenerateDocsIndexTests(unittest.TestCase):
     def test_scope_summary_uses_first_non_empty_paragraph_only(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "mkdocs.yml").write_text("nav:\n  - Home: index.md\n", encoding="utf-8")
-            page_path = root / "docs" / "index.md"
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(root, [{"label": "Home", "path": "index.md"}])
+            page_path = root / "src" / "content" / "docs" / "index.md"
             page_path.parent.mkdir(parents=True, exist_ok=True)
             page_path.write_text(
                 "\n".join(
@@ -147,21 +176,20 @@ class GenerateDocsIndexTests(unittest.TestCase):
     def test_excludes_generated_pages_even_if_listed_in_nav(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "mkdocs.yml").write_text(
-                "\n".join(
-                    [
-                        "nav:",
-                        "  - Home: index.md",
-                        "  - Ecosystem:",
-                        "      - ecosystem/map.md",
-                    ]
-                )
-                + "\n",
-                encoding="utf-8",
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {"label": "Home", "path": "index.md"},
+                    {
+                        "label": "Ecosystem",
+                        "items": [{"label": "Map", "path": "ecosystem/map.md"}],
+                    },
+                ],
             )
 
             self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
-            generated_path = root / "docs" / "ecosystem" / "map.md"
+            generated_path = root / "src" / "content" / "docs" / "ecosystem" / "map.md"
             generated_path.parent.mkdir(parents=True, exist_ok=True)
             generated_path.write_text(
                 "\n".join(
@@ -184,6 +212,132 @@ class GenerateDocsIndexTests(unittest.TestCase):
             docs_index = generate_docs_index.build_docs_index(root)
             self.assertEqual([page["path"] for page in docs_index["pages"]], ["index.md"])
 
+    def test_excludes_known_generated_paths_even_without_banner_marker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {"label": "Home", "path": "index.md"},
+                    {
+                        "label": "Reference",
+                        "items": [
+                            {
+                                "label": "Server Py Summary",
+                                "path": "reference/server-py-summary.md",
+                            }
+                        ],
+                    },
+                ],
+            )
+
+            self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            self._write_page(
+                root,
+                "reference/server-py-summary.md",
+                "Server.py Summary",
+                "Operational guidance",
+                "Generated reference summary.",
+            )
+
+            docs_index = generate_docs_index.build_docs_index(root)
+            self.assertEqual([page["path"] for page in docs_index["pages"]], ["index.md"])
+
+    def test_sidebar_nav_can_preserve_checked_in_nav_section_semantics(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {
+                        "label": "Orientation",
+                        "items": [
+                            {
+                                "label": "What's New",
+                                "path": "whats-new/index.md",
+                                "docs_index_nav_section": "Orientation / What's New",
+                            },
+                            {
+                                "label": "Troubleshooting",
+                                "items": [
+                                    {"label": "Troubleshooting", "path": "troubleshooting/index.md"}
+                                ],
+                            },
+                        ],
+                    }
+                ],
+            )
+
+            self._write_page(
+                root,
+                "whats-new/index.md",
+                "What's New",
+                "Operational guidance",
+                "Latest changes summary.",
+            )
+            self._write_page(
+                root,
+                "troubleshooting/index.md",
+                "Troubleshooting",
+                "Operational guidance",
+                "Troubleshooting summary.",
+            )
+
+            docs_index = generate_docs_index.build_docs_index(root)
+            self.assertEqual(docs_index["pages"][0]["nav_section"], "Orientation / What's New")
+            self.assertEqual(docs_index["pages"][1]["nav_section"], "Orientation / Troubleshooting")
+
+    def test_sidebar_nav_override_supports_custom_fixture_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            custom_nav_path = root / "nav" / "custom-sidebar.json"
+            custom_nav_path.parent.mkdir(parents=True, exist_ok=True)
+            custom_nav_path.write_text(
+                json.dumps(
+                    [
+                        {"label": "Home", "path": "index.md"},
+                        {
+                            "label": "Orientation",
+                            "items": [
+                                {
+                                    "label": "Troubleshooting",
+                                    "items": [
+                                        {
+                                            "label": "Troubleshooting",
+                                            "path": "troubleshooting/index.md",
+                                        }
+                                    ],
+                                }
+                            ],
+                        },
+                    ],
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            self._write_page(
+                root,
+                "troubleshooting/index.md",
+                "Troubleshooting",
+                "Operational guidance",
+                "Troubleshooting summary.",
+            )
+
+            docs_index = generate_docs_index.build_docs_index(
+                root, nav_source="nav/custom-sidebar.json"
+            )
+            self.assertEqual(
+                [page["path"] for page in docs_index["pages"]],
+                ["index.md", "troubleshooting/index.md"],
+            )
+            self.assertEqual(docs_index["pages"][1]["nav_section"], "Orientation / Troubleshooting")
+
     def test_script_writes_expected_output_file(self):
         with tempfile.TemporaryDirectory() as tmp:
             output_path = Path(tmp) / "docs-index.json"
@@ -199,6 +353,10 @@ class GenerateDocsIndexTests(unittest.TestCase):
             self.assertTrue(output_path.exists())
             data = json.loads(output_path.read_text(encoding="utf-8"))
             self.assertEqual(data["artifact"], "docs-index.json")
+            self.assertEqual(
+                data["scope"]["surface"],
+                "hand-authored published docs pages included in the checked-in docs navigation",
+            )
             self.assertIn("pages", data)
             self.assertGreater(len(data["pages"]), 0)
 

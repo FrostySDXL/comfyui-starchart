@@ -29,5 +29,5 @@ CPU-safe CI and must be triggered manually with a known ComfyUI URL.
 ## Artifact Connection
 
 The route shapes in these examples align with the pinned endpoint metadata in
-`server_endpoints.json`. See [Machine-Readable Artifacts](../../docs/reference/machine-readable-artifacts.md)
+`server_endpoints.json`. See [Machine-Readable Artifacts](../../src/content/docs/reference/machine-readable-artifacts.md)
 for the published artifact and manifest URLs.

@@ -15,7 +15,7 @@ spec.loader.exec_module(new_doc)
 
 class TestNewDoc(unittest.TestCase):
     def _tmp_output(self, suffix, folder="reference"):
-        return f"docs/{folder}/test_new_doc_{suffix}.md"
+        return f"src/content/docs/{folder}/test_new_doc_{suffix}.md"
 
     def _clean(self, path):
         p = REPO_ROOT / Path(path)
@@ -40,6 +40,7 @@ class TestNewDoc(unittest.TestCase):
         )
         self.assertEqual(exit_code, 0, msg=stderr)
         content = (REPO_ROOT / output).read_text(encoding="utf-8")
+        self.assertTrue(content.startswith('---\ntitle: "Success Page"\n---\n\n'))
         self.assertIn("# Success Page", content)
         self.assertIn("**Evidence:** Source-backed from pinned snapshots", content)
         self.assertIn("**Primary Source:** docs.comfy.org/tutorial", content)
@@ -104,12 +105,12 @@ class TestNewDoc(unittest.TestCase):
             "Outside",
         )
         self.assertNotEqual(exit_code, 0)
-        self.assertIn("must stay under docs/", stderr)
+        self.assertIn("must stay under src/content/docs/", stderr)
 
     def test_output_must_end_with_markdown_extension(self):
         exit_code, _stdout, stderr = self._run_main(
             "--output",
-            "docs/reference/test_new_doc_no_extension",
+            "src/content/docs/reference/test_new_doc_no_extension",
             "--mode",
             "reference",
             "--title",
@@ -150,7 +151,7 @@ class TestNewDoc(unittest.TestCase):
         self._clean(output)
 
     def test_scaffold_mode_warns_when_primary_source_is_unused(self):
-        output = "docs/test_new_doc_scaffold.md"
+        output = "src/content/docs/test_new_doc_scaffold.md"
         self._clean(output)
         exit_code, _stdout, stderr = self._run_main(
             "--output",
@@ -165,13 +166,14 @@ class TestNewDoc(unittest.TestCase):
         self.assertEqual(exit_code, 0, msg=stderr)
         self.assertIn("Primary source was provided but not used", stderr)
         content = (REPO_ROOT / output).read_text(encoding="utf-8")
+        self.assertTrue(content.startswith('---\ntitle: "Scaffold Page"\n---\n\n'))
         self.assertIn("# Scaffold Page", content)
         self.assertNotIn("**Primary Source:**", content)
         self._clean(output)
 
     def test_output_path_normalization_uses_forward_slash_shape(self):
-        normalized = new_doc.normalize_output_argument(r"docs\reference\path-test.md")
-        self.assertEqual(normalized.as_posix(), "docs/reference/path-test.md")
+        normalized = new_doc.normalize_output_argument(r"src\content\docs\reference\path-test.md")
+        self.assertEqual(normalized.as_posix(), "src/content/docs/reference/path-test.md")
 
 
 if __name__ == "__main__":

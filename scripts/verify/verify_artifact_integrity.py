@@ -15,9 +15,9 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_MANIFEST_PATH = REPO_ROOT / "docs" / "artifacts" / "manifest.json"
+DEFAULT_MANIFEST_PATH = REPO_ROOT / "public" / "artifacts" / "manifest.json"
 DEFAULT_CANONICAL_DIR = REPO_ROOT / "references" / "raw"
-DEFAULT_PUBLISHED_DIR = REPO_ROOT / "docs" / "artifacts" / "current"
+DEFAULT_PUBLISHED_DIR = REPO_ROOT / "public" / "artifacts" / "current"
 ARTIFACT_FILES = [
     "server_endpoints.json",
     "js_hooks.json",
@@ -107,7 +107,7 @@ def main() -> int:
     parser.add_argument(
         "--manifest-path",
         default=str(DEFAULT_MANIFEST_PATH),
-        help="Path to docs/artifacts/manifest.json",
+        help="Path to public/artifacts/manifest.json",
     )
     parser.add_argument(
         "--canonical-dir",
@@ -117,7 +117,7 @@ def main() -> int:
     parser.add_argument(
         "--published-dir",
         default=str(DEFAULT_PUBLISHED_DIR),
-        help="Directory containing published docs/artifacts/current artifact JSON files",
+        help="Directory containing published public/artifacts/current artifact JSON files",
     )
     args = parser.parse_args()
 

@@ -65,14 +65,14 @@ class MarkdownTopLevelSpacingUnitTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
-            docs_dir = root / "docs"
-            docs_dir.mkdir()
+            docs_dir = root / "src" / "content" / "docs"
+            docs_dir.mkdir(parents=True)
             bad_file = docs_dir / "bad.md"
             bad_file.write_text("# Bad\n\n ## Scope\n", encoding="utf-8")
 
             issues = module.verify_docs_directory(root, docs_dir)
 
-        self.assertEqual(issues, [("docs/bad.md", 3, " ## Scope")])
+        self.assertEqual(issues, [("src/content/docs/bad.md", 3, " ## Scope")])
 
 
 class MarkdownTopLevelSpacingScriptTests(unittest.TestCase):

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Run a lightweight blocking-checks smoke through run_all.py.
+"""Run a lightweight Starlight-era blocking-checks smoke through run_all.py.
 
 This wrapper exercises the blocking maintainer verification pipeline in one
 subprocess without recursively rerunning the unit test suite, equivalent to
-running run_all.py with --skip-tests.
+running run_all.py with --skip-tests while still exercising the Astro check and
+build path.
 """
 
 from __future__ import annotations
@@ -17,28 +18,21 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 RUN_ALL_SCRIPT = REPO_ROOT / "scripts" / "verify" / "run_all.py"
 
 
-def build_command(*, skip_mkdocs: bool) -> list[str]:
-    command = [sys.executable, str(RUN_ALL_SCRIPT), "--skip-tests"]
-    if skip_mkdocs:
-        command.append("--skip-mkdocs")
-    return command
+def build_command() -> list[str]:
+    return [sys.executable, str(RUN_ALL_SCRIPT), "--skip-tests"]
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Run a blocking-checks smoke through scripts/verify/run_all.py without "
-            "rerunning unit tests (equivalent to run_all.py --skip-tests)."
+            "rerunning Python or Node test suites (equivalent to run_all.py "
+            "--skip-tests)."
         )
     )
-    parser.add_argument(
-        "--skip-mkdocs",
-        action="store_true",
-        help="Forward --skip-mkdocs to run_all.py for focused debugging.",
-    )
-    args = parser.parse_args()
+    parser.parse_args()
 
-    command = build_command(skip_mkdocs=args.skip_mkdocs)
+    command = build_command()
     print(f"Running pipeline smoke: {' '.join(command)}")
     try:
         result = subprocess.run(command, capture_output=True, text=True, cwd=str(REPO_ROOT))

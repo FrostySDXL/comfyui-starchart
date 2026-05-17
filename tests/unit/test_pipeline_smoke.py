@@ -24,18 +24,11 @@ class PipelineSmokeUnitTests(unittest.TestCase):
     def test_build_command_defaults_to_skip_tests(self):
         module = _load_module()
 
-        command = module.build_command(skip_mkdocs=False)
+        command = module.build_command()
 
         self.assertEqual(command[0], sys.executable)
         self.assertEqual(command[1], str(module.RUN_ALL_SCRIPT))
         self.assertEqual(command[2:], ["--skip-tests"])
-
-    def test_build_command_can_forward_skip_mkdocs(self):
-        module = _load_module()
-
-        command = module.build_command(skip_mkdocs=True)
-
-        self.assertEqual(command[2:], ["--skip-tests", "--skip-mkdocs"])
 
     def test_main_returns_subprocess_exit_code(self):
         module = _load_module()

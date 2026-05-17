@@ -1,0 +1,23 @@
+{
+  "backup_location": null,
+  "next_steps": {
+    "delta_summary_command": null
+  },
+  "published": {
+    "manifest_included": false,
+    "provenance_path": "public/artifacts/refresh-provenance.json"
+  },
+  "refresh_date": "2026-04-30",
+  "requested_versions": {
+    "core": "v0.20.1",
+    "frontend": "v1.44.13"
+  },
+  "resolved_commits": {
+    "core": "64b8457f55cd7fb54ca7a956d9c73b505e903e0c",
+    "frontend": "389ff8ba49468cc3afa11aec5778224689a8f9b9"
+  },
+  "runtime_object_info": {
+    "merged_into_node_api_schema": false,
+    "requested": false
+  }
+}

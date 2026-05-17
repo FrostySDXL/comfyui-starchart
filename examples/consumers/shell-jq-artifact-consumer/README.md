@@ -52,6 +52,6 @@ If you omit the runtime URL, the script completes after artifact discovery and
 prints a note that the runtime probe was skipped.
 
 For the contract boundaries this example assumes, read
-[`docs/reference/machine-readable-artifacts.md`](../../../docs/reference/machine-readable-artifacts.md)
+[`src/content/docs/reference/machine-readable-artifacts.md`](../../../src/content/docs/reference/machine-readable-artifacts.md)
 and the overview page
-[`docs/how-to/consumer-starter-examples.md`](../../../docs/how-to/consumer-starter-examples.md).
+[`src/content/docs/how-to/consumer-starter-examples.md`](../../../src/content/docs/how-to/consumer-starter-examples.md).
