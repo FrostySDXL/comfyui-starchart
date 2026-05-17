@@ -19,7 +19,7 @@ This directory shows a two-phase hybrid consumer flow:
 
 - `curl`
 - `jq`
-- a published docs/artifacts base URL
+- a published documentation site base URL
 - optionally, a live ComfyUI runtime URL such as `http://127.0.0.1:8188`
 
 ## What This Proves

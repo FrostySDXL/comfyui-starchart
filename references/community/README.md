@@ -67,7 +67,7 @@ review scheduling only.
 6. If you ran the generator, run `python scripts/verify/community_generated_freshness.py`
 7. Run `python scripts/verify/community_page_coverage.py`
 8. Run `python scripts/verify/cross_references.py`
-9. Run `python -m mkdocs build`
+9. Run `npm run build`
 
 ## Path formatting
 

@@ -19,7 +19,7 @@ This directory shows a small shell-side artifact discovery flow:
 
 - `curl`
 - `jq`
-- a published docs/artifacts base URL such as `https://example.com/comfyui-knowledge-base`
+- a published documentation site base URL such as `https://example.com/comfyui-knowledge-base`
 
 ## What This Proves
 
