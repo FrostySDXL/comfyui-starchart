@@ -8,7 +8,7 @@ node_modules/
 *.egg-info/
 dist/
 build/
-site/
+/site/
 .mkdocs-cache/
 .pytest_cache/
 .DS_Store
