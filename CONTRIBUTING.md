@@ -534,8 +534,8 @@ For script or extractor changes, also include:
 
 ## Local Node.js Baseline
 
-Use Node.js `22.x` when touching site-framework or frontend-build surfaces. The
-repo will standardize on `.nvmrc` during the Starlight bootstrap task. Until
-that file lands, use equivalent environment-specific tooling to select Node.js
-`22.x`.
+Use Node.js `22.x` when touching site-framework or frontend-build surfaces.
+The repo enforces this with the root `.nvmrc` file (content: `22`). CI uses
+`actions/setup-node@v4` with `node-version-file: ".nvmrc"` to select the
+correct version.
 - Review `AGENTS.md` for the full operational reference (machine-oriented, but comprehensive).

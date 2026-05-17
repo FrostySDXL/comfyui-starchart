@@ -618,6 +618,16 @@ def extract_endpoints(source_text: str) -> list[dict]:
         returns = infer_returns(block, source_text)
         parameters = extract_parameters(route, block, source_text)
 
+        notes = []
+        if method in ("POST", "PUT", "PATCH") and parameters:
+            notes.append(
+                "Parameters marked 'required' reflect static subscript access "
+                "patterns, not API-level requiredness. Only fields that cause "
+                "the handler to return an error status when missing are truly "
+                "mandatory. Consult the prose API docs for precise "
+                "mutation-request contracts."
+            )
+
         endpoints.append(
             {
                 "route": route,
@@ -625,6 +635,7 @@ def extract_endpoints(source_text: str) -> list[dict]:
                 "description": description,
                 "parameters": parameters,
                 "returns": returns,
+                "notes": notes,
             }
         )
 

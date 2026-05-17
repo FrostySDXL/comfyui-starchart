@@ -3,7 +3,7 @@
     "sources": [
       "references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py"
     ],
-    "extracted_date": "2026-04-30",
+    "extracted_date": "2026-05-17",
     "version": "v0.20.1",
     "commit": "64b8457f55cd7fb54ca7a956d9c73b505e903e0c"
   },
@@ -58,7 +58,8 @@
           "source_type": "source-backed",
           "strategy": "web.WebSocketResponse"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/",
@@ -77,7 +78,8 @@
           "source_type": "source-backed",
           "strategy": "web.FileResponse"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/embeddings",
@@ -96,7 +98,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/models",
@@ -115,7 +118,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/models/{folder}",
@@ -148,7 +152,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/extensions",
@@ -167,7 +172,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/upload/image",
@@ -248,7 +254,10 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": [
+        "Parameters marked 'required' reflect static subscript access patterns, not API-level requiredness. Only fields that cause the handler to return an error status when missing are truly mandatory. Consult the prose API docs for precise mutation-request contracts."
+      ]
     },
     {
       "route": "/upload/mask",
@@ -329,7 +338,10 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": [
+        "Parameters marked 'required' reflect static subscript access patterns, not API-level requiredness. Only fields that cause the handler to return an error status when missing are truly mandatory. Consult the prose API docs for precise mutation-request contracts."
+      ]
     },
     {
       "route": "/view",
@@ -401,7 +413,8 @@
           "source_type": "source-backed",
           "strategy": "web.FileResponse"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/view_metadata/{folder_name}",
@@ -444,7 +457,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/system_stats",
@@ -524,7 +538,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/features",
@@ -543,7 +558,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/prompt",
@@ -562,7 +578,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/object_info",
@@ -581,7 +598,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/object_info/{node_class}",
@@ -611,7 +629,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/api/jobs",
@@ -723,7 +742,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/api/jobs/{job_id}",
@@ -758,7 +778,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/history",
@@ -798,7 +819,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/history/{prompt_id}",
@@ -828,7 +850,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/queue",
@@ -854,7 +877,8 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": []
     },
     {
       "route": "/prompt",
@@ -957,7 +981,10 @@
           "source_type": "source-backed",
           "strategy": "web.json_response"
         }
-      }
+      },
+      "notes": [
+        "Parameters marked 'required' reflect static subscript access patterns, not API-level requiredness. Only fields that cause the handler to return an error status when missing are truly mandatory. Consult the prose API docs for precise mutation-request contracts."
+      ]
     },
     {
       "route": "/queue",
@@ -997,7 +1024,10 @@
           "source_type": "source-backed",
           "strategy": "web.Response"
         }
-      }
+      },
+      "notes": [
+        "Parameters marked 'required' reflect static subscript access patterns, not API-level requiredness. Only fields that cause the handler to return an error status when missing are truly mandatory. Consult the prose API docs for precise mutation-request contracts."
+      ]
     },
     {
       "route": "/interrupt",
@@ -1027,7 +1057,10 @@
           "source_type": "source-backed",
           "strategy": "web.Response"
         }
-      }
+      },
+      "notes": [
+        "Parameters marked 'required' reflect static subscript access patterns, not API-level requiredness. Only fields that cause the handler to return an error status when missing are truly mandatory. Consult the prose API docs for precise mutation-request contracts."
+      ]
     },
     {
       "route": "/free",
@@ -1069,7 +1102,10 @@
           "source_type": "source-backed",
           "strategy": "web.Response"
         }
-      }
+      },
+      "notes": [
+        "Parameters marked 'required' reflect static subscript access patterns, not API-level requiredness. Only fields that cause the handler to return an error status when missing are truly mandatory. Consult the prose API docs for precise mutation-request contracts."
+      ]
     },
     {
       "route": "/history",
@@ -1109,7 +1145,10 @@
           "source_type": "source-backed",
           "strategy": "web.Response"
         }
-      }
+      },
+      "notes": [
+        "Parameters marked 'required' reflect static subscript access patterns, not API-level requiredness. Only fields that cause the handler to return an error status when missing are truly mandatory. Consult the prose API docs for precise mutation-request contracts."
+      ]
     }
   ]
 }

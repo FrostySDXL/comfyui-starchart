@@ -6,16 +6,16 @@ line-length = 100
 include = ["scripts/**/*.py", "tests/**/*.py"]
 
 [lint]
-# Conservative first gate: import hygiene, syntax/runtime correctness, and
-# deterministic import ordering. Deliberately omits broader style/complexity
-# rules so the initial enforcement surface stays low-churn.
+# Conservative first gate expanded to broader pycodestyle and Pyflakes coverage.
+# E501 (line-too-long) is ignored: many lines exceed 100 chars due to long help
+# strings, docstrings, and format strings that are awkward to break.
 select = [
-    "E4",
-    "E7",
-    "E9",
-    "F",
-    "I",
+    "E",      # All pycodestyle errors (indentation, whitespace, blank lines, line length)
+    "W",      # All pycodestyle warnings (trailing whitespace, blank line with whitespace)
+    "F",      # Pyflakes (undefined names, unused imports)
+    "I",      # isort (import ordering)
 ]
+ignore = ["E501"]
 
 [lint.per-file-ignores]
 # Files that conditionally add REPO_ROOT to sys.path before local imports

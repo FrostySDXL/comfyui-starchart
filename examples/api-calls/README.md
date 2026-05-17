@@ -11,8 +11,11 @@ meant as practical starter calls for tools that talk to native ComfyUI.
 ## Included Examples
 
 - `post-prompt.json` - request body structure for `POST /prompt`
-- `curl-examples.md` - prompt submission, queue polling, history lookup, and
-  websocket connection examples
+- `post-prompt.sh` - runnable shell script that submits `post-prompt.json`
+- `queue-status.sh` - polls `GET /queue` with formatted JSON output
+- `history-lookup.sh` - retrieves `GET /history/{prompt_id}` for a given prompt
+- `curl-examples.md` - narrative walkthrough of prompt submission, queue polling,
+  history lookup, and websocket connection examples
 
 ## Evidence Level
 

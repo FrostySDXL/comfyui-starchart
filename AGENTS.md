@@ -128,7 +128,7 @@ Non-goals: official docs replacement, community wiki, package registry.
   - `publish_reference_artifacts.py` -- Copies canonical JSON artifacts to `public/artifacts/` and writes `manifest.json`
   - `generate_snapshot_delta_summary.py` -- Produces deterministic baseline-to-baseline comparison under `public/artifacts/delta-summary.json`
 - `scripts/verify/` -- Verification scripts
-  - Core blocking checks: `cross_references.py`, `docs_index_freshness.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `markdown_top_level_spacing.py`, `community_generated_freshness.py`, `community_page_coverage.py`
+  - Core blocking checks: `cross_references.py`, `docs_index_freshness.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `markdown_top_level_spacing.py`, `sidebar_navigation_coverage.py`, `community_generated_freshness.py`, `community_page_coverage.py`
   - Supplemental checks: `pipeline_smoke.py`, `shell_examples_syntax.py`
   - Non-blocking: `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`
   - Community: `community_metadata.py`, `community_staleness.py`
@@ -163,6 +163,7 @@ python scripts/verify/upstream_pins.py
 python scripts/verify/validate_schema.py
 python scripts/verify/verify_artifact_integrity.py
 python scripts/verify/markdown_top_level_spacing.py
+python scripts/verify/sidebar_navigation_coverage.py
 python scripts/verify/pipeline_smoke.py
 python scripts/verify/shell_examples_syntax.py
 
@@ -207,8 +208,8 @@ on hardcoded Windows install paths.
 ## 4.5. Local Node.js Baseline
 
 - Use Node.js `22.x` when touching site-framework or frontend-build surfaces.
-- The repo will standardize this with `.nvmrc` during the Starlight bootstrap task.
-- Until that file lands, use equivalent environment-specific tooling to select Node.js `22.x`.
+- The repo enforces this with the root `.nvmrc` file (content: `22`).
+- CI selects the version via `actions/setup-node@v4` with `node-version-file: ".nvmrc"`.
 
 ## 5. Task Playbooks
 

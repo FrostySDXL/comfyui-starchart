@@ -112,7 +112,7 @@
       "path": "known-limitations/index.md",
       "nav_section": "Orientation / Known Limitations",
       "audience": null,
-      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance for repo-local publication boundaries",
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
       "summary": "This page is intentionally small. It only keeps limitations that can be verified against the repo's pinned ComfyUI snapshots or official docs."
     },
     {

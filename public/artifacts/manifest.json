@@ -16,10 +16,10 @@
     "server_endpoints.json": {
       "current_url": "artifacts/current/server_endpoints.json",
       "versioned_url": "artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30/server_endpoints.json",
-      "sha256": "e71e3253a38e706189d9a8c3822d33b1aae543ff7ebe20f782efebe69c9d7d5c",
+      "sha256": "c0ba3f05b70688123a878e997012777b95a43305f839b29b64c37522515f8d46",
       "version": "v0.20.1",
       "commit": "64b8457f55cd7fb54ca7a956d9c73b505e903e0c",
-      "extracted_date": "2026-04-30",
+      "extracted_date": "2026-05-17",
       "sources": [
         "references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py"
       ]

@@ -31,6 +31,15 @@ For direct local HTTP calls, the practical default base URL is
 
 ## Request Structure
 
+> **Caveat for tooling authors:** The `server_endpoints.json` artifact marks
+> several fields as `required: true` because the static extractor cannot
+> distinguish mandatory fields from conditionally-consumed fields. Only
+> `prompt` is truly required by the handler. Fields such as `number`, `front`,
+> `extra_data`, `client_id`, and `partial_execution_targets` are optional or
+> conditional in practice. See
+> [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md#server_endpointsjson)
+> for the full published artifact contract.
+
 The handler recognizes these request fields directly:
 
 - `prompt` — required workflow graph payload

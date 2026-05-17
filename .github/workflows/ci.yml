@@ -38,6 +38,9 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
       - name: Install Node dependencies
         run: npm ci
 

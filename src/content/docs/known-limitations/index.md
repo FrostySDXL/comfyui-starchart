@@ -2,7 +2,7 @@
 title: "Known Limitations"
 ---
 
-**Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance for repo-local publication boundaries
+**Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
 **Last Updated:** 2026-05-13
 
 ## Scope
@@ -15,7 +15,8 @@ verified directly against official docs or this repo's pinned snapshots. Tier 2
 covers curated community-reported limitations only when the report is specific,
 reproducible, and clearly labeled as external evidence. In the current
 revision, every listed entry is Tier 1 because no additional Tier 2 item met
-the page's evidence threshold.
+the page's evidence threshold. The curation policy on this page is Operational
+guidance.
 
 ## Curation Policy
 
