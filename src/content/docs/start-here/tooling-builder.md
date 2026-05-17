@@ -2,8 +2,6 @@
 title: "Start Here: Tooling Builder"
 ---
 
-# Start Here: Tooling Builder
-
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance for repo-local artifact routing
 **Last Updated:** 2026-05-13
 

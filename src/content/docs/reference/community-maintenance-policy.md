@@ -2,8 +2,6 @@
 title: "Community Maintenance Policy"
 ---
 
-# Community Maintenance Policy
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-05-06
 **Related:** `references/community/community_pages.json`, `references/community/ecosystem_packages.json`

@@ -41,7 +41,6 @@ class TestNewDoc(unittest.TestCase):
         self.assertEqual(exit_code, 0, msg=stderr)
         content = (REPO_ROOT / output).read_text(encoding="utf-8")
         self.assertTrue(content.startswith('---\ntitle: "Success Page"\n---\n\n'))
-        self.assertIn("# Success Page", content)
         self.assertIn("**Evidence:** Source-backed from pinned snapshots", content)
         self.assertIn("**Primary Source:** docs.comfy.org/tutorial", content)
         today = datetime.date.today().isoformat()
@@ -167,7 +166,6 @@ class TestNewDoc(unittest.TestCase):
         self.assertIn("Primary source was provided but not used", stderr)
         content = (REPO_ROOT / output).read_text(encoding="utf-8")
         self.assertTrue(content.startswith('---\ntitle: "Scaffold Page"\n---\n\n'))
-        self.assertIn("# Scaffold Page", content)
         self.assertNotIn("**Primary Source:**", content)
         self._clean(output)
 

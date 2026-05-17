@@ -2,8 +2,6 @@
 title: "Custom Node and Extension Boundaries"
 ---
 
-# Custom Node and Extension Boundaries
-
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
 **Last Updated:** 2026-05-05
 

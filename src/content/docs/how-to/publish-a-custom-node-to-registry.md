@@ -2,8 +2,6 @@
 title: "Publish a Custom Node to the Registry"
 ---
 
-# Publish a Custom Node to the Registry
-
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-13
 **Primary Source:** https://docs.comfy.org/registry/publishing

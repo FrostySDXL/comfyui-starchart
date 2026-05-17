@@ -2,8 +2,6 @@
 title: "Docs Authoring and Site Build Troubleshooting"
 ---
 
-# Docs Authoring and Site Build Troubleshooting
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-05-03
 

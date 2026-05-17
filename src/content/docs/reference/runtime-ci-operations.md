@@ -2,8 +2,6 @@
 title: "Runtime and CI Operations"
 ---
 
-# Runtime and CI Operations
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-05-06
 

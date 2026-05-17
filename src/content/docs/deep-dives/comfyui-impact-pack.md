@@ -2,8 +2,6 @@
 title: "ComfyUI-Impact-Pack (Community)"
 ---
 
-# ComfyUI-Impact-Pack (Community)
-
 **Evidence:** Community pattern study based on pinned external version
 **Community Package:** ComfyUI-Impact-Pack
 **Package URL:** https://github.com/ltdrdata/ComfyUI-Impact-Pack

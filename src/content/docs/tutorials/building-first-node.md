@@ -2,8 +2,6 @@
 title: "Building Your First Node"
 ---
 
-# Building Your First Node
-
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/custom-nodes/walkthrough

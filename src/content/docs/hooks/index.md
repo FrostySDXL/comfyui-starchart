@@ -2,8 +2,6 @@
 title: "Hooks Section Guide"
 ---
 
-# Hooks Section Guide
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-05-13
 

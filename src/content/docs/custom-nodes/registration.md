@@ -2,8 +2,6 @@
 title: "Registration"
 ---
 
-# Registration
-
 **Evidence:** Mixed: source-backed (io.Schema, execute, NodeOutput from pinned Python snapshot); observed (ComfyExtension + comfy_entrypoint() pattern from pinned frontend TypeScript source and community examples)
 **Last Updated:** 2026-05-05
 **Primary Sources**

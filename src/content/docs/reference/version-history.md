@@ -2,8 +2,6 @@
 title: "Version History"
 ---
 
-# Version History
-
 ## Scope
 
 This page is not a full release log. It is a compatibility-focused summary for

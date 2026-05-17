@@ -25,7 +25,6 @@ ROUTED_DOC_RELATIVE_PATHS = (
 )
 KNOWN_REPO_ROOT_PREFIXES = (
     ".github/",
-    "docs/",
     "src/content/docs/",
     "examples/",
     "references/",

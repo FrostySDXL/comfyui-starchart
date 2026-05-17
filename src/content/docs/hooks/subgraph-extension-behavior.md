@@ -2,8 +2,6 @@
 title: "Subgraph Extension Behavior"
 ---
 
-# Subgraph Extension Behavior
-
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-13
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/subgraphs

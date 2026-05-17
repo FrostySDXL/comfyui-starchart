@@ -38,7 +38,9 @@ class GenerateDocsIndexTests(unittest.TestCase):
         page_path.write_text(
             "\n".join(
                 [
-                    f"# {title}",
+                    "---",
+                    f'title: "{title}"',
+                    "---",
                     "",
                     f"**Evidence:** {evidence}",
                     "**Last Updated:** 2026-05-03",
@@ -153,7 +155,9 @@ class GenerateDocsIndexTests(unittest.TestCase):
             page_path.write_text(
                 "\n".join(
                     [
-                        "# Docs Home",
+                        "---",
+                        'title: "Docs Home"',
+                        "---",
                         "",
                         "**Evidence:** Operational guidance",
                         "",
@@ -196,7 +200,9 @@ class GenerateDocsIndexTests(unittest.TestCase):
                     [
                         "<!-- GENERATED FILE: do not edit directly -->",
                         "",
-                        "# Ecosystem Map",
+                        "---",
+                        'title: "Ecosystem Map"',
+                        "---",
                         "",
                         "**Evidence:** Community pattern study",
                         "",
@@ -337,6 +343,34 @@ class GenerateDocsIndexTests(unittest.TestCase):
                 ["index.md", "troubleshooting/index.md"],
             )
             self.assertEqual(docs_index["pages"][1]["nav_section"], "Orientation / Troubleshooting")
+
+    def test_frontmatter_title_is_preferred_without_leading_h1(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(root, [{"label": "Home", "path": "index.md"}])
+            page_path = root / "src" / "content" / "docs" / "index.md"
+            page_path.parent.mkdir(parents=True, exist_ok=True)
+            page_path.write_text(
+                "\n".join(
+                    [
+                        "---",
+                        'title: "Frontmatter Home"',
+                        "---",
+                        "",
+                        "**Evidence:** Operational guidance",
+                        "",
+                        "## Scope",
+                        "",
+                        "Frontmatter summary.",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            docs_index = generate_docs_index.build_docs_index(root)
+            self.assertEqual(docs_index["pages"][0]["title"], "Frontmatter Home")
 
     def test_script_writes_expected_output_file(self):
         with tempfile.TemporaryDirectory() as tmp:

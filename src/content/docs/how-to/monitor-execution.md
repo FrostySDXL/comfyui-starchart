@@ -2,8 +2,6 @@
 title: "Monitor Execution"
 ---
 
-# Monitor Execution
-
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-04-30
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_messages

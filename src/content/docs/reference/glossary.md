@@ -2,8 +2,6 @@
 title: "Glossary"
 ---
 
-# Glossary
-
 **Evidence:** Official docs-backed from docs.comfy.org; Operational guidance for repo-local artifact terms
 **Last Updated:** 2026-05-13
 

@@ -2,8 +2,6 @@
 title: "Community Generated Surfaces"
 ---
 
-# Community Generated Surfaces
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-05-06
 **Related:** `references/community/ecosystem_packages.json`, `references/community/community_pages.json`, `src/content/docs/ecosystem/map.md`, `src/content/docs/reference/community-maintenance-policy.md`

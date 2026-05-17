@@ -2,8 +2,6 @@
 title: "Tutorials Section Guide"
 ---
 
-# Tutorials Section Guide
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-05-03
 

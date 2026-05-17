@@ -2,8 +2,6 @@
 title: "Client ID"
 ---
 
-# Client ID
-
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-04-30
 **Primary Source:** ComfyUI core v0.20.1 `server.py` (pinned snapshot)

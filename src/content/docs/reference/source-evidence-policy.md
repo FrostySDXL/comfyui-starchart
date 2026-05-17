@@ -2,8 +2,6 @@
 title: "Source Evidence Policy"
 ---
 
-# Source Evidence Policy
-
 **Last Updated:** 2026-05-06
 **Primary Sources:** https://docs.comfy.org/, https://github.com/Comfy-Org/ComfyUI
 

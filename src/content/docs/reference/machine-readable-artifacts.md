@@ -2,8 +2,6 @@
 title: "Machine-Readable Artifacts"
 ---
 
-# Machine-Readable Artifacts
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-05-06
 

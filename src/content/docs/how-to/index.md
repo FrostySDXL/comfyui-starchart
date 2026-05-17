@@ -2,8 +2,6 @@
 title: "How-To Section Guide"
 ---
 
-# How-To Section Guide
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-05-13
 

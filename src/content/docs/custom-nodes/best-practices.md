@@ -2,8 +2,6 @@
 title: "Best Practices"
 ---
 
-# Best Practices
-
 **Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version
 **Last Updated:** 2026-04-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/server_overview

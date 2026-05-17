@@ -2,8 +2,6 @@
 title: "Deep Dive: Workflow JSON as an Interchange Surface"
 ---
 
-# Deep Dive: Workflow JSON as an Interchange Surface
-
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-13
 **Primary Source:** https://docs.comfy.org/specs/workflow_json

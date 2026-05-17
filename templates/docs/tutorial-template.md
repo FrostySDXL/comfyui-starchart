@@ -1,7 +1,5 @@
 <!-- Remove placeholder text that does not apply. Keep steps concrete and outcome-focused. -->
 
-# Page Title
-
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** YYYY-MM-DD
 **Primary Source:** Official docs page or pinned source path that anchors this workflow

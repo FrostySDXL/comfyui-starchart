@@ -2,8 +2,6 @@
 title: "Architecture Overview"
 ---
 
-# Architecture Overview
-
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
 **Last Updated:** 2026-05-13
 

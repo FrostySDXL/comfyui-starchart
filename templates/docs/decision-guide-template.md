@@ -1,7 +1,5 @@
 <!-- Remove placeholder text that does not apply. Keep the guide balanced and explicit about tradeoffs. -->
 
-# Page Title
-
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** YYYY-MM-DD
 **Primary Source:** Official docs page or pinned source path that supports the comparison

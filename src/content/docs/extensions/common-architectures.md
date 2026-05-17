@@ -2,8 +2,6 @@
 title: "Common Architectures"
 ---
 
-# Common Architectures
-
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/custom-nodes/overview

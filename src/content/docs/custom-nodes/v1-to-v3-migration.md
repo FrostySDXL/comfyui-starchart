@@ -2,8 +2,6 @@
 title: "V1 to V3 Migration Guide"
 ---
 
-# V1 to V3 Migration Guide
-
 **Evidence:** Official docs-backed (migration steps); Community pattern studies (case studies)
 **Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/migration

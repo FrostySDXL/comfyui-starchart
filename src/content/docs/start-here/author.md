@@ -2,8 +2,6 @@
 title: "Start Here: Custom Node Author"
 ---
 
-# Start Here: Custom Node Author
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-05-07
 

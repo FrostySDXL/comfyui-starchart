@@ -2,8 +2,6 @@
 title: "Custom Node Development Guide"
 ---
 
-# Custom Node Development Guide
-
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-07
 **Primary Source:** https://docs.comfy.org/custom-nodes/overview

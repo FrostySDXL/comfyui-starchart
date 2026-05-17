@@ -2,8 +2,6 @@
 title: "Update ComfyUI with Version Awareness"
 ---
 
-# Update ComfyUI with Version Awareness
-
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-13
 **Primary Source:** https://docs.comfy.org/installation/update_comfyui

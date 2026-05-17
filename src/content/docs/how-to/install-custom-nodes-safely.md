@@ -2,8 +2,6 @@
 title: "Install Custom Nodes Safely"
 ---
 
-# Install Custom Nodes Safely
-
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-13
 **Primary Source:** https://docs.comfy.org/installation/install_custom_node

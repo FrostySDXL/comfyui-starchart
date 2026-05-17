@@ -2,8 +2,6 @@
 title: "Extension Points"
 ---
 
-# Extension Points
-
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
 **Last Updated:** 2026-05-13
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks

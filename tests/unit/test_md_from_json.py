@@ -72,7 +72,6 @@ class MarkdownGenerationTests(unittest.TestCase):
 
             rendered = output_path.read_text(encoding="utf-8")
             self.assertTrue(rendered.startswith('---\ntitle: "Server.py Summary"\n---\n\n'))
-            self.assertIn("# Server.py Summary", rendered)
             self.assertIn("sample server.py", rendered)
             self.assertIn("extra/source.py", rendered)
             self.assertIn("| POST | /prompt | Submit prompt |", rendered)

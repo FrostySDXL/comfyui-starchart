@@ -2,8 +2,6 @@
 title: "Start Here: Docs Contributor"
 ---
 
-# Start Here: Docs Contributor
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-04-30
 

@@ -127,7 +127,6 @@ def apply_metadata(
     frontmatter = f'---\ntitle: "{title}"\n---\n\n'
     if not content.startswith("---\n"):
         content = frontmatter + content
-    content = content.replace("# Page Title", f"# {title}")
     content = content.replace("YYYY-MM-DD", datetime.date.today().isoformat())
 
     primary_source_applied = False

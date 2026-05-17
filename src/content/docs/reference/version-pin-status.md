@@ -2,8 +2,6 @@
 title: "Version Pin Status"
 ---
 
-# Version Pin Status
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-05-13
 

@@ -2,8 +2,6 @@
 title: "ComfyUI Knowledge Base"
 ---
 
-# ComfyUI Knowledge Base
-
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-05-13
 

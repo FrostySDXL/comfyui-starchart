@@ -2,8 +2,6 @@
 title: "Known Limitations"
 ---
 
-# Known Limitations
-
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance for repo-local publication boundaries
 **Last Updated:** 2026-05-13
 

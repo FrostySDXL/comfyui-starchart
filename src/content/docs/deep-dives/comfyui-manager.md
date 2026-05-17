@@ -2,8 +2,6 @@
 title: "Deep Dive: ComfyUI-Manager (Community Pattern Study)"
 ---
 
-# Deep Dive: ComfyUI-Manager (Community Pattern Study)
-
 **Evidence:** Community pattern study based on pinned external version
 **Package:** [ltdrdata/ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager/tree/491f847bbc286588175695ea43fa4e13cd14a437)
 **Last Updated:** 2026-05-13

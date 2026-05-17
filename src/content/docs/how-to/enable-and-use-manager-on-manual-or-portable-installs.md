@@ -2,8 +2,6 @@
 title: "Enable and Use Manager on Manual or Portable Installs"
 ---
 
-# Enable and Use Manager on Manual or Portable Installs
-
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-13
 **Primary Source:** https://docs.comfy.org/manager/install

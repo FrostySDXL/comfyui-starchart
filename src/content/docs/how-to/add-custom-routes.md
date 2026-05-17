@@ -2,8 +2,6 @@
 title: "Add Custom Routes"
 ---
 
-# Add Custom Routes
-
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_routes

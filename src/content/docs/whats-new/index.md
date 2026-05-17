@@ -2,8 +2,6 @@
 title: "What's New"
 ---
 
-# What's New
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-05-03
 

@@ -2,8 +2,6 @@
 title: "Prompt Submission"
 ---
 
-# Prompt Submission
-
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-05-05
 **Primary Source:** ComfyUI core v0.20.1 `server.py` (pinned snapshot)

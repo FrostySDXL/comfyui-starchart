@@ -124,7 +124,7 @@ class GenerateCommunityPagesUnitTests(unittest.TestCase):
             "packages": [],
         }
         result = module.build_markdown(data)
-        self.assertIn("# Ecosystem Map", result)
+        self.assertIn('title: "Ecosystem Map"', result)
 
     def test_build_markdown_renders_caveats(self):
         module = self._import_module()
@@ -193,7 +193,6 @@ class GenerateCommunityPagesScriptTests(unittest.TestCase):
             content = output_path.read_text(encoding="utf-8")
             self.assertTrue(content.startswith('---\ntitle: "Ecosystem Map"\n---\n\n'))
             self.assertIn("GENERATED FILE: do not edit directly", content)
-            self.assertIn("# Ecosystem Map", content)
 
 
 if __name__ == "__main__":

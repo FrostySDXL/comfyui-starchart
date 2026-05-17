@@ -2,8 +2,6 @@
 title: "V3 Node Structure"
 ---
 
-# V3 Node Structure
-
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/server_overview

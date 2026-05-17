@@ -1,7 +1,5 @@
 <!-- Remove placeholder text that does not apply. Keep the framing explicit that this is external behavior. -->
 
-# Page Title
-
 **Evidence:** Community pattern study based on pinned external version
 **Last Updated:** YYYY-MM-DD
 **Primary Source:** https://github.com/user/repo

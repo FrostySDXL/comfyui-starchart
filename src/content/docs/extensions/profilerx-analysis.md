@@ -2,8 +2,6 @@
 title: "ProfilerX Analysis"
 ---
 
-# ProfilerX Analysis
-
 **Evidence:** Community pattern study based on pinned external version
 **Last Updated:** 2026-05-05
 **Primary Source:** https://github.com/ryanontheinside/ComfyUI_ProfilerX

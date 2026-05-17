@@ -2,8 +2,6 @@
 title: "V1 to V3 Migration: Case Study -- Pipe Nodes"
 ---
 
-# V1 to V3 Migration: Case Study -- Pipe Nodes
-
 **Evidence:** Community pattern study based on pinned external version
 **Community Package:** ComfyUI-Impact-Pack
 **Package URL:** https://github.com/ltdrdata/ComfyUI-Impact-Pack

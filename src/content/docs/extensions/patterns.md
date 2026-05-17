@@ -2,8 +2,6 @@
 title: "Extension Patterns"
 ---
 
-# Extension Patterns
-
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-07
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks

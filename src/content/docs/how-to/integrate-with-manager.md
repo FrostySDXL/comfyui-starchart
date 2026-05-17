@@ -2,8 +2,6 @@
 title: "Integrate with Manager"
 ---
 
-# Integrate with Manager
-
 **Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version
 **Last Updated:** 2026-05-13
 **Primary Source:** https://docs.comfy.org/manager/pack-management

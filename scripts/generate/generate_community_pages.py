@@ -96,8 +96,6 @@ def build_markdown(data: dict) -> str:
         "",
         GENERATED_BANNER,
         "",
-        "# Ecosystem Map",
-        "",
         "**Evidence:** Community pattern study",
         f"**Last Updated:** {metadata.get('last_updated', 'unknown')}",
         "",

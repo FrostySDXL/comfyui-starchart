@@ -2,8 +2,6 @@
 title: "Adding Background Metrics"
 ---
 
-# Adding Background Metrics
-
 **Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version
 **Last Updated:** 2026-05-05
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_messages

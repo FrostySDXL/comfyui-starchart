@@ -2,8 +2,6 @@
 title: "Decision Tree: Custom Node Architecture"
 ---
 
-# Decision Tree: Custom Node Architecture
-
 **Last Updated:** 2026-04-22
 **Evidence:** Mixed: source-backed (decision framework, V1/V3 patterns) and scaffold (hand-authored code examples, example-only event names)
 

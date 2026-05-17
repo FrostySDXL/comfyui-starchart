@@ -1,7 +1,5 @@
 <!-- Remove placeholder text that does not apply. Keep scaffold pages honest and intentionally incomplete. -->
 
-# Page Title
-
 **Evidence:** Scaffold
 **Last Updated:** YYYY-MM-DD
 

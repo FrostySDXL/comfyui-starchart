@@ -2,8 +2,6 @@
 title: "Troubleshoot Custom Node Breakage"
 ---
 
-# Troubleshoot Custom Node Breakage
-
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-13
 **Primary Source:** https://docs.comfy.org/troubleshooting/custom-node-issues

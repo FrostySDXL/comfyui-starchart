@@ -71,8 +71,6 @@ def build_markdown(data: dict) -> str:
         'title: "Server.py Summary"',
         "---",
         "",
-        "# Server.py Summary",
-        "",
         f"**Last Synced:** {metadata.get('extracted_date', 'unknown')}",
         f"**Source:** {_format_sources(metadata.get('sources'))}",
         "",

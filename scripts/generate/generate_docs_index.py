@@ -15,6 +15,7 @@ DOCS_ROOT = REPO_ROOT / "src" / "content" / "docs"
 OUTPUT_PATH = REPO_ROOT / "public" / "artifacts" / "docs-index.json"
 
 TITLE_RE = re.compile(r"^\s*#\s+(.+?)\s*$", re.MULTILINE)
+FRONTMATTER_TITLE_RE = re.compile(r'^---\s*\ntitle:\s*"(.+?)"\s*\n---\s*', re.MULTILINE)
 EVIDENCE_RE = re.compile(r"^\s*\*\*Evidence:\*\*\s*(.+?)\s*$", re.MULTILINE)
 GENERATED_BANNER_PREFIX = "<!-- GENERATED FILE:"
 GENERATED_PAGE_EXCLUSIONS = {
@@ -44,8 +45,6 @@ def _normalize_rel_doc_path(path: str) -> str:
     normalized = path.replace("\\", "/")
     if normalized.startswith("src/content/docs/"):
         normalized = normalized[len("src/content/docs/") :]
-    elif normalized.startswith("docs/"):
-        normalized = normalized[5:]
     return normalized
 
 
@@ -114,6 +113,9 @@ def _flatten_nav_from_source(
 
 
 def _extract_title(text: str, fallback: str) -> str:
+    frontmatter_match = FRONTMATTER_TITLE_RE.search(text)
+    if frontmatter_match:
+        return frontmatter_match.group(1).strip()
     match = TITLE_RE.search(text)
     return match.group(1).strip() if match else fallback
 

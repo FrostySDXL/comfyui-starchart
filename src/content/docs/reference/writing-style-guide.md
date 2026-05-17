@@ -2,11 +2,12 @@
 title: "Writing Style Guide"
 ---
 
-# Writing Style Guide
-
 **Last Updated:** 2026-05-05
 **Related:** `source-evidence-policy.md` for evidence labeling rules
 **Evidence:** Operational guidance
+
+The page title should come from frontmatter `title`. Do not duplicate it with a
+leading markdown `#` heading.
 
 ## Purpose
 

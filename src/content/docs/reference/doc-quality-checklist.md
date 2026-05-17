@@ -2,8 +2,6 @@
 title: "Doc Quality Checklist"
 ---
 
-# Doc Quality Checklist
-
 **Last Updated:** 2026-05-05
 **Related:** `writing-style-guide.md`, `source-evidence-policy.md`
 **Evidence:** Operational guidance

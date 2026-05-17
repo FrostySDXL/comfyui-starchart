@@ -2,8 +2,6 @@
 title: "Start Here: Service Integration"
 ---
 
-# Start Here: Service Integration
-
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-05-03
 

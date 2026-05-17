@@ -2,8 +2,6 @@
 title: "Consumer Starter Examples"
 ---
 
-# Consumer Starter Examples
-
 **Evidence:** Operational guidance
 **Last Updated:** 2026-05-05
 

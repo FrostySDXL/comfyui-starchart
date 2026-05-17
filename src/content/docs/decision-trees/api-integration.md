@@ -2,8 +2,6 @@
 title: "Decision Tree: Choosing an Integration Approach"
 ---
 
-# Decision Tree: Choosing an Integration Approach
-
 **Last Updated:** 2026-04-21
 **Evidence:** Source-backed from pinned snapshots
 

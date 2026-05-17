@@ -2,8 +2,6 @@
 title: "Start Here: Extension Developer"
 ---
 
-# Start Here: Extension Developer
-
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-05-05
 

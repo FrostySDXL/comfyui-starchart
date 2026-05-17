@@ -4,8 +4,6 @@ title: "Ecosystem Map"
 
 <!-- GENERATED FILE: do not edit directly. Edit references/community/ecosystem_packages.json and run python scripts/generate/generate_community_pages.py. Note: curated follow-up study highlights are maintained in the generator code, not in the JSON source. -->
 
-# Ecosystem Map
-
 **Evidence:** Community pattern study
 **Last Updated:** 2026-05-06
 

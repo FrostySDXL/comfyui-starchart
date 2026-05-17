@@ -2,8 +2,6 @@
 title: "API to Workflow: Execution Events"
 ---
 
-# API to Workflow: Execution Events
-
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-04-30
 **Primary Sources:**

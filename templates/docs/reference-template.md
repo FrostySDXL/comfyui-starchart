@@ -1,7 +1,5 @@
 <!-- Remove placeholder text that does not apply. Keep the page factual, source-backed, and lightweight. -->
 
-# Page Title
-
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** YYYY-MM-DD
 **Primary Source:** ComfyUI core `vX.Y.Z` `server.py` (pinned snapshot)

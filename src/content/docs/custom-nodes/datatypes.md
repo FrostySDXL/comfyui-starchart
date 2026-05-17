@@ -2,8 +2,6 @@
 title: "Datatypes"
 ---
 
-# Datatypes
-
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-07
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/datatypes
