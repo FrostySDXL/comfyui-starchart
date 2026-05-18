@@ -3,7 +3,7 @@ title: "Start Here: Extension Developer"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-18
 
 ## Who This Path Is For
 
@@ -75,14 +75,16 @@ as a separate server-side extension point.
 
 ## Recommended Reading Order
 
-1. [JavaScript Hooks](../hooks/javascript-hooks.md) -- core frontend extension API
-2. [Server Hooks](../hooks/server-hooks.md) -- execution lifecycle callbacks
-3. [Extension Patterns](../extensions/patterns.md) -- architectural patterns and
-   when to use each approach
-4. [Common Architectures](../extensions/common-architectures.md) -- composition
-   patterns from real extensions
-5. [ProfilerX Analysis](../extensions/profilerx-analysis.md) -- worked example of
-   a hybrid extension
+1. [Server-Side Composition](../architecture/server-side-composition.md) -- where routes, hooks, managers, and extension assets fit
+2. [JavaScript Hooks](../hooks/javascript-hooks.md) and [Server Hooks](../hooks/server-hooks.md) -- core frontend and callback-oriented server surfaces
+3. [Extension Patterns](../extensions/patterns.md) -- how to choose a stable implementation shape
+
+## Deeper Reading
+
+- [Common Architectures](../extensions/common-architectures.md) -- composition
+  patterns from real extensions
+- [ProfilerX Analysis](../extensions/profilerx-analysis.md) -- worked example of
+  a hybrid extension
 
 ## Common Patterns to Study
 
@@ -111,6 +113,7 @@ to the repo's `CONTRIBUTING.md` file for maintainer-grade workflow details.
 ## Read Next
 
 - [JavaScript Hooks](../hooks/javascript-hooks.md) -- core frontend extension API
+- [Server-Side Composition](../architecture/server-side-composition.md) -- system map for server-owned extension surfaces
 - [Server Hooks](../hooks/server-hooks.md) -- execution lifecycle callbacks
 - [Extension Patterns](../extensions/patterns.md) -- architectural tradeoffs
 - [Decision Tree: API Integration](../decision-trees/api-integration.md) -- if you discover you need integration, not extension

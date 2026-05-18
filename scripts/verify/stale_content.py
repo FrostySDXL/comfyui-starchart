@@ -83,26 +83,22 @@ def find_stale_in_markdown() -> list[tuple[str, int, str]]:
     stale = []
     for md_file in sorted(DOCS_DIR.rglob("*.md")):
         lines = md_file.read_text(encoding="utf-8").splitlines()
+        in_fenced_block = False
         for line_num, line in enumerate(lines, 1):
+            stripped = line.strip()
+            if stripped.startswith("```"):
+                in_fenced_block = not in_fenced_block
+                continue
+            if in_fenced_block:
+                continue
             for marker in STALE_MARKERS:
                 if marker in line:
                     # Skip lines that are part of code blocks or are legitimate references
-                    stripped = line.strip()
-                    # Allow TODO in code examples within backtick blocks
-                    if stripped.startswith("```") or stripped.startswith("|"):
+                    if stripped.startswith("|"):
                         continue
-                    # Allow the word TODO in explanatory text only if it's clearly a task marker
-                    # (not in a JSON value or code sample)
-                    if marker == "TODO" and (
-                        "returns" in line.lower() or "description" in line.lower()
-                    ):
-                        stale.append(
-                            (str(md_file.relative_to(Path.cwd())), line_num, stripped[:100])
-                        )
-                    elif marker != "TODO":
-                        stale.append(
-                            (str(md_file.relative_to(Path.cwd())), line_num, stripped[:100])
-                        )
+                    if marker == "TODO" and re.search(r'["`\']TODO["`\']', line):
+                        continue
+                    stale.append((str(md_file.relative_to(Path.cwd())), line_num, stripped[:100]))
                     break
     return stale
 

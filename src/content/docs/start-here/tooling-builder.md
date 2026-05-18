@@ -3,7 +3,7 @@ title: "Start Here: Tooling Builder"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance for repo-local artifact routing
-**Last Updated:** 2026-05-13
+**Last Updated:** 2026-05-18
 
 ## Scope
 
@@ -87,6 +87,10 @@ Use these distinctions consistently:
 - **Compatibility aliases** under `/api/...` exist in the pinned server, but
   this repo keeps the undecorated route path as the canonical tooling surface.
 
+If you need the subsystem map behind those surfaces, read
+[Execution Pipeline](../architecture/execution-pipeline.md) before going deeper
+into route-level details.
+
 If your tool needs direct file or image retrieval, read the route details for
 `GET /view` and the history pages rather than assuming every output is pushed
 through the WebSocket.
@@ -141,8 +145,6 @@ workflow-handling rules.
 Use these bounded starter patterns when you want concrete consumer-side examples:
 
 - [Consumer Starter Examples](../how-to/consumer-starter-examples.md)
-- `examples/consumers/shell-jq-artifact-consumer/`
-- `examples/consumers/artifacts-plus-live-api/`
 
 These examples are starter patterns, not a supported SDK surface.
 
@@ -155,6 +157,7 @@ repo-local maintainer workflow in `CONTRIBUTING.md`.
 ## Read Next
 
 - [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md)
+- [Execution Pipeline](../architecture/execution-pipeline.md)
 - [API Endpoints](../api/endpoints.md)
 - [WebSocket](../api/websocket.md)
 - [Object Info](../reference/object-info.md)

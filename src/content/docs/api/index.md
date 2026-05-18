@@ -3,7 +3,7 @@ title: "API Section Guide"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-03
+**Last Updated:** 2026-05-18
 
 ## Scope
 
@@ -12,6 +12,8 @@ page to read, not as a replacement for the route reference.
 
 ## Read First
 
+- [Execution Pipeline](../architecture/execution-pipeline.md) if you need the
+  execution-system shape before route details
 - [API Endpoints](endpoints.md) if you need the full HTTP route inventory
 - [Prompt Submission](prompt-submission.md) if you are sending workflows
 - [WebSocket](websocket.md) if you need live execution events

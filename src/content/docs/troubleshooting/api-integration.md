@@ -3,7 +3,7 @@ title: "API Integration Troubleshooting"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-05-06
+**Last Updated:** 2026-05-18
 
 ## Scope
 
@@ -33,6 +33,7 @@ behavior and custom UI features do not carry over automatically.
 Read next:
 
 - [Known Limitations](../known-limitations/index.md)
+- [Known Limitations: API and Execution Boundaries](../known-limitations/api-execution-boundaries.md)
 - [Start Here: Service Integration](../start-here/service-integration.md)
 - [JavaScript Hooks](../hooks/javascript-hooks.md)
 
@@ -60,4 +61,4 @@ Read next:
 
 - [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md)
 - [Start Here: Tooling Builder](../start-here/tooling-builder.md)
-- [Known Limitations](../known-limitations/index.md)
+- [Known Limitations: API and Execution Boundaries](../known-limitations/api-execution-boundaries.md)

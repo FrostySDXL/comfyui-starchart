@@ -3,7 +3,7 @@ title: "Extension Points"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-05-13
+**Last Updated:** 2026-05-18
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
 
 ## Primary Sources
@@ -169,6 +169,7 @@ for the same extension API. They solve different classes of problems.
 
 ## Read Next
 
+- [Server-Side Composition](../architecture/server-side-composition.md)
 - [JavaScript Hooks](javascript-hooks.md)
 - [Server Hooks](server-hooks.md)
 - [Subgraph Extension Behavior](subgraph-extension-behavior.md)

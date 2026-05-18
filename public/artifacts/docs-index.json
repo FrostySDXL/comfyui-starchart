@@ -116,12 +116,52 @@
       "summary": "This page is intentionally small. It only keeps limitations that can be verified against the repo's pinned ComfyUI snapshots or official docs."
     },
     {
+      "title": "Known Limitations: API and Execution Boundaries",
+      "path": "known-limitations/api-execution-boundaries.md",
+      "nav_section": "Orientation / Known Limitations",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
+      "summary": "This page groups limitations that come from the boundary between ComfyUI's HTTP API, WebSocket execution stream, queue/history storage, and API-only operation. It keeps only limitations that are source-backed or official-docs-backed."
+    },
+    {
+      "title": "Known Limitations: Service Surface Boundaries",
+      "path": "known-limitations/service-surface-boundaries.md",
+      "nav_section": "Orientation / Known Limitations",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org",
+      "summary": "This page groups limitations that belong to official non-local service surfaces, especially ComfyUI Cloud and the official MCP server. These are official surfaces, but they are not interchangeable with the local API."
+    },
+    {
+      "title": "Known Limitations: Extension Boundaries",
+      "path": "known-limitations/extension-boundaries.md",
+      "nav_section": "Orientation / Known Limitations",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org",
+      "summary": "This page groups limitations that come from the extension and distribution boundary: Manager behavior, registry-backed install flows, and cleanup assumptions for packaged extensions."
+    },
+    {
       "title": "Architecture Overview",
       "path": "architecture/overview.md",
       "nav_section": "Architecture",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
       "summary": "This page is a bounded conceptual overview of ComfyUI architecture for readers who need the system shape before diving into detailed reference pages."
+    },
+    {
+      "title": "Execution Pipeline",
+      "path": "architecture/execution-pipeline.md",
+      "nav_section": "Architecture",
+      "audience": null,
+      "evidence": "Source-backed from pinned snapshots",
+      "summary": "This page documents the server-side execution pipeline that turns a submitted prompt into queued work, live events, and stored history. It is an architecture-level map of responsibilities and boundaries, not a step-by-step API tutorial or a full engine internals reference."
+    },
+    {
+      "title": "Server-Side Composition",
+      "path": "architecture/server-side-composition.md",
+      "nav_section": "Architecture",
+      "audience": null,
+      "evidence": "Source-backed from pinned snapshots",
+      "summary": "This page maps how ComfyUI composes its running server surface: route tables, manager-owned subsystems, extension web assets, prompt hooks, and execution integration points. It is not a route-by-route API reference and not a frontend hook catalog."
     },
     {
       "title": "API Section Guide",

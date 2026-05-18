@@ -1,0 +1,1 @@
+invokeExtensions("nodeCreated", node)

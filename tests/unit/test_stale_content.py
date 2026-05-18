@@ -49,8 +49,9 @@ class StaleContentUnitTests(unittest.TestCase):
             )
             (raw_dir / "invalid.json").write_text("{not-json", encoding="utf-8")
 
-            with patch.object(module, "REFERENCES_RAW_DIR", raw_dir), patch.object(
-                module.Path, "cwd", return_value=root
+            with (
+                patch.object(module, "REFERENCES_RAW_DIR", raw_dir),
+                patch.object(module.Path, "cwd", return_value=root),
             ):
                 stale = module.find_stale_in_json()
 
@@ -89,8 +90,9 @@ class StaleContentUnitTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            with patch.object(module, "DOCS_DIR", docs_dir), patch.object(
-                module.Path, "cwd", return_value=root
+            with (
+                patch.object(module, "DOCS_DIR", docs_dir),
+                patch.object(module.Path, "cwd", return_value=root),
             ):
                 stale = module.find_stale_in_markdown()
 
@@ -99,15 +101,15 @@ class StaleContentUnitTests(unittest.TestCase):
             [
                 (
                     _repo_rel("src", "content", "docs", "sample.md"),
-                    3,
-                    '"description": "TODO in code block should be ignored"',
-                ),
-                (
-                    _repo_rel("src", "content", "docs", "sample.md"),
                     6,
                     "description TODO needs follow-up",
                 ),
                 (_repo_rel("src", "content", "docs", "sample.md"), 7, "DEPRECATED route note"),
+                (
+                    _repo_rel("src", "content", "docs", "sample.md"),
+                    8,
+                    "TODO plain note should not be flagged",
+                ),
             ],
         )
 
@@ -128,8 +130,9 @@ class StaleContentUnitTests(unittest.TestCase):
                 f"**Last Updated:** {fresh_date.isoformat()}\n", encoding="utf-8"
             )
 
-            with patch.object(module, "DOCS_DIR", docs_dir), patch.object(
-                module.Path, "cwd", return_value=root
+            with (
+                patch.object(module, "DOCS_DIR", docs_dir),
+                patch.object(module.Path, "cwd", return_value=root),
             ):
                 stale = module.find_stale_dates(30)
 
@@ -163,8 +166,9 @@ class StaleContentUnitTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            with patch.object(module, "DOCS_DIR", docs_dir), patch.object(
-                module.Path, "cwd", return_value=root
+            with (
+                patch.object(module, "DOCS_DIR", docs_dir),
+                patch.object(module.Path, "cwd", return_value=root),
             ):
                 stale = module.find_stale_version_refs("v0.20.1")
 

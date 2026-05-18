@@ -3,7 +3,7 @@ title: "Start Here: Service Integration"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-03
+**Last Updated:** 2026-05-18
 
 ## Who This Path Is For
 
@@ -43,6 +43,9 @@ Key resources:
 
 This approach treats ComfyUI as a remote generation service without
 modifying its internals.
+
+If you need the system map behind that flow before reading route details, start
+with [Execution Pipeline](../architecture/execution-pipeline.md).
 
 ### Extension-Backed Integration
 
@@ -123,6 +126,7 @@ repo's `CONTRIBUTING.md` file for workflow and verification guidance.
 ## Read Next
 
 - [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) -- canonical published artifact contract and support-artifact boundaries
+- [Execution Pipeline](../architecture/execution-pipeline.md) -- execution-system map behind prompt validation, queueing, and history
 - [API Endpoints](../api/endpoints.md) -- complete route reference
 - [WebSocket](../api/websocket.md) -- event stream details
 - [Prompt Submission](../api/prompt-submission.md) -- constructing prompts

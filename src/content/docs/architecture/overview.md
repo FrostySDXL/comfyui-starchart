@@ -3,7 +3,7 @@ title: "Architecture Overview"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-05-13
+**Last Updated:** 2026-05-18
 
 ## Scope
 
@@ -12,6 +12,10 @@ who need the system shape before diving into detailed reference pages.
 
 It is not a full subsystem map, an exhaustive internal architecture reference,
 or a replacement for the official docs.
+
+If you need those deeper maps, continue to the dedicated
+[Execution Pipeline](execution-pipeline.md) and
+[Server-Side Composition](server-side-composition.md) pages.
 
 ## What ComfyUI Is at a High Level
 
@@ -118,8 +122,8 @@ surface that matches your task.
 
 ## Read Next
 
+- [Execution Pipeline](execution-pipeline.md)
+- [Server-Side Composition](server-side-composition.md)
 - [Start Here: Tooling Builder](../start-here/tooling-builder.md)
 - [Known Limitations](../known-limitations/index.md)
 - [Glossary](../reference/glossary.md)
-- [API Endpoints](../api/endpoints.md)
-- [WebSocket](../api/websocket.md)

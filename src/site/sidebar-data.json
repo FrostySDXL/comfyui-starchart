@@ -27,13 +27,23 @@
           { "label": "Docs Authoring and Site Build", "path": "troubleshooting/docs-authoring-and-site-build.md" }
         ]
       },
-      { "label": "Known Limitations", "path": "known-limitations/index.md", "docs_index_nav_section": "Orientation / Known Limitations" }
+      {
+        "label": "Known Limitations",
+        "items": [
+          { "label": "Known Limitations", "path": "known-limitations/index.md", "docs_index_nav_section": "Orientation / Known Limitations" },
+          { "label": "API and Execution Boundaries", "path": "known-limitations/api-execution-boundaries.md", "docs_index_nav_section": "Orientation / Known Limitations" },
+          { "label": "Service Surface Boundaries", "path": "known-limitations/service-surface-boundaries.md", "docs_index_nav_section": "Orientation / Known Limitations" },
+          { "label": "Extension Boundaries", "path": "known-limitations/extension-boundaries.md", "docs_index_nav_section": "Orientation / Known Limitations" }
+        ]
+      }
     ]
   },
   {
     "label": "Architecture",
     "items": [
-      { "label": "Overview", "path": "architecture/overview.md" }
+      { "label": "Overview", "path": "architecture/overview.md" },
+      { "label": "Execution Pipeline", "path": "architecture/execution-pipeline.md" },
+      { "label": "Server-Side Composition", "path": "architecture/server-side-composition.md" }
     ]
   },
   {
