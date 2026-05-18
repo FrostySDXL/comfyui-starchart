@@ -186,6 +186,46 @@ class StaleContentUnitTests(unittest.TestCase):
             ],
         )
 
+    def test_find_stale_version_refs_skips_intentionally_historical_pages(self):
+        module = _load_module()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            docs_dir = root / "src" / "content" / "docs"
+            (docs_dir / "whats-new").mkdir(parents=True)
+            (docs_dir / "reference").mkdir(parents=True)
+            (docs_dir / "other").mkdir(parents=True)
+
+            (docs_dir / "whats-new" / "index.md").write_text(
+                "Historical note for v0.19.3\n",
+                encoding="utf-8",
+            )
+            (docs_dir / "reference" / "version-history.md").write_text(
+                "Release anchor v0.18.0\n",
+                encoding="utf-8",
+            )
+            (docs_dir / "other" / "version-history.md").write_text(
+                "Unexpected stale v0.17.0\n",
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(module, "DOCS_DIR", docs_dir),
+                patch.object(module.Path, "cwd", return_value=root),
+            ):
+                stale = _normalize_stale(module.find_stale_version_refs("v0.20.1"))
+
+        self.assertEqual(
+            stale,
+            [
+                (
+                    _repo_rel("src", "content", "docs", "other", "version-history.md"),
+                    1,
+                    "References older ComfyUI version v0.17.0 (current pin: v0.20.1): Unexpected stale v0.17.0",
+                )
+            ],
+        )
+
     def test_find_stale_in_markdown_flags_unclosed_fence(self):
         module = _load_module()
 
@@ -211,6 +251,35 @@ class StaleContentUnitTests(unittest.TestCase):
                     _repo_rel("src", "content", "docs", "broken.md"),
                     0,
                     "Unclosed fenced code block may hide stale markers",
+                )
+            ],
+        )
+
+    def test_find_stale_in_markdown_skips_tilde_fenced_blocks(self):
+        module = _load_module()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            docs_dir = root / "src" / "content" / "docs"
+            docs_dir.mkdir(parents=True)
+            (docs_dir / "tilde.md").write_text(
+                "# Tilde\n~~~json\nTODO inside tilde fence\n~~~\nTODO outside tilde fence\n",
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(module, "DOCS_DIR", docs_dir),
+                patch.object(module.Path, "cwd", return_value=root),
+            ):
+                stale = _normalize_stale(module.find_stale_in_markdown())
+
+        self.assertEqual(
+            stale,
+            [
+                (
+                    _repo_rel("src", "content", "docs", "tilde.md"),
+                    5,
+                    "TODO outside tilde fence",
                 )
             ],
         )

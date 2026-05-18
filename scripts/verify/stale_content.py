@@ -86,7 +86,7 @@ def find_stale_in_markdown() -> list[tuple[str, int, str]]:
         in_fenced_block = False
         for line_num, line in enumerate(lines, 1):
             stripped = line.strip()
-            if stripped.startswith("```"):
+            if stripped.startswith(("```", "~~~")):
                 in_fenced_block = not in_fenced_block
                 continue
             if in_fenced_block:
@@ -172,7 +172,9 @@ def find_stale_version_refs(current_version: str) -> list[tuple[str, int, str]]:
     version_ref_re = re.compile(r"v(\d+)\.(\d+)\.\d+")
 
     for md_file in sorted(DOCS_DIR.rglob("*.md")):
-        if "whats-new" in md_file.parts or md_file.name == "version-history.md":
+        if "whats-new" in md_file.parts or (
+            md_file.name == "version-history.md" and "reference" in md_file.parts
+        ):
             continue
         lines = md_file.read_text(encoding="utf-8").splitlines()
         for line_num, line in enumerate(lines, 1):
