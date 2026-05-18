@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "artifacts/schemas/refresh-provenance.schema.json",
+  "title": "ComfyUI Knowledge Base refresh-provenance support artifact",
+  "description": "Bounded structure for the checked-in refresh-provenance.json support artifact written by the snapshot refresh workflow.",
+  "type": "object",
+  "required": [
+    "backup_location",
+    "next_steps",
+    "published",
+    "refresh_date",
+    "requested_versions",
+    "resolved_commits",
+    "runtime_object_info"
+  ],
+  "properties": {
+    "backup_location": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "next_steps": {
+      "type": "object",
+      "required": [
+        "delta_summary_command"
+      ],
+      "properties": {
+        "delta_summary_command": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "published": {
+      "type": "object",
+      "required": [
+        "manifest_included",
+        "provenance_path"
+      ],
+      "properties": {
+        "manifest_included": {
+          "type": "boolean"
+        },
+        "provenance_path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "refresh_date": {
+      "type": "string"
+    },
+    "requested_versions": {
+      "type": "object",
+      "required": [
+        "core",
+        "frontend"
+      ],
+      "properties": {
+        "core": {
+          "type": "string"
+        },
+        "frontend": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "resolved_commits": {
+      "type": "object",
+      "required": [
+        "core",
+        "frontend"
+      ],
+      "properties": {
+        "core": {
+          "type": "string"
+        },
+        "frontend": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "runtime_object_info": {
+      "type": "object",
+      "required": [
+        "merged_into_node_api_schema",
+        "requested"
+      ],
+      "properties": {
+        "merged_into_node_api_schema": {
+          "type": "boolean"
+        },
+        "requested": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

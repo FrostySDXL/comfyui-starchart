@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "artifacts/schemas/delta-summary.schema.json",
+  "title": "ComfyUI Knowledge Base delta-summary support artifact",
+  "description": "Bounded structure for the checked-in delta-summary.json support artifact that compares two canonical extracted baselines.",
+  "type": "object",
+  "required": [
+    "comparison",
+    "notes",
+    "artifacts"
+  ],
+  "properties": {
+    "comparison": {
+      "type": "object",
+      "required": [
+        "old",
+        "new"
+      ],
+      "properties": {
+        "old": {
+          "type": "string"
+        },
+        "new": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "required": [
+        "server_endpoints",
+        "js_hooks",
+        "node_api_schema"
+      ],
+      "properties": {
+        "server_endpoints": {
+          "type": "object",
+          "required": [
+            "old_count",
+            "new_count",
+            "added",
+            "removed",
+            "changed"
+          ],
+          "properties": {
+            "old_count": {
+              "type": "integer"
+            },
+            "new_count": {
+              "type": "integer"
+            },
+            "added": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "removed": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "changed": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "js_hooks": {
+          "type": "object",
+          "required": [
+            "old_count",
+            "new_count",
+            "added",
+            "removed",
+            "changed"
+          ],
+          "properties": {
+            "old_count": {
+              "type": "integer"
+            },
+            "new_count": {
+              "type": "integer"
+            },
+            "added": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "removed": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "changed": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "node_api_schema": {
+          "type": "object",
+          "required": [
+            "object_info_fields",
+            "io_types",
+            "typed_input_shapes"
+          ],
+          "properties": {
+            "object_info_fields": {
+              "type": "object",
+              "required": [
+                "old_count",
+                "new_count",
+                "added",
+                "removed",
+                "changed"
+              ],
+              "properties": {
+                "old_count": {
+                  "type": "integer"
+                },
+                "new_count": {
+                  "type": "integer"
+                },
+                "added": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "removed": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "changed": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": true
+            },
+            "io_types": {
+              "type": "object",
+              "required": [
+                "old_count",
+                "new_count",
+                "added",
+                "removed",
+                "changed"
+              ],
+              "properties": {
+                "old_count": {
+                  "type": "integer"
+                },
+                "new_count": {
+                  "type": "integer"
+                },
+                "added": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "removed": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "changed": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": true
+            },
+            "typed_input_shapes": {
+              "type": "object",
+              "required": [
+                "old_count",
+                "new_count",
+                "added",
+                "removed",
+                "changed"
+              ],
+              "properties": {
+                "old_count": {
+                  "type": "integer"
+                },
+                "new_count": {
+                  "type": "integer"
+                },
+                "added": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "removed": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "changed": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

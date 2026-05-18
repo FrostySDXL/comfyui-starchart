@@ -3,7 +3,7 @@ title: "History and Queue"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-18
 **Primary Source:** ComfyUI core v0.20.1 `server.py` (pinned snapshot)
 
 ## Primary Sources
@@ -27,6 +27,64 @@ Many community wrappers build their higher-level "wait for result" logic
 on top of these same surfaces. That wrapper behavior can be useful to
 study, but the native contract here is still the HTTP and WebSocket API
 documented in ComfyUI's source.
+
+This same area now also includes the `/api/jobs` routes. They combine
+running queue state, pending queue state, and stored history into one
+filtered lookup surface.
+
+## Jobs API
+
+### `GET /api/jobs`
+
+This route is the server's unified job listing surface. It reads:
+
+- running jobs from `self.prompt_queue.get_current_queue_volatile()`
+- pending jobs from that same queue snapshot
+- completed jobs from `self.prompt_queue.get_history()`
+
+Before those queue-derived records are returned, the handler passes the
+running and pending lists through `_remove_sensitive_from_queue()`.
+
+Supported query parameters from the handler docstring and validation path:
+
+- `status` — optional comma-separated status filter; accepted values are
+  `pending`, `in_progress`, `completed`, and `failed`
+- `workflow_id` — optional workflow filter
+- `sort_by` — optional; must be `created_at` or `execution_duration`
+- `sort_order` — optional; must be `asc` or `desc`
+- `limit` — optional positive integer
+- `offset` — optional integer; invalid integer values return HTTP 400,
+  while negative values are clamped back to `0`
+
+The response is a JSON object with:
+
+- `jobs` — the filtered page of job records
+- `pagination` — an object containing `offset`, `limit`, `total`, and
+  `has_more`
+
+The handler returns HTTP 400 when validation fails, including invalid
+status names, unsupported sort fields, unsupported sort directions, or
+non-integer pagination inputs.
+
+### `GET /api/jobs/{job_id}`
+
+This route returns one combined job record by ID.
+
+The handler:
+
+1. reads `job_id` from the route path
+2. snapshots running and pending queue state
+3. loads matching stored history with `get_history(prompt_id=job_id)`
+4. sanitizes queue-derived records with `_remove_sensitive_from_queue()`
+5. calls `get_job(job_id, running, queued, history)` to assemble the
+   final response
+
+The response behavior is:
+
+- HTTP 200 with the matching job record when found
+- HTTP 404 with `{"error": "Job not found"}` when no matching record exists
+- HTTP 400 with `{"error": "job_id is required"}` if the path value is
+  missing or empty
 
 ## Queue State
 

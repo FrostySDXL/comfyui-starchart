@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "artifacts/schemas/docs-index.schema.json",
+  "title": "ComfyUI Knowledge Base docs-index support artifact",
+  "description": "Bounded structure for the checked-in docs-index.json support artifact used for navigation-aware docs discovery.",
+  "type": "object",
+  "required": [
+    "artifact",
+    "artifact_schema_version",
+    "scope",
+    "pages"
+  ],
+  "properties": {
+    "artifact": {
+      "type": "string"
+    },
+    "artifact_schema_version": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "surface",
+        "excludes"
+      ],
+      "properties": {
+        "surface": {
+          "type": "string"
+        },
+        "excludes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "path",
+          "nav_section",
+          "audience",
+          "evidence",
+          "summary"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "nav_section": {
+            "type": "string"
+          },
+          "audience": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "evidence": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "summary": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
