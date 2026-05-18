@@ -5,7 +5,6 @@ import importlib.util
 import json
 import tempfile
 import unittest
-from os import sep
 from pathlib import Path
 from unittest.mock import patch
 
@@ -21,7 +20,11 @@ def _load_module():
 
 
 def _repo_rel(*parts: str) -> str:
-    return sep.join(parts)
+    return "/".join(parts)
+
+
+def _normalize_stale(stale):
+    return [(path.replace("\\", "/"), line_num, detail) for path, line_num, detail in stale]
 
 
 class StaleContentUnitTests(unittest.TestCase):
@@ -53,7 +56,7 @@ class StaleContentUnitTests(unittest.TestCase):
                 patch.object(module, "REFERENCES_RAW_DIR", raw_dir),
                 patch.object(module.Path, "cwd", return_value=root),
             ):
-                stale = module.find_stale_in_json()
+                stale = _normalize_stale(module.find_stale_in_json())
 
         self.assertEqual(
             stale,
@@ -83,7 +86,7 @@ class StaleContentUnitTests(unittest.TestCase):
                         "| TODO | table row should be ignored |",
                         "description TODO needs follow-up",
                         "DEPRECATED route note",
-                        "TODO plain note should not be flagged",
+                        "TODO plain marker should be flagged",
                     ]
                 )
                 + "\n",
@@ -94,7 +97,7 @@ class StaleContentUnitTests(unittest.TestCase):
                 patch.object(module, "DOCS_DIR", docs_dir),
                 patch.object(module.Path, "cwd", return_value=root),
             ):
-                stale = module.find_stale_in_markdown()
+                stale = _normalize_stale(module.find_stale_in_markdown())
 
         self.assertEqual(
             stale,
@@ -108,7 +111,7 @@ class StaleContentUnitTests(unittest.TestCase):
                 (
                     _repo_rel("src", "content", "docs", "sample.md"),
                     8,
-                    "TODO plain note should not be flagged",
+                    "TODO plain marker should be flagged",
                 ),
             ],
         )
@@ -134,7 +137,7 @@ class StaleContentUnitTests(unittest.TestCase):
                 patch.object(module, "DOCS_DIR", docs_dir),
                 patch.object(module.Path, "cwd", return_value=root),
             ):
-                stale = module.find_stale_dates(30)
+                stale = _normalize_stale(module.find_stale_dates(30))
 
         self.assertEqual(
             stale,
@@ -170,7 +173,7 @@ class StaleContentUnitTests(unittest.TestCase):
                 patch.object(module, "DOCS_DIR", docs_dir),
                 patch.object(module.Path, "cwd", return_value=root),
             ):
-                stale = module.find_stale_version_refs("v0.20.1")
+                stale = _normalize_stale(module.find_stale_version_refs("v0.20.1"))
 
         self.assertEqual(
             stale,
@@ -179,6 +182,35 @@ class StaleContentUnitTests(unittest.TestCase):
                     _repo_rel("src", "content", "docs", "versions.md"),
                     1,
                     "References older ComfyUI version v0.19.3 (current pin: v0.20.1): Uses behavior from v0.19.3 only.",
+                )
+            ],
+        )
+
+    def test_find_stale_in_markdown_flags_unclosed_fence(self):
+        module = _load_module()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            docs_dir = root / "src" / "content" / "docs"
+            docs_dir.mkdir(parents=True)
+            (docs_dir / "broken.md").write_text(
+                "# Broken\n```python\nTODO hidden in broken fence\n",
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(module, "DOCS_DIR", docs_dir),
+                patch.object(module.Path, "cwd", return_value=root),
+            ):
+                stale = _normalize_stale(module.find_stale_in_markdown())
+
+        self.assertEqual(
+            stale,
+            [
+                (
+                    _repo_rel("src", "content", "docs", "broken.md"),
+                    0,
+                    "Unclosed fenced code block may hide stale markers",
                 )
             ],
         )

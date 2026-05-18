@@ -46,7 +46,9 @@ class ExtractorIntegrationTests(unittest.TestCase):
         self.assertEqual(errors, [])
 
         endpoint_map = {endpoint["route"]: endpoint for endpoint in data["endpoints"]}
+        self.assertEqual(len(endpoint_map), 5)
         self.assertEqual(endpoint_map["/ws"]["returns"]["kind"], "websocket")
+        self.assertEqual(endpoint_map["/api/jobs"]["returns"]["kind"], "json")
         self.assertIn(
             "queue_running",
             {field["name"] for field in endpoint_map["/queue"]["returns"]["fields"]},
@@ -58,6 +60,10 @@ class ExtractorIntegrationTests(unittest.TestCase):
         self.assertIn(
             ("prompt", "json"),
             {(p["name"], p["location"]) for p in endpoint_map["/prompt"]["parameters"]},
+        )
+        self.assertIn(
+            "prompt_id",
+            {field["name"] for field in endpoint_map["/prompt"]["returns"]["fields"]},
         )
 
     def test_parse_hooks_main_handles_fixture_files(self):
@@ -91,9 +97,12 @@ class ExtractorIntegrationTests(unittest.TestCase):
         self.assertEqual(errors, [])
 
         hook_map = {hook["name"]: hook for hook in data["hooks"]}
+        self.assertEqual(len(hook_map), 4)
         self.assertEqual(hook_map["setup"]["return_type"], "Promise<void> | void")
         self.assertEqual(hook_map["beforeRegisterNodeDef"]["arguments"][0]["name"], "nodeType")
+        self.assertEqual(hook_map["beforeRegisterNodeDef"]["return_type"], "Promise<void> | void")
         self.assertIn("async", hook_map["setup"]["invocation_style"])
+        self.assertIn("sync", hook_map["nodeCreated"]["invocation_style"])
         self.assertIn("nodeCreated", hook_map)
         self.assertIn("init", hook_map)
 
@@ -133,10 +142,16 @@ class ExtractorIntegrationTests(unittest.TestCase):
         self.assertEqual(errors, [])
 
         io_types = {entry["io_type"]: entry for entry in data["io_types"]}
+        self.assertIn("STRING", io_types)
         self.assertEqual(io_types["BOOLEAN"]["type_hint"], "bool")
         self.assertEqual(io_types["LOAD_3D_ANIMATION"]["type_hint"], "Model3DDict")
         self.assertIn("AudioInput", data["typed_input_shapes"])
+        self.assertEqual(
+            data["typed_input_shapes"]["AudioInput"]["fields"]["sample_rate"]["type"],
+            "int",
+        )
         self.assertIn("input", data["object_info_fields"])
+        self.assertIn("display_name", data["object_info_fields"])
 
 
 if __name__ == "__main__":

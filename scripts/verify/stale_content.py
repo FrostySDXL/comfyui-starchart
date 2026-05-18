@@ -100,6 +100,14 @@ def find_stale_in_markdown() -> list[tuple[str, int, str]]:
                         continue
                     stale.append((str(md_file.relative_to(Path.cwd())), line_num, stripped[:100]))
                     break
+        if in_fenced_block:
+            stale.append(
+                (
+                    str(md_file.relative_to(Path.cwd())),
+                    0,
+                    "Unclosed fenced code block may hide stale markers",
+                )
+            )
     return stale
 
 
@@ -164,6 +172,8 @@ def find_stale_version_refs(current_version: str) -> list[tuple[str, int, str]]:
     version_ref_re = re.compile(r"v(\d+)\.(\d+)\.\d+")
 
     for md_file in sorted(DOCS_DIR.rglob("*.md")):
+        if "whats-new" in md_file.parts or md_file.name == "version-history.md":
+            continue
         lines = md_file.read_text(encoding="utf-8").splitlines()
         for line_num, line in enumerate(lines, 1):
             for vm in version_ref_re.finditer(line):

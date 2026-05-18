@@ -3,7 +3,7 @@ title: "What's New"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-17
+**Last Updated:** 2026-05-18
 
 ## Scope
 
@@ -34,6 +34,18 @@ replays non-blocking checks as blocking on a weekly schedule.
 A new verifier ensures every page in the community-generated surface is
 accounted for, and stale generated pages are flagged before they reach
 readers.
+
+### Architecture and limitations navigation are deeper
+
+The docs now include dedicated architecture pages for the execution pipeline
+and server-side composition. Known Limitations is split into categorized
+sub-pages so readers can navigate API/execution boundaries, service-surface
+boundaries, and extension-package constraints without scanning one long page.
+
+### Integration coverage is less smoke-level
+
+The test surface now includes fixture-backed extractor integration tests and
+real remark/unified pipeline tests for the markdown plugins used by the site.
 
 ## Previous Waves
 

@@ -164,6 +164,8 @@ validation discipline because the backend accepts many possible linked values.
 
 ## Read Next
 
+- [Architecture Overview](../architecture/overview.md)
+- [Execution Pipeline](../architecture/execution-pipeline.md)
 - [Machine-Readable Artifacts](machine-readable-artifacts.md)
 - [Source Evidence Policy](source-evidence-policy.md)
 - [What's New](../whats-new/index.md)
