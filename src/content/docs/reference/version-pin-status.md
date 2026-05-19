@@ -3,7 +3,7 @@ title: "Version Pin Status"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-13
+**Last Updated:** 2026-05-18
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.
@@ -19,13 +19,13 @@ reference data.
 
 Pinned source set:
 
-- ComfyUI core tag `v0.20.1`
-- core commit `64b8457f55cd7fb54ca7a956d9c73b505e903e0c`
-- official frontend package version `1.44.13`
-- official frontend tag `v1.44.13`
-- frontend commit `389ff8ba49468cc3afa11aec5778224689a8f9b9`
+- ComfyUI core tag `v0.21.1`
+- core commit `26515acd23fa291a8f5ab53c5997258598de0701`
+- official frontend package version `1.45.9`
+- official frontend tag `v1.45.9`
+- frontend commit `8562816ffa0d996bd400e517292fee074a6acefa`
 
-The active pinned files now live under `references/snapshots/2026-04-30/` and
+The active pinned files now live under `references/snapshots/2026-05-18/` and
 the extracted JSON in `references/raw/` points at those snapshot files.
 
 The earlier pinned baseline under `references/snapshots/2026-04-19/` is still
@@ -59,7 +59,7 @@ with current copies and versioned copies keyed to the pinned baseline. See
 and consumption details.
 
 The current published versioned artifact directory is
-`public/artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30/`.
+`public/artifacts/versions/core-v0.21.1_frontend-v1.45.9_2026-05-18/`.
 
 ## Automation
 

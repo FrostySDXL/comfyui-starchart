@@ -25,10 +25,32 @@ Treat the sections below as review priorities surfaced by official changelog and
 release-note summaries. They are not exhaustive compatibility guarantees.
 
 **Evidence:** Official docs-backed from docs.comfy.org; Operational guidance
-**Last Updated:** 2026-05-13
+**Last Updated:** 2026-05-18
 **Primary Sources:** https://docs.comfy.org/changelog/index, https://docs.comfy.org/api-reference/releases/get-release-notes, https://github.com/Comfy-Org/ComfyUI/releases
 
 ## Release-Line Compatibility Anchors
+
+### v0.21.x
+
+**Exact release anchor:** [v0.21.1](https://github.com/Comfy-Org/ComfyUI/releases/tag/v0.21.1)
+
+**Compatibility-relevant changes**
+
+- adds `BACKGROUND_REMOVAL:BackgroundRemoval` IO type; all IO types received updated definitions in this release line
+- bumps the frontend package through `1.43.18` and adds `DynamicCombo`/`Autogrow` to several partner nodes
+- replaces Pillow with PyAV for image loading, unifies audio/video in the video loader, and adds automatic metadata rotation
+- adds block prefetch and LoRA async loading (notably faster for LTX); introduces `--cache-ram 2` for dynamic VRAM tuning
+- adds `--feature-flag` CLI argument and `--list-feature-flags` registry for toggling experimental behavior
+- adds OpenAPI cloud-runtime and experiment node-schema endpoints, blueprint subgraph descriptions, and deterministic ControlNet load order
+- adds `causal_window_fix` for long-sequence blending, auto-regressive video generation, and image-to-video for causal models
+
+**What to re-check**
+
+- custom nodes or tooling that assume the older IO type surface or pre-PyAV image-loading behavior
+- frontend widgets that depend on older package-state timing, especially around DynamicCombo and Autogrow
+- API clients that consume OpenAPI specs and may encounter new cloud-runtime or experiment endpoints
+- execution assumptions around ControlNet load ordering, block prefetch, or LoRA async loading
+- video-generation workflows that depend on older frame-interpolation or causal-window behavior
 
 ### v0.20.x
 

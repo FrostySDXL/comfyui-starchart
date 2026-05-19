@@ -111,7 +111,7 @@ full labeling rules.
 
 ## Current Version Pin
 
-ComfyUI core `v0.20.1` and official frontend `v1.44.13`. Content written
+ComfyUI core `v0.21.1` and official frontend `v1.45.9`. Content written
 against other versions should note the version it applies to.
 
 ## Scope Boundaries

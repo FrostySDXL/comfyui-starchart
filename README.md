@@ -1,7 +1,7 @@
 # ComfyUI Knowledge Base
 
 **Last Updated:** 2026-05-13
-**ComfyUI Version Pin:** Core `v0.20.1` (`64b8457f55cd7fb54ca7a956d9c73b505e903e0c`) with official frontend `v1.44.13` (`389ff8ba49468cc3afa11aec5778224689a8f9b9`) for the current pinned snapshots and extracted reference data
+**ComfyUI Version Pin:** Core `v0.21.1` (`26515acd23fa291a8f5ab53c5997258598de0701`) with official frontend `v1.45.9` (`8562816ffa0d996bd400e517292fee074a6acefa`) for the current pinned snapshots and extracted reference data
 
 **Evidence:** Operational guidance
 

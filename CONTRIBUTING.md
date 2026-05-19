@@ -263,12 +263,35 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    python scripts/generate/generate_snapshot_delta_summary.py --old references/raw_backup_TIMESTAMP --new references/raw --output public/artifacts/delta-summary.json
    ```
 6. Remove the temporary backup after confirming the delta output if you no longer need it.
-7. Run the maintainer verification gate:
+7. Update version-pin references in docs. A refresh changes the pinned baseline,
+   and three files always carry the current version and commit: `README.md`
+   (version-pin block near the top), `src/content/docs/reference/version-pin-status.md`
+   (version/commit lines, snapshot directory, versioned artifact directory), and
+   `src/content/docs/index.md` ("Current Version Pin" section).
+
+   Also review source-citation paths in `src/content/docs/` pages that cite the
+   old snapshot directory (for example `references/snapshots/2026-04-30/...`).
+   Check `public/artifacts/delta-summary.json` to decide whether updates are
+   mechanical path-only or warrant prose review.
+
+   Find every stale reference before committing (use the old version/commit values):
+   ```bash
+   rg -n "<old-version>|<old-commit>" src/content/docs -g "*.md"
+   ```
+   Skip `public/artifacts/versions/<old-baseline>/` (historical copies) and
+   `references/raw_backup_*/` (pre-refresh backups).
+
+   Verify after updating:
+   ```bash
+   python scripts/verify/cross_references.py
+   ```
+
+8. Run the maintainer verification gate:
    ```bash
    python scripts/verify/run_all.py
    ```
 
-AO note: this repo now hardens the provenance-writing contract and follow-up command hints without treating that as proof that a fresh upstream refresh rehearsal succeeded end-to-end. A future real refresh execution is still required to validate the live clone -> extract -> generate -> publish closure path.
+The live clone -> extract -> generate -> publish -> verify closure path was validated end-to-end on 2026-05-18 with core `v0.21.1` and frontend `v1.45.9`. Repeat this workflow when a new upstream baseline is needed.
 
 ### Adding a New Verification Script
 
