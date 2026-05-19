@@ -8,14 +8,11 @@ node_modules/
 *.egg-info/
 dist/
 build/
-.mkdocs-cache/
 .pytest_cache/
 .DS_Store
 .vscode/
 .idea/
 .cache/
-archived/
-.tmp_runtime_verify/
 .env
 .env.*
 *.pem
@@ -28,4 +25,5 @@ archived/
 credentials*
 *secret*
 livedocs/
-livetests/
+.ruff_cache/
+references/_refresh_backups/

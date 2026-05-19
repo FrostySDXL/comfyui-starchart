@@ -182,7 +182,9 @@ Use it to answer questions like:
 Do not use it as runtime truth. It compares checked-in artifact baselines only.
 When generating this file after a refresh, preserve a copy of the pre-refresh
 `references/raw/` directory first and use that preserved copy as `--old`. The
-refresh script overwrites `references/raw/` in place.
+refresh script overwrites `references/raw/` in place. The current refresh helper
+creates that ephemeral working copy under the `_refresh_backups/raw_<timestamp>/`
+directory inside `references/`.
 
 `delta-summary.json` also remains outside the canonical published contract. It
 is not discovered from `manifest.json`, and `verify_artifact_integrity.py` does
@@ -206,6 +208,11 @@ The current payload records at least:
 Use this file as refresh evidence and as a maintainer handoff aid. Do not treat
 it as a canonical artifact contract alongside the three primary published JSON
 artifacts.
+
+The backup path recorded here is temporary local rollback state, not durable
+history. Durable history lives in `references/snapshots/`,
+`public/artifacts/versions/`, and the published `refresh-provenance.json`
+record itself.
 
 ### docs-index.json
 
@@ -360,6 +367,13 @@ For baseline-to-baseline comparisons, the proven maintainer sequence is:
 1. run `scripts/refresh_snapshots.py` and note the printed repo-local backup directory plus `refresh-provenance.json` output
 2. run `scripts/generate/publish_reference_artifacts.py`
 3. run `scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output public/artifacts/delta-summary.json`
+
+The `<backup-dir>` value should normally be the auto-created
+`_refresh_backups/raw_<timestamp>/` directory inside `references/`. If older
+`raw_backup_*` directories directly under `references/` remain on disk from earlier refreshes,
+leave them as legacy local working copies unless you intentionally delete or
+migrate them after confirming the new path covers your rollback and comparison
+needs.
 
 ## Bounded Usage Examples
 

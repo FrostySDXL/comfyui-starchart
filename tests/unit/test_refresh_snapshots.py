@@ -76,6 +76,7 @@ class RefreshSnapshotsArgumentTests(unittest.TestCase):
         self.assertIn("--runtime-object-info-url", result.stdout)
         self.assertIn("--skip-runtime-merge", result.stdout)
         self.assertIn("automatic repo-local backup", result.stdout.lower())
+        self.assertIn("references/_refresh_backups/raw_<timestamp>/", result.stdout)
 
     def test_runtime_url_only_works(self):
         """Running with only --runtime-object-info-url should not fail argument validation."""
@@ -194,7 +195,9 @@ class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
     def test_build_delta_summary_command_uses_repo_preferred_python_command(self):
         """Follow-up commands should use the repo's maintainer-friendly Python invocation."""
         module = _load_module()
-        backup_dir = module.REPO_ROOT / "references" / "raw_backup_20260518T010203Z"
+        backup_dir = (
+            module.REPO_ROOT / "references" / "_refresh_backups" / "raw_20260518T010203Z"
+        )
         with mock.patch.object(
             module.refresh_support, "recommended_python_command", return_value="py -3.11"
         ) as command_mock:
@@ -202,6 +205,7 @@ class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
 
         command_mock.assert_called_once_with(module.sys.platform)
         self.assertIn("py -3.11 scripts/generate/generate_snapshot_delta_summary.py", command)
+        self.assertIn('--old "references/_refresh_backups/raw_20260518T010203Z"', command)
 
     def test_persist_refresh_provenance_passes_partial_refresh_state(self):
         """persist_refresh_provenance should preserve null backup/version state and write the built payload."""

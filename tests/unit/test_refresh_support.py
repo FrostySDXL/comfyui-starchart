@@ -93,11 +93,31 @@ class RefreshSupportBackupTests(unittest.TestCase):
             backup_dir = module.create_pre_refresh_backup(references_dir, raw_dir, tmp_path)
 
             self.assertIsNotNone(backup_dir)
-            self.assertEqual(backup_dir.parent.name, "references")
-            self.assertTrue(backup_dir.name.startswith("raw_backup_"))
+            self.assertEqual(backup_dir.parent.name, "_refresh_backups")
+            self.assertEqual(backup_dir.parent.parent.name, "references")
+            self.assertTrue(backup_dir.name.startswith("raw_"))
             copied = backup_dir / "server_endpoints.json"
             self.assertTrue(copied.exists())
             self.assertEqual(copied.read_text(encoding="utf-8"), '{"ok": true}\n')
+
+    def test_create_pre_refresh_backup_creates_parent_directory(self):
+        """Backup creation should create the dedicated backup parent directory when missing."""
+        module = _load_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            references_dir = tmp_path / "references"
+            raw_dir = references_dir / "raw"
+            raw_dir.mkdir(parents=True)
+            (raw_dir / "server_endpoints.json").write_text('{"ok": true}\n', encoding="utf-8")
+
+            backup_root = references_dir / "_refresh_backups"
+            self.assertFalse(backup_root.exists())
+
+            backup_dir = module.create_pre_refresh_backup(references_dir, raw_dir, tmp_path)
+
+            self.assertIsNotNone(backup_dir)
+            self.assertTrue(backup_root.exists())
+            self.assertEqual(backup_dir.parent, backup_root)
 
     def test_create_pre_refresh_backup_skips_when_no_prior_baseline(self):
         """No backup should be created when canonical raw artifacts do not yet exist."""
@@ -142,17 +162,17 @@ class RefreshSupportProvenanceTests(unittest.TestCase):
         """Delta summary command should reference the backup relative to the repo root."""
         module = _load_module()
         repo_root = Path("D:/repo")
-        backup_dir = repo_root / "references" / "raw_backup_20260503T010203Z"
+        backup_dir = repo_root / "references" / "_refresh_backups" / "raw_20260503T010203Z"
         command = module.build_delta_summary_command(backup_dir, repo_root, "py -3.11")
         self.assertIn("py -3.11 scripts/generate/generate_snapshot_delta_summary.py", command)
-        self.assertIn('--old "references/raw_backup_20260503T010203Z"', command)
+        self.assertIn('--old "references/_refresh_backups/raw_20260503T010203Z"', command)
 
     def test_write_refresh_provenance_persists_required_fields(self):
         """Refresh provenance output should persist the documented minimum fields."""
         module = _load_module()
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_path = Path(tmpdir)
-            backup_dir = tmp_path / "references" / "raw_backup_20260503T010203Z"
+            backup_dir = tmp_path / "references" / "_refresh_backups" / "raw_20260503T010203Z"
             backup_dir.mkdir(parents=True)
             provenance_path = tmp_path / "public" / "artifacts" / "refresh-provenance.json"
 
@@ -179,7 +199,10 @@ class RefreshSupportProvenanceTests(unittest.TestCase):
         self.assertEqual(persisted["requested_versions"]["frontend"], "v1.44.13")
         self.assertEqual(persisted["resolved_commits"]["core"], "abc123")
         self.assertEqual(persisted["resolved_commits"]["frontend"], "def456")
-        self.assertEqual(persisted["backup_location"], "references/raw_backup_20260503T010203Z")
+        self.assertEqual(
+            persisted["backup_location"],
+            "references/_refresh_backups/raw_20260503T010203Z",
+        )
         self.assertTrue(persisted["runtime_object_info"]["requested"])
         self.assertFalse(persisted["runtime_object_info"]["merged_into_node_api_schema"])
         self.assertEqual(

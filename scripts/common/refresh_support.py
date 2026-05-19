@@ -36,8 +36,10 @@ def create_pre_refresh_backup(
         return None
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    backup_dir = references_dir / f"raw_backup_{timestamp}"
+    backup_root = references_dir / "_refresh_backups"
+    backup_dir = backup_root / f"raw_{timestamp}"
     try:
+        backup_root.mkdir(parents=True, exist_ok=True)
         shutil.copytree(references_raw_dir, backup_dir)
     except OSError as exc:
         backup_path = repo_relative_path(backup_dir, repo_root)

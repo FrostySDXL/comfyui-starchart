@@ -176,7 +176,14 @@ Refresh is not complete at the first command. The maintainer closure sequence is
 7. run the broader verification path required by the change, typically
    `python scripts/verify/run_all.py`
 8. remove the temporary backup only after you no longer need it for restore or
-   delta review
+   delta review; durable history belongs in `references/snapshots/`,
+   `public/artifacts/versions/`, and `public/artifacts/refresh-provenance.json`
+
+The current backup location is the `_refresh_backups/raw_<timestamp>/`
+directory under `references/`.
+If older `raw_backup_*` directories directly under `references/` already exist locally, leave them
+in place as legacy working backups until you intentionally delete or migrate
+them after proving the new path works for your refresh and rollback flow.
 
 ## Broken pushes and ambiguous CI failures
 
@@ -243,6 +250,9 @@ Use the smallest truthful rollback that returns the repo to a verified state.
 - Keep `public/artifacts/refresh-provenance.json` honest about the last attempted
   refresh or explicitly update the surrounding maintainer note if the published
   provenance record is intentionally being replaced.
+
+Refresh backups remain ephemeral local working state. Do not treat them as the
+repo's long-term historical retention surface.
 
 ## Artifact Boundaries
 

@@ -111,13 +111,13 @@ def main() -> int:
         description=(
             "Generate a snapshot delta summary from two artifact baselines. "
             "After running refresh_snapshots.py, pass the auto-created "
-            "references/raw_backup_<timestamp> directory as --old."
+            "references/_refresh_backups/raw_<timestamp> directory as --old."
         )
     )
     parser.add_argument(
         "--old",
         required=True,
-        help="Directory containing the old baseline artifacts (typically the auto-created references/raw_backup_<timestamp> path)",
+        help="Directory containing the old baseline artifacts (typically the auto-created references/_refresh_backups/raw_<timestamp> path)",
     )
     parser.add_argument(
         "--new", required=True, help="Directory containing the new baseline artifacts"

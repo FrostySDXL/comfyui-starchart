@@ -558,7 +558,8 @@ def main():
         description=(
             "Fetch new upstream versions and refresh snapshots, extractors, and docs. "
             "Creates an automatic repo-local backup before overwriting canonical raw artifacts "
-            "and writes refresh provenance to public/artifacts/refresh-provenance.json."
+            "under references/_refresh_backups/raw_<timestamp>/ and writes refresh provenance "
+            "to public/artifacts/refresh-provenance.json."
         )
     )
     parser.add_argument(
