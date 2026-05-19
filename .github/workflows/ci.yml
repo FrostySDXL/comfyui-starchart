@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js 22.x
+      - name: Set up Node.js (from .nvmrc)
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
@@ -99,7 +99,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js 22.x
+      - name: Set up Node.js (from .nvmrc)
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
