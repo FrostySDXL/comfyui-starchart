@@ -3,16 +3,17 @@ title: "ProfilerX Analysis"
 ---
 
 **Evidence:** Community pattern study based on pinned external version
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-19
 **Primary Source:** https://github.com/ryanontheinside/ComfyUI_ProfilerX
+**Baseline verification status:** This is a community pattern study. Current core snapshot citation paths were updated where mechanical drift was obvious, while the community-pattern analysis and intentionally retained older `progress.py` contract note remain the governing trust signals.
 
 ## Primary Sources
 
 - https://github.com/ryanontheinside/ComfyUI_ProfilerX (community pattern example)
 - ProfilerX `README.md`, `__init__.py`, `handler.py`, `routes.py`, `web/index.ts` (community repo)
-- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py` (v0.20.1, commit 64b8457f55cd7fb54ca7a956d9c73b505e903e0c) -- upstream source for ComfyUI progress handler and route patterns
-- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/execution.py` (v0.20.1, commit 64b8457f55cd7fb54ca7a956d9c73b505e903e0c) -- upstream source for handler registration during execution
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` (v0.19.3, commit 308602640) -- intentionally retained for the `ProgressHandler` callback contract because the current pinned v0.20.1 snapshot set does not include an equivalent `comfy_execution/progress.py` path
+- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701) -- upstream source for ComfyUI progress handler and route patterns
+- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/execution.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701) -- upstream source for handler registration during execution
+- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` (v0.19.3, commit 308602640) -- intentionally retained for the `ProgressHandler` callback contract because the current pinned snapshot set does not include an equivalent `comfy_execution/progress.py` path
 
 ## Scope
 

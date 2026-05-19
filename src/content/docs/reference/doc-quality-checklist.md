@@ -2,7 +2,7 @@
 title: "Doc Quality Checklist"
 ---
 
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-19
 **Related:** `writing-style-guide.md`, `source-evidence-policy.md`
 **Evidence:** Operational guidance
 
@@ -40,6 +40,7 @@ Items marked (Required) must pass before a page is merged. (Recommended) items s
 - [ ] (Required) No claim of official ComfyUI behavior without a citation from `docs.comfy.org` or a pinned upstream source
 - [ ] (Recommended) Official vs community claims are clearly separated
 - [ ] (Recommended) Repo-local policy/process pages use `Operational guidance` and do not use that label to imply ComfyUI behavior claims are source-backed
+- [ ] (Required) After a snapshot refresh, baseline verification status wording was reviewed; if the page is not fully current, the opening block says so explicitly
 - [ ] (Optional) Source citations point to pinned snapshots or official docs where applicable
 - [ ] (Optional) "TODO" or "incomplete" markers are honest; incomplete pages use the Scaffold label
 - [ ] (Optional) No words like "authoritative" or "source of truth" without exact backing

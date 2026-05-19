@@ -3,7 +3,7 @@ title: "Version Pin Status"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-18
+**Last Updated:** 2026-05-19
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.
@@ -27,6 +27,10 @@ Pinned source set:
 
 The active pinned files now live under `references/snapshots/2026-05-18/` and
 the extracted JSON in `references/raw/` points at those snapshot files.
+
+Prose docs may lag this canonical artifact baseline. When they do, they should
+declare that explicitly with a `**Baseline verification status:**` block rather
+than implying current-baseline review that did not happen.
 
 The earlier pinned baseline under `references/snapshots/2026-04-19/` is still
 preserved for historical comparison and refresh-path proof.

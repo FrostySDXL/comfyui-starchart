@@ -3,12 +3,13 @@ title: "Server-Side Composition"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-18
+**Last Updated:** 2026-05-19
 **Primary Sources:**
-- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py` (v0.20.1, commit 64b8457)
-- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/execution.py` (v0.20.1, commit 64b8457)
-- `references/snapshots/2026-04-30/comfyui-frontend-v1.44.13/src/scripts/app.ts` (v1.44.13, commit 389ff8b)
-- `references/snapshots/2026-04-30/comfyui-frontend-v1.44.13/src/types/comfy.ts` (v1.44.13, commit 389ff8b)
+- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701)
+- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/execution.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701)
+- `references/snapshots/2026-05-18/comfyui-frontend-v1.45.9/src/scripts/app.ts` (v1.45.9, commit 2dbf49fd9da0e0b809ee1f4e663148c79f730cc2)
+- `references/snapshots/2026-05-18/comfyui-frontend-v1.45.9/src/types/comfy.ts` (v1.45.9, commit 2dbf49fd9da0e0b809ee1f4e663148c79f730cc2)
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Scope
 

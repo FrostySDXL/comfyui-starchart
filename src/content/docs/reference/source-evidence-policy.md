@@ -3,7 +3,7 @@ title: "Source Evidence Policy"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-06
+**Last Updated:** 2026-05-19
 **Primary Sources:** https://docs.comfy.org/, https://github.com/Comfy-Org/ComfyUI
 
 ## Purpose
@@ -89,6 +89,32 @@ Use `Operational guidance` for repo-local policy, process, and operations pages.
 These pages describe how this repository is maintained and verified. They do not
 raise the trust level of any ComfyUI behavior claim.
 
+### Baseline verification status for prose pages
+
+When a prose page depends on the repo's pinned source baseline, add a
+`**Baseline verification status:**` line in the opening metadata block after the
+evidence and source lines. Use it to say whether the prose was re-reviewed
+against the current baseline, still reflects a prior baseline, or only received
+mechanical citation updates after a refresh.
+
+Use the wording patterns below instead of inventing page-by-page variants:
+
+```markdown
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
+```
+
+```markdown
+**Baseline verification status:** Verified against the prior pinned baseline: core `v0.20.1`, frontend `v1.44.13`, snapshots `2026-04-30`. Current-baseline re-review is still pending.
+```
+
+```markdown
+**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
+```
+
+For pages with mixed entry-level status, say that explicitly in the baseline
+status line and point readers to the inline notes. Do not collapse mixed status
+to a fully current claim.
+
 ## When Evidence Is Weak or Incomplete
 
 - say that explicitly
@@ -119,13 +145,19 @@ If a feature is in `master` but not yet in a pinned snapshot, note it: "Source-b
 
 ## Current Status
 
+The active pinned baseline is tracked on
+[Version Pin Status](version-pin-status.md). The current pinned snapshot set now
+lives under `references/snapshots/2026-05-18/`, while older pinned snapshot
+directories such as `2026-04-19/` and `2026-04-30/` remain useful historical
+comparison points.
+
 - official docs are cited across the repo
-- several pages also cite upstream source URLs
-- pinned source snapshots now exist under `references/snapshots/2026-04-19/` and `references/snapshots/2026-04-30/`
-- machine-readable reference files in `references/raw/` now point at those pinned
-  snapshot files for their extracted data
-- some prose pages still cite official docs pages or broader upstream URLs where
-  exact pinned snapshot references would add useful precision
+- several pages also cite upstream source URLs or pinned snapshot paths
+- machine-readable reference files in `references/raw/` point at the active
+  pinned snapshot files for their extracted data
+- some prose pages may still reflect a prior baseline or only partial
+  current-baseline review; those pages should declare that with a baseline
+  verification status block near the top
 - this policy now formally integrates with the writing style guide at
   `docs/reference/writing-style-guide.md`
 

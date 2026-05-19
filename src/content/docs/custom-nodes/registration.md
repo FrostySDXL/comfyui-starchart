@@ -2,14 +2,15 @@
 title: "Registration"
 ---
 
-**Evidence:** Mixed: source-backed (io.Schema, execute, NodeOutput from pinned Python snapshot); observed (ComfyExtension + comfy_entrypoint() pattern from pinned frontend TypeScript source and community examples)
-**Last Updated:** 2026-05-05
+**Evidence:** Source-backed from pinned snapshots; Observed (community pattern)
+**Last Updated:** 2026-05-19
 **Primary Sources**
 
 - https://docs.comfy.org/custom-nodes/overview
 - https://docs.comfy.org/custom-nodes/backend/server_overview
-- `references/snapshots/2026-04-30/comfyui-frontend-v1.44.13/src/types/comfy.ts` (ComfyExtension interface)
-- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/comfy_api/latest/_io.py` (io.Schema, io.ComfyNode, NodeOutput)
+- `references/snapshots/2026-05-18/comfyui-frontend-v1.45.9/src/types/comfy.ts` (ComfyExtension interface)
+- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/comfy_api/latest/_io.py` (io.Schema, io.ComfyNode, NodeOutput)
+**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
 
 ## Scope
 

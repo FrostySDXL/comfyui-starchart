@@ -3,8 +3,9 @@ title: "Extension Lifecycle Boundaries"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-05-18
-**Primary Sources:** https://docs.comfy.org/custom-nodes/js/javascript_hooks, https://docs.comfy.org/development/comfyui-server/comms_routes, `references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py`
+**Last Updated:** 2026-05-19
+**Primary Sources:** https://docs.comfy.org/custom-nodes/js/javascript_hooks, https://docs.comfy.org/development/comfyui-server/comms_routes, `references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py`
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Scope
 

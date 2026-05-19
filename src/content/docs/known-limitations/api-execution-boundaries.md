@@ -3,7 +3,8 @@ title: "Known Limitations: API and Execution Boundaries"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-05-18
+**Last Updated:** 2026-05-19
+**Baseline verification status:** This page contains mixed entry-level verification. Source-backed limitations tied to the current pinned snapshots were re-reviewed against core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`; docs.comfy.org-backed API-mode guidance still carries the prior-baseline notes shown inline.
 
 ## Scope
 
@@ -15,7 +16,7 @@ It keeps only limitations that are source-backed or official-docs-backed.
 
 **Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks ; https://docs.comfy.org/development/comfyui-server/comms_routes
 
-**Verified in:** docs.comfy.org pages cited above and this repo's pinned core v0.20.1 / frontend v1.44.13 baseline
+**Verified in:** docs.comfy.org pages cited above and this repo's prior pinned core `v0.20.1` / frontend `v1.44.13` baseline. Current-baseline re-review is still pending.
 
 **Status:** Behavioral constraint
 
@@ -38,7 +39,7 @@ outputs and metadata.
 
 **Source:** https://docs.comfy.org/custom-nodes/overview
 
-**Verified in:** docs.comfy.org custom-node overview, with wording kept aligned to this repo's pinned core `v0.20.1` / frontend `v1.44.13` API-mode guidance
+**Verified in:** docs.comfy.org custom-node overview, with wording kept aligned to this repo's prior pinned core `v0.20.1` / frontend `v1.44.13` API-mode guidance. Current-baseline re-review is still pending.
 
 **Status:** Behavioral constraint
 
@@ -62,7 +63,7 @@ extension path.
 
 **Source:** `src/content/docs/reference/machine-readable-artifacts.md`; `src/content/docs/reference/runtime-ci-operations.md`
 
-**Verified in:** current repo-published artifact contract and runtime-capture guidance for the pinned core v0.20.1 / frontend v1.44.13 baseline
+**Verified in:** current repo-published artifact contract and runtime-capture guidance for the pinned core `v0.21.1` / frontend `v1.45.9` baseline
 
 **Status:** Repo-local publication boundary
 
@@ -79,15 +80,15 @@ stable published baseline. For routing help, see
 [API Integration Troubleshooting](../troubleshooting/api-integration.md) and
 [Start Here: Tooling Builder](../start-here/tooling-builder.md).
 
-**Last verified:** 2026-05-03
+**Last verified:** 2026-05-19
 
 ---
 
 ## Initial WebSocket `status` only exposes queue count, not full queue lists
 
-**Source:** `references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py`
+**Source:** `references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py`
 
-**Verified in:** ComfyUI core v0.20.1 pinned snapshot
+**Verified in:** ComfyUI core `v0.21.1` pinned snapshot
 
 **Status:** Behavioral constraint
 
@@ -100,15 +101,15 @@ the full `queue_running` and `queue_pending` lists.
 entries themselves. Treat the WebSocket `status` snapshot as a lightweight
 queue-count signal.
 
-**Last verified:** 2026-04-30
+**Last verified:** 2026-05-19
 
 ---
 
 ## `executed` is not emitted for every completed node
 
-**Source:** `references/snapshots/2026-04-30/comfyui-core-v0.20.1/execution.py`
+**Source:** `references/snapshots/2026-05-18/comfyui-core-v0.21.1/execution.py`
 
-**Verified in:** ComfyUI core v0.20.1 pinned snapshot
+**Verified in:** ComfyUI core `v0.21.1` pinned snapshot
 
 **Status:** Behavioral constraint
 
@@ -120,7 +121,7 @@ output still execute, but they do not emit this message.
 history lookup together when you need complete execution tracking. Do not use
 `executed` as a proxy for "every node finished."
 
-**Last verified:** 2026-04-30
+**Last verified:** 2026-05-19
 
 ## Read Next
 

@@ -2,9 +2,10 @@
 title: "Custom Node Development Guide"
 ---
 
-**Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-05-07
+**Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
+**Last Updated:** 2026-05-19
 **Primary Source:** https://docs.comfy.org/custom-nodes/overview
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Primary Sources
 
@@ -12,6 +13,8 @@ title: "Custom Node Development Guide"
 - https://docs.comfy.org/custom-nodes/backend/server_overview
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
 - https://docs.comfy.org/custom-nodes/walkthrough
+- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/comfy_api/latest/_io.py`
+- `references/snapshots/2026-05-18/comfyui-frontend-v1.45.9/src/types/comfy.ts`
 
 ## Scope
 
@@ -31,9 +34,10 @@ Most custom nodes are server-side Python nodes. Those define inputs,
 outputs, and an execution function so the graph can pass data through
 them like any built-in Comfy node.
 
-This page was re-reviewed against the current pinned repository baseline on
-2026-05-07. The guidance here still matches the repo's current core `v0.20.1`
-and frontend `v1.44.13` orientation at the level this page intends to cover.
+This page has been re-reviewed at its current level of guidance against the
+active pinned baseline. The observed-Python-entrypoint caveat above still
+applies where the repo is relying on frontend and community evidence rather than
+direct pinned Python entrypoint source.
 
 For current development, V3 is the recommended mental model: declare a
 schema with `io.Schema`, implement execution with `execute`, and expose

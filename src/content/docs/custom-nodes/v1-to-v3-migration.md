@@ -3,14 +3,15 @@ title: "V1 to V3 Migration Guide"
 ---
 
 **Evidence:** Official docs-backed (migration steps); Community pattern studies (case studies)
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-19
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/migration
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Primary Sources
 
 - https://docs.comfy.org/custom-nodes/overview
 - https://docs.comfy.org/custom-nodes/backend/migration
-- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/comfy_api/latest/_io.py`
+- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/comfy_api/latest/_io.py`
 
 ## Scope
 

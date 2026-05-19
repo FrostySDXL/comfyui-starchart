@@ -3,11 +3,12 @@ title: "API to Workflow: Execution Events"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-19
 **Primary Sources:**
 - https://docs.comfy.org/development/comfyui-server/comms_messages
-- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py` (v0.20.1, commit 64b8457)
-- `references/snapshots/2026-04-30/comfyui-core-v0.20.1/execution.py` (v0.20.1, commit 64b8457)
+- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701)
+- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/execution.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701)
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Who This Page Is For
 
@@ -98,7 +99,7 @@ progress.
 ### 3. `execution_cached`
 
 Emitted when a node's outputs are already cached from a previous run
-and no new computation is needed. Source: `execution.py` lines 745-753.
+and no new computation is needed. Source: `execution.py` lines 744-755.
 
 ```json
 {

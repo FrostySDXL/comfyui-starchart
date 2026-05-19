@@ -1,6 +1,6 @@
 # Contributing
 
-**Last Updated:** 2026-05-13
+**Last Updated:** 2026-05-19
 
 Thank you for contributing to the ComfyUI Knowledge Base. This guide is the
 canonical repo-local maintainer workflow authority for making maintainer-grade
@@ -283,13 +283,22 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    `references/_refresh_backups/` (pre-refresh backups).
 
    Verify after updating:
-   ```bash
-   python scripts/verify/cross_references.py
-   ```
+    ```bash
+    python scripts/verify/cross_references.py
+    ```
+
+   For each stale prose page, decide whether the drift is only mechanical (for
+   example a snapshot path or surrounding citation path changed) or whether the
+   prose itself needs a new current-baseline review. If the prose was not fully
+   re-reviewed, add or update the page's `**Baseline verification status:**`
+   block instead of pretending the page is current. Use the standard wording in
+   `src/content/docs/reference/source-evidence-policy.md` and do not blindly
+   replace old version or snapshot references when the page still truthfully
+   reflects a prior baseline.
 
 8. Run the maintainer verification gate:
-   ```bash
-   python scripts/verify/run_all.py
+    ```bash
+    python scripts/verify/run_all.py
    ```
 
 The live clone -> extract -> generate -> publish -> verify closure path was validated end-to-end on 2026-05-18 with core `v0.21.1` and frontend `v1.45.9`. Repeat this workflow when a new upstream baseline is needed.

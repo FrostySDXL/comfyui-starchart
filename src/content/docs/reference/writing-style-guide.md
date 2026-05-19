@@ -2,7 +2,7 @@
 title: "Writing Style Guide"
 ---
 
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-19
 **Related:** `source-evidence-policy.md` for evidence labeling rules
 **Evidence:** Operational guidance
 
@@ -237,6 +237,14 @@ label near the top of the page, after the title and scope statement. Use the
 qualified form when a pinned source is available. Use `Operational guidance`
 for repo-local policy, process, and operations pages; do not use it to support
 claims about ComfyUI behavior.
+
+If a page depends on the repo's pinned baseline, place the
+`**Baseline verification status:**` block immediately under the opening
+evidence/source metadata and before the first main section heading. Use it when
+the page is verified against the current baseline, still relies on a prior
+baseline, or only received mechanical citation updates after a refresh. Reuse
+the exact wording patterns from `source-evidence-policy.md` instead of making up
+new variants.
 
 ## Author Workflow Summary
 

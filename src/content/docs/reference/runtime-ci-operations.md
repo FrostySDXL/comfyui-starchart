@@ -3,7 +3,7 @@ title: "Runtime and CI Operations"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-06
+**Last Updated:** 2026-05-19
 
 ## Overview
 
@@ -153,13 +153,16 @@ Adds:
 
 ```bash
 # Source-only refresh
-python scripts/refresh_snapshots.py --core-version v0.20.1
+python scripts/refresh_snapshots.py --core-version <core-version-pin>
 
 # Hybrid refresh with runtime capture
-python scripts/refresh_snapshots.py --core-version v0.20.1 \
+python scripts/refresh_snapshots.py --core-version <core-version-pin> \
   --runtime-object-info-url http://127.0.0.1:8188 \
-  --runtime-object-info-version v0.20.1
+  --runtime-object-info-version <core-version-pin>
 ```
+
+Get the active pin values from [Version Pin Status](version-pin-status.md)
+before running the refresh commands.
 
 Refresh is not complete at the first command. The maintainer closure sequence is:
 

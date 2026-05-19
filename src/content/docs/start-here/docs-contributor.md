@@ -3,7 +3,7 @@ title: "Start Here: Docs Contributor"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-19
 
 ## Who This Path Is For
 
@@ -29,6 +29,12 @@ Read these files in this order before writing or editing prose documentation:
 Use `CONTRIBUTING.md` only when your change crosses into maintainer-owned
 surfaces such as scripts, CI, extracted data, published artifacts, or other
 repo-local workflow material.
+
+If the page you are editing depends on the pinned snapshot baseline, reuse the
+`**Baseline verification status:**` wording from
+[`source-evidence-policy.md`](../reference/source-evidence-policy.md). Do not
+blindly replace older version, commit, or snapshot references after a refresh
+unless you actually re-reviewed the prose against the new baseline.
 
 ## How to Pick the Right Page Mode
 
