@@ -3,7 +3,7 @@ title: "How-To Section Guide"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-13
+**Last Updated:** 2026-05-18
 
 ## Scope
 
@@ -21,6 +21,7 @@ you already know the outcome you want.
 | Plan for Manager-compatible distribution and registry expectations | [Integrate with Manager](integrate-with-manager.md) |
 | Isolate and recover from custom node breakage | [Troubleshoot Custom Node Breakage](troubleshoot-custom-node-breakage.md) |
 | Watch prompt progress and execution state | [Monitor Execution](monitor-execution.md) |
+| Run the repo's live runtime smoke or metadata capture scripts | [Run Runtime Verification Locally](run-runtime-verification-locally.md) |
 | Add an extension-owned HTTP endpoint | [Add Custom Routes](add-custom-routes.md) |
 | Load small consumer-oriented artifact examples | [Consumer Starter Examples](consumer-starter-examples.md) |
 
@@ -31,6 +32,7 @@ you already know the outcome you want.
 - **Integrate with Manager** explains author-facing distribution boundaries and registry-backed expectations.
 - **Update ComfyUI** explains install-mode-aware update steps and version-line choices.
 - **Troubleshoot custom node breakage** explains how to isolate and confirm failures after installation or updates.
+- **Run runtime verification locally** explains the opt-in live ComfyUI checks that sit outside normal CPU-safe repo CI.
 
 ## Read Next
 

@@ -76,6 +76,14 @@
       "summary": "This glossary defines repeated repository and artifact terms that appear across the docs. It is an orientation aid, not a tutorial or a second reference set."
     },
     {
+      "title": "Quick Reference",
+      "path": "reference/quick-reference.md",
+      "nav_section": "Orientation / Quick Reference",
+      "audience": null,
+      "evidence": "Operational guidance",
+      "summary": "This page is a compact lookup surface for common repo-documentation and ComfyUI reference questions. Use it when you already know the kind of answer you need and want the shortest path to the right page."
+    },
+    {
       "title": "Troubleshooting",
       "path": "troubleshooting/index.md",
       "nav_section": "Orientation / Troubleshooting",
@@ -106,6 +114,14 @@
       "audience": null,
       "evidence": "Operational guidance",
       "summary": "This page covers repo-local doc authoring confusion: what kind of file you are editing, when to start from a template or helper, and which minimum checks must pass before you call a doc change done."
+    },
+    {
+      "title": "General Diagnostic Workflow",
+      "path": "troubleshooting/diagnostic-workflow.md",
+      "nav_section": "Orientation / Troubleshooting",
+      "audience": null,
+      "evidence": "Operational guidance",
+      "summary": "This page gives a general triage workflow for readers who know something is wrong but do not yet know whether the problem belongs to the standard API, custom nodes, frontend extensions, published artifacts, or this repository's own maintenance workflow."
     },
     {
       "title": "Known Limitations",
@@ -340,6 +356,22 @@
       "summary": "This page documents the most common ComfyUI extension architecture patterns and the tradeoffs between them. It covers frontend-only, backend-only, route-backed, and hybrid approaches."
     },
     {
+      "title": "Extension Lifecycle Boundaries",
+      "path": "extensions/extension-lifecycle-boundaries.md",
+      "nav_section": "Extensions",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
+      "summary": "This page maps the main lifecycle boundaries that extension authors cross when they move between frontend hooks, custom routes, server hooks, and graph-facing custom nodes."
+    },
+    {
+      "title": "Route-Backed Panels and Tools",
+      "path": "extensions/route-backed-panels-and-tools.md",
+      "nav_section": "Extensions",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version",
+      "summary": "This page documents the route-backed tool pattern: a frontend panel or control surface paired with extension-owned HTTP routes."
+    },
+    {
       "title": "ProfilerX Analysis",
       "path": "extensions/profilerx-analysis.md",
       "nav_section": "Extensions",
@@ -468,6 +500,14 @@
       "summary": "ComfyUI exposes execution state through two complementary channels:"
     },
     {
+      "title": "Run Runtime Verification Locally",
+      "path": "how-to/run-runtime-verification-locally.md",
+      "nav_section": "How-To",
+      "audience": null,
+      "evidence": "Operational guidance",
+      "summary": "Use this page when you want to run the repo's runtime smoke or runtime metadata capture workflows against a live ComfyUI instance on your own machine or lab environment."
+    },
+    {
       "title": "Add Custom Routes",
       "path": "how-to/add-custom-routes.md",
       "nav_section": "How-To",
@@ -500,6 +540,14 @@
       "summary": null
     },
     {
+      "title": "Decision Tree: Choosing a Distribution Path",
+      "path": "decision-trees/distribution-path.md",
+      "nav_section": "Decision Trees",
+      "audience": null,
+      "evidence": "Official docs-backed from docs.comfy.org",
+      "summary": null
+    },
+    {
       "title": "Object Info",
       "path": "reference/object-info.md",
       "nav_section": "Reference",
@@ -508,11 +556,19 @@
       "summary": "`GET /object_info` is ComfyUI's node discovery endpoint. It returns the metadata the frontend and external tooling need to understand which nodes exist, what inputs they accept, what outputs they produce, and how they should be displayed."
     },
     {
+      "title": "Artifact Schema Version Migration",
+      "path": "reference/artifact-schema-version-migration.md",
+      "nav_section": "Reference",
+      "audience": null,
+      "evidence": "Operational guidance",
+      "summary": "This page explains how tooling consumers should interpret and respond to changes in the published `artifact_schema_version` field."
+    },
+    {
       "title": "Source Evidence Policy",
       "path": "reference/source-evidence-policy.md",
       "nav_section": "Reference",
       "audience": null,
-      "evidence": null,
+      "evidence": "Operational guidance",
       "summary": null
     },
     {
@@ -530,6 +586,14 @@
       "audience": null,
       "evidence": "Operational guidance",
       "summary": null
+    },
+    {
+      "title": "Docs Deprecation and Staleness Policy",
+      "path": "reference/docs-deprecation-and-staleness-policy.md",
+      "nav_section": "Reference",
+      "audience": null,
+      "evidence": "Operational guidance",
+      "summary": "This page defines how maintainers should handle documentation that becomes stale, version-misaligned, or superseded."
     },
     {
       "title": "Community Maintenance Policy",
@@ -578,6 +642,14 @@
       "audience": null,
       "evidence": "Operational guidance",
       "summary": null
+    },
+    {
+      "title": "Evaluate Ecosystem Packages Safely",
+      "path": "ecosystem/evaluate-packages-safely.md",
+      "nav_section": "Ecosystem",
+      "audience": null,
+      "evidence": "Operational guidance",
+      "summary": "This page explains how to use the repo's ecosystem material safely when you are deciding whether to depend on a third-party ComfyUI package."
     },
     {
       "title": "Deep Dive: Workflow JSON as an Interchange Surface",

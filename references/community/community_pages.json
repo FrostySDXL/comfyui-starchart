@@ -94,6 +94,17 @@
       "notes": "Hybrid guide: official Manager docs primary, pinned community repo used for narrow verification"
     },
     {
+      "page_path": "src/content/docs/extensions/route-backed-panels-and-tools.md",
+      "page_kind": "hand_authored_guide",
+      "evidence_label": "Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version",
+      "source_type": "hybrid",
+      "last_verified": "2026-05-18",
+      "needs_review_after": "2026-08-18",
+      "maintenance_tier": "tier_2",
+      "generated_from": null,
+      "notes": "Hybrid extension guide: official route docs primary, pinned community repos used as bounded pattern examples"
+    },
+    {
       "page_path": "src/content/docs/custom-nodes/best-practices.md",
       "page_kind": "hand_authored_guide",
       "evidence_label": "Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version",

@@ -18,13 +18,15 @@
     "items": [
       { "label": "What's New", "path": "whats-new/index.md", "docs_index_nav_section": "Orientation / What's New" },
       { "label": "Glossary", "path": "reference/glossary.md", "docs_index_nav_section": "Orientation / Glossary" },
+      { "label": "Quick Reference", "path": "reference/quick-reference.md", "docs_index_nav_section": "Orientation / Quick Reference" },
       {
         "label": "Troubleshooting",
         "items": [
           { "label": "Troubleshooting", "path": "troubleshooting/index.md" },
           { "label": "API Integration", "path": "troubleshooting/api-integration.md" },
           { "label": "Custom Node and Extension Boundaries", "path": "troubleshooting/custom-node-and-extension-boundaries.md" },
-          { "label": "Docs Authoring and Site Build", "path": "troubleshooting/docs-authoring-and-site-build.md" }
+          { "label": "Docs Authoring and Site Build", "path": "troubleshooting/docs-authoring-and-site-build.md" },
+          { "label": "General Diagnostic Workflow", "path": "troubleshooting/diagnostic-workflow.md" }
         ]
       },
       {
@@ -86,6 +88,8 @@
     "label": "Extensions",
     "items": [
       { "label": "Patterns", "path": "extensions/patterns.md" },
+      { "label": "Extension Lifecycle Boundaries", "path": "extensions/extension-lifecycle-boundaries.md" },
+      { "label": "Route-Backed Panels and Tools", "path": "extensions/route-backed-panels-and-tools.md" },
       { "label": "ProfilerX Analysis", "path": "extensions/profilerx-analysis.md" },
       { "label": "Common Architectures", "path": "extensions/common-architectures.md" }
     ]
@@ -112,6 +116,7 @@
       { "label": "Publish a Custom Node to Registry", "path": "how-to/publish-a-custom-node-to-registry.md" },
       { "label": "Troubleshoot Custom Node Breakage", "path": "how-to/troubleshoot-custom-node-breakage.md" },
       { "label": "Monitor Execution", "path": "how-to/monitor-execution.md" },
+      { "label": "Run Runtime Verification Locally", "path": "how-to/run-runtime-verification-locally.md" },
       { "label": "Add Custom Routes", "path": "how-to/add-custom-routes.md" },
       { "label": "Consumer Starter Examples", "path": "how-to/consumer-starter-examples.md" }
     ]
@@ -120,7 +125,8 @@
     "label": "Decision Trees",
     "items": [
       { "label": "API Integration", "path": "decision-trees/api-integration.md" },
-      { "label": "Custom Node Architecture", "path": "decision-trees/custom-node-architecture.md" }
+      { "label": "Custom Node Architecture", "path": "decision-trees/custom-node-architecture.md" },
+      { "label": "Distribution Path", "path": "decision-trees/distribution-path.md" }
     ]
   },
   {
@@ -128,9 +134,11 @@
     "items": [
       { "label": "Object Info", "path": "reference/object-info.md" },
       { "label": "Server Py Summary", "path": "reference/server-py-summary.md" },
+      { "label": "Artifact Schema Version Migration", "path": "reference/artifact-schema-version-migration.md" },
       { "label": "Source Evidence Policy", "path": "reference/source-evidence-policy.md" },
       { "label": "Writing Style Guide", "path": "reference/writing-style-guide.md" },
       { "label": "Doc Quality Checklist", "path": "reference/doc-quality-checklist.md" },
+      { "label": "Docs Deprecation and Staleness Policy", "path": "reference/docs-deprecation-and-staleness-policy.md" },
       { "label": "Community Maintenance Policy", "path": "reference/community-maintenance-policy.md" },
       { "label": "Community Generated Surfaces", "path": "reference/community-generated-surfaces.md" },
       { "label": "Version Pin Status", "path": "reference/version-pin-status.md" },
@@ -142,7 +150,8 @@
   {
     "label": "Ecosystem",
     "items": [
-      { "label": "Map", "path": "ecosystem/map.md" }
+      { "label": "Map", "path": "ecosystem/map.md" },
+      { "label": "Evaluate Packages Safely", "path": "ecosystem/evaluate-packages-safely.md" }
     ]
   },
   {

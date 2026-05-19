@@ -3,7 +3,7 @@ title: "Troubleshooting"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-07
+**Last Updated:** 2026-05-18
 
 ## Scope
 
@@ -33,6 +33,8 @@ in the repo's current docs. It is not a general support manual or a full FAQ.
 - [Docs Authoring and Site Build](docs-authoring-and-site-build.md) --
   hand-authored versus generated outputs, page creation paths, and minimum doc
   verification
+- [General Diagnostic Workflow](diagnostic-workflow.md) -- start with scope,
+  classify the failing surface, and route to the right deeper page
 
 ## Read Next
 
