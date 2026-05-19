@@ -27,7 +27,7 @@ npm run build
 
 Serve locally: `npm run dev`
 
-Always Use Supported Node.js for site/framework work: `22.12+`
+Always Use Supported Node.js for site/framework work: `22.12+` (tested through Node 24 LTS)
 
 Maintainer dependency contract:
 
@@ -209,7 +209,7 @@ on hardcoded Windows install paths.
 
 ## 4.5. Local Node.js Baseline
 
-- Use Node.js `22.12+` when touching site-framework or frontend-build surfaces.
+- Use Node.js `22.12+` (tested through Node 24 LTS) when touching site-framework or frontend-build surfaces.
 - The repo enforces this with the root `.nvmrc` file (content: `22.12`).
 - CI selects the version via `actions/setup-node@v4` with `node-version-file: ".nvmrc"`.
 

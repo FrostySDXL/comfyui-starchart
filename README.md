@@ -101,7 +101,7 @@ For editorial standards and evidence rules, use these files together:
 
 Supported Python: `3.11+`
 
-Supported Node.js for site-work and upcoming Starlight surfaces: `22.12+`
+Supported Node.js for site-work and Starlight surfaces: `22.12+` (tested through Node 24 LTS)
 
 ```bash
 python -m pip install -r requirements.lock

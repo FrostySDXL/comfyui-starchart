@@ -17,5 +17,14 @@ build/
 archived/
 .tmp_runtime_verify/
 .env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+credentials*
+*secret*
 livedocs/
 livetests/
