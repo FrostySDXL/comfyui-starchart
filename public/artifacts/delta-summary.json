@@ -1,6 +1,6 @@
 {
   "comparison": {
-    "old": "references/raw_backup_before_refresh",
+    "old": "references/raw_backup_20260519T004701Z",
     "new": "references/raw"
   },
   "notes": [
@@ -51,10 +51,10 @@
         "changed": []
       },
       "io_types": {
-        "old_count": 68,
-        "new_count": 69,
+        "old_count": 69,
+        "new_count": 70,
         "added": [
-          "RANGE:Range"
+          "BACKGROUND_REMOVAL:BackgroundRemoval"
         ],
         "removed": [],
         "changed": [
@@ -112,6 +112,7 @@
           "NOISE:Noise",
           "PHOTOMAKER:Photomaker",
           "POINT:Point",
+          "RANGE:Range",
           "SAMPLER:Sampler",
           "SEGS:SEGS",
           "SIGMAS:Sigmas",

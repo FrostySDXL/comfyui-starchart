@@ -3,8 +3,8 @@ title: "Server.py Summary"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-17
-**Primary Sources:** references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py
+**Last Updated:** 2026-05-18
+**Primary Sources:** references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py
 
 ## Overview
 
