@@ -20,6 +20,13 @@ test('rewriteDocLinkHref preserves anchors, queries, and external URLs', () => {
   assert.equal(rewriteDocLinkHref('#scope'), '#scope');
 });
 
+test('rewriteDocLinkHref normalizes backslashes and preserves combined query-plus-hash suffixes', () => {
+  assert.equal(
+    rewriteDocLinkHref('..\\reference\\version-pin-status.md?view=compact#automation'),
+    '../reference/version-pin-status/?view=compact#automation',
+  );
+});
+
 test('stripLeadingH1 removes the first content H1 but preserves leading html banners', () => {
   const tree = {
     type: 'root',
@@ -47,4 +54,19 @@ test('stripLeadingH1 leaves later H1 nodes alone when earlier content exists', (
   stripLeadingH1(tree);
 
   assert.deepEqual(tree.children.map((node) => node.type), ['paragraph', 'heading']);
+});
+
+test('stripLeadingH1 ignores leading definitions before removing the first content H1', () => {
+  const tree = {
+    type: 'root',
+    children: [
+      { type: 'definition', identifier: 'ref', url: 'reference/glossary.md' },
+      { type: 'heading', depth: 1, children: [{ type: 'text', value: 'Drop Me' }] },
+      { type: 'paragraph', children: [{ type: 'text', value: 'Body.' }] },
+    ],
+  };
+
+  stripLeadingH1(tree);
+
+  assert.deepEqual(tree.children.map((node) => node.type), ['definition', 'paragraph']);
 });

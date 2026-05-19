@@ -40,8 +40,10 @@ running ComfyUI process.
   the advisory scripts
 - `.github/workflows/weekly-pin-check.yml` -- verifies pinned commits still
   resolve upstream
-- `.github/workflows/upstream-watch.yml` -- detects newer upstream versions and
-  creates tracking issues
+- `.github/workflows/upstream-watch.yml` -- scheduled every Monday at 10:00 UTC
+  and available on manual dispatch; scheduled runs detect newer upstream
+  versions and create or update tracking issues, while manual runs produce the
+  watch artifacts without mutating issue state
 
 ### When to rely on it
 
@@ -68,6 +70,10 @@ CPU-safe CI does **not** verify that:
 - `.github/workflows/advisory-checks.yml` reruns those same advisory scripts as
   blocking on a scheduled or manual basis so maintainers still get a durable
   escalation path.
+- `scripts/verify/example_surface_integrity.py` currently stays advisory in
+  normal push/PR CI because the example surface and its routing references are
+  still evolving. Promote it only after maintainers judge the signal stable
+  enough that false positives are uncommon.
 
 ## Opt-In Runtime Verification
 

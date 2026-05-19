@@ -2,6 +2,7 @@
 title: "Source Evidence Policy"
 ---
 
+**Evidence:** Operational guidance
 **Last Updated:** 2026-05-06
 **Primary Sources:** https://docs.comfy.org/, https://github.com/Comfy-Org/ComfyUI
 
@@ -123,8 +124,8 @@ If a feature is in `master` but not yet in a pinned snapshot, note it: "Source-b
 - pinned source snapshots now exist under `references/snapshots/2026-04-19/` and `references/snapshots/2026-04-30/`
 - machine-readable reference files in `references/raw/` now point at those pinned
   snapshot files for their extracted data
-- broader prose documentation still needs ongoing review to replace broad `master`
-  URLs with exact pinned references where precision matters
+- some prose pages still cite official docs pages or broader upstream URLs where
+  exact pinned snapshot references would add useful precision
 - this policy now formally integrates with the writing style guide at
   `docs/reference/writing-style-guide.md`
 

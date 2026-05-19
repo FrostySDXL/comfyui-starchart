@@ -110,6 +110,12 @@ when your change touches the example surface or its routing references. It is
 not part of `run_all.py`, but it now also runs in advisory CI so example-surface
 drift stays visible without widening the default blocking path.
 
+Keep this verifier advisory-only in normal push/PR CI while the example surface
+and its routing references are still evolving. The promotion path is: reduce
+false positives, prove the signal stays stable across routine example/docs
+changes, then intentionally move it into `run_all.py` and the blocking CI job in
+the same change.
+
 ---
 
 ## What This Repository Is
@@ -239,7 +245,10 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    ```bash
    python scripts/refresh_snapshots.py --core-version <version> --frontend-version <version>
    ```
-2. Confirm that the script reported a repo-local `references/raw_backup_TIMESTAMP` path when a prior canonical baseline existed, and that it wrote `public/artifacts/refresh-provenance.json`.
+2. Confirm that the script wrote `public/artifacts/refresh-provenance.json`, and that the file truthfully reflects the attempted path:
+   - `backup_location` should contain a repo-local `references/raw_backup_TIMESTAMP` path when a prior canonical baseline existed, otherwise `null`
+   - the `published` block should still show that `refresh-provenance.json` is a published support artifact rather than a manifest-discovered canonical artifact
+   - the `next_steps` block should include the repo-local follow-up commands needed to publish artifacts, verify integrity, and optionally regenerate the delta summary
 3. Republish the artifact surface:
    ```bash
    python scripts/generate/publish_reference_artifacts.py
@@ -258,6 +267,8 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    ```bash
    python scripts/verify/run_all.py
    ```
+
+AO note: this repo now hardens the provenance-writing contract and follow-up command hints without treating that as proof that a fresh upstream refresh rehearsal succeeded end-to-end. A future real refresh execution is still required to validate the live clone -> extract -> generate -> publish closure path.
 
 ### Adding a New Verification Script
 
@@ -454,8 +465,9 @@ modifying runtime extractors.
 
 - **`validate_schema.py` fails:** The error message usually names the exact file
   and field that is invalid. Fix the source JSON, not any generated output.
-- **`cross_references.py` fails:** It lists broken internal links. Check that the
-  target page exists and that the path uses forward slashes.
+- **`cross_references.py` fails:** It lists broken `references/...` path mentions
+  in docs or broken source-path metadata in `references/raw/*.json`. Check that
+  the referenced file exists and that the path uses forward slashes.
 - **`verify_artifact_integrity.py` fails:** A canonical raw artifact,
   published current copy, or manifest checksum is out of sync. Republish with
   `publish_reference_artifacts.py` and verify that no published copy was
@@ -534,8 +546,8 @@ For script or extractor changes, also include:
 
 ## Local Node.js Baseline
 
-Use Node.js `22.x` when touching site-framework or frontend-build surfaces.
-The repo enforces this with the root `.nvmrc` file (content: `22`). CI uses
+Use Node.js `22.12+` when touching site-framework or frontend-build surfaces.
+The repo enforces this with the root `.nvmrc` file (content: `22.12`). CI uses
 `actions/setup-node@v4` with `node-version-file: ".nvmrc"` to select the
 correct version.
 - Review `AGENTS.md` for the full operational reference (machine-oriented, but comprehensive).

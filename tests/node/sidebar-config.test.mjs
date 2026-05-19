@@ -31,3 +31,15 @@ test('toStarlightSidebar converts checked-in paths to Starlight sidebar items', 
   const glossaryEntry = orientationSection.items.find((entry) => entry.label === 'Glossary');
   assert.equal(glossaryEntry.slug, 'reference/glossary');
 });
+
+test('toStarlightSidebar normalizes backslash paths and derives fallback labels deterministically', () => {
+  const sidebar = toStarlightSidebar([
+    {
+      label: 'Reference',
+      items: [{ path: 'reference\\version-pin-status.md' }],
+    },
+  ]);
+
+  assert.equal(sidebar[0].items[0].label, 'Version Pin Status');
+  assert.equal(sidebar[0].items[0].slug, 'reference/version-pin-status');
+});

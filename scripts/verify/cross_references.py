@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
-"""Verify that all cross-references in docs and JSON files point to existing paths.
+"""Verify repo-local references path mentions in docs and extracted JSON metadata.
 
 Usage:
     python scripts/verify/cross_references.py
 
-Exits 0 if all references are valid, exits 1 with a report of broken references.
+Checks two bounded surfaces only:
+    1. `references/...` path mentions inside published markdown docs
+    2. source-path metadata inside `references/raw/*.json`
+
+This script does not validate general intra-doc markdown links. The site build is
+the broader guard for those navigation paths.
+
+Exits 0 if all checked references are valid, exits 1 with a report of broken
+references.
 """
 
 import json
@@ -109,12 +117,12 @@ def verify_json_source_references() -> list[tuple[str, str]]:
 
 
 def main():
-    """Run all cross-reference checks and report results."""
+    """Run bounded references-path checks and report results."""
     errors = []
 
     md_broken = verify_markdown_references()
     if md_broken:
-        print("BROKEN REFERENCES IN MARKDOWN DOCS:")
+        print("BROKEN REFERENCES PATHS IN MARKDOWN DOCS:")
         for doc_file, ref_path in md_broken:
             print(f"  {doc_file} -> {ref_path}")
         errors.extend(md_broken)
@@ -127,7 +135,7 @@ def main():
         errors.extend(json_broken)
 
     if not errors:
-        print("All cross-references are valid.")
+        print("All references-path checks are valid.")
         return 0
     else:
         print(f"\nFound {len(errors)} broken reference(s).")

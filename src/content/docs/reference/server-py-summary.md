@@ -2,42 +2,47 @@
 title: "Server.py Summary"
 ---
 
-**Last Synced:** 2026-04-30
-**Source:** references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py
+**Evidence:** Source-backed from pinned snapshots
+**Last Updated:** 2026-05-17
+**Primary Sources:** references/snapshots/2026-04-30/comfyui-core-v0.20.1/server.py
 
 ## Overview
 
-Generated from `references/raw/server_endpoints.json`.
+This page is a bounded generated inventory built from `references/raw/server_endpoints.json`.
+
+Use it to scan extracted routes, parameters, and structured return hints from pinned `server.py` analysis.
+
+It does **not** replace the reader-oriented endpoint guidance in [API Endpoints](../api/endpoints.md). Empty descriptions or generic summaries usually mean the extractor could not prove richer semantics from the pinned source without inference.
 
 ## Route Summary
 
 | Method | Route | Description | Parameters |
 | --- | --- | --- | --- |
-| GET | /ws |  | clientId (query) default= |
-| GET | / |  | - |
-| GET | /embeddings |  | - |
-| GET | /models |  | - |
-| GET | /models/{folder} |  | folder (path) |
-| GET | /extensions |  | - |
-| POST | /upload/image |  | image (form); overwrite (form); type (form); subfolder (form) default= |
-| POST | /upload/mask |  | image (form); overwrite (form); type (form); subfolder (form) default= |
-| GET | /view |  | filename (query); subfolder (query); preview (query); channel (query) default=; type (query) default=output |
-| GET | /view_metadata/{folder_name} |  | folder_name (path); filename (query) |
-| GET | /system_stats |  | - |
-| GET | /features |  | - |
-| GET | /prompt |  | - |
-| GET | /object_info |  | - |
-| GET | /object_info/{node_class} |  | node_class (path) |
+| GET | /ws | - | clientId (query) default= |
+| GET | / | - | - |
+| GET | /embeddings | - | - |
+| GET | /models | - | - |
+| GET | /models/{folder} | - | folder (path) |
+| GET | /extensions | - | - |
+| POST | /upload/image | - | image (form); overwrite (form); type (form); subfolder (form) default= |
+| POST | /upload/mask | - | image (form); overwrite (form); type (form); subfolder (form) default= |
+| GET | /view | - | filename (query); subfolder (query); preview (query); channel (query) default=; type (query) default=output |
+| GET | /view_metadata/{folder_name} | - | folder_name (path); filename (query) |
+| GET | /system_stats | - | - |
+| GET | /features | - | - |
+| GET | /prompt | - | - |
+| GET | /object_info | - | - |
+| GET | /object_info/{node_class} | - | node_class (path) |
 | GET | /api/jobs | List all jobs with filtering, sorting, and pagination. Query parameters: status: Filter by status (comma-separated): pending, in_progress, completed, failed workflow_id: Filter by workflow ID sort_by: Sort field: created_at (default), execution_duration sort_order: Sort direction: asc, desc (default) limit: Max items to return (positive integer) offset: Items to skip (non-negative integer, default 0) | status (query); workflow_id (query); sort_by (query) default=created_at; sort_order (query) default=desc; limit (query); offset (query) |
 | GET | /api/jobs/{job_id} | Get a single job by ID. | job_id (path) |
-| GET | /history |  | max_items (query); offset (query) |
-| GET | /history/{prompt_id} |  | prompt_id (path) |
-| GET | /queue |  | - |
-| POST | /prompt |  | number (json); front (json); prompt (json); partial_execution_targets (json); extra_data (json); client_id (json); prompt_id (json) |
-| POST | /queue |  | clear (json); delete (json) |
-| POST | /interrupt |  | prompt_id (json) |
-| POST | /free |  | unload_models (json) default=False; free_memory (json) default=False |
-| POST | /history |  | clear (json); delete (json) |
+| GET | /history | - | max_items (query); offset (query) |
+| GET | /history/{prompt_id} | - | prompt_id (path) |
+| GET | /queue | - | - |
+| POST | /prompt | - | number (json); front (json); prompt (json); partial_execution_targets (json); extra_data (json); client_id (json); prompt_id (json) |
+| POST | /queue | - | clear (json); delete (json) |
+| POST | /interrupt | - | prompt_id (json) |
+| POST | /free | - | unload_models (json) default=False; free_memory (json) default=False |
+| POST | /history | - | clear (json); delete (json) |
 
 ## Response Summary
 

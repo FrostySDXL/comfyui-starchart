@@ -191,6 +191,57 @@ class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
         self.assertTrue(callable(module.write_refresh_provenance))
         self.assertTrue(callable(module.compute_diff_summary))
 
+    def test_build_delta_summary_command_uses_repo_preferred_python_command(self):
+        """Follow-up commands should use the repo's maintainer-friendly Python invocation."""
+        module = _load_module()
+        backup_dir = module.REPO_ROOT / "references" / "raw_backup_20260518T010203Z"
+        with mock.patch.object(
+            module.refresh_support, "recommended_python_command", return_value="py -3.11"
+        ) as command_mock:
+            command = module.build_delta_summary_command(backup_dir)
+
+        command_mock.assert_called_once_with(module.sys.platform)
+        self.assertIn("py -3.11 scripts/generate/generate_snapshot_delta_summary.py", command)
+
+    def test_persist_refresh_provenance_passes_partial_refresh_state(self):
+        """persist_refresh_provenance should preserve null backup/version state and write the built payload."""
+        module = _load_module()
+        args = mock.Mock(
+            core_version=None,
+            frontend_version="v1.44.13",
+            runtime_object_info_url=None,
+            skip_runtime_merge=False,
+        )
+        payload = {"refresh_date": "2026-05-18"}
+        with (
+            mock.patch.object(
+                module, "build_refresh_provenance", return_value=payload
+            ) as build_mock,
+            mock.patch.object(
+                module, "write_refresh_provenance", return_value=module.PROVENANCE_OUTPUT_PATH
+            ) as write_mock,
+        ):
+            written = module.persist_refresh_provenance(
+                args,
+                "2026-05-18",
+                None,
+                "frontend-sha",
+                None,
+            )
+
+        build_mock.assert_called_once_with(
+            refresh_date="2026-05-18",
+            requested_core_version=None,
+            requested_frontend_version="v1.44.13",
+            resolved_core_commit=None,
+            resolved_frontend_commit="frontend-sha",
+            backup_dir=None,
+            runtime_object_info_requested=False,
+            runtime_object_info_merged=False,
+        )
+        write_mock.assert_called_once_with(payload)
+        self.assertEqual(written, module.PROVENANCE_OUTPUT_PATH)
+
 
 class RefreshSnapshotsOrchestrationTests(unittest.TestCase):
     """Test the thinner orchestration helpers used by main()."""

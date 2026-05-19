@@ -72,6 +72,11 @@ class MarkdownGenerationTests(unittest.TestCase):
 
             rendered = output_path.read_text(encoding="utf-8")
             self.assertTrue(rendered.startswith('---\ntitle: "Server.py Summary"\n---\n\n'))
+            self.assertIn("**Evidence:** Source-backed from pinned snapshots", rendered)
+            self.assertIn("**Last Updated:** 2026-04-19", rendered)
+            self.assertIn("**Primary Sources:** sample server.py, extra/source.py", rendered)
+            self.assertIn("bounded generated inventory", rendered)
+            self.assertIn("[API Endpoints](../api/endpoints.md)", rendered)
             self.assertIn("sample server.py", rendered)
             self.assertIn("extra/source.py", rendered)
             self.assertIn("| POST | /prompt | Submit prompt |", rendered)
@@ -127,6 +132,65 @@ class MarkdownGenerationTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             rendered = output_path.read_text(encoding="utf-8")
             self.assertIn("No extracted endpoints are available yet", rendered)
+            self.assertIn("bounded generated inventory", rendered)
+
+    def test_blank_descriptions_render_as_dashes_under_bounded_contract(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            input_path = Path(tmp) / "server_endpoints.json"
+            output_path = Path(tmp) / "server-py-summary.md"
+            input_path.write_text(
+                json.dumps(
+                    {
+                        "metadata": {
+                            "sources": ["sample server.py"],
+                            "extracted_date": "2026-04-30",
+                            "version": "test",
+                        },
+                        "coverage": {
+                            "description": "contract",
+                            "guaranteed_fields": [],
+                            "best_effort_fields": [],
+                            "deferred": [],
+                        },
+                        "endpoints": [
+                            {
+                                "route": "/queue",
+                                "method": "GET",
+                                "description": "",
+                                "parameters": [],
+                                "returns": {
+                                    "kind": "json",
+                                    "summary": "",
+                                    "status_codes": [200],
+                                    "fields": [],
+                                    "notes": [],
+                                },
+                            }
+                        ],
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--input",
+                    str(input_path),
+                    "--output",
+                    str(output_path),
+                ],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            rendered = output_path.read_text(encoding="utf-8")
+            self.assertIn("| GET | /queue | - | - |", rendered)
+            self.assertIn("| /queue | json | 200 | - |", rendered)
 
 
 if __name__ == "__main__":

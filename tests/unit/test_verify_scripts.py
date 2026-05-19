@@ -9,10 +9,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 class CrossReferencesTests(unittest.TestCase):
-    """Test that cross_references.py runs and reports valid references."""
+    """Test that cross_references.py runs and reports bounded path checks."""
 
     def test_cross_references_script_runs(self):
-        """The cross-references script should run without error on the current repo."""
+        """The references-path script should run without error on the current repo."""
         result = subprocess.run(
             [sys.executable, str(REPO_ROOT / "scripts" / "verify" / "cross_references.py")],
             capture_output=True,
@@ -20,7 +20,7 @@ class CrossReferencesTests(unittest.TestCase):
             cwd=str(REPO_ROOT),
         )
         self.assertEqual(result.returncode, 0, msg=result.stderr or result.stdout)
-        self.assertIn("All cross-references are valid", result.stdout)
+        self.assertIn("All references-path checks are valid", result.stdout)
 
     def test_cross_references_imports(self):
         """The cross_references module should be importable."""
@@ -34,6 +34,7 @@ class CrossReferencesTests(unittest.TestCase):
         spec.loader.exec_module(module)
         self.assertTrue(hasattr(module, "verify_markdown_references"))
         self.assertTrue(hasattr(module, "verify_json_source_references"))
+        self.assertIn("does not validate general intra-doc markdown links", module.__doc__)
 
 
 class StaleContentTests(unittest.TestCase):

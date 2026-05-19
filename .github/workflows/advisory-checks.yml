@@ -38,4 +38,6 @@ jobs:
         run: python scripts/verify/community_staleness.py
 
       - name: Check example surface integrity
+        # Keep this blocking only in advisory replay until maintainers decide the
+        # example surface is stable enough for push/PR CI promotion.
         run: python scripts/verify/example_surface_integrity.py

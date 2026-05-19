@@ -27,6 +27,8 @@ npm run build
 
 Serve locally: `npm run dev`
 
+Always Use Supported Node.js for site/framework work: `22.12+`
+
 Maintainer dependency contract:
 
 - Install from `requirements.lock`
@@ -128,7 +130,7 @@ Non-goals: official docs replacement, community wiki, package registry.
   - `publish_reference_artifacts.py` -- Copies canonical JSON artifacts to `public/artifacts/` and writes `manifest.json`
   - `generate_snapshot_delta_summary.py` -- Produces deterministic baseline-to-baseline comparison under `public/artifacts/delta-summary.json`
 - `scripts/verify/` -- Verification scripts
-  - Core blocking checks: `cross_references.py`, `docs_index_freshness.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `markdown_top_level_spacing.py`, `sidebar_navigation_coverage.py`, `community_generated_freshness.py`, `community_page_coverage.py`
+  - Core blocking checks: `cross_references.py` (bounded `references/...` path verification plus raw JSON source-path checks), `docs_index_freshness.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `markdown_top_level_spacing.py`, `sidebar_navigation_coverage.py`, `community_generated_freshness.py`, `community_page_coverage.py`
   - Supplemental checks: `pipeline_smoke.py`, `shell_examples_syntax.py`
   - Non-blocking: `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`
   - Community: `community_metadata.py`, `community_staleness.py`
@@ -136,7 +138,7 @@ Non-goals: official docs replacement, community wiki, package registry.
 - `tests/unit/` -- Unit tests for all scripts
 - `examples/` -- Hand-authored pattern examples, API calls, and workflows
 - `.github/workflows/` -- CI (`ci.yml`), advisory replay (`advisory-checks.yml`),
-  weekly pin check (`weekly-pin-check.yml`), upstream version watch (`upstream-watch.yml`, temporarily manual-only with cron removed), and docs deployment (`deploy-pages.yml`)
+  weekly pin check (`weekly-pin-check.yml`), upstream version watch (`upstream-watch.yml`, scheduled every Monday at 10:00 UTC with manual dispatch also available), and docs deployment (`deploy-pages.yml`)
   - includes opt-in runtime workflows such as `runtime-smoke.yml` and `headless-runtime-metadata.yml`
 
 ## 4. Key Commands
@@ -207,8 +209,8 @@ on hardcoded Windows install paths.
 
 ## 4.5. Local Node.js Baseline
 
-- Use Node.js `22.x` when touching site-framework or frontend-build surfaces.
-- The repo enforces this with the root `.nvmrc` file (content: `22`).
+- Use Node.js `22.12+` when touching site-framework or frontend-build surfaces.
+- The repo enforces this with the root `.nvmrc` file (content: `22.12`).
 - CI selects the version via `actions/setup-node@v4` with `node-version-file: ".nvmrc"`.
 
 ## 5. Task Playbooks
@@ -224,8 +226,11 @@ procedures.
   from `CONTRIBUTING.md`, then verify with the required schema and cross-link
   checks.
 - **Refreshing upstream baselines:** use `scripts/refresh_snapshots.py`, note
-  the printed backup path and `public/artifacts/refresh-provenance.json`, then use
-  the republish and verification sequence in `CONTRIBUTING.md`.
+  the printed backup path and `public/artifacts/refresh-provenance.json`, confirm
+  that the file's `backup_location`, `published`, and `next_steps` fields tell the
+  truth about the attempted path, then use the republish and verification
+  sequence in `CONTRIBUTING.md`. Provenance-structure hardening is not a
+  substitute for a future real refresh rehearsal.
 - **Updating community metadata:** edit the JSON source, regenerate downstream
   output, and use the community verification pipeline from `CONTRIBUTING.md`.
 - **Adding extractors or verifiers:** keep them test-backed, wire them into
@@ -238,7 +243,7 @@ procedures.
 - **Cross-platform artifact hashes**: The three published artifact checksums are for textual JSON files and must be stable across Windows and Linux checkouts. Hash them after normalizing `CRLF` to `LF`; do not use this normalization rule for future binary artifacts.
 - **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
 - **Structured returns and traceability are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`. The `kind` field is reliable; `fields`, `summary`, and `traceability` details are best-effort from static analysis.
-- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, and `community_staleness` use `continue-on-error: true` in normal push/PR CI. `python_style`, `cross_references`, `validate_schema`, `verify_artifact_integrity`, `markdown_top_level_spacing`, `community_generated_freshness`, and `community_page_coverage` block the pipeline, and the advisory scripts also replay in `advisory-checks.yml` as a scheduled/manual blocking escalation path.
+- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, `community_staleness`, and `example_surface_integrity` use `continue-on-error: true` in normal push/PR CI. `python_style`, `cross_references`, `validate_schema`, `verify_artifact_integrity`, `markdown_top_level_spacing`, `community_generated_freshness`, and `community_page_coverage` block the pipeline, and the advisory scripts also replay in `advisory-checks.yml` as a scheduled/manual blocking escalation path. Keep `example_surface_integrity` advisory until maintainers judge the example surface stable enough that false positives are uncommon.
 - **Site-render-sensitive markdown spacing**: leading spaces before top-level markdown headings or metadata labels in hand-authored docs can render raw markdown in the browser output. `scripts/verify/markdown_top_level_spacing.py` blocks that drift.
 - **Supplemental CI checks are intentionally outside `run_all.py`**: `pipeline_smoke.py` reruns the blocking wrapper end-to-end without recursive unit tests, and `shell_examples_syntax.py` depends on a `bash` executable for `examples/**/*.sh` validation resolved from `--bash-executable`, `COMFYUI_KB_BASH`, or `PATH`.
 - **Generated community pages must not be hand-edited**: `src/content/docs/ecosystem/map.md` is generated from `references/community/ecosystem_packages.json`. Edit the JSON and rerun the generator.

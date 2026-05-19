@@ -7,7 +7,7 @@ title: "Version Pin Status"
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.
-> It does not make claims about ComfyUI behavior; it records what this
+> It does not define native ComfyUI behavior; it records what this
 > repository has pinned for its own reference purposes.
 
 **Primary Sources:** https://github.com/Comfy-Org/ComfyUI, https://github.com/Comfy-Org/ComfyUI/releases, https://docs.comfy.org/changelog
@@ -64,16 +64,16 @@ The current published versioned artifact directory is
 ## Automation
 
 - `.github/workflows/weekly-pin-check.yml` verifies pinned commits still resolve
-- `.github/workflows/upstream-watch.yml` detects newer upstream versions and
-  opens tracking issues
+- `.github/workflows/upstream-watch.yml` runs every Monday at 10:00 UTC and on
+  manual dispatch; scheduled runs detect newer upstream versions and create or
+  update tracking issues, while manual runs do not mutate issue state
 
 ## Remaining Limits
 
-- many prose docs still cite official docs pages or broad upstream URLs rather
-  than exact pinned snapshot paths
-- this is a pinned reference baseline for the extracted data, not a claim that
-  every documentation page in the repo has been fully rewritten to exact pinned
-  citations yet
+- some prose docs still cite official docs pages or broader upstream URLs
+  instead of exact pinned snapshot paths
+- this pinned baseline directly governs the extracted data and published
+  artifact set; prose citation depth still varies by page
 - runtime-only artifacts reflect the specific ComfyUI instance configuration at
   capture time and should not be treated as canonical baselines
 

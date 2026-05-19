@@ -82,7 +82,7 @@ def build_delta_summary_command(backup_dir: Path | None) -> str | None:
     return refresh_support.build_delta_summary_command(
         backup_dir,
         REPO_ROOT,
-        sys.executable,
+        refresh_support.recommended_python_command(sys.platform),
     )
 
 
@@ -109,7 +109,7 @@ def build_refresh_provenance(
         runtime_object_info_merged=runtime_object_info_merged,
         repo_root=REPO_ROOT,
         provenance_output_path=PROVENANCE_OUTPUT_PATH,
-        python_executable=sys.executable,
+        python_executable=refresh_support.recommended_python_command(sys.platform),
     )
 
 

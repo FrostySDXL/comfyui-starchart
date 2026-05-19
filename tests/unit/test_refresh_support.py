@@ -25,10 +25,25 @@ class RefreshSupportImportTests(unittest.TestCase):
     def test_module_imports(self):
         """The refresh_support module should be importable."""
         module = _load_module()
+        self.assertTrue(hasattr(module, "recommended_python_command"))
         self.assertTrue(hasattr(module, "repo_relative_path"))
         self.assertTrue(hasattr(module, "create_pre_refresh_backup"))
         self.assertTrue(hasattr(module, "build_refresh_provenance"))
         self.assertTrue(hasattr(module, "compute_diff_summary"))
+
+
+class RefreshSupportCommandTests(unittest.TestCase):
+    """Test repo-preferred maintainer command rendering."""
+
+    def test_recommended_python_command_uses_windows_launcher(self):
+        """Windows follow-up commands should use the repo's Python launcher rule."""
+        module = _load_module()
+        self.assertEqual(module.recommended_python_command("win32"), "py -3.11")
+
+    def test_recommended_python_command_uses_python_on_non_windows(self):
+        """Non-Windows follow-up commands should stay portable."""
+        module = _load_module()
+        self.assertEqual(module.recommended_python_command("linux"), "python")
 
 
 class RefreshSupportPathTests(unittest.TestCase):
@@ -172,9 +187,59 @@ class RefreshSupportProvenanceTests(unittest.TestCase):
             "public/artifacts/refresh-provenance.json",
         )
         self.assertFalse(persisted["published"]["manifest_included"])
+        self.assertFalse(persisted["published"]["canonical_artifacts_updated_by_refresh"])
+        self.assertFalse(persisted["published"]["delta_summary_updated_by_refresh"])
+        self.assertEqual(
+            persisted["next_steps"]["publish_reference_artifacts_command"],
+            "py -3.11 scripts/generate/publish_reference_artifacts.py",
+        )
+        self.assertEqual(
+            persisted["next_steps"]["verify_artifact_integrity_command"],
+            "py -3.11 scripts/verify/verify_artifact_integrity.py",
+        )
         self.assertIn(
             "generate_snapshot_delta_summary.py",
             persisted["next_steps"]["delta_summary_command"],
+        )
+        self.assertEqual(
+            persisted["next_steps"]["run_all_command"],
+            "py -3.11 scripts/verify/run_all.py",
+        )
+
+    def test_build_refresh_provenance_preserves_partial_refresh_state(self):
+        """Partial refresh runs should keep nulls while preserving operator follow-up commands."""
+        module = _load_module()
+        payload = module.build_refresh_provenance(
+            refresh_date="2026-05-18",
+            requested_core_version=None,
+            requested_frontend_version="v1.44.13",
+            resolved_core_commit=None,
+            resolved_frontend_commit="def456",
+            backup_dir=None,
+            runtime_object_info_requested=False,
+            runtime_object_info_merged=False,
+            repo_root=Path("D:/repo"),
+            provenance_output_path=Path("D:/repo/public/artifacts/refresh-provenance.json"),
+            python_executable="py -3.11",
+        )
+
+        self.assertIsNone(payload["requested_versions"]["core"])
+        self.assertEqual(payload["requested_versions"]["frontend"], "v1.44.13")
+        self.assertIsNone(payload["resolved_commits"]["core"])
+        self.assertEqual(payload["resolved_commits"]["frontend"], "def456")
+        self.assertIsNone(payload["backup_location"])
+        self.assertIsNone(payload["next_steps"]["delta_summary_command"])
+        self.assertEqual(
+            payload["next_steps"]["publish_reference_artifacts_command"],
+            "py -3.11 scripts/generate/publish_reference_artifacts.py",
+        )
+        self.assertEqual(
+            payload["next_steps"]["verify_artifact_integrity_command"],
+            "py -3.11 scripts/verify/verify_artifact_integrity.py",
+        )
+        self.assertEqual(
+            payload["next_steps"]["run_all_command"],
+            "py -3.11 scripts/verify/run_all.py",
         )
 
     def test_write_refresh_provenance_raises_clear_runtime_error_on_write_failure(self):

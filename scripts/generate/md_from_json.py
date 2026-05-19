@@ -62,6 +62,11 @@ def _format_sources(sources: object) -> str:
     return "unknown"
 
 
+def _text_or_dash(value: object) -> str:
+    text = str(value).strip() if value is not None else ""
+    return text or "-"
+
+
 def build_markdown(data: dict) -> str:
     metadata = data.get("metadata", {})
     endpoints = data.get("endpoints", [])
@@ -71,8 +76,9 @@ def build_markdown(data: dict) -> str:
         'title: "Server.py Summary"',
         "---",
         "",
-        f"**Last Synced:** {metadata.get('extracted_date', 'unknown')}",
-        f"**Source:** {_format_sources(metadata.get('sources'))}",
+        "**Evidence:** Source-backed from pinned snapshots",
+        f"**Last Updated:** {metadata.get('extracted_date', 'unknown')}",
+        f"**Primary Sources:** {_format_sources(metadata.get('sources'))}",
         "",
         "## Overview",
         "",
@@ -83,6 +89,8 @@ def build_markdown(data: dict) -> str:
             [
                 "No extracted endpoints are available yet.",
                 "",
+                "This page is a bounded generated inventory. It is only as complete as the extracted route data currently available from pinned `server.py` analysis.",
+                "",
                 "Run `python scripts/extract/parse_server.py path/to/server.py` to populate this page.",
             ]
         )
@@ -90,7 +98,11 @@ def build_markdown(data: dict) -> str:
 
     lines.extend(
         [
-            "Generated from `references/raw/server_endpoints.json`.",
+            "This page is a bounded generated inventory built from `references/raw/server_endpoints.json`.",
+            "",
+            "Use it to scan extracted routes, parameters, and structured return hints from pinned `server.py` analysis.",
+            "",
+            "It does **not** replace the reader-oriented endpoint guidance in [API Endpoints](../api/endpoints.md). Empty descriptions or generic summaries usually mean the extractor could not prove richer semantics from the pinned source without inference.",
             "",
             "## Route Summary",
             "",
@@ -101,7 +113,7 @@ def build_markdown(data: dict) -> str:
 
     for endpoint in endpoints:
         lines.append(
-            f"| {endpoint.get('method', '')} | {endpoint.get('route', '')} | {endpoint.get('description', '')} | {_escape_cell(_format_parameters(endpoint.get('parameters', [])))} |"
+            f"| {endpoint.get('method', '')} | {endpoint.get('route', '')} | {_escape_cell(_text_or_dash(endpoint.get('description', '')))} | {_escape_cell(_format_parameters(endpoint.get('parameters', [])))} |"
         )
 
     lines.extend(
@@ -118,11 +130,11 @@ def build_markdown(data: dict) -> str:
         returns = endpoint.get("returns", {})
         if isinstance(returns, dict):
             kind = returns.get("kind", "unknown")
-            summary = returns.get("summary", "")
+            summary = _text_or_dash(returns.get("summary", ""))
             status_codes = ", ".join(str(code) for code in returns.get("status_codes", [])) or "-"
         else:
             kind = "unknown"
-            summary = str(returns)
+            summary = _text_or_dash(returns)
             status_codes = "-"
         lines.append(
             f"| {_escape_cell(endpoint.get('route', ''))} | {_escape_cell(kind)} | {_escape_cell(status_codes)} | {_escape_cell(summary)} |"

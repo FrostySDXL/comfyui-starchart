@@ -4,6 +4,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
+def recommended_python_command(platform_name: str) -> str:
+    """Return the repo-preferred Python command for follow-up maintainer steps."""
+    if platform_name.startswith("win"):
+        return "py -3.11"
+    return "python"
+
+
 def repo_relative_path(path: Path | None, repo_root: Path) -> str | None:
     """Return a repo-relative path with forward slashes."""
     if path is None:
@@ -88,13 +95,22 @@ def build_refresh_provenance(
         "published": {
             "provenance_path": repo_relative_path(provenance_output_path, repo_root),
             "manifest_included": False,
+            "canonical_artifacts_updated_by_refresh": False,
+            "delta_summary_updated_by_refresh": False,
         },
         "next_steps": {
+            "publish_reference_artifacts_command": (
+                f"{python_executable} scripts/generate/publish_reference_artifacts.py"
+            ),
+            "verify_artifact_integrity_command": (
+                f"{python_executable} scripts/verify/verify_artifact_integrity.py"
+            ),
             "delta_summary_command": build_delta_summary_command(
                 backup_dir,
                 repo_root,
                 python_executable,
-            )
+            ),
+            "run_all_command": f"{python_executable} scripts/verify/run_all.py",
         },
     }
 

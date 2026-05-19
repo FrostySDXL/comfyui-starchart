@@ -168,8 +168,9 @@ jobs:
 
       - name: Check example surface integrity
         # Non-blocking: example-surface structural checks add useful coverage but
-        # stay advisory until maintainers decide they are stable enough for the
-        # default blocking path.
+        # stay advisory while the example surface and its routing references are
+        # still evolving. Promote this only after maintainers judge false
+        # positives uncommon enough for the default blocking path.
         run: python scripts/verify/example_surface_integrity.py
         continue-on-error: true
 

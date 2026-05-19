@@ -1,9 +1,14 @@
 {
   "backup_location": null,
   "next_steps": {
-    "delta_summary_command": null
+    "delta_summary_command": null,
+    "publish_reference_artifacts_command": "py -3.11 scripts/generate/publish_reference_artifacts.py",
+    "run_all_command": "py -3.11 scripts/verify/run_all.py",
+    "verify_artifact_integrity_command": "py -3.11 scripts/verify/verify_artifact_integrity.py"
   },
   "published": {
+    "canonical_artifacts_updated_by_refresh": false,
+    "delta_summary_updated_by_refresh": false,
     "manifest_included": false,
     "provenance_path": "public/artifacts/refresh-provenance.json"
   },

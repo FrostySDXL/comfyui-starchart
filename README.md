@@ -101,7 +101,7 @@ For editorial standards and evidence rules, use these files together:
 
 Supported Python: `3.11+`
 
-Supported Node.js for site-work and upcoming Starlight surfaces: `22.x`
+Supported Node.js for site-work and upcoming Starlight surfaces: `22.12+`
 
 ```bash
 python -m pip install -r requirements.lock
@@ -113,14 +113,13 @@ npm run build
 Serve locally: `npm run dev`
 
 If you are touching site-framework or frontend-build surfaces, use Node.js
-`22.x` via `.nvmrc` or equivalent environment-specific tooling.
+`22.12+` via `.nvmrc` or equivalent environment-specific tooling.
 
 ### Dependency reproducibility
 
-- Install the repo's maintainer environment from `requirements.lock`.
-- Edit direct Python dependencies in `requirements.in`.
-- Do not hand-edit `requirements.lock`; regenerate it after dependency changes.
-- `requirements.txt` is a compatibility shim that points to `requirements.lock`.
+Maintainers should install from `requirements.lock`. For direct dependency edits,
+lockfile regeneration, and the full maintainer setup workflow, use
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 Before pushing maintainer-grade workflow, script, or verifier changes, run:
 
@@ -163,10 +162,10 @@ follow-up.
 
 ### CPU-safe workflows (blocking, supplemental, and non-blocking)
 
-- **`.github/workflows/ci.yml`** -- runs on push/PR to main: the blocking verification path runs on both `ubuntu-latest` and `windows-latest` (Python unit tests, Node-side tests, Python style, cross-references, docs-index freshness, schema validation, artifact integrity verification for canonical published artifacts, top-level markdown spacing verification for hand-authored docs, generated community freshness, community page coverage, sidebar navigation coverage, `npm run check`, and `npm run build`). A supplemental Ubuntu job then runs `python scripts/verify/pipeline_smoke.py` to exercise the `run_all.py` wrapper end-to-end without rerunning unit tests, plus `python scripts/verify/shell_examples_syntax.py` to validate hand-authored shell examples with `bash -n`. Advisory checks (`stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py`) still run in CI but remain non-blocking there. Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
+- **`.github/workflows/ci.yml`** -- runs on push/PR to main: the blocking verification path runs on both `ubuntu-latest` and `windows-latest` (Python unit tests, Node-side tests, Python style, references-path verification, docs-index freshness, schema validation, artifact integrity verification for canonical published artifacts, top-level markdown spacing verification for hand-authored docs, generated community freshness, community page coverage, sidebar navigation coverage, `npm run check`, and `npm run build`). A supplemental Ubuntu job then runs `python scripts/verify/pipeline_smoke.py` to exercise the `run_all.py` wrapper end-to-end without rerunning unit tests, plus `python scripts/verify/shell_examples_syntax.py` to validate hand-authored shell examples with `bash -n`. Advisory checks (`stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py`) still run in CI but remain non-blocking there. Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
 - **`.github/workflows/advisory-checks.yml`** -- scheduled weekly and available via `workflow_dispatch`: reruns the current advisory scripts as blocking so advisory failures remain visible without turning normal PR CI into a noisy blocker.
 - **`.github/workflows/weekly-pin-check.yml`** -- runs every Monday at 09:00 UTC and on manual dispatch: checks that pinned commits and tags still resolve in upstream repos.
-- **`.github/workflows/upstream-watch.yml`** -- runs every Monday at 10:00 UTC: detects newer upstream versions and creates or updates tracking issues.
+- **`.github/workflows/upstream-watch.yml`** -- runs every Monday at 10:00 UTC and on manual dispatch: scheduled runs detect newer upstream versions and create or update tracking issues; manual runs generate the watch artifacts without mutating issue state.
 
 ### Site deployment
 

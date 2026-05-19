@@ -23,14 +23,26 @@
     "next_steps": {
       "type": "object",
       "required": [
+        "publish_reference_artifacts_command",
+        "verify_artifact_integrity_command",
         "delta_summary_command"
+        ,"run_all_command"
       ],
       "properties": {
+        "publish_reference_artifacts_command": {
+          "type": "string"
+        },
+        "verify_artifact_integrity_command": {
+          "type": "string"
+        },
         "delta_summary_command": {
           "type": [
             "string",
             "null"
           ]
+        },
+        "run_all_command": {
+          "type": "string"
         }
       },
       "additionalProperties": true
@@ -39,9 +51,17 @@
       "type": "object",
       "required": [
         "manifest_included",
-        "provenance_path"
+        "provenance_path",
+        "canonical_artifacts_updated_by_refresh",
+        "delta_summary_updated_by_refresh"
       ],
       "properties": {
+        "canonical_artifacts_updated_by_refresh": {
+          "type": "boolean"
+        },
+        "delta_summary_updated_by_refresh": {
+          "type": "boolean"
+        },
         "manifest_included": {
           "type": "boolean"
         },
@@ -60,15 +80,21 @@
         "core",
         "frontend"
       ],
-      "properties": {
-        "core": {
-          "type": "string"
+        "properties": {
+          "core": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "frontend": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         },
-        "frontend": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": true
+        "additionalProperties": true
     },
     "resolved_commits": {
       "type": "object",
@@ -76,15 +102,21 @@
         "core",
         "frontend"
       ],
-      "properties": {
-        "core": {
-          "type": "string"
+        "properties": {
+          "core": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "frontend": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         },
-        "frontend": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": true
+        "additionalProperties": true
     },
     "runtime_object_info": {
       "type": "object",

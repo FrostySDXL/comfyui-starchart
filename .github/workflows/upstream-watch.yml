@@ -1,8 +1,8 @@
 name: Upstream Watch
 
-on:
-  # Temporarily manual-only while the scheduled upstream watch is disabled.
-  # Previous cron: "0 10 * * 1" (every Monday at 10:00 UTC).
+"on":
+  schedule:
+    - cron: "0 10 * * 1"  # Every Monday at 10:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
             upstream_summary.json
             upstream_summary.md
 
-      - name: Create or update tracking issue
+      - name: Create or update tracking issue (scheduled runs only)
         if: github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
