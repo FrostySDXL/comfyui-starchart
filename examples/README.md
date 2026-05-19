@@ -13,12 +13,24 @@ content-level evidence labels.
 | `extensions/` | Extension architecture patterns (server hooks, frontend hooks) |
 | `workflows/` | Workflow JSON examples with parameter-injection commentary |
 
+## High-value starter examples
+
+- `workflows/api-execution-tracking-workflow.json` - repo-authored workflow
+  fixture for prompt-submission and execution-tracking walkthroughs
+- `extensions/minimal-route-registration/` - smallest route-registration pattern
+  that isolates `PromptServer.instance.routes` usage
+- `consumers/python-artifact-delta-reader/` - Python starter for reading
+  `artifacts/delta-summary.json` without treating it as a canonical manifest
+  artifact
+
 ## Conventions
 
 - Every subdirectory has its own `README.md` with evidence labels and scope statements.
 - Shell scripts (`.sh` files) are validated by `python scripts/verify/shell_examples_syntax.py`.
 - Examples are hand-authored pattern illustrations, not extracted references.
 - New examples should follow the structure of the nearest existing family.
+- Be explicit about whether an example is source-backed, repo-authored, or a
+  starter scaffold.
 
 ## Adding an example
 

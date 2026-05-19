@@ -195,9 +195,7 @@ class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
     def test_build_delta_summary_command_uses_repo_preferred_python_command(self):
         """Follow-up commands should use the repo's maintainer-friendly Python invocation."""
         module = _load_module()
-        backup_dir = (
-            module.REPO_ROOT / "references" / "_refresh_backups" / "raw_20260518T010203Z"
-        )
+        backup_dir = module.REPO_ROOT / "references" / "_refresh_backups" / "raw_20260518T010203Z"
         with mock.patch.object(
             module.refresh_support, "recommended_python_command", return_value="py -3.11"
         ) as command_mock:

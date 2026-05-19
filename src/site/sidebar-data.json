@@ -157,6 +157,7 @@
   {
     "label": "Deep Dives",
     "items": [
+      { "label": "Deep Dives Section Guide", "path": "deep-dives/index.md", "docs_index_nav_section": "Deep Dives / Deep Dives Section Guide" },
       { "label": "Workflow JSON Schema", "path": "deep-dives/workflow-json-schema.md" },
       { "label": "Execution Model Inversion", "path": "deep-dives/execution-model-inversion.md" },
       { "label": "Registry Packaging and Compatibility", "path": "deep-dives/registry-packaging-and-compatibility.md" },

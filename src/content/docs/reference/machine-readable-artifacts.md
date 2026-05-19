@@ -351,6 +351,18 @@ When upstream snapshots are refreshed, running the packaging script generates a
 new version key and new versioned copies. The `current/` copies are overwritten,
 but the versioned copies are preserved until explicitly removed.
 
+Versioned copies under `public/artifacts/versions/` are durable published
+history, but that history is intentionally bounded. Maintainers should normally
+keep the current baseline plus a small recent trail of prior baselines, avoid
+pruning any version still referenced by docs, provenance records, or active
+comparisons, and prune intentionally rather than treating old versions like
+temporary working state.
+
+This versioned-history policy is distinct from the temporary repo-local refresh
+backup directories created during a refresh in the repo's ignored refresh-backup
+area. Those backup directories are local rollback and comparison working state,
+not published historical artifacts.
+
 ## Schema Publication Approach
 
 The schema files under `public/artifacts/schemas/` are checked into the repo as

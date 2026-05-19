@@ -161,7 +161,7 @@ guides, and tooling artifacts.
 | Update extracted references after a snapshot refresh | Matching extractor in `scripts/extract/` + snapshot files in `references/snapshots/<date>/` | Run the extractor script | `python scripts/verify/extraction_idempotency.py` + `validate_schema.py` |
 | Add a new extractor | An existing extractor in `scripts/extract/` + its test in `tests/unit/` | New script + new test | `python -m unittest discover -s tests -v` |
 | Add a verification script | An existing verifier in `scripts/verify/` + its test in `tests/unit/` | New script + new test + update `run_all.py` / `.github/workflows/ci.yml` intentionally | `python -m unittest discover -s tests -v` |
-| Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Run refresh, note the auto-created `references/_refresh_backups/raw_TIMESTAMP` path plus `public/artifacts/refresh-provenance.json`, republish artifacts, then regenerate the delta summary when comparing baselines | `publish_reference_artifacts.py` + `generate_snapshot_delta_summary.py` + `run_all.py` |
+| Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Run refresh, note the auto-created repo-local refresh backup directory under `references/_refresh_backups/` plus `public/artifacts/refresh-provenance.json`, republish artifacts, then regenerate the delta summary when comparing baselines | `publish_reference_artifacts.py` + `generate_snapshot_delta_summary.py` + `run_all.py` |
 | Change CI behavior | Relevant workflow in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then inspect Ubuntu/Windows Actions runs and any advisory replay workflow after push |
 
 
@@ -246,7 +246,7 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
     python scripts/refresh_snapshots.py --core-version <version> --frontend-version <version>
    ```
 2. Confirm that the script wrote `public/artifacts/refresh-provenance.json`, and that the file truthfully reflects the attempted path:
-   - `backup_location` should contain a repo-local `references/_refresh_backups/raw_TIMESTAMP` path when a prior canonical baseline existed, otherwise `null`
+   - `backup_location` should contain the repo-local refresh backup directory path under `references/_refresh_backups/` when a prior canonical baseline existed, otherwise `null`
    - the `published` block should still show that `refresh-provenance.json` is a published support artifact rather than a manifest-discovered canonical artifact
    - the `next_steps` block should include the repo-local follow-up commands needed to publish artifacts, verify integrity, and optionally regenerate the delta summary
    - legacy `references/raw_backup_*` directories, if any, remain local historical working copies; leave them in place until you intentionally delete or migrate them after the new backup path is proven in your workflow
@@ -261,7 +261,7 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    ```
 5. If you are comparing two baselines, generate the published delta summary from the auto-created backup:
    ```bash
-    python scripts/generate/generate_snapshot_delta_summary.py --old references/_refresh_backups/raw_TIMESTAMP --new references/raw --output public/artifacts/delta-summary.json
+     python scripts/generate/generate_snapshot_delta_summary.py --old <repo-local-refresh-backup-dir> --new references/raw --output public/artifacts/delta-summary.json
    ```
 6. Remove the temporary backup after confirming the delta output if you no longer need it. The durable history surfaces remain `references/snapshots/`, `public/artifacts/versions/`, and `public/artifacts/refresh-provenance.json`; the backup directory is only local rollback and comparison working state.
 7. Update version-pin references in docs. A refresh changes the pinned baseline,
@@ -302,6 +302,25 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    ```
 
 The live clone -> extract -> generate -> publish -> verify closure path was validated end-to-end on 2026-05-18 with core `v0.21.1` and frontend `v1.45.9`. Repeat this workflow when a new upstream baseline is needed.
+
+### Versioned published artifact retention
+
+Treat `public/artifacts/versions/` as durable published history, but keep that
+history bounded.
+
+- keep the current baseline plus a small recent trail of prior baselines by
+  default; the current repo posture is current plus up to three earlier
+  baselines unless there is a documented reason to retain more
+- do not prune a versioned baseline that is still referenced by published docs,
+  `public/artifacts/refresh-provenance.json`, or an active comparison workflow
+- when pruning is appropriate, remove a whole version-key directory
+  intentionally rather than letting the history drift opportunistically
+- after pruning, rerun at minimum `python scripts/verify/cross_references.py`
+  and any artifact-surface verification affected by the change
+
+This retention policy applies only to `public/artifacts/versions/`. It does not
+redefine the temporary local backup policy for `references/_refresh_backups/`,
+which remains rollback and comparison working state rather than durable history.
 
 ### Adding a New Verification Script
 
@@ -479,7 +498,7 @@ python scripts/generate/publish_reference_artifacts.py
 python scripts/generate/generate_snapshot_delta_summary.py --old <dir> --new <dir> --output public/artifacts/delta-summary.json
 ```
 
-When generating a refresh delta from the live repo state, `--old` should point at the auto-created `references/_refresh_backups/raw_TIMESTAMP/` directory printed by `refresh_snapshots.py` before it overwrites the canonical raw artifacts in place.
+When generating a refresh delta from the live repo state, `--old` should point at the auto-created repo-local refresh backup directory printed by `refresh_snapshots.py` before it overwrites the canonical raw artifacts in place.
 
 ### Runtime testing (optional)
 
@@ -524,7 +543,7 @@ repo in a half-updated state.
   `python scripts/generate/publish_reference_artifacts.py`, then rerun
   `python scripts/verify/verify_artifact_integrity.py` and the relevant
   verification commands.
-- **Snapshot refresh changes:** use the repo-local `references/_refresh_backups/raw_TIMESTAMP`
+- **Snapshot refresh changes:** use the repo-local refresh backup directory under `references/_refresh_backups/`
   directory created by `scripts/refresh_snapshots.py` when you need to restore
   the prior canonical raw baseline. After restore, republish artifacts, rerun
   integrity verification, regenerate `public/artifacts/delta-summary.json` if the
