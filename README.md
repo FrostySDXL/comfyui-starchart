@@ -101,7 +101,7 @@ For editorial standards and evidence rules, use these files together:
 
 Supported Python: `3.11+`
 
-Supported Node.js for site-work and Starlight surfaces: `22.12+` (tested through Node 24 LTS)
+Supported Node.js for site-work and Starlight surfaces: `24+`
 
 ```bash
 python -m pip install -r requirements.lock
@@ -113,7 +113,7 @@ npm run build
 Serve locally: `npm run dev`
 
 If you are touching site-framework or frontend-build surfaces, use Node.js
-`22.12+` via `.nvmrc` or equivalent environment-specific tooling.
+`24+` via `.nvmrc` or equivalent environment-specific tooling.
 
 ### Dependency reproducibility
 

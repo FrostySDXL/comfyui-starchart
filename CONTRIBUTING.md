@@ -569,8 +569,8 @@ For script or extractor changes, also include:
 
 ## Local Node.js Baseline
 
-Use Node.js `22.12+` (tested through Node 24 LTS) when touching site-framework or frontend-build surfaces.
-The repo enforces this with the root `.nvmrc` file (content: `22.12`). CI uses
+Use Node.js `24+` when touching site-framework or frontend-build surfaces.
+The repo enforces this with the root `.nvmrc` file (content: `24`). CI uses
 `actions/setup-node@v4` with `node-version-file: ".nvmrc"` to select the
 correct version.
 - Review `AGENTS.md` for the full operational reference (machine-oriented, but comprehensive).
