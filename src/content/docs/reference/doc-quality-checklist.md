@@ -47,7 +47,7 @@ Items marked (Required) must pass before a page is merged. (Recommended) items s
 ### Build and links
 
 - [ ] (Required) `npm run build` passes without new errors
-- [ ] (Required) `references/...` path mentions and navigational links resolve to valid targets
+- [ ] (Required) `references/` path mentions and navigational links resolve to valid targets
 - [ ] (Recommended) No broken or dangling links
 
 ## When to Use This Checklist
