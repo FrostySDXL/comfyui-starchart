@@ -1,7 +1,7 @@
 {
   "comparison": {
-    "old": "references/raw_backup_20260519T004701Z",
-    "new": "references/raw"
+    "old": "public/artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30",
+    "new": "public/artifacts/current"
   },
   "notes": [
     "Deterministic artifact-to-artifact comparison only.",
@@ -20,27 +20,7 @@
       "new_count": 19,
       "added": [],
       "removed": [],
-      "changed": [
-        "addCustomNodeDefs",
-        "afterConfigureGraph",
-        "beforeConfigureGraph",
-        "beforeRegisterNodeDef",
-        "beforeRegisterVueAppNodeDefs",
-        "getCanvasMenuItems",
-        "getCustomWidgets",
-        "getNodeMenuItems",
-        "getSelectionToolboxCommands",
-        "init",
-        "loadedGraphNode",
-        "nodeCreated",
-        "onAuthTokenRefreshed",
-        "onAuthUserLogout",
-        "onAuthUserResolved",
-        "onNodeOutputsUpdated",
-        "refreshComboInNodes",
-        "registerCustomNodes",
-        "setup"
-      ]
+      "changed": []
     },
     "node_api_schema": {
       "object_info_fields": {

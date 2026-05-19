@@ -280,7 +280,7 @@
       "path": "custom-nodes/development-guide.md",
       "nav_section": "Custom Nodes",
       "audience": null,
-      "evidence": "Official docs-backed from docs.comfy.org",
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
       "summary": "ComfyUI custom nodes extend the platform's client-server model. The server side is Python and performs real work such as model execution, data processing, and file handling. The client side is JavaScript and renders the editor, widgets, and graph interactions."
     },
     {
@@ -304,7 +304,7 @@
       "path": "custom-nodes/registration.md",
       "nav_section": "Custom Nodes",
       "audience": null,
-      "evidence": "Mixed: source-backed (io.Schema, execute, NodeOutput from pinned Python snapshot); observed (ComfyExtension + comfy_entrypoint() pattern from pinned frontend TypeScript source and community examples)",
+      "evidence": "Source-backed from pinned snapshots; Observed (community pattern)",
       "summary": "Registration is the step that makes ComfyUI discover your node classes. The exact mechanism depends on whether the package is using legacy V1 or modern V3 conventions."
     },
     {
@@ -536,7 +536,7 @@
       "path": "decision-trees/custom-node-architecture.md",
       "nav_section": "Decision Trees",
       "audience": null,
-      "evidence": "Mixed: source-backed (decision framework, V1/V3 patterns) and scaffold (hand-authored code examples, example-only event names)",
+      "evidence": "Source-backed from pinned snapshots; Operational guidance",
       "summary": null
     },
     {

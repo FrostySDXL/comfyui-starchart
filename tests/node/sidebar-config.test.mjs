@@ -43,3 +43,47 @@ test('toStarlightSidebar normalizes backslash paths and derives fallback labels 
   assert.equal(sidebar[0].items[0].label, 'Version Pin Status');
   assert.equal(sidebar[0].items[0].slug, 'reference/version-pin-status');
 });
+
+test('docPathToSlug rejects non-markdown sidebar paths', () => {
+  assert.throws(() => docPathToSlug('reference/version-pin-status.json'), {
+    message: /must end in \.md/,
+  });
+});
+
+test('toStarlightSidebar rejects invalid leaf entries', () => {
+  assert.throws(() => toStarlightSidebar([{ label: 'Broken' }]), {
+    message: /Invalid sidebar entry/,
+  });
+});
+
+test('toStarlightSidebar converts a larger nested sidebar shape deterministically', () => {
+  const sidebar = toStarlightSidebar([
+    { path: 'index.md', label: 'Home' },
+    {
+      label: 'Reference',
+      items: [
+        { path: 'reference/index.md' },
+        { path: 'reference/source-evidence-policy.md' },
+        {
+          label: 'Hooks',
+          items: [{ path: 'hooks/javascript-hooks.md' }],
+        },
+      ],
+    },
+  ]);
+
+  assert.deepEqual(sidebar, [
+    { label: 'Home', slug: '' },
+    {
+      label: 'Reference',
+      items: [
+        { label: 'Index', slug: 'reference' },
+        { label: 'Source Evidence Policy', slug: 'reference/source-evidence-policy' },
+        {
+          label: 'Hooks',
+          items: [{ label: 'Javascript Hooks', slug: 'hooks/javascript-hooks' }],
+        },
+      ],
+    },
+  ]);
+});

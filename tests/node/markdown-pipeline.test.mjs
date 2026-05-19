@@ -56,3 +56,17 @@ test('remark plugins compose cleanly in one pipeline', async () => {
   assert.doesNotMatch(output, /^# Page Title/m);
   assert.match(output, /\.\.\/api\/history-queue\//);
 });
+
+test('remarkRewriteDocLinks rewrites definition-style markdown links in a real pipeline', async () => {
+  const input = '[ref]: ..\\reference\\version-pin-status.md?view=compact#automation\n\nReuse [ref][ref].';
+
+  const output = String(
+    await unified()
+      .use(remarkParse)
+      .use(remarkRewriteDocLinks)
+      .use(remarkStringify)
+      .process(input),
+  );
+
+  assert.match(output, /\.\.\/reference\/version-pin-status\/\?view=compact#automation/);
+});

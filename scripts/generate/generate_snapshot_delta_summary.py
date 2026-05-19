@@ -32,12 +32,51 @@ def _json_key(value: object) -> str:
     return json.dumps(value, sort_keys=True, ensure_ascii=False)
 
 
-def _compare_mapping(old_map: dict, new_map: dict) -> dict:
+def _normalize_snapshot_source_path(path: object) -> object:
+    if not isinstance(path, str):
+        return path
+    normalized = path.replace("\\", "/")
+    marker = "/src/"
+    marker_index = normalized.find(marker)
+    if marker_index != -1:
+        return normalized[marker_index + 1 :]
+    return normalized
+
+
+def _normalize_hook_for_comparison(hook: dict) -> dict:
+    traceability = hook.get("traceability")
+    normalized_traceability = traceability
+    if isinstance(traceability, dict):
+        normalized_traceability = {
+            "source_type": traceability.get("source_type"),
+            "strategy": traceability.get("strategy"),
+        }
+
+    return {
+        "name": hook.get("name"),
+        "type": hook.get("type"),
+        "description": hook.get("description"),
+        "defined_in": _normalize_snapshot_source_path(hook.get("defined_in")),
+        "invoked_in": sorted(
+            _normalize_snapshot_source_path(path) for path in hook.get("invoked_in", [])
+        ),
+        "signature": hook.get("signature"),
+        "arguments": hook.get("arguments", []),
+        "return_type": hook.get("return_type"),
+        "invocation_style": hook.get("invocation_style", []),
+        "traceability": normalized_traceability,
+    }
+
+
+def _compare_mapping(old_map: dict, new_map: dict, *, normalizer=None) -> dict:
     old_keys = set(old_map)
     new_keys = set(new_map)
     shared_keys = old_keys & new_keys
     changed = sorted(
-        key for key in shared_keys if _json_key(old_map[key]) != _json_key(new_map[key])
+        key
+        for key in shared_keys
+        if _json_key(normalizer(old_map[key]) if normalizer else old_map[key])
+        != _json_key(normalizer(new_map[key]) if normalizer else new_map[key])
     )
     return {
         "old_count": len(old_map),
@@ -92,6 +131,7 @@ def build_delta_summary(
             "js_hooks": _compare_mapping(
                 _hook_map(old_artifacts["js_hooks.json"]),
                 _hook_map(new_artifacts["js_hooks.json"]),
+                normalizer=_normalize_hook_for_comparison,
             ),
             "node_api_schema": {
                 "object_info_fields": _compare_mapping(

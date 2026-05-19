@@ -27,6 +27,16 @@ test('rewriteDocLinkHref normalizes backslashes and preserves combined query-plu
   );
 });
 
+test('rewriteDocLinkHref rewrites current-directory and nested index markdown routes', () => {
+  assert.equal(rewriteDocLinkHref('./index.md'), './');
+  assert.equal(rewriteDocLinkHref('./reference/index.md#schema'), './reference/#schema');
+});
+
+test('rewriteDocLinkHref leaves non-markdown relative assets and mailto links unchanged', () => {
+  assert.equal(rewriteDocLinkHref('../images/logo.svg'), '../images/logo.svg');
+  assert.equal(rewriteDocLinkHref('mailto:docs@example.invalid'), 'mailto:docs@example.invalid');
+});
+
 test('stripLeadingH1 removes the first content H1 but preserves leading html banners', () => {
   const tree = {
     type: 'root',
@@ -69,4 +79,20 @@ test('stripLeadingH1 ignores leading definitions before removing the first conte
   stripLeadingH1(tree);
 
   assert.deepEqual(tree.children.map((node) => node.type), ['definition', 'paragraph']);
+});
+
+test('stripLeadingH1 removes an H1 after mixed skippable leading nodes', () => {
+  const tree = {
+    type: 'root',
+    children: [
+      { type: 'html', value: '<div>banner</div>' },
+      { type: 'definition', identifier: 'ref', url: 'reference/glossary.md' },
+      { type: 'heading', depth: 1, children: [{ type: 'text', value: 'Drop Me Too' }] },
+      { type: 'paragraph', children: [{ type: 'text', value: 'Body.' }] },
+    ],
+  };
+
+  stripLeadingH1(tree);
+
+  assert.deepEqual(tree.children.map((node) => node.type), ['html', 'definition', 'paragraph']);
 });

@@ -1,7 +1,7 @@
 {
   "metadata": {
     "schema_version": "1.0.0",
-    "last_updated": "2026-05-06",
+    "last_updated": "2026-05-19",
     "description": "Review metadata for community-facing documentation pages"
   },
   "pages": [
@@ -125,6 +125,17 @@
       "maintenance_tier": "tier_2",
       "generated_from": null,
       "notes": "Hybrid guide: official migration docs primary, linked case studies are separate community pages"
+    },
+    {
+      "page_path": "src/content/docs/custom-nodes/registration.md",
+      "page_kind": "hand_authored_guide",
+      "evidence_label": "Source-backed from pinned snapshots; Observed (community pattern)",
+      "source_type": "hybrid",
+      "last_verified": "2026-05-19",
+      "needs_review_after": "2026-08-19",
+      "maintenance_tier": "tier_2",
+      "generated_from": null,
+      "notes": "Hybrid registration guide: pinned Python/frontend sources primary, community examples used for the observed ComfyExtension and comfy_entrypoint registration pattern"
     },
     {
       "page_path": "src/content/docs/reference/community-maintenance-policy.md",
