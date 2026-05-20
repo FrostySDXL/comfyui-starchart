@@ -129,7 +129,7 @@
     {
       "page_path": "src/content/docs/custom-nodes/registration.md",
       "page_kind": "hand_authored_guide",
-      "evidence_label": "Source-backed from pinned snapshots; Observed (community pattern)",
+      "evidence_label": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Community pattern study",
       "source_type": "hybrid",
       "last_verified": "2026-05-19",
       "needs_review_after": "2026-08-19",
