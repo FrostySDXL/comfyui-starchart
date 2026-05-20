@@ -64,6 +64,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
         self.assertTrue(any(c == [module.NPM_EXECUTABLE, "run", "check"] for c in call_order))
         self.assertTrue(any(c == [module.NPM_EXECUTABLE, "run", "build"] for c in call_order))
+        self.assertTrue(any("rendered_links.py" in str(c) for c in call_order))
 
         # Verify order: tests first, then Python/style verifiers, then sidebar/check/build
         unittest_idx = next(i for i, c in enumerate(call_order) if "unittest" in str(c))
@@ -97,6 +98,9 @@ class RunAllUnitTests(unittest.TestCase):
         astro_build_idx = next(
             i for i, c in enumerate(call_order) if c == [module.NPM_EXECUTABLE, "run", "build"]
         )
+        rendered_links_idx = next(
+            i for i, c in enumerate(call_order) if "rendered_links.py" in str(c)
+        )
 
         self.assertLess(unittest_idx, cross_idx)
         self.assertLess(unittest_idx, npm_test_idx)
@@ -113,6 +117,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertLess(coverage_idx, sidebar_idx)
         self.assertLess(sidebar_idx, astro_check_idx)
         self.assertLess(astro_check_idx, astro_build_idx)
+        self.assertLess(astro_build_idx, rendered_links_idx)
 
     def test_failure_stops_sequence(self):
         module = _load_module()
@@ -153,6 +158,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertFalse(any("markdown_top_level_spacing.py" in str(c) for c in call_order))
         self.assertFalse(any("community_generated_freshness.py" in str(c) for c in call_order))
         self.assertFalse(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
+        self.assertFalse(any("rendered_links.py" in str(c) for c in call_order))
 
     def test_skip_tests_flag(self):
         module = _load_module()
@@ -173,6 +179,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
         self.assertTrue(any("docs_index_freshness.py" in str(c) for c in call_order))
         self.assertTrue(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
+        self.assertTrue(any("rendered_links.py" in str(c) for c in call_order))
 
     def test_sidebar_failure_stops_before_astro_steps(self):
         module = _load_module()
@@ -192,6 +199,25 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
         self.assertFalse(any(c == [module.NPM_EXECUTABLE, "run", "check"] for c in call_order))
         self.assertFalse(any(c == [module.NPM_EXECUTABLE, "run", "build"] for c in call_order))
+        self.assertFalse(any("rendered_links.py" in str(c) for c in call_order))
+
+    def test_rendered_links_failure_stops_after_build(self):
+        module = _load_module()
+        call_order = []
+
+        def fake_run(cmd, **kwargs):
+            call_order.append(cmd)
+            if "rendered_links.py" in str(cmd):
+                return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="rendered fail")
+            return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
+
+        with patch("scripts.verify.run_all.subprocess.run", side_effect=fake_run):
+            with patch("sys.argv", ["run_all.py"]):
+                result = module.main()
+
+        self.assertEqual(result, 1)
+        self.assertTrue(any(c == [module.NPM_EXECUTABLE, "run", "build"] for c in call_order))
+        self.assertTrue(any("rendered_links.py" in str(c) for c in call_order))
 
 
 class RunAllScriptTests(unittest.TestCase):

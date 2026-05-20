@@ -96,9 +96,11 @@ maintainer workflows intentionally remain in `AGENTS.md` and `CONTRIBUTING.md`.
 Use `AGENTS.md` as the startup-critical quick-reference for session setup,
 constraints, repo map, and key commands. Use `CONTRIBUTING.md` as the
 authoritative home for deeper maintainer playbooks and longer operating
-procedures. Use `CHANGELOG.md` when you need a selective repo-history view of
-major docs, artifact, verification, and site-platform milestones before making
-or packaging changes.
+procedures. Use `CHANGELOG.md` when you need the canonical chronological repo
+history of major docs, artifact, verification, and site-platform milestones
+before making or packaging changes. Use `src/content/docs/whats-new/index.md`
+only as a short curated reader-facing highlights page, not as a second
+changelog.
 
 Non-goals: official docs replacement, community wiki, package registry.
 
@@ -132,8 +134,8 @@ Non-goals: official docs replacement, community wiki, package registry.
   - `publish_reference_artifacts.py` -- Copies canonical JSON artifacts to `public/artifacts/` and writes `manifest.json`
   - `generate_snapshot_delta_summary.py` -- Produces deterministic baseline-to-baseline comparison under `public/artifacts/delta-summary.json`
 - `scripts/verify/` -- Verification scripts
-  - Core blocking checks: `cross_references.py` (bounded `references/...` path verification plus raw JSON source-path checks), `docs_index_freshness.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `markdown_top_level_spacing.py`, `sidebar_navigation_coverage.py`, `community_generated_freshness.py`, `community_page_coverage.py`
-  - Supplemental checks: `pipeline_smoke.py`, `shell_examples_syntax.py`
+  - Core blocking checks: `python_style.py`, `cross_references.py` (bounded `references/...` path verification plus raw JSON source-path checks), `docs_index_freshness.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `markdown_top_level_spacing.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `sidebar_navigation_coverage.py`, `rendered_links.py`
+  - Supplemental checks: `pipeline_smoke.py`, `shell_examples_syntax.py`, `example_surface_integrity.py`
   - Non-blocking: `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`
   - Community: `community_metadata.py`, `community_staleness.py`
 - `scripts/refresh_snapshots.py` -- Fetch new upstream versions and re-run pipeline
@@ -167,9 +169,11 @@ python scripts/verify/upstream_pins.py
 python scripts/verify/validate_schema.py
 python scripts/verify/verify_artifact_integrity.py
 python scripts/verify/markdown_top_level_spacing.py
+python scripts/verify/rendered_links.py
 python scripts/verify/sidebar_navigation_coverage.py
 python scripts/verify/pipeline_smoke.py
 python scripts/verify/shell_examples_syntax.py
+python scripts/verify/example_surface_integrity.py
 
 # Community verifiers (non-blocking in CI)
 python scripts/verify/community_metadata.py
@@ -224,6 +228,11 @@ procedures.
 - **Editing prose documentation:** read the target page plus the editorial
   policy stack, then run `python scripts/verify/cross_references.py` and
   `npm run build`.
+- **Updating `CHANGELOG.md` vs `src/content/docs/whats-new/index.md`:** update
+  `CHANGELOG.md` for chronological repo history; update `whats-new` only when a
+  change materially alters reader navigation, published artifacts, verification
+  expectations readers/maintainers should notice quickly, or major workflow
+  entry paths. Do not mirror changelog entries into `whats-new`.
 - **Updating extracted references:** use the matching extractor/generator flow
   from `CONTRIBUTING.md`, then verify with the required schema and cross-link
   checks.
@@ -245,9 +254,10 @@ procedures.
 - **Cross-platform artifact hashes**: The three published artifact checksums are for textual JSON files and must be stable across Windows and Linux checkouts. Hash them after normalizing `CRLF` to `LF`; do not use this normalization rule for future binary artifacts.
 - **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
 - **Structured returns and traceability are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`. The `kind` field is reliable; `fields`, `summary`, and `traceability` details are best-effort from static analysis.
-- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, `community_staleness`, and `example_surface_integrity` use `continue-on-error: true` in normal push/PR CI. `python_style`, `cross_references`, `validate_schema`, `verify_artifact_integrity`, `markdown_top_level_spacing`, `community_generated_freshness`, and `community_page_coverage` block the pipeline, and the advisory scripts also replay in `advisory-checks.yml` as a scheduled/manual blocking escalation path. Keep `example_surface_integrity` advisory until maintainers judge the example surface stable enough that false positives are uncommon.
+- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, `community_staleness`, and `example_surface_integrity` use `continue-on-error: true` in normal push/PR CI. `python_style`, `cross_references`, `docs_index_freshness`, `validate_schema`, `verify_artifact_integrity`, `markdown_top_level_spacing`, `community_generated_freshness`, `community_page_coverage`, `sidebar_navigation_coverage`, and `rendered_links` block the pipeline, and the advisory scripts also replay in `advisory-checks.yml` as a scheduled/manual blocking escalation path. Keep `example_surface_integrity` advisory until maintainers judge the example surface stable enough that false positives are uncommon.
 - **Site-render-sensitive markdown spacing**: leading spaces before top-level markdown headings or metadata labels in hand-authored docs can render raw markdown in the browser output. `scripts/verify/markdown_top_level_spacing.py` blocks that drift.
 - **Supplemental CI checks are intentionally outside `run_all.py`**: `pipeline_smoke.py` reruns the blocking wrapper end-to-end without recursive unit tests, and `shell_examples_syntax.py` depends on a `bash` executable for `examples/**/*.sh` validation resolved from `--bash-executable`, `COMFYUI_KB_BASH`, or `PATH`.
+- **Astro/Starlight 404 build warning is currently benign**: `npm run build` may print `Entry docs → 404 was not found.` while generating `/404.html`. That message comes from Starlight checking for an optional custom `src/content/docs/404.md` entry before falling back to its built-in 404 page. Treat it as expected noise unless the build fails or `dist/404.html` is missing.
 - **Generated community pages must not be hand-edited**: `src/content/docs/ecosystem/map.md` is generated from `references/community/ecosystem_packages.json`. Edit the JSON and rerun the generator.
 - **Examples are not all source-backed**: Treat files under `examples/` as pattern examples unless the page explicitly states they were generated or extracted from pinned upstream sources.
 

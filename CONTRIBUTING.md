@@ -29,6 +29,11 @@ verification expectations, refresh procedures, and CI-adjacent guidance that
 should not be duplicated across the other top-level files or the published docs
 site.
 
+`CHANGELOG.md` is the canonical chronological history surface for notable repo
+changes. `src/content/docs/whats-new/index.md` is a short curated reader-facing
+highlights page. Do not turn `whats-new` into a second changelog or mirror the
+two files entry-for-entry.
+
 ---
 
 ## Quickstart
@@ -161,6 +166,7 @@ guides, and tooling artifacts.
 | Update extracted references after a snapshot refresh | Matching extractor in `scripts/extract/` + snapshot files in `references/snapshots/<date>/` | Run the extractor script | `python scripts/verify/extraction_idempotency.py` + `validate_schema.py` |
 | Add a new extractor | An existing extractor in `scripts/extract/` + its test in `tests/unit/` | New script + new test | `python -m unittest discover -s tests -v` |
 | Add a verification script | An existing verifier in `scripts/verify/` + its test in `tests/unit/` | New script + new test + update `run_all.py` / `.github/workflows/ci.yml` intentionally | `python -m unittest discover -s tests -v` |
+| Update repo history / highlights pages | `CHANGELOG.md` + `src/content/docs/whats-new/index.md` | One or both files depending on audience and scope | `python scripts/verify/cross_references.py` + `npm run build` |
 | Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Run refresh, note the auto-created repo-local refresh backup directory under `references/_refresh_backups/` plus `public/artifacts/refresh-provenance.json`, republish artifacts, then regenerate the delta summary when comparing baselines | `publish_reference_artifacts.py` + `generate_snapshot_delta_summary.py` + `run_all.py` |
 | Change CI behavior | Relevant workflow in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then inspect Ubuntu/Windows Actions runs and any advisory replay workflow after push |
 
@@ -188,6 +194,35 @@ guides, and tooling artifacts.
    ```
 6. **Review your diff** before committing. Ensure you did not accidentally edit
    generated files.
+
+### Updating `CHANGELOG.md` vs `src/content/docs/whats-new/index.md`
+
+Treat these as separate surfaces with different jobs:
+
+- `CHANGELOG.md` is the canonical chronological repo history.
+- `src/content/docs/whats-new/index.md` is a short curated highlights page for
+  readers navigating the published site.
+
+Update `CHANGELOG.md` when a change is notable in repo history, including CI,
+verification, docs architecture, artifact publication, or maintainer workflow
+milestones.
+
+Update `whats-new` only when the change materially affects one or more of:
+
+- reader navigation or entry paths
+- published artifacts or their interpretation
+- verification expectations maintainers or tooling authors should notice quickly
+- major workflow entry points visible from the published docs surface
+
+Do not copy changelog entries into `whats-new`. The highlights page should stay
+selective, thematic, and shorter-lived than the changelog.
+
+When you touch either file, verify locally:
+
+```bash
+python scripts/verify/cross_references.py
+npm run build
+```
 
 ### Updating the Community Catalog
 
@@ -443,6 +478,7 @@ python scripts/verify/cross_references.py
 python scripts/verify/docs_index_freshness.py
 python scripts/verify/verify_artifact_integrity.py
 npm run build
+python scripts/verify/rendered_links.py
 python -m unittest discover -s tests -v
 ```
 
@@ -482,6 +518,8 @@ python scripts/verify/verify_artifact_integrity.py     # [BLOCKING]
 python scripts/verify/markdown_top_level_spacing.py    # [BLOCKING]
 python scripts/verify/community_generated_freshness.py # [BLOCKING]
 python scripts/verify/community_page_coverage.py       # [BLOCKING]
+python scripts/verify/sidebar_navigation_coverage.py   # [BLOCKING]
+python scripts/verify/rendered_links.py                # [BLOCKING]
 python scripts/verify/stale_content.py                 # [non-blocking]
 python scripts/verify/extraction_idempotency.py        # [non-blocking]
 python scripts/verify/upstream_pins.py                 # [non-blocking]
@@ -524,6 +562,15 @@ modifying runtime extractors.
   published current copy, or manifest checksum is out of sync. Republish with
   `publish_reference_artifacts.py` and verify that no published copy was
   hand-edited.
+- **`rendered_links.py` fails:** The built site contains at least one internal
+  navigation link that resolves to a missing HTML page. Re-run `npm run build`,
+  inspect the broken-link report, and fix the source markdown link or route
+  rewriting logic that produced the invalid href.
+- **`npm run build` prints `Entry docs → 404 was not found.` but still exits 0:**
+  This is currently benign Starlight noise, not a broken docs link. Starlight
+  checks for an optional custom `src/content/docs/404.md` page before falling
+  back to its built-in 404 route. Treat it as expected unless the build fails
+  or `dist/404.html` is missing.
 - **`community_generated_freshness.py` fails:** You edited a community JSON file
   but forgot to rerun `generate_community_pages.py` before verifying.
 - **`extraction_idempotency.py` fails:** See the Common Pitfalls note on
@@ -564,7 +611,7 @@ rollback posture, use
 - **Editing generated markdown directly:** `src/content/docs/ecosystem/map.md` looks like a normal markdown file, but it is produced by a generator. Always edit `references/community/ecosystem_packages.json` and rerun the generator instead.
 - **Windows backslashes in JSON:** If you author or run extractors on Windows, paths written with `str(path)` will contain backslashes. Always normalize with `.replace("\\", "/")` before writing JSON metadata.
 - **Forgetting to regenerate after JSON changes:** If you edit `references/raw/` or `references/community/` JSON files, rerun the matching generator before running `cross_references.py` or `npm run build`.
-- **Misunderstanding CI blocking behavior:** `cross_references.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `community_generated_freshness.py`, and `community_page_coverage.py` will block CI and prevent merge. `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py` run in CI but do not block the pipeline.
+- **Misunderstanding CI blocking behavior:** `python_style.py`, `cross_references.py`, `docs_index_freshness.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `markdown_top_level_spacing.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `sidebar_navigation_coverage.py`, and `rendered_links.py` will block CI and prevent merge. `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py` run in CI but do not block the pipeline.
 - **Misreading semantic enrichment fields:** Plan K adds `traceability` markers and richer typed detail to endpoints, hooks, and node schema fields. These are best-effort from static analysis. The `kind` field is reliable; deeper fields should be treated as helpful signals, not strict runtime contracts.
 - **Writing from memory:** Claims about ComfyUI behavior must be traceable to a pinned snapshot or official docs. If you cannot find a source, mark the claim accordingly or leave it out.
 - **Skipping unit tests for script changes:** If you change any script under `scripts/`, add or update the matching test under `tests/unit/` and run the full test suite.

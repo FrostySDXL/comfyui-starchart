@@ -7,6 +7,31 @@ verification, workflow, and repo structure rather than every commit.
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-05-20 - verifier maintenance and docs-surface boundaries
+
+### Maintainer guidance and history surfaces
+
+- Clarify in `AGENTS.md` and `CONTRIBUTING.md` that `CHANGELOG.md` is the
+  canonical chronological repo-history surface while
+  `src/content/docs/whats-new/index.md` stays a short curated highlights page.
+- Document the current Astro/Starlight `Entry docs → 404 was not found.` build
+  message as benign noise unless the build fails or `dist/404.html` is missing.
+
+### Verification and test coverage
+
+- Align blocking-verifier inventories with the actual CI and `run_all.py`
+  surfaces, including `sidebar_navigation_coverage.py` and
+  `rendered_links.py`.
+- Add dedicated unit and CLI coverage for `sidebar_navigation_coverage.py`.
+- Keep `rendered_links.py` fixture coverage in its dedicated test module rather
+  than duplicating it in the shared verifier smoke tests.
+
+### Reader-facing highlights
+
+- Update `src/content/docs/whats-new/index.md` so its verification notes match
+  current CI behavior and explicitly point maintainers to `CHANGELOG.md` for
+  exhaustive repo history.
+
 ## 2026-05-20 - repo rename to ComfyUI StarChart
 
 ### Repo identity and hosting

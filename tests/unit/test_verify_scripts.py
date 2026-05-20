@@ -191,7 +191,5 @@ class MarkdownTopLevelSpacingTests(unittest.TestCase):
         spec.loader.exec_module(module)
         self.assertTrue(hasattr(module, "find_leading_space_issues"))
         self.assertTrue(hasattr(module, "verify_docs_directory"))
-
-
 if __name__ == "__main__":
     unittest.main()

@@ -3,13 +3,14 @@ title: "What's New"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-18
+**Last Updated:** 2026-05-20
 
 ## Scope
 
 This page highlights meaningful repo-visible changes that affect how readers
 use the docs or published artifacts. It is intentionally selective and does not
-backfill the full project history.
+backfill the full project history. For exhaustive chronological repo history,
+use `CHANGELOG.md` in the repository root.
 
 ## Current Wave
 
@@ -23,11 +24,12 @@ reader-visible surface is preserved.
 
 ### Verification surface expanded
 
-New blocking verifiers catch sidebar navigation coverage drift
-(`sidebar_navigation_coverage.py`), example surface integrity
-(`example_surface_integrity.py`), and Python style violations via Ruff
-(`python_style.py`). The advisory escalation workflow (`advisory-checks.yml`)
-replays non-blocking checks as blocking on a weekly schedule.
+The blocking verification path now catches Python style drift via Ruff
+(`python_style.py`), sidebar navigation coverage drift
+(`sidebar_navigation_coverage.py`), and built-site internal navigation failures
+(`rendered_links.py`). Example surface integrity
+(`example_surface_integrity.py`) remains advisory in normal push/PR CI and is
+replayed as blocking only in the scheduled/manual advisory workflow.
 
 ### Community page coverage is now verified
 
@@ -72,6 +74,7 @@ page without scanning the entire sidebar first.
 - Read this page when the repo structure or reader workflow changes.
 - Use section hubs and start-here pages for routing, not this page.
 - Use the reference pages when you need exact artifact or API details.
+- Use `CHANGELOG.md` when you need exhaustive chronological repo history.
 
 ## Read Next
 

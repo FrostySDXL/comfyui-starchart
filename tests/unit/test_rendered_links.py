@@ -148,19 +148,31 @@ class LinkToDistPathTests(unittest.TestCase):
 class RenderedLinksScriptTests(unittest.TestCase):
     """Test that the script runs correctly on the repo."""
 
-    def test_script_runs_on_built_site(self):
-        """The script should run without error on a built site."""
-        # This test requires the site to be built
-        dist_dir = REPO_ROOT / "dist"
-        if not dist_dir.exists():
-            self.skipTest("dist/ directory not found - run 'npm run build' first")
+    def test_script_runs_on_valid_fixture(self):
+        """The script should run without error on a valid fixture dist tree."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            dist_dir = Path(tmpdir)
+            source_dir = dist_dir / "reference"
+            source_dir.mkdir(parents=True)
+            (source_dir / "index.html").write_text(
+                '<a href="/comfyui-starchart/reference/glossary/">Glossary</a>',
+                encoding="utf-8",
+            )
+            glossary_dir = source_dir / "glossary"
+            glossary_dir.mkdir()
+            (glossary_dir / "index.html").write_text("<html></html>", encoding="utf-8")
 
-        result = subprocess.run(
-            [sys.executable, str(REPO_ROOT / "scripts" / "verify" / "rendered_links.py")],
-            capture_output=True,
-            text=True,
-            cwd=str(REPO_ROOT),
-        )
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(REPO_ROOT / "scripts" / "verify" / "rendered_links.py"),
+                    "--dist-dir",
+                    str(dist_dir),
+                ],
+                capture_output=True,
+                text=True,
+                cwd=str(REPO_ROOT),
+            )
         self.assertEqual(result.returncode, 0, msg=result.stderr or result.stdout)
         self.assertIn("All internal navigation links are valid", result.stdout)
 
