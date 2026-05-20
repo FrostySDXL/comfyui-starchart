@@ -22,14 +22,14 @@
       ],
       "sampler_name": "euler",
       "scheduler": "normal",
-      "seed": 1,
+      "seed": 156680208700286,
       "steps": 20
     }
   },
   "4": {
     "class_type": "CheckpointLoaderSimple",
     "inputs": {
-      "ckpt_name": "REPLACE_WITH_AVAILABLE_CHECKPOINT.safetensors"
+      "ckpt_name": "v1-5-pruned-emaonly-fp16.safetensors"
     }
   },
   "5": {
@@ -47,7 +47,7 @@
         "4",
         1
       ],
-      "text": "a small observatory under a clear night sky"
+      "text": "beautiful scenery nature glass bottle landscape, , purple galaxy bottle,"
     }
   },
   "7": {
@@ -57,7 +57,7 @@
         "4",
         1
       ],
-      "text": "blurry, low quality"
+      "text": "text, watermark"
     }
   },
   "8": {
@@ -76,7 +76,7 @@
   "9": {
     "class_type": "SaveImage",
     "inputs": {
-      "filename_prefix": "tooling-example",
+      "filename_prefix": "ComfyUI",
       "images": [
         "8",
         0
