@@ -1,5 +1,10 @@
 const LEADING_SKIPPABLE_NODE_TYPES = new Set(['html', 'definition']);
 
+// Base path for the site. Must match the `base` setting in astro.config.mjs.
+// If astro.config.mjs changes, this constant AND scripts/verify/rendered_links.py SITE_BASE
+// must be updated together. There is no shared config source yet.
+const SITE_BASE = '/comfyui_knowledge_base';
+
 function splitUrlParts(url) {
   const hashIndex = url.indexOf('#');
   const queryIndex = url.indexOf('?');
@@ -14,7 +19,31 @@ function splitUrlParts(url) {
   };
 }
 
-export function rewriteDocLinkHref(url) {
+/**
+ * Normalize path segments by resolving `.` and `..` components.
+ * @param {string[]} segments - Array of path segments
+ * @returns {string[]} - Normalized segments
+ */
+function normalizeSegments(segments) {
+  const result = [];
+  for (const seg of segments) {
+    if (seg === '..') {
+      result.pop();
+    } else if (seg !== '.' && seg !== '') {
+      result.push(seg);
+    }
+  }
+  return result;
+}
+
+/**
+ * Rewrite a markdown link href to a Starlight-compatible route.
+ * When currentFilePath is provided, resolves relative links to absolute URL paths.
+ * @param {string} url - The original href value
+ * @param {string} [currentFilePath] - Path of the current markdown file relative to content root
+ * @returns {string} - Rewritten href
+ */
+export function rewriteDocLinkHref(url, currentFilePath) {
   if (typeof url !== 'string' || !url) return url;
   if (/^(?:[a-z]+:|\/\/|#)/i.test(url)) return url;
 
@@ -22,6 +51,8 @@ export function rewriteDocLinkHref(url) {
   if (!path.endsWith('.md')) return url;
 
   const normalizedPath = path.replaceAll('\\', '/');
+
+  // Convert markdown path to route path
   let routePath;
   if (normalizedPath === 'index.md') {
     routePath = '';
@@ -29,6 +60,26 @@ export function rewriteDocLinkHref(url) {
     routePath = normalizedPath.slice(0, -'index.md'.length);
   } else {
     routePath = `${normalizedPath.slice(0, -'.md'.length)}/`;
+  }
+
+  // If we have the current file path and the link is relative, resolve to absolute
+  if (currentFilePath && !routePath.startsWith('/')) {
+    const currentNormalized = currentFilePath.replaceAll('\\', '/');
+    // Get directory of current file (remove filename)
+    const currentDir = currentNormalized.includes('/')
+      ? currentNormalized.slice(0, currentNormalized.lastIndexOf('/'))
+      : '';
+
+    // Combine current directory with relative route path and normalize
+    const combined = currentDir ? `${currentDir}/${routePath}` : routePath;
+    const segments = combined.split('/');
+    const normalized = normalizeSegments(segments);
+
+    // Return absolute path with site base
+    const normalizedRoute = normalized.join('/');
+    routePath = normalizedRoute ? `${SITE_BASE}/${normalizedRoute}/` : `${SITE_BASE}/`;
+    // Clean up double slashes
+    routePath = routePath.replace(/\/+/g, '/');
   }
 
   return `${routePath}${suffix}`;
@@ -45,10 +96,25 @@ function visitNodes(node, callback) {
 }
 
 export function remarkRewriteDocLinks() {
-  return (tree) => {
+  return (tree, file) => {
+    // Get the current file's path relative to content root
+    // Astro provides this via file.path or file.history[0]
+    const rawPath = file?.path || file?.history?.[0] || null;
+
+    // Extract the path relative to src/content/docs/
+    let currentFilePath = null;
+    if (rawPath) {
+      const normalized = rawPath.replaceAll('\\', '/');
+      const docsMarker = 'src/content/docs/';
+      const markerIndex = normalized.indexOf(docsMarker);
+      if (markerIndex !== -1) {
+        currentFilePath = normalized.slice(markerIndex + docsMarker.length);
+      }
+    }
+
     visitNodes(tree, (node) => {
       if ((node.type === 'link' || node.type === 'definition') && typeof node.url === 'string') {
-        node.url = rewriteDocLinkHref(node.url);
+        node.url = rewriteDocLinkHref(node.url, currentFilePath);
       }
     });
   };

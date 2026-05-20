@@ -16,6 +16,7 @@ cross-platform CI blocking path (ubuntu-latest and windows-latest):
     11. sidebar_navigation_coverage.py
     12. astro check
     13. astro build
+    14. rendered_links.py
 
 Advisory/non-blocking checks remain separate and are not included here.
 
@@ -156,6 +157,13 @@ def main() -> int:
         (
             [NPM_EXECUTABLE, "run", "build"],
             "Astro build",
+        )
+    )
+
+    steps.append(
+        (
+            [sys.executable, str(SCRIPTS_VERIFY_DIR / "rendered_links.py")],
+            "Rendered links verification",
         )
     )
 

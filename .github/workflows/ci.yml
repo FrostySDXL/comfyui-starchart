@@ -92,6 +92,9 @@ jobs:
       - name: Build Starlight site
         run: npm run build
 
+      - name: Verify rendered links
+        run: python scripts/verify/rendered_links.py
+
   supplemental-verification:
     name: Supplemental verification (ubuntu-latest)
     needs: blocking-verification
