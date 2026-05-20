@@ -113,9 +113,7 @@ class ResolveLinkTests(unittest.TestCase):
             "/comfyui-starchart/reference/glossary/",
             self.site_base,
         )
-        self.assertEqual(
-            result, "/comfyui-starchart/reference/glossary/source-evidence-policy/"
-        )
+        self.assertEqual(result, "/comfyui-starchart/reference/glossary/source-evidence-policy/")
 
     def test_parent_directory_link_resolved(self):
         """Parent directory links should be resolved correctly."""
