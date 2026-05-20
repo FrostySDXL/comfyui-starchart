@@ -1,0 +1,328 @@
+{
+  "api/client-id.md": {
+    "task_intents": [
+      "lookup-history",
+      "monitor-execution",
+      "submit-prompt"
+    ],
+    "related_artifacts": [
+      "server_endpoints.json",
+      "tooling-index.json"
+    ],
+    "related_routes": [
+      "GET /ws",
+      "POST /prompt"
+    ],
+    "related_events": [
+      "executed",
+      "executing",
+      "execution_cached",
+      "execution_error",
+      "execution_interrupted",
+      "execution_start",
+      "execution_success",
+      "status"
+    ],
+    "runtime_required": true,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "api/history-queue.md",
+      "api/prompt-submission.md",
+      "api/websocket.md"
+    ]
+  },
+  "api/endpoints.md": {
+    "task_intents": [
+      "discover-routes"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "manifest.json",
+      "server_endpoints.json",
+      "tooling-index.json"
+    ],
+    "related_routes": [
+      "GET /history/{prompt_id}",
+      "GET /object_info",
+      "GET /queue",
+      "GET /ws",
+      "POST /prompt"
+    ],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "api/prompt-submission.md",
+      "api/websocket.md",
+      "reference/machine-readable-artifacts.md"
+    ]
+  },
+  "api/history-queue.md": {
+    "task_intents": [
+      "lookup-history",
+      "monitor-execution"
+    ],
+    "related_artifacts": [
+      "server_endpoints.json",
+      "tooling-index.json"
+    ],
+    "related_routes": [
+      "GET /api/jobs",
+      "GET /api/jobs/{job_id}",
+      "GET /history",
+      "GET /history/{prompt_id}",
+      "GET /prompt",
+      "GET /queue",
+      "POST /history",
+      "POST /queue"
+    ],
+    "related_events": [
+      "status"
+    ],
+    "runtime_required": true,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "api/client-id.md",
+      "api/prompt-submission.md",
+      "api/websocket.md"
+    ]
+  },
+  "api/prompt-submission.md": {
+    "task_intents": [
+      "submit-prompt"
+    ],
+    "related_artifacts": [
+      "server_endpoints.json",
+      "tooling-index.json"
+    ],
+    "related_routes": [
+      "POST /prompt"
+    ],
+    "related_events": [
+      "executed",
+      "executing",
+      "execution_cached",
+      "execution_error",
+      "execution_interrupted",
+      "execution_start",
+      "execution_success"
+    ],
+    "runtime_required": true,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "api/history-queue.md",
+      "api/websocket.md",
+      "reference/machine-readable-artifacts.md"
+    ]
+  },
+  "api/websocket.md": {
+    "task_intents": [
+      "monitor-execution"
+    ],
+    "related_artifacts": [
+      "server_endpoints.json",
+      "tooling-index.json"
+    ],
+    "related_routes": [
+      "GET /ws"
+    ],
+    "related_events": [
+      "executed",
+      "executing",
+      "execution_cached",
+      "execution_error",
+      "execution_interrupted",
+      "execution_start",
+      "execution_success",
+      "feature_flags",
+      "status"
+    ],
+    "runtime_required": true,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "api/history-queue.md",
+      "api/prompt-submission.md",
+      "how-to/monitor-execution.md"
+    ]
+  },
+  "decision-trees/api-integration.md": {
+    "task_intents": [
+      "route-docs-task"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "tooling-index.json"
+    ],
+    "related_routes": [
+      "GET /history/{prompt_id}",
+      "GET /object_info",
+      "GET /queue",
+      "GET /view",
+      "GET /ws",
+      "POST /prompt"
+    ],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "api/endpoints.md",
+      "api/prompt-submission.md",
+      "start-here/tooling-builder.md"
+    ]
+  },
+  "how-to/monitor-execution.md": {
+    "task_intents": [
+      "lookup-history",
+      "monitor-execution"
+    ],
+    "related_artifacts": [
+      "server_endpoints.json",
+      "tooling-index.json"
+    ],
+    "related_routes": [
+      "GET /history",
+      "GET /history/{prompt_id}",
+      "GET /prompt",
+      "GET /queue",
+      "GET /system_stats",
+      "GET /ws"
+    ],
+    "related_events": [
+      "execution_error",
+      "execution_interrupted",
+      "execution_start",
+      "execution_success",
+      "executed",
+      "executing",
+      "progress",
+      "status"
+    ],
+    "runtime_required": true,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "api/history-queue.md",
+      "api/websocket.md",
+      "tutorials/api-to-workflow-execution-events.md"
+    ]
+  },
+  "reference/machine-readable-artifacts.md": {
+    "task_intents": [
+      "discover-artifacts",
+      "route-docs-task"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "js_hooks.json",
+      "manifest.json",
+      "node_api_schema.json",
+      "server_endpoints.json",
+      "tooling-index.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "reference/object-info.md",
+      "start-here/tooling-builder.md"
+    ]
+  },
+  "reference/object-info.md": {
+    "task_intents": [
+      "inspect-object-info"
+    ],
+    "related_artifacts": [
+      "node_api_schema.json",
+      "tooling-index.json"
+    ],
+    "related_routes": [
+      "GET /object_info",
+      "GET /object_info/{node_class}"
+    ],
+    "related_events": [],
+    "runtime_required": true,
+    "stability_tier": "runtime-dependent",
+    "recommended_next_reads": [
+      "api/endpoints.md",
+      "reference/machine-readable-artifacts.md",
+      "reference/runtime-ci-operations.md"
+    ]
+  },
+  "start-here/tooling-builder.md": {
+    "task_intents": [
+      "route-docs-task"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "manifest.json",
+      "tooling-index.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "api/endpoints.md",
+      "how-to/consumer-starter-examples.md",
+      "reference/machine-readable-artifacts.md"
+    ]
+  },
+  "troubleshooting/api-integration.md": {
+    "task_intents": [
+      "debug-api-integration",
+      "route-docs-task"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "tooling-index.json"
+    ],
+    "related_routes": [
+      "GET /history/{prompt_id}",
+      "GET /object_info",
+      "GET /queue",
+      "GET /ws",
+      "POST /prompt"
+    ],
+    "related_events": [
+      "status"
+    ],
+    "runtime_required": false,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "api/history-queue.md",
+      "api/websocket.md",
+      "start-here/tooling-builder.md"
+    ]
+  },
+  "tutorials/api-to-workflow-execution-events.md": {
+    "task_intents": [
+      "monitor-execution"
+    ],
+    "related_artifacts": [
+      "server_endpoints.json",
+      "tooling-index.json"
+    ],
+    "related_routes": [
+      "GET /history/{prompt_id}",
+      "GET /ws"
+    ],
+    "related_events": [
+      "execution_cached",
+      "execution_error",
+      "execution_interrupted",
+      "execution_start",
+      "execution_success",
+      "executed",
+      "executing",
+      "progress",
+      "status"
+    ],
+    "runtime_required": true,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "api/history-queue.md",
+      "api/websocket.md",
+      "how-to/monitor-execution.md"
+    ]
+  }
+}

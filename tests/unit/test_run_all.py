@@ -56,6 +56,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("python_style.py" in str(c) for c in call_order))
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
         self.assertTrue(any("docs_index_freshness.py" in str(c) for c in call_order))
+        self.assertTrue(any("tooling_index_freshness.py" in str(c) for c in call_order))
         self.assertTrue(any("validate_schema.py" in str(c) for c in call_order))
         self.assertTrue(any("verify_artifact_integrity.py" in str(c) for c in call_order))
         self.assertTrue(any("markdown_top_level_spacing.py" in str(c) for c in call_order))
@@ -75,6 +76,9 @@ class RunAllUnitTests(unittest.TestCase):
         cross_idx = next(i for i, c in enumerate(call_order) if "cross_references.py" in str(c))
         docs_index_idx = next(
             i for i, c in enumerate(call_order) if "docs_index_freshness.py" in str(c)
+        )
+        tooling_index_idx = next(
+            i for i, c in enumerate(call_order) if "tooling_index_freshness.py" in str(c)
         )
         validate_idx = next(i for i, c in enumerate(call_order) if "validate_schema.py" in str(c))
         integrity_idx = next(
@@ -108,7 +112,8 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertLess(unittest_idx, python_style_idx)
         self.assertLess(python_style_idx, cross_idx)
         self.assertLess(cross_idx, docs_index_idx)
-        self.assertLess(docs_index_idx, validate_idx)
+        self.assertLess(docs_index_idx, tooling_index_idx)
+        self.assertLess(tooling_index_idx, validate_idx)
         self.assertLess(validate_idx, integrity_idx)
         self.assertLess(integrity_idx, spacing_idx)
         self.assertLess(integrity_idx, freshness_idx)
@@ -137,6 +142,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("python_style.py" in str(c) for c in call_order))
         self.assertFalse(any("cross_references.py" in str(c) for c in call_order))
         self.assertFalse(any("docs_index_freshness.py" in str(c) for c in call_order))
+        self.assertFalse(any("tooling_index_freshness.py" in str(c) for c in call_order))
         self.assertFalse(any("validate_schema.py" in str(c) for c in call_order))
 
     def test_integrity_failure_stops_before_downstream_steps(self):
@@ -178,6 +184,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("python_style.py" in str(c) for c in call_order))
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
         self.assertTrue(any("docs_index_freshness.py" in str(c) for c in call_order))
+        self.assertTrue(any("tooling_index_freshness.py" in str(c) for c in call_order))
         self.assertTrue(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
         self.assertTrue(any("rendered_links.py" in str(c) for c in call_order))
 

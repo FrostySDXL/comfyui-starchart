@@ -61,9 +61,10 @@ Use the most stable input that matches your job.
 
 | Need | Start here | Why |
 |------|------------|-----|
-| Pinned baseline route or schema discovery | [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) | The repo's canonical published JSON contract is intentionally bounded and version-pinned. |
+| Canonical pinned artifact discovery | [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) | Start from `manifest.json` when you need version-pinned JSON artifacts and checksum-aware canonical discovery. |
 | Live installed-node discovery | [Object Info](../reference/object-info.md) | `GET /object_info` reflects the current instance, including installed custom nodes. |
-| Page routing for an agent or tool | `artifacts/docs-index.json` via [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) | It is a bounded routing aid, not a full-text replacement for the docs. |
+| Conservative published-doc page routing | `artifacts/docs-index.json` via [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) | Use this when you need bounded page discovery without full-site scraping or high-level task labeling. |
+| Higher-level tooling-task routing | `artifacts/tooling-index.json` via [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) | Use this when your tool needs task intents, related routes, runtime hints, or recommended next reads on top of page discovery. |
 | Runtime-only hybrid capture | [Runtime and CI Operations](../reference/runtime-ci-operations.md) | Use this only when the live instance state matters more than the pinned baseline. |
 
 Default rule: start from the canonical published artifacts when you need a
@@ -145,6 +146,7 @@ workflow-handling rules.
 Use these bounded starter patterns when you want concrete consumer-side examples:
 
 - [Consumer Starter Examples](../how-to/consumer-starter-examples.md)
+- `examples/consumers/prompt-submit-monitor-history/` for the highest-level built-in starter flow in this repo: submit prompt -> watch WebSocket -> fetch history
 
 These examples are starter patterns, not a supported SDK surface.
 

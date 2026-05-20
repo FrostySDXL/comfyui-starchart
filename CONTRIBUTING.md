@@ -145,6 +145,7 @@ guides, and tooling artifacts.
 | `examples/` | Hand-authored pattern examples, API calls, workflows | **Yes** |
 | `references/raw/` | Extracted JSON from upstream snapshots (endpoints, hooks, schemas) | **No** -- edit upstream snapshots in `references/snapshots/`, then re-run extractors |
 | `references/community/` | Human-editable metadata for community pages and ecosystem packages | **Yes** -- edit JSON directly, then regenerate downstream artifacts |
+| `references/tooling-index-metadata.json` | Human-editable enrichment metadata for `public/artifacts/tooling-index.json` | **Yes** -- edit the JSON source, then rerun `scripts/generate/generate_tooling_index.py` |
 | `references/snapshots/` | Pinned upstream source files organized by date | **No** -- these are vendored upstream source. Update them with `scripts/refresh_snapshots.py`, not by hand. |
 | `scripts/common/` | Shared utility modules used by multiple scripts (for example path normalization and HTTP helpers) | **Yes** -- keep helpers narrow and script-focused |
 | `scripts/extract/` | Scripts that parse source into JSON | **Yes** -- if you are adding or fixing an extractor |
@@ -163,6 +164,7 @@ guides, and tooling artifacts.
 | Fix or add a docs page | The target page + `src/content/docs/reference/source-evidence-policy.md` + `src/content/docs/reference/writing-style-guide.md` | `src/content/docs/<topic>/<page>.md`; use `templates/docs/` or `scripts/new_doc.py` | `python scripts/verify/cross_references.py` + `npm run build` |
 | Add or modify shell examples | Existing shell example under `examples/` + adjacent example README | The `.sh` file + any paired README guidance | `python scripts/verify/shell_examples_syntax.py` |
 | Update the community catalog | `references/community/ecosystem_packages.json` + `src/content/docs/reference/community-maintenance-policy.md` | The JSON source file | `validate_schema.py`, `community_metadata.py`, `community_staleness.py`, `generate_community_pages.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `cross_references.py`, `npm run build` |
+| Update tooling routing metadata | `references/tooling-index-metadata.json` + `src/content/docs/reference/machine-readable-artifacts.md` | The JSON source file, then regenerate `public/artifacts/tooling-index.json` | `python scripts/generate/generate_tooling_index.py` + `python scripts/verify/tooling_index_freshness.py` + `python scripts/verify/cross_references.py` + `npm run build` |
 | Update extracted references after a snapshot refresh | Matching extractor in `scripts/extract/` + snapshot files in `references/snapshots/<date>/` | Run the extractor script | `python scripts/verify/extraction_idempotency.py` + `validate_schema.py` |
 | Add a new extractor | An existing extractor in `scripts/extract/` + its test in `tests/unit/` | New script + new test | `python -m unittest discover -s tests -v` |
 | Add a verification script | An existing verifier in `scripts/verify/` + its test in `tests/unit/` | New script + new test + update `run_all.py` / `.github/workflows/ci.yml` intentionally | `python -m unittest discover -s tests -v` |
@@ -422,7 +424,9 @@ Run the narrowest relevant checks first while iterating, then
 `python scripts/verify/run_all.py` before opening a PR or handing maintainer
 workflow changes to review. The wrapper mirrors the CI job's blocking checks on
 both Ubuntu and Windows; advisory checks remain separate in normal PR CI and
-escalate through the dedicated advisory replay workflow.
+escalate through the dedicated advisory replay workflow. The blocking freshness
+pair runs in order as `docs_index_freshness.py` followed immediately by
+`tooling_index_freshness.py` before schema validation.
 
 ## Maintainer Failure-Path Quick Guide
 
@@ -476,6 +480,7 @@ Keep the deeper workflow-specific detail in
 python scripts/verify/python_style.py
 python scripts/verify/cross_references.py
 python scripts/verify/docs_index_freshness.py
+python scripts/verify/tooling_index_freshness.py
 python scripts/verify/verify_artifact_integrity.py
 npm run build
 python scripts/verify/rendered_links.py
@@ -513,6 +518,7 @@ the same advisory scripts are replayed separately in `.github/workflows/advisory
 python scripts/verify/python_style.py                  # [BLOCKING]
 python scripts/verify/cross_references.py              # [BLOCKING]
 python scripts/verify/docs_index_freshness.py          # [BLOCKING]
+python scripts/verify/tooling_index_freshness.py       # [BLOCKING]
 python scripts/verify/validate_schema.py               # [BLOCKING]
 python scripts/verify/verify_artifact_integrity.py     # [BLOCKING]
 python scripts/verify/markdown_top_level_spacing.py    # [BLOCKING]
@@ -532,6 +538,7 @@ python scripts/verify/community_staleness.py           # [non-blocking]
 ```bash
 python scripts/generate/md_from_json.py
 python scripts/generate/generate_community_pages.py
+python scripts/generate/generate_tooling_index.py
 python scripts/generate/publish_reference_artifacts.py
 python scripts/generate/generate_snapshot_delta_summary.py --old <dir> --new <dir> --output public/artifacts/delta-summary.json
 ```

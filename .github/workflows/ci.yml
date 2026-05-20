@@ -68,6 +68,9 @@ jobs:
       - name: Verify docs index freshness
         run: python scripts/verify/docs_index_freshness.py
 
+      - name: Verify tooling index freshness
+        run: python scripts/verify/tooling_index_freshness.py
+
       - name: Validate JSON schemas
         run: python scripts/verify/validate_schema.py
 

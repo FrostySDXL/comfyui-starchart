@@ -3,7 +3,7 @@ title: "ComfyUI StarChart"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-13
+**Last Updated:** 2026-05-20
 
 ## Scope
 
@@ -15,8 +15,15 @@ documentation. See [docs.comfy.org](https://docs.comfy.org/) for official docs.
 The repository also publishes machine-readable JSON artifacts extracted from
 pinned upstream snapshots. See [Machine-Readable Artifacts](reference/machine-readable-artifacts.md)
 for a catalog of available artifacts, stable URLs, and consumption guidance.
-That page also documents `artifacts/docs-index.json`, a bounded support artifact
-for page discovery rather than a replacement for the canonical JSON references.
+That page also documents the support-artifact pair `artifacts/docs-index.json`
+and `artifacts/tooling-index.json`, which help with routing and task discovery
+without replacing the canonical JSON references.
+
+When choosing a machine-readable entry surface:
+
+- use `artifacts/manifest.json` for canonical artifact discovery and checksum-aware loading
+- use `artifacts/docs-index.json` for conservative page routing across published docs
+- use `artifacts/tooling-index.json` for higher-level tooling-task routing, route relations, and next-read hints
 
 Treat this docs site as a product with bounded audiences:
 

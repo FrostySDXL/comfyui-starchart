@@ -3,7 +3,7 @@ title: "Consumer Starter Examples"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-20
 
 ## Scope
 
@@ -12,6 +12,21 @@ this repository for artifact and docs discovery work. It does not introduce a
 new client-library contract or replace the machine-readable artifact reference.
 
 ## Available Starter Examples
+
+### Python: Prompt submit, execution monitoring, and history lookup
+
+Repo path: `examples/consumers/prompt-submit-monitor-history/`
+
+Use this example when you want one higher-level runtime-dependent flow for:
+
+- submitting a workflow to `POST /prompt`
+- watching a bounded subset of `GET /ws` execution messages
+- correlating on `prompt_id` and `client_id`
+- fetching `GET /history/{prompt_id}` after completion or timeout
+
+This example requires a live ComfyUI runtime and the explicit Python
+`websocket-client` dependency. It is still a starter pattern, not a supported
+SDK contract.
 
 ### Python: Manifest-first canonical artifact loading
 
@@ -63,7 +78,7 @@ stays clear.
 
 ## Contract Boundary
 
-Treat all four directories as starter patterns only. They are intentionally
+Treat all five directories as starter patterns only. They are intentionally
 small, self-contained examples. They do not create a supported SDK,
 installable client package, or broader productized consumer surface.
 

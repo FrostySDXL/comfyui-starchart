@@ -14,6 +14,14 @@ use `CHANGELOG.md` in the repository root.
 
 ## Current Wave
 
+### Tooling routing now has a richer support artifact
+
+The published support surface now includes `artifacts/tooling-index.json` for
+higher-level tooling-task routing, route relations, and next-read hints. The
+tooling-builder entry path and starter-example routing were also tightened so
+tooling consumers can move from discovery to prompt-submit monitoring faster
+without blurring the canonical artifact boundary.
+
 ### Site framework migrated to Astro Starlight
 
 The documentation site now builds with Astro Starlight instead of MkDocs.

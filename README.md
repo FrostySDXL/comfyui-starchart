@@ -66,10 +66,10 @@ For editorial standards and evidence rules, use these files together:
 ### Where to Start
 
 - **Consumers**
+  - Building tools or agents: [`src/content/docs/start-here/tooling-builder.md`](src/content/docs/start-here/tooling-builder.md)
   - Building custom nodes: [`src/content/docs/start-here/author.md`](src/content/docs/start-here/author.md)
   - Extending ComfyUI: [`src/content/docs/start-here/extension-developer.md`](src/content/docs/start-here/extension-developer.md)
   - Integrating ComfyUI into a service: [`src/content/docs/start-here/service-integration.md`](src/content/docs/start-here/service-integration.md)
-  - Building tools or agents: [`src/content/docs/start-here/tooling-builder.md`](src/content/docs/start-here/tooling-builder.md)
 - **Contributors**
   - Start with [`src/content/docs/start-here/docs-contributor.md`](src/content/docs/start-here/docs-contributor.md) for the lighter editorial path
 - **Maintainers**
@@ -82,11 +82,13 @@ For editorial standards and evidence rules, use these files together:
 - Snapshots live in `references/snapshots/`
 - Helper scripts live in `scripts/extract/` and `scripts/generate/`
 - Published artifact copies, manifest, delta summary, and refresh provenance live in `public/artifacts/`
-- `public/artifacts/docs-index.json` is a bounded support artifact for tooling and agent page discovery; it does not widen the canonical JSON artifact contract
+- `public/artifacts/docs-index.json` is a bounded support artifact for page discovery and conservative docs routing
+- `public/artifacts/tooling-index.json` is a sibling support artifact for higher-level tooling-task routing and relation hints; it remains outside the canonical manifest-discovered contract
 - See [Machine-Readable Artifacts](src/content/docs/reference/machine-readable-artifacts.md) for
-  the canonical published artifact set, published JSON Schemas, bounded
-  guarantees, the minimum consumer contract, and conceptual examples for tooling
-  authors
+  the difference between `manifest.json`, `docs-index.json`, and
+  `tooling-index.json`, plus the canonical published artifact set, published
+  JSON Schemas, bounded guarantees, the minimum consumer contract, and
+  conceptual examples for tooling authors
 - Consumer starter examples for manifest-first artifact loading and docs-discovery
   patterns live under `examples/consumers/`; see
   [Consumer Starter Examples](src/content/docs/how-to/consumer-starter-examples.md)

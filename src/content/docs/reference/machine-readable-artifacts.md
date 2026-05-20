@@ -40,6 +40,7 @@ The repo also publishes non-canonical support artifacts:
 | Artifact | Purpose | Stable URL |
 |----------|---------|------------|
 | `docs-index.json` | Bounded page-level index for routing tools and agents to the right published docs page without full-site scraping | `artifacts/docs-index.json` |
+| `tooling-index.json` | Bounded tooling-task routing index that adds curated task intents, route relations, runtime hints, and next-read guidance on top of the published docs surface | `artifacts/tooling-index.json` |
 | `delta-summary.json` | Deterministic comparison summary between two artifact baselines | `artifacts/delta-summary.json` |
 | `refresh-provenance.json` | Durable evidence about the most recent refresh run, including requested versions, resolved commits, backup path, and runtime-enrichment intent | `artifacts/refresh-provenance.json` |
 
@@ -87,7 +88,7 @@ to these minimum rules:
   base URL, port, or request headers; for direct local use, the practical
   default is `http://127.0.0.1:8188`, and JSON `POST` calls such as `/prompt`
   should send `Content-Type: application/json`
-- treat `docs-index.json`, `delta-summary.json`, and
+- treat `docs-index.json`, `tooling-index.json`, `delta-summary.json`, and
   `refresh-provenance.json` as support artifacts with narrower guarantees than
   the three canonical extracted artifacts
 - treat runtime-only captures such as `object_info_runtime.json` as optional,
@@ -274,6 +275,7 @@ built site.
 | `public/artifacts/versions/<key>/` | Immutable snapshot for reproducible builds |
 | `public/artifacts/manifest.json` | Discovery metadata with URLs, versions, commits, and SHA-256 checksums for canonical published artifacts |
 | `public/artifacts/docs-index.json` | Published support artifact for bounded docs-page discovery |
+| `public/artifacts/tooling-index.json` | Published support artifact for bounded tooling-task routing and relation hints |
 | `public/artifacts/schemas/` | Checked-in bounded JSON Schema files for the canonical published artifacts |
 | `public/artifacts/delta-summary.json` | Deterministic baseline-to-baseline comparison output |
 | `public/artifacts/refresh-provenance.json` | Durable published record of the latest refresh run; intentionally outside manifest discovery |
@@ -316,6 +318,68 @@ and does not participate in the bounded schema-discovery contract.
 
 `docs-index.json` is also intentionally excluded from `manifest.json`. It is a
 published docs-routing aid rather than a canonical extracted artifact.
+
+`tooling-index.json` is likewise intentionally excluded from `manifest.json`.
+It adds curated support-routing metadata, not a canonical extracted artifact
+contract.
+
+### tooling-index.json
+
+`tooling-index.json` is a sibling support artifact to `docs-index.json`. It
+keeps the same full hand-authored published-doc coverage baseline, then adds
+optional curated fields for tooling-task routing.
+
+Each page entry always includes the same base page facts used by
+`docs-index.json`:
+
+- `title`
+- `path`
+- `nav_section`
+- `audience`
+- `evidence`
+- `summary`
+
+When a page has tooling enrichment, the artifact can also include bounded
+fields such as:
+
+- `task_intents`
+- `related_artifacts`
+- `related_routes`
+- `related_events`
+- `runtime_required`
+- `stability_tier`
+- `recommended_next_reads`
+
+Use this file when a tool needs to answer questions like:
+
+- which docs page best matches a task such as route discovery, prompt
+  submission, or execution monitoring
+- which canonical artifacts or routes are most related to that page
+- whether a task depends on a live runtime rather than only pinned artifacts
+- which next pages a tooling consumer should read after the first match
+
+Do not treat it as:
+
+- full-text search
+- a replacement for `manifest.json`
+- a new canonical extracted artifact contract
+- a guarantee that every tooling nuance is fully classified
+
+The maintained generation path is:
+
+```bash
+python scripts/generate/generate_tooling_index.py
+```
+
+A checked-in companion schema is also published at
+`artifacts/schemas/tooling-index.schema.json` for consumer-side validation and
+inspection. Like the artifact itself, that schema stays outside manifest schema
+discovery and the blocking canonical-artifact schema validation path.
+
+`tooling-index.json` is intentionally excluded from `manifest.json`. It is a
+published support artifact for routing and discovery rather than a canonical
+schema-discovery surface, and it stays outside the canonical byte-identity
+guarantee enforced for the three extracted JSON artifacts.
 
 ## Versioning
 
@@ -469,6 +533,29 @@ entry = manifest["artifacts"]["server_endpoints.json"]
 artifact_bytes = urllib.request.urlopen(f"{base}/{entry['current_url']}").read()
 
 assert hashlib.sha256(artifact_bytes).hexdigest() == entry["sha256"]
+```
+
+### Routing a tooling task with tooling-index.json
+
+Use `tooling-index.json` when your consumer wants a bounded first-pass routing
+hint before reading the matched docs page in full.
+
+```python
+import json, urllib.request
+
+base = "https://<your-site>"
+tooling_index = json.load(
+    urllib.request.urlopen(f"{base}/artifacts/tooling-index.json")
+)
+
+matches = [
+    page
+    for page in tooling_index["pages"]
+    if "monitor-execution" in page.get("task_intents", [])
+]
+
+for page in matches:
+    print(page["path"], page["related_routes"], page["recommended_next_reads"])
 ```
 
 ## Runtime Artifacts
