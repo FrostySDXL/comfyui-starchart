@@ -2,9 +2,9 @@
 title: "Registration"
 ---
 
-**Evidence:** Source-backed from pinned snapshots; Observed (community pattern)
+**Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Community pattern study
 **Last Updated:** 2026-05-19
-**Primary Sources**
+**Primary Sources:**
 
 - https://docs.comfy.org/custom-nodes/overview
 - https://docs.comfy.org/custom-nodes/backend/server_overview

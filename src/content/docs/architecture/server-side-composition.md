@@ -7,8 +7,8 @@ title: "Server-Side Composition"
 **Primary Sources:**
 - `references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701)
 - `references/snapshots/2026-05-18/comfyui-core-v0.21.1/execution.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701)
-- `references/snapshots/2026-05-18/comfyui-frontend-v1.45.9/src/scripts/app.ts` (v1.45.9, commit 2dbf49fd9da0e0b809ee1f4e663148c79f730cc2)
-- `references/snapshots/2026-05-18/comfyui-frontend-v1.45.9/src/types/comfy.ts` (v1.45.9, commit 2dbf49fd9da0e0b809ee1f4e663148c79f730cc2)
+- `references/snapshots/2026-05-18/comfyui-frontend-v1.45.9/src/scripts/app.ts` (v1.45.9, commit 8562816ffa0d996bd400e517292fee074a6acefa)
+- `references/snapshots/2026-05-18/comfyui-frontend-v1.45.9/src/types/comfy.ts` (v1.45.9, commit 8562816ffa0d996bd400e517292fee074a6acefa)
 **Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Scope

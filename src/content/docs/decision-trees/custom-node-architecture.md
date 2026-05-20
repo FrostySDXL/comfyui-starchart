@@ -3,7 +3,7 @@ title: "Decision Tree: Custom Node Architecture"
 ---
 
 **Last Updated:** 2026-05-19
-**Evidence:** Source-backed from pinned snapshots; Operational guidance
+**Evidence:** Source-backed from pinned snapshots; Operational guidance for repo-authored decision support and examples
 
 ## Overview
 

@@ -4,7 +4,7 @@ title: "Known Limitations: API and Execution Boundaries"
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
 **Last Updated:** 2026-05-19
-**Baseline verification status:** This page contains mixed entry-level verification. Source-backed limitations tied to the current pinned snapshots were re-reviewed against core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`; docs.comfy.org-backed API-mode guidance still carries the prior-baseline notes shown inline.
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18` for the source-backed entries re-reviewed in this page. This page still contains mixed entry-level verification; docs.comfy.org-backed API-mode guidance carries the prior-baseline notes shown inline.
 
 ## Scope
 
