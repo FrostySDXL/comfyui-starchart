@@ -304,7 +304,7 @@
       "path": "custom-nodes/registration.md",
       "nav_section": "Custom Nodes",
       "audience": null,
-      "evidence": "Source-backed from pinned snapshots; Observed (community pattern)",
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Community pattern study",
       "summary": "Registration is the step that makes ComfyUI discover your node classes. The exact mechanism depends on whether the package is using legacy V1 or modern V3 conventions."
     },
     {
@@ -536,7 +536,7 @@
       "path": "decision-trees/custom-node-architecture.md",
       "nav_section": "Decision Trees",
       "audience": null,
-      "evidence": "Source-backed from pinned snapshots; Operational guidance",
+      "evidence": "Source-backed from pinned snapshots; Operational guidance for repo-authored decision support and examples",
       "summary": null
     },
     {

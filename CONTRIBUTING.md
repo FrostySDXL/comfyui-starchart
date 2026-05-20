@@ -243,7 +243,7 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
 
 1. Run the refresh pipeline and note the printed backup path:
    ```bash
-    python scripts/refresh_snapshots.py --core-version <version> --frontend-version <version>
+   python scripts/refresh_snapshots.py --core-version <version> --frontend-version <version>
    ```
 2. Confirm that the script wrote `public/artifacts/refresh-provenance.json`, and that the file truthfully reflects the attempted path:
    - `backup_location` should contain the repo-local refresh backup directory path under `references/_refresh_backups/` when a prior canonical baseline existed, otherwise `null`
@@ -261,7 +261,7 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    ```
 5. If you are comparing two baselines, generate the published delta summary from the auto-created backup:
    ```bash
-     python scripts/generate/generate_snapshot_delta_summary.py --old <repo-local-refresh-backup-dir> --new references/raw --output public/artifacts/delta-summary.json
+   python scripts/generate/generate_snapshot_delta_summary.py --old <repo-local-refresh-backup-dir> --new references/raw --output public/artifacts/delta-summary.json
    ```
 6. Remove the temporary backup after confirming the delta output if you no longer need it. The durable history surfaces remain `references/snapshots/`, `public/artifacts/versions/`, and `public/artifacts/refresh-provenance.json`; the backup directory is only local rollback and comparison working state.
 7. Update version-pin references in docs. A refresh changes the pinned baseline,
@@ -283,9 +283,9 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    `references/_refresh_backups/` (pre-refresh backups).
 
    Verify after updating:
-    ```bash
-    python scripts/verify/cross_references.py
-    ```
+   ```bash
+   python scripts/verify/cross_references.py
+   ```
 
    For each stale prose page, decide whether the drift is only mechanical (for
    example a snapshot path or surrounding citation path changed) or whether the
@@ -297,8 +297,8 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    reflects a prior baseline.
 
 8. Run the maintainer verification gate:
-    ```bash
-    python scripts/verify/run_all.py
+   ```bash
+   python scripts/verify/run_all.py
    ```
 
 The live clone -> extract -> generate -> publish -> verify closure path was validated end-to-end on 2026-05-18 with core `v0.21.1` and frontend `v1.45.9`. Repeat this workflow when a new upstream baseline is needed.
@@ -340,8 +340,8 @@ which remains rollback and comparison working state rather than durable history.
 6. Treat this section as the authoritative home for future verifier placement.
 7. Run the full test suite:
    ```bash
-    python -m unittest discover -s tests -v
-    ```
+   python -m unittest discover -s tests -v
+   ```
 8. If the verifier exercises the orchestrated maintainer pipeline or example shell scripts, decide whether it belongs in the supplemental Ubuntu CI job in `.github/workflows/ci.yml`.
 
 ### Adding a New Extractor
