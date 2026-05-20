@@ -106,8 +106,12 @@ def validate_tooling_metadata(
         task_intents = _expect_string_list(path, "task_intents", entry.get("task_intents", []))
         invalid_task_intents = sorted(set(task_intents) - KNOWN_TASK_INTENTS)
         if invalid_task_intents:
+            allowed_task_intents = ", ".join(sorted(KNOWN_TASK_INTENTS))
             raise ValueError(
-                f"{path}: invalid task_intents values: {', '.join(invalid_task_intents)}"
+                f"{path}: invalid task_intents values: {', '.join(invalid_task_intents)}. "
+                f"Allowed values: {allowed_task_intents}. "
+                "If you are intentionally adding a new task intent, update "
+                "KNOWN_TASK_INTENTS in scripts/generate/generate_tooling_index.py."
             )
 
         related_artifacts = _expect_string_list(
@@ -181,19 +185,22 @@ def build_tooling_index(
     repo_root: Path = REPO_ROOT,
     nav_source: str | Path | None = None,
     metadata_path: Path | None = None,
+    metadata: dict[str, dict[str, object]] | None = None,
 ) -> dict[str, object]:
     resolved_nav_source = nav_source if nav_source is not None else DEFAULT_NAV_SOURCE
     resolved_metadata_path = metadata_path if metadata_path is not None else METADATA_PATH
     pages = build_published_docs_surface(repo_root, resolved_nav_source, DOCS_ROOT)
     eligible_paths = {page["path"] for page in pages}
     nav_paths = _nav_paths_for_validation(repo_root, resolved_nav_source)
-    metadata = load_tooling_metadata(resolved_metadata_path)
-    validate_tooling_metadata(metadata, eligible_paths, nav_paths)
+    resolved_metadata = (
+        metadata if metadata is not None else load_tooling_metadata(resolved_metadata_path)
+    )
+    validate_tooling_metadata(resolved_metadata, eligible_paths, nav_paths)
 
     merged_pages = []
     for page in sorted(pages, key=lambda item: item["path"]):
         merged = dict(page)
-        merged.update(normalize_enrichment(metadata.get(page["path"])))
+        merged.update(normalize_enrichment(resolved_metadata.get(page["path"])))
         merged_pages.append(merged)
 
     return {
@@ -241,12 +248,13 @@ def main() -> int:
     )
     args = parser.parse_args()
 
+    metadata = load_tooling_metadata(Path(args.metadata))
     tooling_index = build_tooling_index(
         repo_root=REPO_ROOT,
         nav_source=args.nav_source,
         metadata_path=Path(args.metadata),
+        metadata=metadata,
     )
-    metadata = load_tooling_metadata(Path(args.metadata))
     eligible_paths = {page["path"] for page in tooling_index["pages"]}
     nav_paths = _nav_paths_for_validation(REPO_ROOT, args.nav_source)
     excluded_metadata_paths = collect_excluded_metadata_paths(metadata, eligible_paths, nav_paths)

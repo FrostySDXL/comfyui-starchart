@@ -404,6 +404,31 @@ class GenerateToolingIndexTests(unittest.TestCase):
             )
             self.assertEqual(entry["related_events"], ["executing", "execution_start", "status"])
 
+    def test_invalid_task_intents_message_lists_allowed_values(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._make_fixture_repo(root)
+            self._write_metadata(
+                root,
+                {
+                    "api/websocket.md": {
+                        "task_intents": ["new-intent"],
+                        "related_artifacts": [],
+                        "related_routes": [],
+                        "related_events": [],
+                        "runtime_required": False,
+                        "stability_tier": "pinned-baseline",
+                        "recommended_next_reads": [],
+                    }
+                },
+            )
+            with self.assertRaisesRegex(
+                ValueError,
+                "Allowed values: .*If you are intentionally adding a new task intent",
+            ):
+                generate_tooling_index.build_tooling_index(root)
+
     def test_script_writes_output_file(self):
         with tempfile.TemporaryDirectory() as tmp:
             output_path = Path(tmp) / "tooling-index.json"

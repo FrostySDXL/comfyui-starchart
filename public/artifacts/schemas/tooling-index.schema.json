@@ -34,7 +34,7 @@
           }
         }
       },
-      "additionalProperties": true
+      "additionalProperties": false
     },
     "pages": {
       "type": "array",
@@ -126,9 +126,9 @@
             }
           }
         },
-        "additionalProperties": true
+        "additionalProperties": false
       }
     }
   },
-  "additionalProperties": true
+  "additionalProperties": false
 }
