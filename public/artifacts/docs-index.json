@@ -65,7 +65,7 @@
       "nav_section": "Orientation / What's New",
       "audience": null,
       "evidence": "Operational guidance",
-      "summary": "This page highlights meaningful repo-visible changes that affect how readers use the docs or published artifacts. It is intentionally selective and does not backfill the full project history."
+      "summary": "This page highlights meaningful repo-visible changes that affect how readers use the docs or published artifacts. It is intentionally selective and does not backfill the full project history. For exhaustive chronological repo history, use `CHANGELOG.md` in the repository root."
     },
     {
       "title": "Glossary",
