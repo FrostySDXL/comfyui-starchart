@@ -3,7 +3,7 @@ const LEADING_SKIPPABLE_NODE_TYPES = new Set(['html', 'definition']);
 // Base path for the site. Must match the `base` setting in astro.config.mjs.
 // If astro.config.mjs changes, this constant AND scripts/verify/rendered_links.py SITE_BASE
 // must be updated together. There is no shared config source yet.
-const SITE_BASE = '/comfyui_knowledge_base';
+const SITE_BASE = '/comfyui-starchart';
 
 function splitUrlParts(url) {
   const hashIndex = url.indexOf('#');

@@ -33,7 +33,7 @@ artifact `artifacts/delta-summary.json`:
 ## Usage
 
 ```bash
-py -3.11 examples/consumers/python-artifact-delta-reader/read_delta_summary.py https://example.com/comfyui-knowledge-base
+py -3.11 examples/consumers/python-artifact-delta-reader/read_delta_summary.py https://example.com/comfyui-starchart
 ```
 
 For the contract boundaries this example assumes, read

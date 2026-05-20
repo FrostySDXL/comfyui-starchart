@@ -6,8 +6,8 @@ import { loadSidebarData, toStarlightSidebar } from './src/site/sidebar.js';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://frostysdxl.github.io/comfyui_knowledge_base',
-  base: '/comfyui_knowledge_base/',
+  site: 'https://frostysdxl.github.io/comfyui-starchart',
+  base: '/comfyui-starchart/',
   outDir: './dist',
   publicDir: './public',
   markdown: {
@@ -15,12 +15,12 @@ export default defineConfig({
   },
   integrations: [
     starlight({
-      title: 'ComfyUI Knowledge Base',
+      title: 'ComfyUI StarChart',
       social: [
         {
           icon: 'github',
           label: 'GitHub',
-          href: 'https://github.com/FrostySDXL/comfyui_knowledge_base',
+          href: 'https://github.com/FrostySDXL/comfyui-starchart',
         },
       ],
       sidebar: toStarlightSidebar(loadSidebarData()),

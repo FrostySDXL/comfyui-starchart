@@ -7,6 +7,27 @@ verification, workflow, and repo structure rather than every commit.
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-05-20 - repo rename to ComfyUI StarChart
+
+### Repo identity and hosting
+
+- Rename the repository identity from ComfyUI Knowledge Base to ComfyUI
+  StarChart across the primary brand, package, and hosting surfaces.
+- Align the Astro site URL, GitHub Pages base path, and GitHub repository link
+  with the new `comfyui-starchart` slug.
+
+### Docs, examples, and support artifacts
+
+- Update the docs home title, top-level repo guidance, published schema titles,
+  and consumer example base-URL conventions to the new name.
+- Regenerate `public/artifacts/docs-index.json` so the published docs-discovery
+  support artifact reflects the renamed docs home.
+
+### Verification and routing
+
+- Update repo-local link-rewrite and rendered-link verification base-path
+  constants and tests so build-time routing checks follow the new Pages path.
+
 ## 0.2.0 - 2026-05-19
 
 ### Repo metadata

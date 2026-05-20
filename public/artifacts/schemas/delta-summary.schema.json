@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "artifacts/schemas/delta-summary.schema.json",
-  "title": "ComfyUI Knowledge Base delta-summary support artifact",
+  "title": "ComfyUI StarChart delta-summary support artifact",
   "description": "Bounded structure for the checked-in delta-summary.json support artifact that compares two canonical extracted baselines.",
   "type": "object",
   "required": [

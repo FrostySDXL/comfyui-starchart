@@ -1,4 +1,4 @@
-# ComfyUI Knowledge Base
+# ComfyUI StarChart
 
 **Last Updated:** 2026-05-13
 **ComfyUI Version Pin:** Core `v0.21.1` (`26515acd23fa291a8f5ab53c5997258598de0701`) with official frontend `v1.45.9` (`8562816ffa0d996bd400e517292fee074a6acefa`) for the current pinned snapshots and extracted reference data

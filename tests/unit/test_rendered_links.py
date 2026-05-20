@@ -44,13 +44,13 @@ class ExtractInternalLinksTests(unittest.TestCase):
 
     def setUp(self):
         self.module = load_module()
-        self.site_base = "/comfyui_knowledge_base"
+        self.site_base = "/comfyui-starchart"
 
     def test_extracts_absolute_internal_links(self):
         """Should extract links starting with site base."""
-        html = '<a href="/comfyui_knowledge_base/reference/glossary/">Glossary</a>'
+        html = '<a href="/comfyui-starchart/reference/glossary/">Glossary</a>'
         links = self.module.extract_internal_links(html, self.site_base)
-        self.assertEqual(links, ["/comfyui_knowledge_base/reference/glossary/"])
+        self.assertEqual(links, ["/comfyui-starchart/reference/glossary/"])
 
     def test_skips_external_links(self):
         """Should skip http/https links."""
@@ -67,9 +67,9 @@ class ExtractInternalLinksTests(unittest.TestCase):
     def test_skips_static_assets(self):
         """Should skip links to CSS, JS, SVG, and other static files."""
         html = """
-        <link href="/comfyui_knowledge_base/_astro/common.css">
-        <a href="/comfyui_knowledge_base/favicon.svg">Icon</a>
-        <a href="/comfyui_knowledge_base/sitemap-index.xml">Sitemap</a>
+        <link href="/comfyui-starchart/_astro/common.css">
+        <a href="/comfyui-starchart/favicon.svg">Icon</a>
+        <a href="/comfyui-starchart/sitemap-index.xml">Sitemap</a>
         """
         links = self.module.extract_internal_links(html, self.site_base)
         self.assertEqual(links, [])
@@ -77,8 +77,8 @@ class ExtractInternalLinksTests(unittest.TestCase):
     def test_skips_astro_build_artifacts(self):
         """Should skip _astro and pagefind directories."""
         html = """
-        <a href="/comfyui_knowledge_base/_astro/something/">Astro</a>
-        <a href="/comfyui_knowledge_base/pagefind/search/">Search</a>
+        <a href="/comfyui-starchart/_astro/something/">Astro</a>
+        <a href="/comfyui-starchart/pagefind/search/">Search</a>
         """
         links = self.module.extract_internal_links(html, self.site_base)
         self.assertEqual(links, [])
@@ -95,36 +95,36 @@ class ResolveLinkTests(unittest.TestCase):
 
     def setUp(self):
         self.module = load_module()
-        self.site_base = "/comfyui_knowledge_base"
+        self.site_base = "/comfyui-starchart"
 
     def test_absolute_link_unchanged(self):
         """Absolute links starting with site base should be unchanged."""
         result = self.module.resolve_link(
-            "/comfyui_knowledge_base/reference/glossary/",
-            "/comfyui_knowledge_base/api/",
+            "/comfyui-starchart/reference/glossary/",
+            "/comfyui-starchart/api/",
             self.site_base,
         )
-        self.assertEqual(result, "/comfyui_knowledge_base/reference/glossary/")
+        self.assertEqual(result, "/comfyui-starchart/reference/glossary/")
 
     def test_relative_link_resolved(self):
         """Relative links should be resolved against page URL."""
         result = self.module.resolve_link(
             "source-evidence-policy/",
-            "/comfyui_knowledge_base/reference/glossary/",
+            "/comfyui-starchart/reference/glossary/",
             self.site_base,
         )
         self.assertEqual(
-            result, "/comfyui_knowledge_base/reference/glossary/source-evidence-policy/"
+            result, "/comfyui-starchart/reference/glossary/source-evidence-policy/"
         )
 
     def test_parent_directory_link_resolved(self):
         """Parent directory links should be resolved correctly."""
         result = self.module.resolve_link(
             "../api/prompt-submission/",
-            "/comfyui_knowledge_base/deep-dives/workflow/",
+            "/comfyui-starchart/deep-dives/workflow/",
             self.site_base,
         )
-        self.assertEqual(result, "/comfyui_knowledge_base/deep-dives/api/prompt-submission/")
+        self.assertEqual(result, "/comfyui-starchart/deep-dives/api/prompt-submission/")
 
 
 class LinkToDistPathTests(unittest.TestCase):
@@ -132,18 +132,18 @@ class LinkToDistPathTests(unittest.TestCase):
 
     def setUp(self):
         self.module = load_module()
-        self.site_base = "/comfyui_knowledge_base"
+        self.site_base = "/comfyui-starchart"
 
     def test_directory_link_to_index_html(self):
         """Directory links should map to index.html."""
         result = self.module.link_to_dist_path(
-            "/comfyui_knowledge_base/reference/glossary/", self.site_base
+            "/comfyui-starchart/reference/glossary/", self.site_base
         )
         self.assertEqual(result, "reference/glossary/index.html")
 
     def test_root_link_to_index_html(self):
         """Root link should map to index.html."""
-        result = self.module.link_to_dist_path("/comfyui_knowledge_base/", self.site_base)
+        result = self.module.link_to_dist_path("/comfyui-starchart/", self.site_base)
         self.assertEqual(result, "index.html")
 
 
@@ -199,11 +199,11 @@ class RenderedLinksDetectionTests(unittest.TestCase):
             page_dir.mkdir()
             html_file = page_dir / "index.html"
             html_file.write_text(
-                '<a href="/comfyui_knowledge_base/nonexistent/">Broken</a>',
+                '<a href="/comfyui-starchart/nonexistent/">Broken</a>',
                 encoding="utf-8",
             )
 
-            broken = self.module.verify_all_links(dist_dir, "/comfyui_knowledge_base")
+            broken = self.module.verify_all_links(dist_dir, "/comfyui-starchart")
             self.assertEqual(len(broken), 1)
             # Normalize path separators for cross-platform compatibility
             broken_keys = [k.replace("\\", "/") for k in broken.keys()]
@@ -218,7 +218,7 @@ class RenderedLinksDetectionTests(unittest.TestCase):
             source_dir.mkdir()
             source_html = source_dir / "index.html"
             source_html.write_text(
-                '<a href="/comfyui_knowledge_base/target/">Valid</a>',
+                '<a href="/comfyui-starchart/target/">Valid</a>',
                 encoding="utf-8",
             )
             # Create target page
@@ -227,7 +227,7 @@ class RenderedLinksDetectionTests(unittest.TestCase):
             target_html = target_dir / "index.html"
             target_html.write_text("<html></html>", encoding="utf-8")
 
-            broken = self.module.verify_all_links(dist_dir, "/comfyui_knowledge_base")
+            broken = self.module.verify_all_links(dist_dir, "/comfyui-starchart")
             self.assertEqual(len(broken), 0)
 
     def test_passes_valid_relative_link(self):
@@ -248,7 +248,7 @@ class RenderedLinksDetectionTests(unittest.TestCase):
             sibling_html = sibling_dir / "index.html"
             sibling_html.write_text("<html></html>", encoding="utf-8")
 
-            broken = self.module.verify_all_links(dist_dir, "/comfyui_knowledge_base")
+            broken = self.module.verify_all_links(dist_dir, "/comfyui-starchart")
             self.assertEqual(len(broken), 0)
 
 

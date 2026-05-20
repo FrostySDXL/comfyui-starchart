@@ -1,5 +1,5 @@
 ---
-title: "ComfyUI Knowledge Base"
+title: "ComfyUI StarChart"
 ---
 
 **Evidence:** Source-backed from pinned snapshots

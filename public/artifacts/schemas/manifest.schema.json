@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "artifacts/schemas/manifest.schema.json",
-  "title": "ComfyUI Knowledge Base artifact manifest support artifact",
+  "title": "ComfyUI StarChart artifact manifest support artifact",
   "description": "Bounded structure for the checked-in manifest.json support artifact that advertises published artifact locations and checksums.",
   "type": "object",
   "required": [

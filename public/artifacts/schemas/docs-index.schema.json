@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "artifacts/schemas/docs-index.schema.json",
-  "title": "ComfyUI Knowledge Base docs-index support artifact",
+  "title": "ComfyUI StarChart docs-index support artifact",
   "description": "Bounded structure for the checked-in docs-index.json support artifact used for navigation-aware docs discovery.",
   "type": "object",
   "required": [

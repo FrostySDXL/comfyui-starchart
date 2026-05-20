@@ -24,7 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DIST_DIR = REPO_ROOT / "dist"
 # Must match the `base` setting in astro.config.mjs and the SITE_BASE constant in
 # src/site/markdown.js. If astro.config.mjs changes, update both files together.
-SITE_BASE = "/comfyui_knowledge_base"
+SITE_BASE = "/comfyui-starchart"
 
 
 def find_html_files(directory: Path) -> list[Path]:
@@ -92,11 +92,11 @@ def resolve_link(href: str, page_url_path: str, site_base: str) -> str:
 
     Args:
         href: The href value from the link
-        page_url_path: The URL path of the page containing the link (e.g., /comfyui_knowledge_base/reference/glossary/)
-        site_base: The site base path (e.g., /comfyui_knowledge_base)
+        page_url_path: The URL path of the page containing the link (e.g., /comfyui-starchart/reference/glossary/)
+        site_base: The site base path (e.g., /comfyui-starchart)
 
     Returns:
-        Absolute path within the site (e.g., /comfyui_knowledge_base/reference/source-evidence-policy/)
+        Absolute path within the site (e.g., /comfyui-starchart/reference/source-evidence-policy/)
     """
     # Strip anchor and query string
     parsed = urlparse(href)
@@ -129,7 +129,7 @@ def link_to_dist_path(resolved_link: str, site_base: str) -> str:
     """Convert a resolved link to a dist directory path.
 
     Args:
-        resolved_link: Absolute URL path (e.g., /comfyui_knowledge_base/reference/glossary/)
+        resolved_link: Absolute URL path (e.g., /comfyui-starchart/reference/glossary/)
         site_base: The site base path
 
     Returns:
@@ -163,7 +163,7 @@ def get_page_url_path(html_file: Path, dist_dir: Path, site_base: str) -> str:
         site_base: The site base path
 
     Returns:
-        URL path (e.g., /comfyui_knowledge_base/reference/glossary/)
+        URL path (e.g., /comfyui-starchart/reference/glossary/)
     """
     rel_path = html_file.relative_to(dist_dir)
     # Convert to URL path

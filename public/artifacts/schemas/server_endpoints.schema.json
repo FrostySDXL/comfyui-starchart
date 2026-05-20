@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "artifacts/schemas/server_endpoints.schema.json",
-  "title": "ComfyUI Knowledge Base server_endpoints artifact",
+  "title": "ComfyUI StarChart server_endpoints artifact",
   "description": "Bounded guaranteed structure for the published server_endpoints.json artifact. Best-effort descriptive fields remain optional and may evolve independently.",
   "type": "object",
   "required": [

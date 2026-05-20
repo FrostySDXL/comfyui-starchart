@@ -12,7 +12,7 @@
   },
   "pages": [
     {
-      "title": "ComfyUI Knowledge Base",
+      "title": "ComfyUI StarChart",
       "path": "index.md",
       "nav_section": "Home",
       "audience": null,

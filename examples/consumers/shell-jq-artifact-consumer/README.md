@@ -19,7 +19,7 @@ This directory shows a small shell-side artifact discovery flow:
 
 - `curl`
 - `jq`
-- a published documentation site base URL such as `https://example.com/comfyui-knowledge-base`
+- a published documentation site base URL such as `https://example.com/comfyui-starchart`
 
 ## What This Proves
 
@@ -39,13 +39,13 @@ This directory shows a small shell-side artifact discovery flow:
 Artifact-only:
 
 ```bash
-bash examples/consumers/shell-jq-artifact-consumer/list_endpoints.sh https://example.com/comfyui-knowledge-base
+bash examples/consumers/shell-jq-artifact-consumer/list_endpoints.sh https://example.com/comfyui-starchart
 ```
 
 Artifact discovery plus optional live probe:
 
 ```bash
-bash examples/consumers/shell-jq-artifact-consumer/list_endpoints.sh https://example.com/comfyui-knowledge-base http://127.0.0.1:8188
+bash examples/consumers/shell-jq-artifact-consumer/list_endpoints.sh https://example.com/comfyui-starchart http://127.0.0.1:8188
 ```
 
 If you omit the runtime URL, the script completes after artifact discovery and

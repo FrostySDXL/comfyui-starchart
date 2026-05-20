@@ -35,8 +35,8 @@ This directory shows a small JavaScript-side discovery flow:
 ## Usage
 
 ```bash
-node examples/consumers/javascript-docs-and-artifacts/load_docs_index.mjs https://example.com/comfyui-knowledge-base tooling
-node examples/consumers/javascript-docs-and-artifacts/load_manifest.mjs https://example.com/comfyui-knowledge-base js_hooks.json
+node examples/consumers/javascript-docs-and-artifacts/load_docs_index.mjs https://example.com/comfyui-starchart tooling
+node examples/consumers/javascript-docs-and-artifacts/load_manifest.mjs https://example.com/comfyui-starchart js_hooks.json
 ```
 
 The scripts also work against a repo-local built site or docs directory through a

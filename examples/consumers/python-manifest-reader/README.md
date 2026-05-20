@@ -35,8 +35,8 @@ tools:
 ## Usage
 
 ```bash
-py -3.11 examples/consumers/python-manifest-reader/read_manifest.py https://example.com/comfyui-knowledge-base server_endpoints.json
-py -3.11 examples/consumers/python-manifest-reader/validate_artifact.py https://example.com/comfyui-knowledge-base server_endpoints.json
+py -3.11 examples/consumers/python-manifest-reader/read_manifest.py https://example.com/comfyui-starchart server_endpoints.json
+py -3.11 examples/consumers/python-manifest-reader/validate_artifact.py https://example.com/comfyui-starchart server_endpoints.json
 ```
 
 The intended path is an HTTP(S) published site URL. If you point the validator at

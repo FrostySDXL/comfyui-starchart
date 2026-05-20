@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-05-19
 
-Thank you for contributing to the ComfyUI Knowledge Base. This guide is the
+Thank you for contributing to ComfyUI StarChart. This guide is the
 canonical repo-local maintainer workflow authority for making maintainer-grade
 changes safely and getting them merged.
 

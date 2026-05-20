@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "artifacts/schemas/js_hooks.schema.json",
-  "title": "ComfyUI Knowledge Base js_hooks artifact",
+  "title": "ComfyUI StarChart js_hooks artifact",
   "description": "Bounded guaranteed structure for the published js_hooks.json artifact. Optional descriptive fields stay outside the hard contract.",
   "type": "object",
   "required": [

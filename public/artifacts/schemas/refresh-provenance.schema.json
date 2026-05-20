@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "artifacts/schemas/refresh-provenance.schema.json",
-  "title": "ComfyUI Knowledge Base refresh-provenance support artifact",
+  "title": "ComfyUI StarChart refresh-provenance support artifact",
   "description": "Bounded structure for the checked-in refresh-provenance.json support artifact written by the snapshot refresh workflow.",
   "type": "object",
   "required": [

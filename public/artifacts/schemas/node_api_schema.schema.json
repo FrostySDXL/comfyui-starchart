@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "artifacts/schemas/node_api_schema.schema.json",
-  "title": "ComfyUI Knowledge Base node_api_schema artifact",
+  "title": "ComfyUI StarChart node_api_schema artifact",
   "description": "Bounded guaranteed structure for the published node_api_schema.json artifact. Rich typed-detail enrichment remains optional unless explicitly listed here.",
   "type": "object",
   "required": [

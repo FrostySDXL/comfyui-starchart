@@ -99,41 +99,41 @@ test('stripLeadingH1 removes an H1 after mixed skippable leading nodes', () => {
 
 // Tests for currentFilePath-aware link resolution (fixes non-index page URL depth mismatch)
 test('rewriteDocLinkHref resolves same-directory links to absolute paths with base when currentFilePath provided', () => {
-  // From reference/glossary.md, link to source-evidence-policy.md should resolve to /comfyui_knowledge_base/reference/source-evidence-policy/
+  // From reference/glossary.md, link to source-evidence-policy.md should resolve to /comfyui-starchart/reference/source-evidence-policy/
   assert.equal(
     rewriteDocLinkHref('source-evidence-policy.md', 'reference/glossary.md'),
-    '/comfyui_knowledge_base/reference/source-evidence-policy/',
+    '/comfyui-starchart/reference/source-evidence-policy/',
   );
 });
 
 test('rewriteDocLinkHref resolves parent-directory links to absolute paths with base when currentFilePath provided', () => {
-  // From deep-dives/workflow-json-schema.md, link to ../api/prompt-submission.md should resolve to /comfyui_knowledge_base/api/prompt-submission/
+  // From deep-dives/workflow-json-schema.md, link to ../api/prompt-submission.md should resolve to /comfyui-starchart/api/prompt-submission/
   assert.equal(
     rewriteDocLinkHref('../api/prompt-submission.md', 'deep-dives/workflow-json-schema.md'),
-    '/comfyui_knowledge_base/api/prompt-submission/',
+    '/comfyui-starchart/api/prompt-submission/',
   );
 });
 
 test('rewriteDocLinkHref resolves deeply nested relative links correctly', () => {
-  // From start-here/nested/deep/page.md, link to ../../../reference/glossary.md should resolve to /comfyui_knowledge_base/reference/glossary/
+  // From start-here/nested/deep/page.md, link to ../../../reference/glossary.md should resolve to /comfyui-starchart/reference/glossary/
   assert.equal(
     rewriteDocLinkHref('../../../reference/glossary.md', 'start-here/nested/deep/page.md'),
-    '/comfyui_knowledge_base/reference/glossary/',
+    '/comfyui-starchart/reference/glossary/',
   );
 });
 
 test('rewriteDocLinkHref resolves index.md links to directory paths with base', () => {
-  // From reference/glossary.md, link to ../api/index.md should resolve to /comfyui_knowledge_base/api/
+  // From reference/glossary.md, link to ../api/index.md should resolve to /comfyui-starchart/api/
   assert.equal(
     rewriteDocLinkHref('../api/index.md', 'reference/glossary.md'),
-    '/comfyui_knowledge_base/api/',
+    '/comfyui-starchart/api/',
   );
 });
 
 test('rewriteDocLinkHref preserves anchors when resolving with currentFilePath', () => {
   assert.equal(
     rewriteDocLinkHref('source-evidence-policy.md#trust-hierarchy', 'reference/glossary.md'),
-    '/comfyui_knowledge_base/reference/source-evidence-policy/#trust-hierarchy',
+    '/comfyui-starchart/reference/source-evidence-policy/#trust-hierarchy',
   );
 });
 
@@ -155,11 +155,11 @@ test('rewriteDocLinkHref resolves relative links with root-level currentFilePath
   // currentDir becomes '' and the combined path is just the relative route path.
   assert.equal(
     rewriteDocLinkHref('start-here/author.md', 'index.md'),
-    '/comfyui_knowledge_base/start-here/author/',
+    '/comfyui-starchart/start-here/author/',
   );
   assert.equal(
     rewriteDocLinkHref('reference/glossary.md', 'welcome.md'),
-    '/comfyui_knowledge_base/reference/glossary/',
+    '/comfyui-starchart/reference/glossary/',
   );
 });
 
@@ -167,10 +167,10 @@ test('rewriteDocLinkHref resolves ./ prefixed relative links with currentFilePat
   // Links like ./other-page.md from a nested file should resolve relative to current dir.
   assert.equal(
     rewriteDocLinkHref('./service-integration.md', 'start-here/author.md'),
-    '/comfyui_knowledge_base/start-here/service-integration/',
+    '/comfyui-starchart/start-here/service-integration/',
   );
   assert.equal(
     rewriteDocLinkHref('./extension-developer.md#hooks', 'start-here/tooling-builder.md'),
-    '/comfyui_knowledge_base/start-here/extension-developer/#hooks',
+    '/comfyui-starchart/start-here/extension-developer/#hooks',
   );
 });
