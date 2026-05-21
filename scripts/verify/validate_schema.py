@@ -58,7 +58,6 @@ __all__ = [
     "validate_returns",
     "validate_top_level",
     "validate_typed_input_shapes",
-    "_validate_json_file",
     "main",
 ]
 

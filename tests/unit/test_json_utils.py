@@ -11,10 +11,15 @@ from scripts.common import json_utils
 class JsonUtilsTests(unittest.TestCase):
     def test_compute_textual_json_sha256_normalizes_crlf(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "sample.json"
-            path.write_bytes(b'{\r\n  "a": 1\r\n}\r\n')
-            digest = json_utils.compute_textual_json_sha256(path)
-            self.assertEqual(digest, json_utils.compute_textual_json_sha256(path))
+            crlf_path = Path(tmp) / "sample-crlf.json"
+            lf_path = Path(tmp) / "sample-lf.json"
+            crlf_path.write_bytes(b'{\r\n  "a": 1\r\n}\r\n')
+            lf_path.write_bytes(b'{\n  "a": 1\n}\n')
+
+            self.assertEqual(
+                json_utils.compute_textual_json_sha256(crlf_path),
+                json_utils.compute_textual_json_sha256(lf_path),
+            )
 
     def test_compute_bytes_sha256(self):
         self.assertEqual(
