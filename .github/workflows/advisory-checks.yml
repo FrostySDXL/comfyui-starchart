@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.lock
 
+      - name: Install package (editable)
+        run: python -m pip install -e .
+
       # Replay the advisory scripts here as blocking on a weekly schedule and on
       # manual dispatch. This keeps push/PR CI focused on the normal blocking
       # gate while preserving a durable escalation path for advisory failures.

@@ -37,6 +37,9 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.lock
 
+      - name: Install package (editable)
+        run: python -m pip install -e .
+
       - name: Publish reference artifacts
         run: python scripts/generate/publish_reference_artifacts.py
 
