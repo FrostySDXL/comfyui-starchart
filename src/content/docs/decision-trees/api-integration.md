@@ -2,9 +2,9 @@
 title: "Decision Tree: Choosing an Integration Approach"
 ---
 
-**Last Updated:** 2026-05-20
+**Last Updated:** 2026-05-21
 **Evidence:** Source-backed from pinned snapshots
-**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`.
 
 ## Overview
 
@@ -85,7 +85,7 @@ Use the **standard API surface**:
 | What You Need | API Endpoint |
 |--------------|-------------|
 | Submit a workflow | `POST /prompt` |
-| Track progress | WebSocket `/ws?client_id=...` |
+| Track progress | WebSocket `/ws?clientId=...` |
 | Fetch results | `GET /history/{prompt_id}` |
 | List queue | `GET /queue` |
 | Clear queue | `POST /queue` with `{"clear": true}` |

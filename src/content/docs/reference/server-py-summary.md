@@ -3,8 +3,8 @@ title: "Server.py Summary"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-18
-**Primary Sources:** references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py
+**Last Updated:** 2026-05-21
+**Primary Sources:** references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py
 
 ## Overview
 
@@ -58,7 +58,7 @@ It does **not** replace the reader-oriented endpoint guidance in [API Endpoints]
 | /upload/mask | json | 200, 400 | JSON object with fields: name, subfolder, type, asset. |
 | /view | file | 200 | File response with inferred content type. |
 | /view_metadata/{folder_name} | json | 200, 404 | JSON response. |
-| /system_stats | json | 200 | JSON object with fields: system, os, ram_total, ram_free, comfyui_version, required_frontend_version, installed_templates_version, required_templates_version, python_version, pytorch_version, embedded_python, argv, devices, name, type, index, vram_total, vram_free, torch_vram_total, torch_vram_free. |
+| /system_stats | json | 200 | JSON object with fields: system, os, ram_total, ram_free, comfyui_version, required_frontend_version, installed_templates_version, required_templates_version, comfy_package_versions, python_version, pytorch_version, embedded_python, argv, devices, name, type, index, vram_total, vram_free, torch_vram_total, torch_vram_free. |
 | /features | json | 200 | JSON response. |
 | /prompt | json | 200 | JSON response. |
 | /object_info | json | 200 | JSON response. |
@@ -82,7 +82,7 @@ It does **not** replace the reader-oriented endpoint guidance in [API Endpoints]
 | /upload/image | name, subfolder, type, asset | Returns 400 for validation failures or bad requests. |
 | /upload/mask | name, subfolder, type, asset | Returns 400 for validation failures or bad requests. |
 | /view_metadata/{folder_name} | - | Returns 404 when the requested resource is not found. |
-| /system_stats | system, os, ram_total, ram_free, comfyui_version, required_frontend_version, installed_templates_version, required_templates_version, python_version, pytorch_version, embedded_python, argv, devices, name, type, index, vram_total, vram_free, torch_vram_total, torch_vram_free | - |
+| /system_stats | system, os, ram_total, ram_free, comfyui_version, required_frontend_version, installed_templates_version, required_templates_version, comfy_package_versions, python_version, pytorch_version, embedded_python, argv, devices, name, type, index, vram_total, vram_free, torch_vram_total, torch_vram_free | - |
 | /api/jobs | jobs, pagination, offset, limit, total, has_more | Returns 400 for validation failures or bad requests. |
 | /api/jobs/{job_id} | - | Returns 404 when the requested resource is not found. Returns 400 for validation failures or bad requests. |
 | /queue | queue_running, queue_pending | - |

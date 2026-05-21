@@ -3,16 +3,16 @@ title: "ProfilerX Analysis"
 ---
 
 **Evidence:** Community pattern study based on pinned external version
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-21
 **Primary Source:** https://github.com/ryanontheinside/ComfyUI_ProfilerX
-**Baseline verification status:** This is a community pattern study. Current core snapshot citation paths were updated where mechanical drift was obvious, while the community-pattern analysis and intentionally retained older `progress.py` contract note remain the governing trust signals.
+**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline. Community-pattern analysis and the intentionally retained older `progress.py` contract note remain the governing trust signals.
 
 ## Primary Sources
 
 - https://github.com/ryanontheinside/ComfyUI_ProfilerX (community pattern example)
 - ProfilerX `README.md`, `__init__.py`, `handler.py`, `routes.py`, `web/index.ts` (community repo)
-- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701) -- upstream source for ComfyUI progress handler and route patterns
-- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/execution.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701) -- upstream source for handler registration during execution
+- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py` (v0.22.0, commit a8d2519058ea766ca3b14916bcc01ecef5efd235) -- upstream source for ComfyUI progress handler and route patterns
+- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py` (v0.22.0, commit a8d2519058ea766ca3b14916bcc01ecef5efd235) -- upstream source for handler registration during execution
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` (v0.19.3, commit 308602640) -- intentionally retained for the `ProgressHandler` callback contract because the current pinned snapshot set does not include an equivalent `comfy_execution/progress.py` path
 
 ## Scope

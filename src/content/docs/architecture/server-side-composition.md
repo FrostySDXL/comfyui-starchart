@@ -3,13 +3,13 @@ title: "Server-Side Composition"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-21
 **Primary Sources:**
-- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701)
-- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/execution.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701)
-- `references/snapshots/2026-05-18/comfyui-frontend-v1.45.9/src/scripts/app.ts` (v1.45.9, commit 8562816ffa0d996bd400e517292fee074a6acefa)
-- `references/snapshots/2026-05-18/comfyui-frontend-v1.45.9/src/types/comfy.ts` (v1.45.9, commit 8562816ffa0d996bd400e517292fee074a6acefa)
-**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
+- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py` (v0.22.0, commit a8d2519058ea766ca3b14916bcc01ecef5efd235)
+- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py` (v0.22.0, commit a8d2519058ea766ca3b14916bcc01ecef5efd235)
+- `references/snapshots/2026-05-21/comfyui-frontend-v1.45.12/src/scripts/app.ts` (v1.45.12, commit 8ee8dd03c46cc8ba20eb169ea6ff7189fdb21f91)
+- `references/snapshots/2026-05-21/comfyui-frontend-v1.45.12/src/types/comfy.ts` (v1.45.12, commit 8ee8dd03c46cc8ba20eb169ea6ff7189fdb21f91)
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`.
 
 ## Scope
 

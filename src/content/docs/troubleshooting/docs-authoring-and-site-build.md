@@ -3,8 +3,7 @@ title: "Docs Authoring and Site Build Troubleshooting"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-20
-**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
+**Last Updated:** 2026-05-21
 
 ## Scope
 
@@ -41,7 +40,7 @@ Read next:
 For doc-only changes, the minimum expected checks are:
 
  ```bash
- python scripts/verify/cross_references.py
+  py -3.11 scripts/verify/cross_references.py
  npm run build
  ```
 

@@ -3,9 +3,9 @@ title: "Custom Node Development Guide"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/overview
-**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`.
 
 ## Primary Sources
 
@@ -13,8 +13,8 @@ title: "Custom Node Development Guide"
 - https://docs.comfy.org/custom-nodes/backend/server_overview
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
 - https://docs.comfy.org/custom-nodes/walkthrough
-- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/comfy_api/latest/_io.py`
-- `references/snapshots/2026-05-18/comfyui-frontend-v1.45.9/src/types/comfy.ts`
+- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py`
+- `references/snapshots/2026-05-21/comfyui-frontend-v1.45.12/src/types/comfy.ts`
 
 ## Scope
 

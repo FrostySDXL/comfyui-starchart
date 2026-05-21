@@ -17,6 +17,18 @@ def _artifacts_with_hooks(*hooks: dict) -> dict[str, dict]:
     }
 
 
+def _artifacts_with_node_schema(*, io_types=None, typed_input_shapes=None) -> dict[str, dict]:
+    return {
+        "server_endpoints.json": {"endpoints": []},
+        "js_hooks.json": {"hooks": []},
+        "node_api_schema.json": {
+            "object_info_fields": [],
+            "io_types": list(io_types or []),
+            "typed_input_shapes": dict(typed_input_shapes or {}),
+        },
+    }
+
+
 class DeltaSummaryComparisonTests(unittest.TestCase):
     def test_provenance_only_hook_path_drift_does_not_count_as_changed(self):
         old_artifacts = _artifacts_with_hooks(
@@ -134,6 +146,128 @@ class DeltaSummaryComparisonTests(unittest.TestCase):
         summary = build_delta_summary(old_artifacts, new_artifacts, "old", "new")
 
         self.assertEqual(summary["artifacts"]["js_hooks"]["changed"], ["setup"])
+
+    def test_provenance_only_io_type_path_drift_does_not_count_as_changed(self):
+        old_artifacts = _artifacts_with_node_schema(
+            io_types=[
+                {
+                    "io_type": "BACKGROUND_REMOVAL",
+                    "class_name": "BackgroundRemoval",
+                    "input_class": None,
+                    "input_parameters": [],
+                    "output_parameters": [],
+                    "input_parameter_details": [],
+                    "output_parameter_details": [],
+                    "type_hint": "BackgroundRemovalModel",
+                    "defined_in": "references/snapshots/2026-05-18/comfyui-core-v0.21.1/comfy_api/latest/_io.py",
+                    "is_widget": False,
+                }
+            ]
+        )
+        new_artifacts = _artifacts_with_node_schema(
+            io_types=[
+                {
+                    "io_type": "BACKGROUND_REMOVAL",
+                    "class_name": "BackgroundRemoval",
+                    "input_class": None,
+                    "input_parameters": [],
+                    "output_parameters": [],
+                    "input_parameter_details": [],
+                    "output_parameter_details": [],
+                    "type_hint": "BackgroundRemovalModel",
+                    "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+                    "is_widget": False,
+                }
+            ]
+        )
+
+        summary = build_delta_summary(old_artifacts, new_artifacts, "old", "new")
+
+        self.assertEqual(summary["artifacts"]["node_api_schema"]["io_types"]["changed"], [])
+
+    def test_semantic_io_type_change_still_counts_as_changed(self):
+        old_artifacts = _artifacts_with_node_schema(
+            io_types=[
+                {
+                    "io_type": "BACKGROUND_REMOVAL",
+                    "class_name": "BackgroundRemoval",
+                    "input_class": None,
+                    "input_parameters": [],
+                    "output_parameters": [],
+                    "input_parameter_details": [],
+                    "output_parameter_details": [],
+                    "type_hint": "BackgroundRemovalModel",
+                    "defined_in": "references/snapshots/2026-05-18/comfyui-core-v0.21.1/comfy_api/latest/_io.py",
+                    "is_widget": False,
+                }
+            ]
+        )
+        new_artifacts = _artifacts_with_node_schema(
+            io_types=[
+                {
+                    "io_type": "BACKGROUND_REMOVAL",
+                    "class_name": "BackgroundRemoval",
+                    "input_class": None,
+                    "input_parameters": [],
+                    "output_parameters": [],
+                    "input_parameter_details": [],
+                    "output_parameter_details": [],
+                    "type_hint": "BackgroundRemovalModelV2",
+                    "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+                    "is_widget": False,
+                }
+            ]
+        )
+
+        summary = build_delta_summary(old_artifacts, new_artifacts, "old", "new")
+
+        self.assertEqual(
+            summary["artifacts"]["node_api_schema"]["io_types"]["changed"],
+            ["BACKGROUND_REMOVAL:BackgroundRemoval"],
+        )
+
+    def test_provenance_only_typed_input_shape_path_drift_does_not_count_as_changed(self):
+        old_artifacts = _artifacts_with_node_schema(
+            typed_input_shapes={
+                "AudioInput": {
+                    "description": "TypedDict representing audio input.",
+                    "defined_in": "references/snapshots/2026-05-18/comfyui-core-v0.21.1/comfy_api/latest/_input/basic_types.py",
+                    "fields": {
+                        "sample_rate": {
+                            "type": "int",
+                            "traceability": {
+                                "source_type": "source-backed",
+                                "strategy": "typed_dict_field",
+                            },
+                        }
+                    },
+                }
+            }
+        )
+        new_artifacts = _artifacts_with_node_schema(
+            typed_input_shapes={
+                "AudioInput": {
+                    "description": "TypedDict representing audio input.",
+                    "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_input/basic_types.py",
+                    "fields": {
+                        "sample_rate": {
+                            "type": "int",
+                            "traceability": {
+                                "source_type": "source-backed",
+                                "strategy": "typed_dict_field",
+                            },
+                        }
+                    },
+                }
+            }
+        )
+
+        summary = build_delta_summary(old_artifacts, new_artifacts, "old", "new")
+
+        self.assertEqual(
+            summary["artifacts"]["node_api_schema"]["typed_input_shapes"]["changed"],
+            [],
+        )
 
 
 if __name__ == "__main__":

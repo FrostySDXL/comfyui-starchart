@@ -3,16 +3,16 @@ title: "JavaScript Hooks and Registration"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
-**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`.
 
 ## Primary Sources
 
 - https://docs.comfy.org/custom-nodes/js/javascript_hooks
 - https://docs.comfy.org/custom-nodes/js/javascript_overview
 - https://docs.comfy.org/custom-nodes/js/javascript_objects_and_hijacking
-- `references/snapshots/2026-05-18/comfyui-frontend-v1.45.9/src/scripts/app.ts` (v1.45.9, commit 8562816ffa0d996bd400e517292fee074a6acefa)
+- `references/snapshots/2026-05-21/comfyui-frontend-v1.45.12/src/scripts/app.ts` (v1.45.12, commit 8ee8dd03c46cc8ba20eb169ea6ff7189fdb21f91)
 
 ## Scope
 

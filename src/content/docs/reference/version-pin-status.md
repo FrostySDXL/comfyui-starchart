@@ -3,7 +3,7 @@ title: "Version Pin Status"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-21
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.
@@ -19,21 +19,22 @@ reference data.
 
 Pinned source set:
 
-- ComfyUI core tag `v0.21.1`
-- core commit `26515acd23fa291a8f5ab53c5997258598de0701`
-- official frontend package version `1.45.9`
-- official frontend tag `v1.45.9`
-- frontend commit `8562816ffa0d996bd400e517292fee074a6acefa`
+- ComfyUI core tag `v0.22.0`
+- core commit `a8d2519058ea766ca3b14916bcc01ecef5efd235`
+- official frontend package version `1.45.12`
+- official frontend tag `v1.45.12`
+- frontend commit `8ee8dd03c46cc8ba20eb169ea6ff7189fdb21f91`
 
-The active pinned files now live under `references/snapshots/2026-05-18/` and
+The active pinned files now live under `references/snapshots/2026-05-21/` and
 the extracted JSON in `references/raw/` points at those snapshot files.
 
 Prose docs may lag this canonical artifact baseline. When they do, they should
 declare that explicitly with a `**Baseline verification status:**` block rather
 than implying current-baseline review that did not happen.
 
-The earlier pinned baseline under `references/snapshots/2026-04-19/` is still
-preserved for historical comparison and refresh-path proof.
+Earlier pinned baselines under `references/snapshots/2026-05-18/` and
+`references/snapshots/2026-04-19/` remain preserved for historical comparison
+and refresh-path proof.
 
 ## Included Pinned Snapshot Material
 
@@ -63,7 +64,7 @@ with current copies and versioned copies keyed to the pinned baseline. See
 and consumption details.
 
 The current published versioned artifact directory is
-`public/artifacts/versions/core-v0.21.1_frontend-v1.45.9_2026-05-18/`.
+`public/artifacts/versions/core-v0.22.0_frontend-v1.45.12_2026-05-21/`.
 
 ## Automation
 

@@ -3,7 +3,7 @@ title: "ComfyUI StarChart"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-20
+**Last Updated:** 2026-05-21
 
 ## Scope
 
@@ -118,7 +118,7 @@ full labeling rules.
 
 ## Current Version Pin
 
-ComfyUI core `v0.21.1` and official frontend `v1.45.9`. Content written
+ComfyUI core `v0.22.0` and official frontend `v1.45.12`. Content written
 against other versions should note the version it applies to.
 
 ## Scope Boundaries

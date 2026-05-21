@@ -22,13 +22,50 @@ package bumps, Manager version changes, schema additions, and runtime fixes can
 shift within the same general era.
 
 Treat the sections below as review priorities surfaced by official changelog and
-release-note summaries. They are not exhaustive compatibility guarantees.
+release-note summaries, plus repo-observed pinned-baseline transition notes for
+the current line where this repository has fresher local evidence than curated
+release-summary text. They are not exhaustive compatibility guarantees.
 
-**Evidence:** Official docs-backed from docs.comfy.org; Operational guidance
-**Last Updated:** 2026-05-18
-**Primary Sources:** https://docs.comfy.org/changelog/index, https://docs.comfy.org/api-reference/releases/get-release-notes, https://github.com/Comfy-Org/ComfyUI/releases
+**Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance
+**Last Updated:** 2026-05-21
+**Primary Sources:** https://docs.comfy.org/changelog/index, https://docs.comfy.org/api-reference/releases/get-release-notes, https://github.com/Comfy-Org/ComfyUI/releases, `public/artifacts/delta-summary.json`, `references/raw/server_endpoints.json`, `references/raw/node_api_schema.json`
+**Baseline verification status:** Delta values in this page reflect the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`. Release-note summaries remain sourced from the official upstream changelog and release pages.
 
 ## Release-Line Compatibility Anchors
+
+### v0.22.x
+
+**Exact release anchor:** [v0.22.0](https://github.com/Comfy-Org/ComfyUI/releases/tag/v0.22.0)
+
+**Compatibility-relevant changes**
+
+- includes `workflow_id` in execution WebSocket messages, then immediately
+  reverts that change in the same release line; version-aware clients should not
+  assume `workflow_id` is a stable field in the lifecycle payloads for this pin
+- updates workflow templates through the `0.9.77` to `0.9.79` range and
+  generalizes frontend-version warnings across `comfy*` requirements entries
+- adds and adjusts several node/runtime surfaces including MoGe support,
+  downscaled IC-LoRA support for `LTXVAddGuide`, an optional `attention_mask`
+  input on that node, negative `batch_index` handling on batch extractors,
+  lower minimum batch counts for batch image/mask/latent nodes, and Stable Audio
+  3 model support
+- updates OpenAPI-facing docs and schemas, including deprecating
+  `/api/upload/mask` in favor of `/api/upload/image` and tightening asset/API-key
+  schema fields
+- from this repo's pinned-baseline delta, keeps the same extracted route count,
+  JavaScript hook count, and normalized node-schema key counts as `v0.21.1`,
+  while the extracted `GET /system_stats` response summary now includes richer
+  template and package-version metadata such as `comfy_package_versions`
+
+**What to re-check**
+
+- WebSocket clients or dashboards that depend on execution-payload field sets,
+  especially if they experimented with `workflow_id`
+- tooling that parses `/system_stats` and assumes an older field set
+- node packs or workflows that depend on LTXV guide-node behavior, batch-index
+  bounds, newer audio support, or updated template defaults
+- OpenAPI consumers that still call `/api/upload/mask` or assume older asset/API
+  key schema fields
 
 ### v0.21.x
 

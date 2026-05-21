@@ -3,17 +3,17 @@ title: "Adding Background Metrics"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-21
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/comms_messages
-**Baseline verification status:** This page combines official docs guidance with a community pattern study. Current core snapshot citation paths were updated where mechanical drift was obvious, while the community-pattern framing and intentionally retained older `progress.py` contract note remain the governing trust signals.
+**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline. Community-pattern framing and the intentionally retained older `progress.py` contract note remain the governing trust signals.
 
 ## Primary Sources
 
 - https://github.com/ryanontheinside/ComfyUI_ProfilerX (community pattern example)
 - https://docs.comfy.org/development/comfyui-server/comms_messages
 - https://docs.comfy.org/development/comfyui-server/comms_routes
-- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701) -- upstream source for built-in routes and message patterns
-- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/execution.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701) -- upstream source for progress-handler registration during execution
+- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py` (v0.22.0, commit a8d2519058ea766ca3b14916bcc01ecef5efd235) -- upstream source for built-in routes and message patterns
+- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py` (v0.22.0, commit a8d2519058ea766ca3b14916bcc01ecef5efd235) -- upstream source for progress-handler registration during execution
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` (v0.19.3, commit 308602640) -- intentionally retained for the `ProgressHandler` callback contract because the current pinned snapshot set does not include an equivalent `comfy_execution/progress.py` path
 
 ## Scope

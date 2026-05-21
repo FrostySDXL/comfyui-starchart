@@ -3,13 +3,13 @@ title: "API Endpoints"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-19
-**Primary Source:** ComfyUI core v0.21.1 `server.py` (pinned snapshot)
-**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
+**Last Updated:** 2026-05-21
+**Primary Source:** ComfyUI core v0.22.0 `server.py` (pinned snapshot)
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`.
 
 ## Primary Sources
 
-- `references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py` (v0.21.1, commit 26515acd23fa291a8f5ab53c5997258598de0701)
+- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py` (v0.22.0, commit a8d2519058ea766ca3b14916bcc01ecef5efd235)
 - https://docs.comfy.org/development/comfyui-server/comms_routes
 - https://docs.comfy.org/development/comfyui-server/comms_messages
 
@@ -71,7 +71,7 @@ behavior documented in prose.
 
 ### System and job inspection
 
-- `GET /system_stats` — returns host, RAM, VRAM, Python, and version info
+- `GET /system_stats` — returns host, RAM, VRAM, Python, template/version requirements, and package-version info
 - `GET /api/jobs` — returns filtered and paginated job listings
 - `GET /api/jobs/{job_id}` — returns one job record
 

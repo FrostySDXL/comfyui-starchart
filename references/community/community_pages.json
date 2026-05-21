@@ -118,7 +118,7 @@
     {
       "page_path": "src/content/docs/custom-nodes/v1-to-v3-migration.md",
       "page_kind": "hand_authored_guide",
-      "evidence_label": "Official docs-backed (migration steps); Community pattern studies (case studies)",
+      "evidence_label": "Official docs-backed from docs.comfy.org; Community pattern study based on pinned external version",
       "source_type": "hybrid",
       "last_verified": "2026-04-22",
       "needs_review_after": "2026-07-22",

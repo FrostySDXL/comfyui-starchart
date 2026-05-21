@@ -36,6 +36,13 @@ def _normalize_snapshot_source_path(path: object) -> object:
     if not isinstance(path, str):
         return path
     normalized = path.replace("\\", "/")
+    snapshot_marker = "references/snapshots/"
+    snapshot_index = normalized.find(snapshot_marker)
+    if snapshot_index != -1:
+        snapshot_relative = normalized[snapshot_index + len(snapshot_marker) :]
+        parts = snapshot_relative.split("/", 2)
+        if len(parts) == 3:
+            return parts[2]
     marker = "/src/"
     marker_index = normalized.find(marker)
     if marker_index != -1:
@@ -65,6 +72,78 @@ def _normalize_hook_for_comparison(hook: dict) -> dict:
         "return_type": hook.get("return_type"),
         "invocation_style": hook.get("invocation_style", []),
         "traceability": normalized_traceability,
+    }
+
+
+def _normalize_traceability_for_comparison(traceability: object) -> object:
+    if isinstance(traceability, dict):
+        return {
+            "source_type": traceability.get("source_type"),
+            "strategy": traceability.get("strategy"),
+        }
+    return traceability
+
+
+def _normalize_node_schema_field_details(details: object) -> object:
+    if not isinstance(details, list):
+        return details
+    normalized = []
+    for detail in details:
+        if isinstance(detail, dict):
+            normalized.append(
+                {
+                    **detail,
+                    "defined_in": _normalize_snapshot_source_path(detail.get("defined_in")),
+                    "traceability": _normalize_traceability_for_comparison(
+                        detail.get("traceability")
+                    ),
+                }
+            )
+        else:
+            normalized.append(detail)
+    return normalized
+
+
+def _normalize_io_type_for_comparison(entry: dict) -> dict:
+    return {
+        "io_type": entry.get("io_type"),
+        "class_name": entry.get("class_name"),
+        "input_class": entry.get("input_class"),
+        "input_parameters": entry.get("input_parameters", []),
+        "output_parameters": entry.get("output_parameters", []),
+        "input_parameter_details": _normalize_node_schema_field_details(
+            entry.get("input_parameter_details", [])
+        ),
+        "output_parameter_details": _normalize_node_schema_field_details(
+            entry.get("output_parameter_details", [])
+        ),
+        "type_hint": entry.get("type_hint"),
+        "defined_in": _normalize_snapshot_source_path(entry.get("defined_in")),
+        "is_widget": entry.get("is_widget"),
+    }
+
+
+def _normalize_typed_input_shape_field(field: object) -> object:
+    if isinstance(field, dict):
+        return {
+            **field,
+            "defined_in": _normalize_snapshot_source_path(field.get("defined_in")),
+            "traceability": _normalize_traceability_for_comparison(field.get("traceability")),
+        }
+    return field
+
+
+def _normalize_typed_input_shape_for_comparison(shape: dict) -> dict:
+    fields = shape.get("fields", {})
+    normalized_fields = (
+        {name: _normalize_typed_input_shape_field(value) for name, value in fields.items()}
+        if isinstance(fields, dict)
+        else fields
+    )
+    return {
+        "description": shape.get("description"),
+        "defined_in": _normalize_snapshot_source_path(shape.get("defined_in")),
+        "fields": normalized_fields,
     }
 
 
@@ -137,9 +216,15 @@ def build_delta_summary(
                 "object_info_fields": _compare_mapping(
                     old_node["object_info_fields"], new_node["object_info_fields"]
                 ),
-                "io_types": _compare_mapping(old_node["io_types"], new_node["io_types"]),
+                "io_types": _compare_mapping(
+                    old_node["io_types"],
+                    new_node["io_types"],
+                    normalizer=_normalize_io_type_for_comparison,
+                ),
                 "typed_input_shapes": _compare_mapping(
-                    old_node["typed_input_shapes"], new_node["typed_input_shapes"]
+                    old_node["typed_input_shapes"],
+                    new_node["typed_input_shapes"],
+                    normalizer=_normalize_typed_input_shape_for_comparison,
                 ),
             },
         },

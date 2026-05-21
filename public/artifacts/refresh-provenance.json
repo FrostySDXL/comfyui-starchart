@@ -1,7 +1,7 @@
 {
-  "backup_location": "references/raw_backup_20260519T004701Z",
+  "backup_location": "references/_refresh_backups/raw_20260521T055150Z",
   "next_steps": {
-    "delta_summary_command": "py -3.11 scripts/generate/generate_snapshot_delta_summary.py --old \"references/raw_backup_20260519T004701Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
+    "delta_summary_command": "py -3.11 scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260521T055150Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
     "publish_reference_artifacts_command": "py -3.11 scripts/generate/publish_reference_artifacts.py",
     "run_all_command": "py -3.11 scripts/verify/run_all.py",
     "verify_artifact_integrity_command": "py -3.11 scripts/verify/verify_artifact_integrity.py"
@@ -12,14 +12,14 @@
     "manifest_included": false,
     "provenance_path": "public/artifacts/refresh-provenance.json"
   },
-  "refresh_date": "2026-05-18",
+  "refresh_date": "2026-05-21",
   "requested_versions": {
-    "core": "v0.21.1",
-    "frontend": "v1.45.9"
+    "core": "v0.22.0",
+    "frontend": "v1.45.12"
   },
   "resolved_commits": {
-    "core": "26515acd23fa291a8f5ab53c5997258598de0701",
-    "frontend": "8562816ffa0d996bd400e517292fee074a6acefa"
+    "core": "a8d2519058ea766ca3b14916bcc01ecef5efd235",
+    "frontend": "8ee8dd03c46cc8ba20eb169ea6ff7189fdb21f91"
   },
   "runtime_object_info": {
     "merged_into_node_api_schema": false,

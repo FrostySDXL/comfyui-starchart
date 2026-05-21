@@ -3,8 +3,8 @@ title: "Known Limitations: API and Execution Boundaries"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-05-19
-**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18` for the source-backed entries re-reviewed in this page. This page still contains mixed entry-level verification; docs.comfy.org-backed API-mode guidance carries the prior-baseline notes shown inline.
+**Last Updated:** 2026-05-21
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21` for the source-backed entries re-reviewed in this page. This page still contains mixed entry-level verification; docs.comfy.org-backed API-mode guidance carries the prior-baseline notes shown inline.
 
 ## Scope
 
@@ -63,7 +63,7 @@ extension path.
 
 **Source:** `src/content/docs/reference/machine-readable-artifacts.md`; `src/content/docs/reference/runtime-ci-operations.md`
 
-**Verified in:** current repo-published artifact contract and runtime-capture guidance for the pinned core `v0.21.1` / frontend `v1.45.9` baseline
+**Verified in:** current repo-published artifact contract and runtime-capture guidance for the pinned core `v0.22.0` / frontend `v1.45.12` baseline
 
 **Status:** Repo-local publication boundary
 
@@ -86,9 +86,9 @@ stable published baseline. For routing help, see
 
 ## Initial WebSocket `status` only exposes queue count, not full queue lists
 
-**Source:** `references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py`
+**Source:** `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py`
 
-**Verified in:** ComfyUI core `v0.21.1` pinned snapshot
+**Verified in:** ComfyUI core `v0.22.0` pinned snapshot
 
 **Status:** Behavioral constraint
 
@@ -107,9 +107,9 @@ queue-count signal.
 
 ## `executed` is not emitted for every completed node
 
-**Source:** `references/snapshots/2026-05-18/comfyui-core-v0.21.1/execution.py`
+**Source:** `references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`
 
-**Verified in:** ComfyUI core `v0.21.1` pinned snapshot
+**Verified in:** ComfyUI core `v0.22.0` pinned snapshot
 
 **Status:** Behavioral constraint
 

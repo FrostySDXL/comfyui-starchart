@@ -1,11 +1,11 @@
 {
   "metadata": {
     "sources": [
-      "references/snapshots/2026-05-18/comfyui-core-v0.21.1/server.py"
+      "references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py"
     ],
-    "extracted_date": "2026-05-18",
-    "version": "v0.21.1",
-    "commit": "26515acd23fa291a8f5ab53c5997258598de0701"
+    "extracted_date": "2026-05-21",
+    "version": "v0.22.0",
+    "commit": "a8d2519058ea766ca3b14916bcc01ecef5efd235"
   },
   "coverage": {
     "description": "Static extraction of ComfyUI HTTP and WebSocket endpoint structure.",
@@ -467,7 +467,7 @@
       "parameters": [],
       "returns": {
         "kind": "json",
-        "summary": "JSON object with fields: system, os, ram_total, ram_free, comfyui_version, required_frontend_version, installed_templates_version, required_templates_version, python_version, pytorch_version, embedded_python, argv, devices, name, type, index, vram_total, vram_free, torch_vram_total, torch_vram_free.",
+        "summary": "JSON object with fields: system, os, ram_total, ram_free, comfyui_version, required_frontend_version, installed_templates_version, required_templates_version, comfy_package_versions, python_version, pytorch_version, embedded_python, argv, devices, name, type, index, vram_total, vram_free, torch_vram_total, torch_vram_free.",
         "status_codes": [
           200
         ],
@@ -495,6 +495,9 @@
           },
           {
             "name": "required_templates_version"
+          },
+          {
+            "name": "comfy_package_versions"
           },
           {
             "name": "python_version"

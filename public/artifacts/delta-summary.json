@@ -1,7 +1,7 @@
 {
   "comparison": {
-    "old": "public/artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30",
-    "new": "public/artifacts/current"
+    "old": "references/_refresh_backups/raw_20260521T055150Z",
+    "new": "references/raw"
   },
   "notes": [
     "Deterministic artifact-to-artifact comparison only.",
@@ -13,7 +13,9 @@
       "new_count": 25,
       "added": [],
       "removed": [],
-      "changed": []
+      "changed": [
+        "GET /system_stats"
+      ]
     },
     "js_hooks": {
       "old_count": 19,
@@ -31,93 +33,18 @@
         "changed": []
       },
       "io_types": {
-        "old_count": 69,
+        "old_count": 70,
         "new_count": 70,
-        "added": [
-          "BACKGROUND_REMOVAL:BackgroundRemoval"
-        ],
+        "added": [],
         "removed": [],
-        "changed": [
-          "*:AnyType",
-          "ACCUMULATION:Accumulation",
-          "AUDIO:Audio",
-          "AUDIO_ENCODER:AudioEncoder",
-          "AUDIO_ENCODER_OUTPUT:AudioEncoderOutput",
-          "BBOX:BBOX",
-          "BOOLEAN:Boolean",
-          "BOUNDING_BOX:BoundingBox",
-          "CLIP:Clip",
-          "CLIP_VISION:ClipVision",
-          "CLIP_VISION_OUTPUT:ClipVisionOutput",
-          "COLOR:Color",
-          "COMBO:Combo",
-          "COMBO:MultiCombo",
-          "COMFY_AUTOGROW_V3:Autogrow",
-          "COMFY_DYNAMICCOMBO_V3:DynamicCombo",
-          "COMFY_DYNAMICSLOT_V3:DynamicSlot",
-          "COMFY_MATCHTYPE_V3:MatchType",
-          "CONDITIONING:Conditioning",
-          "CONTROL_NET:ControlNet",
-          "CURVE:Curve",
-          "FACE_ANALYSIS:FaceAnalysis",
-          "FILE_3D:File3DAny",
-          "FILE_3D_FBX:File3DFBX",
-          "FILE_3D_GLB:File3DGLB",
-          "FILE_3D_GLTF:File3DGLTF",
-          "FILE_3D_OBJ:File3DOBJ",
-          "FILE_3D_STL:File3DSTL",
-          "FILE_3D_USDZ:File3DUSDZ",
-          "FLOAT:Float",
-          "FLOW_CONTROL:FlowControl",
-          "GLIGEN:Gligen",
-          "GUIDER:Guider",
-          "HISTOGRAM:Histogram",
-          "HOOKS:Hooks",
-          "HOOK_KEYFRAMES:HookKeyframes",
-          "IMAGE:Image",
-          "IMAGECOMPARE:ImageCompare",
-          "INT:Int",
-          "LATENT:Latent",
-          "LATENT_OPERATION:LatentOperation",
-          "LATENT_UPSCALE_MODEL:LatentUpscaleModel",
-          "LOAD3D_CAMERA:Load3DCamera",
-          "LOAD_3D:Load3D",
-          "LOAD_3D_ANIMATION:Load3DAnimation",
-          "LORA_MODEL:LoraModel",
-          "LOSS_MAP:LossMap",
-          "MASK:Mask",
-          "MESH:Mesh",
-          "MODEL:Model",
-          "MODEL_PATCH:ModelPatch",
-          "NOISE:Noise",
-          "PHOTOMAKER:Photomaker",
-          "POINT:Point",
-          "RANGE:Range",
-          "SAMPLER:Sampler",
-          "SEGS:SEGS",
-          "SIGMAS:Sigmas",
-          "STRING:String",
-          "STYLE_MODEL:StyleModel",
-          "SVG:SVG",
-          "TIMESTEPS_RANGE:TimestepsRange",
-          "TRACKS:Tracks",
-          "UPSCALE_MODEL:UpscaleModel",
-          "VAE:Vae",
-          "VIDEO:Video",
-          "VOXEL:Voxel",
-          "WAN_CAMERA_EMBEDDING:WanCameraEmbedding",
-          "WEBCAM:Webcam"
-        ]
+        "changed": []
       },
       "typed_input_shapes": {
         "old_count": 2,
         "new_count": 2,
         "added": [],
         "removed": [],
-        "changed": [
-          "AudioInput",
-          "LatentInput"
-        ]
+        "changed": []
       }
     }
   }
