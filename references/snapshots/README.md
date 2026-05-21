@@ -13,9 +13,11 @@ extractors. These files are source inputs, not generated outputs.
 
 Current layout at the time of this update:
 
-- `2026-05-18/` - current active pinned baseline used by `references/raw/`
-- `2026-04-30/` - historical baseline retained for comparison and refresh-path
+- `2026-05-21/` - current active pinned baseline used by `references/raw/`
+- `2026-05-18/` - historical baseline retained for comparison and refresh-path
   proof
+- `2026-04-30/` - earlier historical baseline retained for comparison and
+  refresh-path proof
 - `2026-04-19/` - earlier historical baseline retained for provenance and
   comparison
 

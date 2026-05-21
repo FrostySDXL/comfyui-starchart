@@ -364,7 +364,7 @@ Use this when you are proving or updating the pinned baseline rather than rerunn
    python scripts/verify/run_all.py
    ```
 
-The live clone -> extract -> generate -> publish -> verify closure path was validated end-to-end on 2026-05-18 with core `v0.21.1` and frontend `v1.45.9`. Repeat this workflow when a new upstream baseline is needed.
+The live clone -> extract -> generate -> publish -> verify closure path was validated end-to-end on 2026-05-21 with core `v0.22.0` and frontend `v1.45.12`. Repeat this workflow when a new upstream baseline is needed.
 
 ### Versioned published artifact retention
 

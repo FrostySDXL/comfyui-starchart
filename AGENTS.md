@@ -213,7 +213,7 @@ python scripts/generate/publish_reference_artifacts.py
 python scripts/generate/generate_snapshot_delta_summary.py --old <dir> --new <dir> --output public/artifacts/delta-summary.json
 
 # Refresh upstream (clone, extract, generate)
-python scripts/refresh_snapshots.py --core-version v0.20.1
+python scripts/refresh_snapshots.py --core-version v0.22.0
 
 # Upstream watch helper (powers .github/workflows/upstream-watch.yml)
 python scripts/check_upstream_versions.py

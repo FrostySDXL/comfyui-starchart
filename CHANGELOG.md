@@ -18,6 +18,12 @@ not imply npm publication intent; `package.json` remains `private: true`.
 - Add shared script helpers and targeted unit coverage for the new packaging and
   validator layout.
 
+### Pinned baseline and artifacts
+
+- Refresh the pinned baseline to ComfyUI core `v0.22.0` and frontend `v1.45.12`.
+- Regenerate published artifacts and update version-pin history.
+- Normalize delta-summary comparison to suppress provenance-only path churn in node schema comparisons.
+
 ### CI, dependency, and maintainer workflow updates
 
 - Add `.python-version`, move maintainer tooling metadata into
