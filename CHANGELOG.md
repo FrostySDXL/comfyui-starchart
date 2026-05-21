@@ -7,6 +7,34 @@ verification, workflow, and repo structure rather than every commit.
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-05-21 - packaging follow-up, generator refresh, and agent-facing guidance
+
+### Packaging, imports, and verification architecture
+
+- Package the maintainer script surface via `pyproject.toml`, add package marker
+  files under `scripts/`, and remove the remaining `sys.path` import hacks.
+- Split schema validation into dedicated modules under `scripts/verify/` while
+  preserving `validate_schema.py` as the compatibility CLI entrypoint.
+- Add shared script helpers and targeted unit coverage for the new packaging and
+  validator layout.
+
+### CI, dependency, and maintainer workflow updates
+
+- Add `.python-version`, move maintainer tooling metadata into
+  `pyproject.toml`, add advisory `mypy`, and regenerate `requirements.lock`.
+- Update CI to use pip caching and keep the advisory typing pass in the
+  supplemental verification lane.
+- Refresh `AGENTS.md` and `CONTRIBUTING.md` so packaging, verification, and
+  upstream-watch guidance matches the implemented maintainer workflow.
+
+### Documentation remediation and repo orientation
+
+- Fix stale docs examples and baseline-status wording across the targeted docs
+  surface, including queue-clear guidance, V3 node examples, glossary routing,
+  and mixed-evidence style guidance.
+- Condense and reposition the root `README.md` so it routes humans and agents to
+  the right docs, artifact, and maintainer entry points more directly.
+
 ## 2026-05-20 - verifier maintenance and docs-surface boundaries
 
 ### Maintainer guidance and history surfaces

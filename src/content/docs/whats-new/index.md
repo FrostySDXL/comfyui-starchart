@@ -3,7 +3,7 @@ title: "What's New"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-20
+**Last Updated:** 2026-05-21
 
 ## Scope
 
@@ -13,6 +13,24 @@ backfill the full project history. For exhaustive chronological repo history,
 use `CHANGELOG.md` in the repository root.
 
 ## Current Wave
+
+### Maintainer tooling is now packaged and more verifiable
+
+The repo now packages its maintainer script surface, removes the old
+`sys.path` import workarounds, and splits schema validation into dedicated
+modules with tighter test coverage.
+
+### CI and maintainer workflow guidance were tightened
+
+CI now uses a clearer packaging/dependency baseline with advisory `mypy`, and
+the maintainer guidance surfaces were updated so local verification and
+upstream-watch workflows match the implemented repo behavior.
+
+### Key docs and repo entry points were refreshed
+
+Targeted docs fixes corrected stale implementation guidance, and the root
+README now gives a cleaner orientation path for both human readers and agent
+consumers.
 
 ### Tooling routing now has a richer support artifact
 
