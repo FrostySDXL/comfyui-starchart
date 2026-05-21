@@ -3,9 +3,9 @@ title: "Datatypes"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-20
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/datatypes
-**Baseline verification status:** Verified against the prior pinned baseline: core `v0.20.1`, frontend `v1.44.13`, snapshots `2026-04-30`. Current-baseline re-review is still pending.
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Primary Sources
 
@@ -23,9 +23,9 @@ ComfyUI datatypes serve two roles at once:
 For most node authors, the key rule is simple: choose the narrowest
 correct datatype and understand the real Python value behind it.
 
-This page was last re-reviewed against the prior pinned repository baseline on
-2026-05-07. The baseline-status block above is the current truth source for
-whether the prose has been fully re-reviewed against the active pinned baseline.
+This page was re-reviewed against the active repository baseline on 2026-05-20.
+The baseline-status block above is the current truth source for whether the
+prose has been fully re-reviewed against the active pinned baseline.
 
 ## Standard Types
 

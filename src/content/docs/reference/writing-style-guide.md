@@ -246,6 +246,19 @@ baseline, or only received mechanical citation updates after a refresh. Reuse
 the exact wording patterns from `source-evidence-policy.md` instead of making up
 new variants.
 
+### Audience-routing pages with mixed evidence
+
+Audience-routing pages such as `start-here/` entry points may legitimately use
+mixed evidence labels when they summarize multiple trust sources and send the
+reader to more specific pages.
+
+- `Operational guidance` alone is not sufficient when the page also makes pinned
+  behavior claims about routes, hooks, node models, or other ComfyUI surfaces.
+- Choose the label that matches the strongest factual claims on the page, not
+  just its navigational role.
+- Do not force uniform evidence labels across all routing pages when their claim
+  mix is genuinely different.
+
 ## Author Workflow Summary
 
 When creating or revising a page:

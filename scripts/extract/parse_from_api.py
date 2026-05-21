@@ -8,17 +8,15 @@ Exits 0 on success, exits 1 on HTTP/network/JSON decode failures.
 """
 
 import argparse
-import hashlib
 import json
 import sys
 from datetime import datetime
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
 from scripts.common import http_utils
+from scripts.common.json_utils import compute_bytes_sha256
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def fetch_object_info(url: str, timeout: int) -> tuple[dict, bytes]:
@@ -38,7 +36,7 @@ def fetch_object_info(url: str, timeout: int) -> tuple[dict, bytes]:
 
 def compute_sha256(data: bytes) -> str:
     """Return the SHA-256 hex digest of data."""
-    return hashlib.sha256(data).hexdigest()
+    return compute_bytes_sha256(data)
 
 
 def build_snapshot(

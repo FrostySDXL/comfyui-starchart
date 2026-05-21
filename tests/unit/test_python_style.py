@@ -31,7 +31,7 @@ class PythonStyleUnitTests(unittest.TestCase):
             call_order.append(cmd)
             return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
-        with patch("scripts.verify.python_style.subprocess.run", side_effect=fake_run):
+        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
             with patch("sys.argv", ["python_style.py"]):
                 result = module.main()
 
@@ -57,7 +57,7 @@ class PythonStyleUnitTests(unittest.TestCase):
                 return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="lint fail")
             return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
-        with patch("scripts.verify.python_style.subprocess.run", side_effect=fake_run):
+        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
             with patch("sys.argv", ["python_style.py"]):
                 result = module.main()
 
@@ -75,7 +75,7 @@ class PythonStyleUnitTests(unittest.TestCase):
                 return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="format fail")
             return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
-        with patch("scripts.verify.python_style.subprocess.run", side_effect=fake_run):
+        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
             with patch("sys.argv", ["python_style.py"]):
                 result = module.main()
 

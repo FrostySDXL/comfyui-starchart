@@ -4,9 +4,17 @@
 #
 #    pip-compile --output-file=requirements.lock --strip-extras requirements.in
 #
+mypy==1.18.2
+    # via -r requirements.in
+mypy-extensions==1.1.0
+    # via mypy
 packaging==26.2
     # via -r requirements.in
+pathspec==1.1.1
+    # via mypy
 ruff==0.15.13
     # via -r requirements.in
+typing-extensions==4.15.0
+    # via mypy
 websocket-client==1.9.0
     # via -r requirements.in

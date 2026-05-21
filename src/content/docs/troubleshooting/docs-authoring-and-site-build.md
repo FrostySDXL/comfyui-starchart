@@ -3,7 +3,8 @@ title: "Docs Authoring and Site Build Troubleshooting"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-03
+**Last Updated:** 2026-05-20
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Scope
 

@@ -16,11 +16,9 @@ import json
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
 from scripts.common import http_utils
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 DEFAULT_PROMPT_PATH = REPO_ROOT / "examples" / "api-calls" / "post-prompt.json"
 

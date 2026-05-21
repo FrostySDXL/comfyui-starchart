@@ -1,15 +1,12 @@
 import argparse
 import json
 import re
-import sys
 from datetime import datetime
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
 from scripts.common.path_normalization import normalize_repo_relative_path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 OUTPUT_PATH = REPO_ROOT / "references" / "raw" / "js_hooks.json"
 INVOKE_RE = re.compile(r'invokeExtensions(Async)?\(\s*["\']([^"\']+)["\']')

@@ -3,7 +3,8 @@ title: "Custom Node and Extension Boundaries"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-20
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Scope
 

@@ -3,7 +3,7 @@ title: "Start Here: Service Integration"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-18
+**Last Updated:** 2026-05-20
 
 ## Who This Path Is For
 
@@ -97,8 +97,8 @@ See the API docs for full parameter and response documentation.
 
 ## Common Patterns
 
-- **Queue management** -- use `/queue` and `/queue/clear` to control the
-  execution queue from an external scheduler
+- **Queue management** -- use `GET /queue` to inspect queue state and `POST /queue`
+  with `{"clear": true}` to clear pending queue items from an external scheduler
 - **Batch processing** -- send multiple prompts sequentially or in parallel;
   use `client_id` to correlate results with requests
 - **Model hot-swapping** -- pair API calls with file operations to swap

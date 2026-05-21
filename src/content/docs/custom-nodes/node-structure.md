@@ -3,14 +3,16 @@ title: "V3 Node Structure"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-05-05
-**Primary Source:** https://docs.comfy.org/custom-nodes/backend/server_overview
+**Last Updated:** 2026-05-20
+**Primary Source:** https://docs.comfy.org/custom-nodes/v3_migration
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Primary Sources
 
 - https://docs.comfy.org/custom-nodes/backend/server_overview
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
 - https://docs.comfy.org/custom-nodes/backend/datatypes
+- https://docs.comfy.org/custom-nodes/v3_migration
 
 ## Scope
 

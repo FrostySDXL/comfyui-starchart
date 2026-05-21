@@ -1,6 +1,6 @@
 # Contributing
 
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-21
 
 Thank you for contributing to ComfyUI StarChart. This guide is the
 canonical repo-local maintainer workflow authority for making maintainer-grade
@@ -40,6 +40,7 @@ two files entry-for-entry.
 
 ```bash
 python -m pip install -r requirements.lock
+python -m pip install -e .
 npm ci
 python -m unittest discover -s tests -v
 npm run build
@@ -49,6 +50,8 @@ Serve locally: `npm run dev`
 
 ### Dependency management
 
+- The repo's Python tooling metadata and local maintainer package config live in `pyproject.toml`.
+- The repo includes a root `.python-version` file containing `3.11` for toolchains that honor it, but Windows maintainers should still prefer `py -3.11` whenever `python` is not 3.11.
 - The supported maintainer and CI install surface is `requirements.lock`.
 - Edit direct dependencies in `requirements.in`.
 - Do not hand-edit `requirements.lock`; regenerate it after direct dependency changes.
@@ -78,6 +81,14 @@ artifact-integrity verification for the canonical published JSON artifacts. The
 blocking path rejects leading spaces before top-level markdown headings and
 metadata labels in hand-authored docs because those lines render incorrectly in
 the published site.
+
+The repo now also carries a narrow advisory mypy scope configured in
+`pyproject.toml` for `scripts/common/` plus the split schema-validator modules.
+Run it when you touch those surfaces or adjust Python packaging/CI behavior:
+
+```bash
+python -m mypy
+```
 
 Use targeted checks while iterating. Use supplemental commands only when the
 touched surface requires them.
@@ -165,11 +176,13 @@ guides, and tooling artifacts.
 | Add or modify shell examples | Existing shell example under `examples/` + adjacent example README | The `.sh` file + any paired README guidance | `python scripts/verify/shell_examples_syntax.py` |
 | Update the community catalog | `references/community/ecosystem_packages.json` + `src/content/docs/reference/community-maintenance-policy.md` | The JSON source file | `validate_schema.py`, `community_metadata.py`, `community_staleness.py`, `generate_community_pages.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `cross_references.py`, `npm run build` |
 | Update tooling routing metadata | `references/tooling-index-metadata.json` + `src/content/docs/reference/machine-readable-artifacts.md` | The JSON source file, then regenerate `public/artifacts/tooling-index.json` | `python scripts/generate/generate_tooling_index.py` + `python scripts/verify/tooling_index_freshness.py` + `python scripts/verify/cross_references.py` + `npm run build` |
+| Update Python packaging, locked dependencies, or maintainer tooling config | `pyproject.toml` + `requirements.in` + affected `scripts/` modules | `pyproject.toml`, `requirements.in`, regenerated `requirements.lock`, and any affected script/test files | `python -m pip install -e .` + `python -m mypy` + `python -m unittest discover -s tests -v` + `python scripts/verify/run_all.py` |
 | Update extracted references after a snapshot refresh | Matching extractor in `scripts/extract/` + snapshot files in `references/snapshots/<date>/` | Run the extractor script | `python scripts/verify/extraction_idempotency.py` + `validate_schema.py` |
 | Add a new extractor | An existing extractor in `scripts/extract/` + its test in `tests/unit/` | New script + new test | `python -m unittest discover -s tests -v` |
 | Add a verification script | An existing verifier in `scripts/verify/` + its test in `tests/unit/` | New script + new test + update `run_all.py` / `.github/workflows/ci.yml` intentionally | `python -m unittest discover -s tests -v` |
 | Update repo history / highlights pages | `CHANGELOG.md` + `src/content/docs/whats-new/index.md` | One or both files depending on audience and scope | `python scripts/verify/cross_references.py` + `npm run build` |
 | Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Run refresh, note the auto-created repo-local refresh backup directory under `references/_refresh_backups/` plus `public/artifacts/refresh-provenance.json`, republish artifacts, then regenerate the delta summary when comparing baselines | `publish_reference_artifacts.py` + `generate_snapshot_delta_summary.py` + `run_all.py` |
+| Check for newer pinned upstream releases without refreshing snapshots | `scripts/check_upstream_versions.py` + `.github/workflows/upstream-watch.yml` | Usually no edit; update the script/workflow together if the watcher behavior changes | `python scripts/check_upstream_versions.py` |
 | Change CI behavior | Relevant workflow in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then inspect Ubuntu/Windows Actions runs and any advisory replay workflow after push |
 
 
@@ -273,6 +286,19 @@ The ecosystem map at `src/content/docs/ecosystem/map.md` is generated. Do not ed
    python scripts/verify/validate_schema.py
    python scripts/verify/extraction_idempotency.py
    ```
+
+### Checking Upstream Version Drift
+
+Use `scripts/check_upstream_versions.py` when you want a non-mutating comparison
+between the repo's pinned versions and the latest upstream tags.
+
+```bash
+python scripts/check_upstream_versions.py
+```
+
+This script is also the engine behind `.github/workflows/upstream-watch.yml`.
+If you change its output contract or invocation assumptions, update the workflow
+in the same change and re-run the relevant CI/workflow verification path.
 
 ### Refreshing Upstream Baselines
 
@@ -474,7 +500,21 @@ Keep the deeper workflow-specific detail in
 - Their absence is normal unless you intentionally ran the live runtime capture
   path or a runtime-specific workflow.
 
-### Essential (run these for almost every change)
+### Preferred default for most maintainer changes
+
+```bash
+python scripts/verify/run_all.py
+```
+
+Use `run_all.py` as the default maintainer-grade local gate. It already runs the
+blocking verification path in the correct order and avoids the ambiguity of a
+hand-maintained “essential subset” drifting behind the actual CI blockers.
+
+### Common targeted checks while iterating
+
+Use these narrower commands while iterating on a specific surface, then return
+to `python scripts/verify/run_all.py` before handing the change off for review
+or opening a PR.
 
 ```bash
 python scripts/verify/python_style.py

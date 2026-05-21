@@ -3,7 +3,7 @@ title: "Glossary"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Operational guidance for repo-local artifact terms
-**Last Updated:** 2026-05-18
+**Last Updated:** 2026-05-20
 
 ## Scope
 
@@ -165,6 +165,7 @@ validation discipline because the backend accepts many possible linked values.
 ## Read Next
 
 - [Architecture Overview](../architecture/overview.md)
+- [Execution Model Inversion Guide](../deep-dives/execution-model-inversion.md)
 - [Execution Pipeline](../architecture/execution-pipeline.md)
 - [Machine-Readable Artifacts](machine-readable-artifacts.md)
 - [Source Evidence Policy](source-evidence-policy.md)

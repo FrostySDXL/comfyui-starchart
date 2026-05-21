@@ -23,7 +23,7 @@ class RunAllUnitTests(unittest.TestCase):
 
     def test_step_success(self):
         module = _load_module()
-        with patch("scripts.verify.run_all.subprocess.run") as mock_run:
+        with patch("scripts.common.subprocess_utils.subprocess.run") as mock_run:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = "ok"
             mock_run.return_value.stderr = ""
@@ -31,7 +31,7 @@ class RunAllUnitTests(unittest.TestCase):
 
     def test_step_failure(self):
         module = _load_module()
-        with patch("scripts.verify.run_all.subprocess.run") as mock_run:
+        with patch("scripts.common.subprocess_utils.subprocess.run") as mock_run:
             mock_run.return_value.returncode = 1
             mock_run.return_value.stdout = ""
             mock_run.return_value.stderr = "error"
@@ -46,7 +46,7 @@ class RunAllUnitTests(unittest.TestCase):
             result = subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
             return result
 
-        with patch("scripts.verify.run_all.subprocess.run", side_effect=fake_run):
+        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
             with patch("sys.argv", ["run_all.py"]):
                 result = module.main()
 
@@ -134,7 +134,7 @@ class RunAllUnitTests(unittest.TestCase):
                 return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="style fail")
             return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
-        with patch("scripts.verify.run_all.subprocess.run", side_effect=fake_run):
+        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
             with patch("sys.argv", ["run_all.py"]):
                 result = module.main()
 
@@ -155,7 +155,7 @@ class RunAllUnitTests(unittest.TestCase):
                 return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="integrity fail")
             return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
-        with patch("scripts.verify.run_all.subprocess.run", side_effect=fake_run):
+        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
             with patch("sys.argv", ["run_all.py"]):
                 result = module.main()
 
@@ -174,7 +174,7 @@ class RunAllUnitTests(unittest.TestCase):
             call_order.append(cmd)
             return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
-        with patch("scripts.verify.run_all.subprocess.run", side_effect=fake_run):
+        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
             with patch("sys.argv", ["run_all.py", "--skip-tests"]):
                 result = module.main()
 
@@ -198,7 +198,7 @@ class RunAllUnitTests(unittest.TestCase):
                 return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="sidebar fail")
             return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
-        with patch("scripts.verify.run_all.subprocess.run", side_effect=fake_run):
+        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
             with patch("sys.argv", ["run_all.py"]):
                 result = module.main()
 
@@ -218,7 +218,7 @@ class RunAllUnitTests(unittest.TestCase):
                 return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="rendered fail")
             return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
-        with patch("scripts.verify.run_all.subprocess.run", side_effect=fake_run):
+        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
             with patch("sys.argv", ["run_all.py"]):
                 result = module.main()
 

@@ -4,6 +4,11 @@
 
 Always Use Supported Python: `3.11+`
 
+Local Python selector:
+
+- The repo now includes a root `.python-version` file containing `3.11` for toolchains that auto-select an interpreter.
+- Treat `.python-version` as a convenience, not a replacement for the Windows launcher rule below.
+
 Windows interpreter rule:
 
 - Do not assume `python` points to 3.11.
@@ -31,6 +36,7 @@ Always Use Supported Node.js for site/framework work: `24+`
 
 Maintainer dependency contract:
 
+- The repo's maintainer tooling metadata now lives in `pyproject.toml`.
 - Install from `requirements.lock`
 - Edit direct dependencies in `requirements.in`
 - Do not hand-edit `requirements.lock`; regenerate it after dependency changes
@@ -44,6 +50,15 @@ python -m piptools compile --strip-extras requirements.in --output-file requirem
 ```
 
 On Windows when `python` is not 3.11, run the same commands with `py -3.11 -m ...`.
+
+Advisory typing check:
+
+```bash
+python -m mypy
+```
+
+The current mypy scope is intentionally narrow and configured in `pyproject.toml`
+for `scripts/common/` plus the split schema-validator modules.
 
 Default maintainer pre-push wrapper:
 
@@ -60,8 +75,10 @@ On Windows when `python` is not 3.11, use: `py -3.11 scripts/verify/run_all.py`
 | Add/fix docs content | `src/content/docs/<topic>/` page + `src/content/docs/reference/source-evidence-policy.md` + `src/content/docs/reference/writing-style-guide.md` | The page + adjacent linked pages + `references/raw/` if citing data; copy from `templates/docs/` or use `scripts/new_doc.py` for new pages | `python scripts/verify/cross_references.py` + `npm run build` |
 | Update extracted references | `references/raw/<file>.json` | Run the matching extractor script | `python scripts/verify/extraction_idempotency.py` |
 | Update community catalog | `references/community/ecosystem_packages.json` + `src/content/docs/reference/community-maintenance-policy.md` | Edit JSON source; regenerate page | `python scripts/verify/validate_schema.py` + `python scripts/verify/community_metadata.py` + `python scripts/verify/community_staleness.py` + `python scripts/generate/generate_community_pages.py` + `python scripts/verify/community_generated_freshness.py` + `python scripts/verify/community_page_coverage.py` + `python scripts/verify/cross_references.py` + `npm run build` |
+| Update Python tooling dependencies or packaging config | `pyproject.toml` + `requirements.in` + affected `scripts/` modules | Edit `pyproject.toml` / `requirements.in`; regenerate `requirements.lock` | `python -m pip install -e .` + `python -m mypy` + `python -m unittest discover -s tests -v` + `python scripts/verify/run_all.py` |
 | Add a new extractor | Existing extractor in `scripts/extract/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
 | Add a verification script | Existing script in `scripts/verify/` | New script + test in `tests/unit/` + intentional `run_all.py` / CI placement | `python -m unittest discover -s tests` |
+| Check pinned upstream releases without refreshing snapshots | `scripts/check_upstream_versions.py` + `.github/workflows/upstream-watch.yml` | Usually no edit; run the watcher script or update it intentionally | `python scripts/check_upstream_versions.py` |
 | Refresh upstream version | `scripts/refresh_snapshots.py` | Run refresh with `--core-version` / `--frontend-version`, note the auto-created repo-local refresh backup directory under `references/_refresh_backups/` and `public/artifacts/refresh-provenance.json`, then republish artifacts and regenerate delta summary | `python scripts/generate/publish_reference_artifacts.py` + `python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output public/artifacts/delta-summary.json` + `python scripts/verify/run_all.py` |
 | Runtime extraction | `scripts/extract/parse_from_api.py` | Run with `--url` and `--output` | `validate_schema.py` passes on output |
 | Change CI workflow | relevant file in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs when operator behavior changes | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then check Ubuntu/Windows Actions runs and any advisory replay workflow after push |
@@ -159,6 +176,7 @@ npm run build
 
 # Verification scripts (all should exit 0 on clean repo)
 python scripts/verify/python_style.py
+python -m mypy
 python scripts/verify/cross_references.py
 python scripts/verify/docs_index_freshness.py
 python scripts/verify/community_generated_freshness.py
@@ -196,6 +214,9 @@ python scripts/generate/generate_snapshot_delta_summary.py --old <dir> --new <di
 
 # Refresh upstream (clone, extract, generate)
 python scripts/refresh_snapshots.py --core-version v0.20.1
+
+# Upstream watch helper (powers .github/workflows/upstream-watch.yml)
+python scripts/check_upstream_versions.py
 
 # Runtime smoke checks (opt-in; requires live ComfyUI instance)
 python scripts/verify/runtime_smoke.py --url <url>
@@ -255,6 +276,7 @@ procedures.
 - **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
 - **Structured returns and traceability are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`. The `kind` field is reliable; `fields`, `summary`, and `traceability` details are best-effort from static analysis.
 - **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, `community_staleness`, and `example_surface_integrity` use `continue-on-error: true` in normal push/PR CI. `python_style`, `cross_references`, `docs_index_freshness`, `validate_schema`, `verify_artifact_integrity`, `markdown_top_level_spacing`, `community_generated_freshness`, `community_page_coverage`, `sidebar_navigation_coverage`, and `rendered_links` block the pipeline, and the advisory scripts also replay in `advisory-checks.yml` as a scheduled/manual blocking escalation path. Keep `example_surface_integrity` advisory until maintainers judge the example surface stable enough that false positives are uncommon.
+- **Advisory typing scope is intentionally narrow**: `python -m mypy` is configured in `pyproject.toml` for `scripts/common/` plus the split schema-validator modules and currently stays advisory in CI.
 - **Site-render-sensitive markdown spacing**: leading spaces before top-level markdown headings or metadata labels in hand-authored docs can render raw markdown in the browser output. `scripts/verify/markdown_top_level_spacing.py` blocks that drift.
 - **Supplemental CI checks are intentionally outside `run_all.py`**: `pipeline_smoke.py` reruns the blocking wrapper end-to-end without recursive unit tests, and `shell_examples_syntax.py` depends on a `bash` executable for `examples/**/*.sh` validation resolved from `--bash-executable`, `COMFYUI_KB_BASH`, or `PATH`.
 - **Astro/Starlight 404 build warning is currently benign**: `npm run build` may print `Entry docs → 404 was not found.` while generating `/404.html`. That message comes from Starlight checking for an optional custom `src/content/docs/404.md` entry before falling back to its built-in 404 page. Treat it as expected noise unless the build fails or `dist/404.html` is missing.

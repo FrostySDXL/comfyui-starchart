@@ -2,8 +2,9 @@
 title: "Decision Tree: Choosing an Integration Approach"
 ---
 
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-05-20
 **Evidence:** Source-backed from pinned snapshots
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Overview
 
@@ -87,7 +88,7 @@ Use the **standard API surface**:
 | Track progress | WebSocket `/ws?client_id=...` |
 | Fetch results | `GET /history/{prompt_id}` |
 | List queue | `GET /queue` |
-| Clear queue | `POST /queue/clear` |
+| Clear queue | `POST /queue` with `{"clear": true}` |
 | Check node info | `GET /object_info` |
 | Fetch/checkpoint a model | `GET /view` |
 

@@ -3,8 +3,9 @@ title: "Extension Patterns"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-05-07
+**Last Updated:** 2026-05-20
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Primary Sources
 

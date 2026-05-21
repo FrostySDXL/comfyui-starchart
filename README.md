@@ -1,207 +1,175 @@
 # ComfyUI StarChart
 
-**Last Updated:** 2026-05-13
+**Last Updated:** 2026-05-21  
 **ComfyUI Version Pin:** Core `v0.21.1` (`26515acd23fa291a8f5ab53c5997258598de0701`) with official frontend `v1.45.9` (`8562816ffa0d996bd400e517292fee074a6acefa`) for the current pinned snapshots and extracted reference data
 
 **Evidence:** Operational guidance
 
 ## What This Repository Is
 
-This repository is a version-pinned, source-extracted companion reference for
-ComfyUI developers. It is not the official ComfyUI documentation; authoritative
-human reference remains at [docs.comfy.org](https://docs.comfy.org/).
+ComfyUI StarChart is a version-pinned, source-extracted companion reference for
+ComfyUI developers. It publishes:
 
-The repo publishes extracted JSON artifacts alongside a self-hostable Astro
-Starlight site. It is designed for extension developers, tooling authors, and integrators
-who need a stable, cited baseline for selected ComfyUI API surfaces, hooks, and
-node schema behavior. Because everything is pinned to exact upstream commits,
-the reference baseline is reproducible and forkable.
+- a self-hostable Astro Starlight documentation site
+- extracted JSON artifacts for selected ComfyUI API, hook, and schema surfaces
+- repo-local maintainer tooling for refresh, verification, and publication
 
-This repo serves three bounded audiences:
+This repository is not the official ComfyUI documentation. Use
+[docs.comfy.org](https://docs.comfy.org/) for authoritative official guidance.
 
-- **Consumers** using the published docs and artifacts to build custom nodes,
-  extensions, integrations, or tools against ComfyUI
-- **Contributors** editing docs, examples, or other hand-authored repo content
-- **Maintainers** running snapshot refreshes, generators, verifiers, CI-facing
-  workflow changes, or published artifact updates
+## Background
 
-## Repository Health Files
+I created ComfyUI StarChart because ComfyUI has a real developer-documentation
+gap.
 
-- [SECURITY.md](SECURITY.md) -- private vulnerability reporting guidance
-- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) -- participation expectations for public collaboration
+There is plenty of ComfyUI content on the internet, but much of it is hard to
+trust as a development baseline. Reddit threads can be helpful but scattered.
+YouTube videos can show a workflow but often age badly. Community repos may
+solve one narrow problem, then stop updating. Even the official docs, while
+important, are not trying to be a version-pinned, machine-readable developer
+reference for every tooling and contribution task.
 
-This repository covers:
-- server API endpoints and WebSocket behavior
-- JavaScript and server-side extension hooks
-- custom node development patterns and datatypes
-- extension architecture patterns
-- tutorials, how-to guides, and machine-readable reference data
+That leaves developers in a frustrating spot: if you want to contribute to
+ComfyUI, build against it, or verify how a surface changed, you often end up
+manually diffing source, chasing outdated examples, and reconstructing context
+from multiple places.
 
-## Evidence Discipline
+StarChart is my attempt to make that workflow less fragile.
 
-Apply this trust order when reading any page:
+The core idea is simple: pin upstream versions, snapshot the relevant source,
+extract structured artifacts from those snapshots, and publish docs that stay
+tied to evidence instead of memory. That makes it easier to answer questions
+like:
 
-1. official ComfyUI documentation on `docs.comfy.org`
-2. upstream ComfyUI source and release notes
-3. this repository's summaries, examples, and extracted references
-4. clearly labeled community pattern examples
+- Is there a new hook?
+- What changed about that hook?
+- What is different in the pinned core compared with the previous baseline?
+- Which route, schema field, or extension surface actually changed?
+- Where should a developer start for custom nodes, extensions, integrations, or runtime metrics work?
 
-This repository does not claim official or native ComfyUI behavior unless backed
-by an official docs page or a pinned upstream source citation.
+I also built this with agents in mind.
 
-For editorial standards and evidence rules, use these files together:
+One of my recurring frustrations was that I like using agents, but there was no
+single resource I trusted to give them precise, bounded, evidence-backed ComfyUI
+development context. Most web material is written for humans to skim, not for an
+agent to query conservatively. Agents do better when the surface is structured,
+stable, and explicit about what is guaranteed versus best-effort.
 
-- `src/content/docs/reference/source-evidence-policy.md`
-- `src/content/docs/reference/writing-style-guide.md`
-- `src/content/docs/reference/doc-quality-checklist.md`
+ComfyUI StarChart gives them that surface:
 
-## Documentation Layers
+- canonical JSON artifacts for pinned API, hook, and schema data
+- support indexes for docs routing and tooling-task discovery
+- stable published paths and checksums via `manifest.json`
+- start-here docs for task routing
 
-### Human-readable docs
+In practice, that means an agent can more reliably answer questions such as:
 
-- Source lives in `src/content/docs/`
-- Preview locally with `npm run dev`
-- New pages should start from `templates/docs/` or use `scripts/new_doc.py --output src/content/docs/...`
+- how do I create a custom node against this pinned baseline?
+- where should I look to build an extension?
+- what changed between two known versions?
+- which doc page is the right next read for metrics capture, route work, or schema validation?
 
-### Where to Start
+The long-term goal is bigger than a readable docs site. I want StarChart to be a
+useful working substrate for both humans and agents: something you can inspect,
+diff, route through, and build on without depending on vague memory or unstable
+community breadcrumbs.
 
-- **Consumers**
-  - Building tools or agents: [`src/content/docs/start-here/tooling-builder.md`](src/content/docs/start-here/tooling-builder.md)
-  - Building custom nodes: [`src/content/docs/start-here/author.md`](src/content/docs/start-here/author.md)
-  - Extending ComfyUI: [`src/content/docs/start-here/extension-developer.md`](src/content/docs/start-here/extension-developer.md)
-  - Integrating ComfyUI into a service: [`src/content/docs/start-here/service-integration.md`](src/content/docs/start-here/service-integration.md)
-- **Contributors**
-  - Start with [`src/content/docs/start-here/docs-contributor.md`](src/content/docs/start-here/docs-contributor.md) for the lighter editorial path
-- **Maintainers**
-  - Use [`CONTRIBUTING.md`](CONTRIBUTING.md) as the canonical repo-local maintainer workflow source for verification, refresh, artifact publication, CI-adjacent, and release-style tasks
+## Who This Repo Is For
 
-### Machine-readable references
+- **Consumers** building custom nodes, extensions, integrations, or tools
+- **Agents** using the tooling schema, support indexes, and JSON artifacts to route, inspect, and interact with the repo's published developer surface
+- **Contributors** editing docs, examples, or other hand-authored content
+- **Maintainers** running verifiers, refreshes, artifact publication, or CI/workflow changes
 
-- JSON reference data lives in `references/raw/`
-- Community metadata lives in `references/community/`
-- Snapshots live in `references/snapshots/`
-- Helper scripts live in `scripts/extract/` and `scripts/generate/`
-- Published artifact copies, manifest, delta summary, and refresh provenance live in `public/artifacts/`
-- `public/artifacts/docs-index.json` is a bounded support artifact for page discovery and conservative docs routing
-- `public/artifacts/tooling-index.json` is a sibling support artifact for higher-level tooling-task routing and relation hints; it remains outside the canonical manifest-discovered contract
-- See [Machine-Readable Artifacts](src/content/docs/reference/machine-readable-artifacts.md) for
-  the difference between `manifest.json`, `docs-index.json`, and
-  `tooling-index.json`, plus the canonical published artifact set, published
-  JSON Schemas, bounded guarantees, the minimum consumer contract, and
-  conceptual examples for tooling authors
-- Consumer starter examples for manifest-first artifact loading and docs-discovery
-  patterns live under `examples/consumers/`; see
-  [Consumer Starter Examples](src/content/docs/how-to/consumer-starter-examples.md)
+Start here:
 
-### Orientation aids
-
-- [Docs home](src/content/docs/index.md) for audience-based entry paths
-- [Glossary](src/content/docs/reference/glossary.md) for repeated artifact and repo terms
-- [What's New](src/content/docs/whats-new/index.md) for recent reader-visible changes
+- **Consumers:** [Docs home](src/content/docs/index.md)
+  - [Custom Node Author](src/content/docs/start-here/author.md)
+  - [Extension Developer](src/content/docs/start-here/extension-developer.md)
+  - [Service Integration](src/content/docs/start-here/service-integration.md)
+  - [Tooling Builder](src/content/docs/start-here/tooling-builder.md)
+- **Agents:** start with [Docs home](src/content/docs/index.md), then use [Tooling Builder](src/content/docs/start-here/tooling-builder.md), [Machine-Readable Artifacts](src/content/docs/reference/machine-readable-artifacts.md), and [AGENTS.md](AGENTS.md)
+- **Contributors:** [Docs Contributor](src/content/docs/start-here/docs-contributor.md)
+- **Maintainers:** [CONTRIBUTING.md](CONTRIBUTING.md) for canonical workflows, plus [AGENTS.md](AGENTS.md) for startup-critical repo guidance
 
 ## Quick Start
 
-Supported Python: `3.11+`
-
-Supported Node.js for site-work and Starlight surfaces: `24+`
+Supported Python: `3.11+`  
+Supported Node.js for site/framework work: `24+`
 
 ```bash
 python -m pip install -r requirements.lock
+python -m pip install -e .
 npm ci
 python -m unittest discover -s tests -v
 npm run build
 ```
 
-Serve locally: `npm run dev`
-
-If you are touching site-framework or frontend-build surfaces, use Node.js
-`24+` via `.nvmrc` or equivalent environment-specific tooling.
-
-### Dependency reproducibility
-
-Maintainers should install from `requirements.lock`. For direct dependency edits,
-lockfile regeneration, and the full maintainer setup workflow, use
-[`CONTRIBUTING.md`](CONTRIBUTING.md).
-
-Before pushing maintainer-grade workflow, script, or verifier changes, run:
+Serve locally:
 
 ```bash
-python scripts/verify/run_all.py
+npm run dev
 ```
 
-Use `run_all.py` as the default maintainer-grade before-push check. It mirrors
-the CI job's blocking path. For lockfile regeneration, extractor/generator
-workflows, snapshot refreshes, runtime capture, community metadata pipelines,
-and the full maintainer verification matrix, use
-[`CONTRIBUTING.md`](CONTRIBUTING.md).
+Maintainer notes:
 
-### Self-hosting
+- `.python-version` contains `3.11` for toolchains that auto-select Python
+- install from `requirements.lock`
+- edit direct Python dependencies in `requirements.in`
+- use `python scripts/verify/run_all.py` as the default maintainer-grade local gate
+- on Windows, prefer `py -3.11` whenever `python` is not already 3.11
 
-The documentation site and published artifacts can be self-hosted or forked.
-Build the site with `npm run build`, then serve the `dist/` directory
-with any static file server. The artifact files under `public/artifacts/` are
-included in the built output.
+## Machine-Readable Artifacts
+
+Canonical extracted artifacts are published from pinned upstream snapshots:
+
+- `artifacts/current/server_endpoints.json`
+- `artifacts/current/js_hooks.json`
+- `artifacts/current/node_api_schema.json`
+- `artifacts/manifest.json` for canonical artifact discovery and checksums
+
+Support artifacts are also published for bounded routing and change analysis:
+
+- `artifacts/docs-index.json`
+- `artifacts/tooling-index.json`
+- `artifacts/delta-summary.json`
+- `artifacts/refresh-provenance.json`
+
+For artifact URLs, contract tiers, schemas, and consumer guidance, see
+[Machine-Readable Artifacts](src/content/docs/reference/machine-readable-artifacts.md).
+
+Consumer starter examples live in
+[src/content/docs/how-to/consumer-starter-examples.md](src/content/docs/how-to/consumer-starter-examples.md)
+and `examples/consumers/`.
 
 ## Maintainer Workflow Entry Points
 
-- `python scripts/verify/run_all.py` is the default maintainer-grade local gate
-  and mirrors the blocking CI path.
-- Use targeted commands while iterating on a narrow surface, then use
-  [`CONTRIBUTING.md`](CONTRIBUTING.md) for the canonical maintainer workflows,
-  verification matrix, extractor/generator procedures, snapshot refresh steps,
-  community metadata pipeline, and CI-adjacent guidance.
-- For runtime-only capture and validation against a live ComfyUI instance, use
-  [`CONTRIBUTING.md`](CONTRIBUTING.md) and
-  [`src/content/docs/reference/runtime-ci-operations.md`](src/content/docs/reference/runtime-ci-operations.md).
+- [CONTRIBUTING.md](CONTRIBUTING.md) is the canonical maintainer workflow guide
+- [AGENTS.md](AGENTS.md) is the startup-oriented quick reference for repo constraints, commands, and task routing
+- `python scripts/verify/run_all.py` is the default blocking local verification wrapper
+- `python scripts/check_upstream_versions.py` powers `.github/workflows/upstream-watch.yml`
 
-For issue intake, use the repository's bug-report template for behavior or
-artifact problems, the docs-request template for documentation gaps or
-discoverability requests, the feature-request template for proposed repo
-enhancements, and the upstream-refresh template for maintainer-run version watch
-follow-up.
+Use `CONTRIBUTING.md` for lockfile regeneration, extractor/generator workflows,
+snapshot refreshes, community metadata pipelines, runtime capture, and the full
+verification matrix.
 
-## CI
+## CI at a Glance
 
-### CPU-safe workflows (blocking, supplemental, and non-blocking)
+- `.github/workflows/ci.yml` runs the blocking verification path on Ubuntu and Windows, with supplemental checks kept in a separate job
+- advisory checks stay non-blocking in normal push/PR CI and escalate through `.github/workflows/advisory-checks.yml`
+- `.github/workflows/upstream-watch.yml` monitors newer upstream releases
+- `.github/workflows/deploy-pages.yml` republishes artifacts and deploys the site
 
-- **`.github/workflows/ci.yml`** -- runs on push/PR to main: the blocking verification path runs on both `ubuntu-latest` and `windows-latest` (Python unit tests, Node-side tests, Python style, references-path verification, docs-index freshness, schema validation, artifact integrity verification for canonical published artifacts, top-level markdown spacing verification for hand-authored docs, generated community freshness, community page coverage, sidebar navigation coverage, `npm run check`, and `npm run build`). A supplemental Ubuntu job then runs `python scripts/verify/pipeline_smoke.py` to exercise the `run_all.py` wrapper end-to-end without rerunning unit tests, plus `python scripts/verify/shell_examples_syntax.py` to validate hand-authored shell examples with `bash -n`. Advisory checks (`stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py`) still run in CI but remain non-blocking there. Also supports `workflow_dispatch` with `core_version` and `frontend_version` inputs to trigger `refresh_snapshots.py`.
-- **`.github/workflows/advisory-checks.yml`** -- scheduled weekly and available via `workflow_dispatch`: reruns the current advisory scripts as blocking so advisory failures remain visible without turning normal PR CI into a noisy blocker.
-- **`.github/workflows/weekly-pin-check.yml`** -- runs every Monday at 09:00 UTC and on manual dispatch: checks that pinned commits and tags still resolve in upstream repos.
-- **`.github/workflows/upstream-watch.yml`** -- runs every Monday at 10:00 UTC and on manual dispatch: scheduled runs detect newer upstream versions and create or update tracking issues; manual runs generate the watch artifacts without mutating issue state.
-
-### Site deployment
-
-- **`.github/workflows/deploy-pages.yml`** -- republishes canonical artifacts,
-  reruns the blocking local verification wrapper (without the final duplicate
-  Starlight checks already covered by the wrapper), then deploys the Starlight site (including packaged
-  artifacts from `public/artifacts/`) to GitHub Pages. Triggers on push to
-  `main`/`master` and on `workflow_dispatch`. Requires the repository Pages
-  source to be set to **GitHub Actions** in repository settings.
-
-### Opt-in runtime workflows
-
-- **`.github/workflows/runtime-smoke.yml`** -- `workflow_dispatch` only: runs lightweight smoke checks against a live ComfyUI instance. Requires a ComfyUI base URL input.
-
-## Runtime Extraction
-
-Optional runtime capture from a live ComfyUI instance stays outside the default
-CPU-safe verification path. Runtime-only `object_info` capture is not part of
-the canonical published artifact surface. Use
-[`CONTRIBUTING.md`](CONTRIBUTING.md) and
-[`src/content/docs/reference/runtime-ci-operations.md`](src/content/docs/reference/runtime-ci-operations.md)
-for the full operating model and commands.
+For workflow details, verification boundaries, and maintainer expectations, use
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Scope Boundaries
 
-- [docs.comfy.org](https://docs.comfy.org/) is the official human reference for ComfyUI.
-- This repository is a pinned companion reference with bounded machine-readable
-  guarantees. It does not aim to replace official docs or cover end-user
-  tutorials.
-- Workflow and tutorial-oriented readers may prefer community resources such as
-  [comfyui-wiki.com](https://comfyui-wiki.com/) for non-developer guides.
+- [docs.comfy.org](https://docs.comfy.org/) is the official human reference for ComfyUI
+- this repo is a pinned companion reference with bounded machine-readable guarantees
+- it does not try to replace official docs or become a general end-user workflow wiki
 
-## External Sources
+## Project Health Files
 
-- https://docs.comfy.org/
-- https://github.com/Comfy-Org/ComfyUI
-- https://registry.comfy.org/
+- [SECURITY.md](SECURITY.md) -- private vulnerability reporting guidance
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) -- participation expectations for public collaboration

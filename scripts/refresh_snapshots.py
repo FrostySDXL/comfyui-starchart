@@ -14,7 +14,6 @@ Exits 0 if successful, exit 1 if any step fails.
 """
 
 import argparse
-import importlib
 import json
 import shutil
 import subprocess
@@ -23,11 +22,9 @@ import tempfile
 from datetime import date
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+from scripts.common import refresh_support
 
-refresh_support = importlib.import_module("scripts.common.refresh_support")
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 REFERENCES_DIR = REPO_ROOT / "references"
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"

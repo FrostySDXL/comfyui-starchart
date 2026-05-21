@@ -37,6 +37,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.lock
 
       - name: Audit dependencies
         run: npm audit --audit-level=high
@@ -115,12 +117,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.lock
 
       - name: Install Node dependencies
         run: npm ci
 
       - name: Install dependencies
         run: python -m pip install -r requirements.lock
+
+      - name: Advisory mypy check
+        run: python -m mypy
+        continue-on-error: true
 
       - name: Run pipeline smoke wrapper
         run: python scripts/verify/pipeline_smoke.py
@@ -137,6 +145,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.lock
 
       - name: Install dependencies
         run: python -m pip install -r requirements.lock
@@ -190,6 +200,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.lock
 
       - name: Install dependencies
         run: python -m pip install -r requirements.lock

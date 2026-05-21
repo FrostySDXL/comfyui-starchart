@@ -17,11 +17,11 @@ Usage:
     python scripts/generate/publish_reference_artifacts.py
 """
 
-import hashlib
-import json
 import shutil
 from datetime import date, datetime
 from pathlib import Path
+
+from scripts.common.json_utils import compute_textual_json_sha256, load_json, write_json
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SOURCE_DIR = REPO_ROOT / "references" / "raw"
@@ -39,10 +39,6 @@ ARTIFACT_FILES = [
 ]
 
 
-def _load_json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
 def _compute_sha256(path: Path) -> str:
     """Return a cross-platform SHA-256 hex digest for textual JSON artifacts.
 
@@ -50,8 +46,7 @@ def _compute_sha256(path: Path) -> str:
     trees may materialize them as CRLF. Normalize CRLF to LF before hashing so
     published manifest hashes are stable across operating systems.
     """
-    file_bytes = path.read_bytes().replace(b"\r\n", b"\n")
-    return hashlib.sha256(file_bytes).hexdigest()
+    return compute_textual_json_sha256(path)
 
 
 def _derive_version_key(artifacts: dict[str, dict]) -> str:
@@ -93,14 +88,6 @@ def _check_staleness(artifacts: dict[str, dict]) -> None:
                 print(f"WARNING: {name} extracted_date is {age_days} days old ({extracted}).")
         except ValueError:
             print(f"WARNING: {name} has an unparsable extracted_date: {extracted}")
-
-
-def _write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(data, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
 
 
 def _site_rel(file_path: Path) -> str:
@@ -177,7 +164,7 @@ def main() -> int:
         if not path.exists():
             print(f"ERROR: Required artifact not found: {path}")
             return 1
-        artifacts[name] = _load_json(path)
+        artifacts[name] = load_json(path)
 
     print("Artifact dates:")
     for name in ARTIFACT_FILES:
@@ -206,7 +193,7 @@ def main() -> int:
     # Write manifest
     manifest = build_manifest(artifacts, version_key, artifact_hashes)
     manifest_path = OUTPUT_ROOT / "manifest.json"
-    _write_json(manifest_path, manifest)
+    write_json(manifest_path, manifest)
 
     print(f"Published artifacts to {OUTPUT_ROOT}")
     print(f"  Current:  {CURRENT_DIR}")

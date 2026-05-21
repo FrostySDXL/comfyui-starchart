@@ -15,11 +15,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
 from scripts.common.path_normalization import normalize_repo_path, normalize_repo_relative_path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 SCRIPTS_EXTRACT_DIR = REPO_ROOT / "scripts" / "extract"

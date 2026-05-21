@@ -9,10 +9,11 @@ manifest checksums are all aligned. Exits 1 on the first integrity failure.
 """
 
 import argparse
-import hashlib
 import json
 import sys
 from pathlib import Path
+
+from scripts.common.json_utils import compute_textual_json_sha256, load_json
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST_PATH = REPO_ROOT / "public" / "artifacts" / "manifest.json"
@@ -32,13 +33,12 @@ def compute_sha256(path: Path) -> str:
     trees may contain CRLF. Normalize CRLF to LF before hashing so manifest
     hashes remain stable across platforms and match committed artifact bytes.
     """
-    file_bytes = path.read_bytes().replace(b"\r\n", b"\n")
-    return hashlib.sha256(file_bytes).hexdigest()
+    return compute_textual_json_sha256(path)
 
 
 def load_manifest(path: Path) -> dict:
     """Load and return the parsed manifest JSON."""
-    return json.loads(path.read_text(encoding="utf-8"))
+    return load_json(path)
 
 
 def verify_integrity(

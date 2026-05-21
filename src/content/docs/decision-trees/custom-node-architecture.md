@@ -2,8 +2,9 @@
 title: "Decision Tree: Custom Node Architecture"
 ---
 
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-20
 **Evidence:** Source-backed from pinned snapshots; Operational guidance for repo-authored decision support and examples
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.21.1`, frontend `v1.45.9`, snapshots `2026-05-18`.
 
 ## Overview
 
@@ -132,10 +133,12 @@ Go to Question 6.
 Target **V3** for the cleaner schema and explicit execution contract:
 
 ```python
-class MyNode(comfy.node_base.ComfyNode):
+from comfy_api.latest import io
+
+class MyNode(io.ComfyNode):
     @staticmethod
     def define_schema():
-        return comfy.io.Schema(...)
+        return io.Schema(...)
 ```
 
 Next steps: [Custom Node Development Guide](../custom-nodes/development-guide.md) and

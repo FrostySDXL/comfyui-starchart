@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "comfyui-starchart-maintainer"
+version = "0.2.0"
+description = "Maintainer tooling package for comfyui-starchart"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+include = ["scripts*"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+include = ["scripts/**/*.py", "tests/**/*.py"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["scripts/common", "scripts/verify/schema_common.py", "scripts/verify/schema_community.py", "scripts/verify/schema_hooks.py", "scripts/verify/schema_node_api.py", "scripts/verify/schema_server.py"]
+ignore_missing_imports = true
+warn_unused_configs = true
