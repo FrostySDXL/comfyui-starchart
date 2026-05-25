@@ -33,4 +33,4 @@ repo recommends showing in examples:
 Use this as the smallest route surface reference. For broader composition
 patterns, compare it with
 [`examples/extensions/hybrid-v1-route/`](../hybrid-v1-route/README.md) and the
-published how-to pages for custom routes and server extension boundaries.
+the published hooks and custom-node pages for route registration and server extension boundaries.

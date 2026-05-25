@@ -149,8 +149,7 @@ and `examples/consumers/`.
 - `python scripts/check_upstream_versions.py` powers `.github/workflows/upstream-watch.yml`
 
 Use `CONTRIBUTING.md` for lockfile regeneration, extractor/generator workflows,
-snapshot refreshes, community metadata pipelines, runtime capture, and the full
-verification matrix.
+snapshot refreshes, runtime capture, and the full verification matrix.
 
 ## CI at a Glance
 

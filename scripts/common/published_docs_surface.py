@@ -11,6 +11,12 @@ TITLE_RE = re.compile(r"^\s*#\s+(.+?)\s*$", re.MULTILINE)
 FRONTMATTER_TITLE_RE = re.compile(r'^---\s*\ntitle:\s*"(.+?)"\s*\n---\s*', re.MULTILINE)
 EVIDENCE_RE = re.compile(r"^\s*\*\*Evidence:\*\*\s*(.+?)\s*$", re.MULTILINE)
 GENERATED_BANNER_PREFIX = "<!-- GENERATED FILE:"
+# Published-docs surface generation does not carry explicit generated-page
+# exclusions here; is_generated_page() already skips pages with the generated
+# banner. The corresponding safety-rail exclusions in
+# scripts/verify/sidebar_navigation_coverage.py exist only to prevent noise
+# if a generated page is intentionally restored to disk without a sidebar
+# entry -- they serve the coverage verifier, not the docs-index generator.
 GENERATED_PAGE_EXCLUSIONS: set[str] = set()
 
 AUDIENCE_BY_PATH = {

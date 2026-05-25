@@ -14,9 +14,6 @@ TEMPLATES_DIR = REPO_ROOT / "templates" / "docs"
 
 MODE_TO_TEMPLATE = {
     "reference": "reference-template.md",
-    "tutorial": "tutorial-template.md",
-    "decision-guide": "decision-guide-template.md",
-    "community-pattern": "community-pattern-template.md",
     "scaffold": "scaffold-template.md",
 }
 
@@ -27,9 +24,6 @@ MODE_TO_ALLOWED_PREFIXES = {
         "src/content/docs/hooks/",
         "src/content/docs/custom-nodes/",
     ],
-    "tutorial": ["src/content/docs/tutorials/", "src/content/docs/how-to/"],
-    "decision-guide": ["src/content/docs/decision-trees/", "src/content/docs/start-here/"],
-    "community-pattern": ["src/content/docs/extensions/", "src/content/docs/ecosystem/"],
 }
 
 
