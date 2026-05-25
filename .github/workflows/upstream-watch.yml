@@ -29,6 +29,16 @@ jobs:
             upstream_summary.json
             upstream_summary.md
 
+      - name: Ensure upstream-watch label exists
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create upstream-watch \
+            --color "ededed" \
+            --description "Upstream version watch tracking" \
+            2>/dev/null || true
+
       - name: Create or update tracking issue (scheduled runs only)
         if: github.event_name == 'schedule'
         env:
@@ -37,8 +47,8 @@ jobs:
           if grep -q '"update_available": true' upstream_summary.json; then
             TITLE="Upstream refresh available"
             BODY=$(cat upstream_summary.md)
-            # Search for existing open issue
-            EXISTING=$(gh issue list --label "upstream-watch" --state open --json number --jq '.[0].number')
+            # Search for existing open issue by title (label may not exist on first run)
+            EXISTING=$(gh issue list --search "${TITLE} in:title" --state open --json number --jq '.[0].number')
             if [ -n "$EXISTING" ]; then
               gh issue edit "$EXISTING" --body "$BODY"
               echo "Updated tracking issue #$EXISTING"
