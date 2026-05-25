@@ -3,6 +3,7 @@
 import importlib.util
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -375,6 +376,28 @@ class RefreshSnapshotsOrchestrationTests(unittest.TestCase):
 
 class RefreshSnapshotsBoundaryTests(unittest.TestCase):
     """Test clarified clone/copy and extractor helper boundaries."""
+
+    def test_refresh_git_ops_copy_source_files_copies_only_existing(self):
+        """_copy_source_files should copy only files that exist, skip missing files."""
+        with tempfile.TemporaryDirectory() as tmp:
+            src_dir = Path(tmp) / "src"
+            src_dir.mkdir()
+            (src_dir / "keep.py").write_text("x = 1", encoding="utf-8")
+            (src_dir / "skip.txt").write_text("y", encoding="utf-8")
+
+            dest_dir = Path(tmp) / "dest"
+
+            copied = refresh_git_ops._copy_source_files(
+                str(src_dir),
+                dest_dir,
+                ["keep.py", "missing.py", "skip.txt"],
+                "test-repo",
+            )
+
+            self.assertEqual(copied, ["keep.py", "skip.txt"])
+            self.assertTrue((dest_dir / "keep.py").exists())
+            self.assertTrue((dest_dir / "skip.txt").exists())
+            self.assertFalse((dest_dir / "missing.py").exists())
 
     def test_refresh_git_ops_run_cmd_raises_on_failure(self):
         """Shared git helper should raise instead of silently returning failures."""

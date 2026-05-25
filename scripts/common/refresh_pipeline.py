@@ -36,7 +36,7 @@ def _run_server_extractor(
     except RuntimeError as exc:
         print(f"  {exc}")
         print("  parse_server.py failed")
-        raise RuntimeError("parse_server.py extraction failed")
+        raise RuntimeError("parse_server.py extraction failed") from exc
 
     for line in result.stdout.strip().splitlines():
         if "Extracted" in line and "endpoints" in line:
@@ -83,7 +83,7 @@ def _run_hooks_extractor(
     except RuntimeError as exc:
         print(f"  {exc}")
         print("  parse_hooks.py failed")
-        raise RuntimeError("parse_hooks.py extraction failed")
+        raise RuntimeError("parse_hooks.py extraction failed") from exc
 
     for line in result.stdout.strip().splitlines():
         if "Extracted" in line and "hooks" in line:
@@ -133,7 +133,7 @@ def _run_node_api_schema_extractor(
     except RuntimeError as exc:
         print(f"  {exc}")
         print("  parse_node_api_schema.py failed")
-        raise RuntimeError("parse_node_api_schema.py extraction failed")
+        raise RuntimeError("parse_node_api_schema.py extraction failed") from exc
 
     for line in result.stdout.strip().splitlines():
         if "Extracted" in line:

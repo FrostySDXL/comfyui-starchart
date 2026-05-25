@@ -51,6 +51,13 @@ not imply npm publication intent; `package.json` remains `private: true`.
 - Reduce `src/site/sidebar-data.json` to the retained surface and regenerate the
   published `docs-index.json` and `tooling-index.json` support artifacts to
   match it.
+- Merge `docs-index.json` and `tooling-index.json` into a single support index
+  under `public/artifacts/docs-index.json`. The merged schema
+  (`docs-index.schema.json` v1.1.0) tightens `additionalProperties` from `true`
+  to `false` at root, scope, page, and the new `tooling_metadata` level to match
+  the former tooling-index strictness. Downstream consumers that previously
+  attached custom keys to page entries will need to adjust to the stricter
+  contract.
 - Prune `references/community/community_pages.json` so community tracking now
   matches the reduced published surface.
 - Prune and retarget `references/tooling-index-metadata.json` so tooling routing

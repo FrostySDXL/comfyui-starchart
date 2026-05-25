@@ -134,9 +134,10 @@ have a compatibility reason to stay with V1.
 - custom nodes should expose the narrowest, clearest interface possible
   so caching and graph reasoning stay predictable
 
-## Stable development habits
+## Best practices
 
-The reduced surface keeps the most durable custom-node guidance here:
+This section absorbs the most durable guidance from the former Best Practices
+page. The reduced surface keeps the most critical custom-node habits here:
 
 - respect caching and execution semantics; keep outputs deterministic when
   practical

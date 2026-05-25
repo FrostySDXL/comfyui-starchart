@@ -97,6 +97,32 @@ class PublishedSchemaValidationTests(unittest.TestCase):
             ],
         )
 
+    def test_validate_json_schema_instance_checks_required_fields_across_nesting(self):
+        """Nested required-fields enforcement should span multiple levels."""
+        schema = {
+            "type": "object",
+            "required": ["info"],
+            "properties": {
+                "info": {
+                    "type": "object",
+                    "required": ["name", "count"],
+                    "properties": {
+                        "name": {"type": "string"},
+                        "count": {"type": "integer"},
+                    },
+                    "additionalProperties": False,
+                },
+            },
+        }
+
+        errors = published_schema_validation._validate_json_schema_instance(
+            {"info": {"count": 5}},
+            schema,
+            "tools.json",
+        )
+
+        self.assertIn("tools.json.info: missing required key 'name'", errors)
+
 
 if __name__ == "__main__":
     unittest.main()

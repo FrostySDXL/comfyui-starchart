@@ -63,7 +63,7 @@ Non-goals:
 | `public/artifacts/versions/` | bounded versioned artifact history | no |
 | `public/artifacts/docs-index.json` | generated merged support index | no |
 | `public/artifacts/schemas/` | checked-in published schemas | yes |
-| `scripts/common/` | shared helper modules | yes |
+| `scripts/common/` | shared helper modules (refresh pipeline, git ops, subprocess, JSON, HTTP, surface constants) | yes |
 | `scripts/extract/` | extractors | yes |
 | `scripts/generate/` | generators and publication scripts | yes |
 | `scripts/verify/` | blocking, supplemental, and advisory verifiers | yes |
