@@ -167,6 +167,18 @@ class RefreshSupportProvenanceTests(unittest.TestCase):
         self.assertIn("py -3.11 scripts/generate/generate_snapshot_delta_summary.py", command)
         self.assertIn('--old "references/_refresh_backups/raw_20260503T010203Z"', command)
 
+    def test_build_delta_summary_command_targets_canonical_new_output_locations(self):
+        """Delta summary command should keep the canonical new/output paths stable."""
+        module = _load_module()
+        command = module.build_delta_summary_command(
+            Path("D:/repo/references/_refresh_backups/raw_20260503T010203Z"),
+            Path("D:/repo"),
+            "py -3.11",
+        )
+
+        self.assertIn('--new "references/raw"', command)
+        self.assertIn('--output "public/artifacts/delta-summary.json"', command)
+
     def test_write_refresh_provenance_persists_required_fields(self):
         """Refresh provenance output should persist the documented minimum fields."""
         module = _load_module()
@@ -264,6 +276,29 @@ class RefreshSupportProvenanceTests(unittest.TestCase):
             payload["next_steps"]["run_all_command"],
             "py -3.11 scripts/verify/run_all.py",
         )
+
+    def test_build_refresh_provenance_keeps_follow_up_truth_values_false_until_post_refresh_steps_run(
+        self,
+    ):
+        """Refresh provenance should truthfully report that publish/delta steps still remain."""
+        module = _load_module()
+        payload = module.build_refresh_provenance(
+            refresh_date="2026-05-18",
+            requested_core_version="v0.20.1",
+            requested_frontend_version=None,
+            resolved_core_commit="abc123",
+            resolved_frontend_commit=None,
+            backup_dir=Path("D:/repo/references/_refresh_backups/raw_20260518T010203Z"),
+            runtime_object_info_requested=False,
+            runtime_object_info_merged=False,
+            repo_root=Path("D:/repo"),
+            provenance_output_path=Path("D:/repo/public/artifacts/refresh-provenance.json"),
+            python_executable="py -3.11",
+        )
+
+        self.assertFalse(payload["published"]["canonical_artifacts_updated_by_refresh"])
+        self.assertFalse(payload["published"]["delta_summary_updated_by_refresh"])
+        self.assertFalse(payload["published"]["manifest_included"])
 
     def test_write_refresh_provenance_raises_clear_runtime_error_on_write_failure(self):
         """Write failures should be wrapped in a clear runtime error."""

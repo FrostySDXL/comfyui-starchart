@@ -8,9 +8,7 @@ import sys
 from pathlib import Path
 
 from scripts.verify.schema_common import (
-    COMMUNITY_SCHEMAS,
     SCHEMAS,
-    validate_community_metadata,
     validate_coverage,
     validate_metadata,
     validate_returns,
@@ -19,7 +17,6 @@ from scripts.verify.schema_common import (
 from scripts.verify.schema_common import (
     validate_against_published_artifact_schema as _validate_against_published_artifact_schema,
 )
-from scripts.verify.schema_community import validate_packages, validate_pages
 from scripts.verify.schema_hooks import HOOK_ARGUMENT_SCHEMA, HOOK_SCHEMA, validate_hooks
 from scripts.verify.schema_node_api import (
     IO_TYPE_SCHEMA,
@@ -33,11 +30,10 @@ from scripts.verify.schema_server import ENDPOINT_SCHEMA, validate_endpoints
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
-REFERENCES_COMMUNITY_DIR = REPO_ROOT / "references" / "community"
 PUBLISHED_SCHEMA_DIR = REPO_ROOT / "public" / "artifacts" / "schemas"
+DOCS_INDEX_PATH = REPO_ROOT / "public" / "artifacts" / "docs-index.json"
 
 __all__ = [
-    "COMMUNITY_SCHEMAS",
     "ENDPOINT_SCHEMA",
     "HOOK_ARGUMENT_SCHEMA",
     "HOOK_SCHEMA",
@@ -46,15 +42,12 @@ __all__ = [
     "TYPED_INPUT_FIELD_SCHEMA",
     "TYPED_INPUT_SHAPE_SCHEMA",
     "validate_against_published_artifact_schema",
-    "validate_community_metadata",
     "validate_coverage",
     "validate_endpoints",
     "validate_hooks",
     "validate_io_types",
     "validate_metadata",
     "validate_object_info_runtime",
-    "validate_packages",
-    "validate_pages",
     "validate_returns",
     "validate_top_level",
     "validate_typed_input_shapes",
@@ -81,17 +74,21 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
         return
 
     validation_errors: list[str] = []
-    schema = SCHEMAS.get(json_file.name) or COMMUNITY_SCHEMAS.get(json_file.name)
+    schema = SCHEMAS.get(json_file.name)
     if schema:
         validation_errors.extend(validate_top_level(data, schema, json_file.name))
 
-    if json_file.name in COMMUNITY_SCHEMAS:
-        validation_errors.extend(validate_community_metadata(data, json_file.name))
-    else:
+    if json_file.name in SCHEMAS:
         validation_errors.extend(validate_metadata(data, json_file.name))
 
     if json_file.name in {"server_endpoints.json", "js_hooks.json", "node_api_schema.json"}:
         validation_errors.extend(validate_coverage(data, json_file.name))
+    if json_file.name in {
+        "server_endpoints.json",
+        "js_hooks.json",
+        "node_api_schema.json",
+        "docs-index.json",
+    }:
         validation_errors.extend(validate_against_published_artifact_schema(data, json_file.name))
 
     if json_file.name == "server_endpoints.json":
@@ -103,10 +100,6 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
         validation_errors.extend(validate_typed_input_shapes(data, json_file.name))
     elif json_file.name == "object_info_runtime.json":
         validation_errors.extend(validate_object_info_runtime(data, json_file.name))
-    elif json_file.name == "ecosystem_packages.json":
-        validation_errors.extend(validate_packages(data, json_file.name))
-    elif json_file.name == "community_pages.json":
-        validation_errors.extend(validate_pages(data, json_file.name))
 
     all_errors.extend(validation_errors)
     if not validation_errors:
@@ -116,8 +109,7 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
 def main() -> int:
     all_errors: list[str] = []
     json_files = sorted(REFERENCES_RAW_DIR.glob("*.json"))
-    community_files = sorted(REFERENCES_COMMUNITY_DIR.glob("*.json"))
-    all_json_files = json_files + community_files
+    all_json_files = json_files + [DOCS_INDEX_PATH]
 
     if not all_json_files:
         print("No JSON reference files found.")

@@ -15,14 +15,11 @@ Exits 0 if successful, exit 1 if any step fails.
 
 import argparse
 import json
-import shutil
-import subprocess
 import sys
-import tempfile
 from datetime import date
 from pathlib import Path
 
-from scripts.common import refresh_support
+from scripts.common import refresh_git_ops, refresh_pipeline, refresh_support
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -124,54 +121,21 @@ def compute_diff_summary(old_json: dict, new_json: dict, json_name: str) -> list
     return refresh_support.compute_diff_summary(old_json, new_json, json_name)
 
 
-def _run_cmd(
-    cmd: list[str], description: str, cwd: str | None = None
-) -> subprocess.CompletedProcess:
-    """Run a command and exit on failure."""
-    print(f"  Running: {' '.join(cmd)}")
-    result = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
-    if result.returncode != 0:
-        print(f"  FAILED: {description}")
-        if result.stdout:
-            print(f"  stdout: {result.stdout[:500]}")
-        if result.stderr:
-            print(f"  stderr: {result.stderr[:500]}")
-    return result
+def _run_cmd(cmd: list[str], description: str, cwd: str | None = None):
+    """Compatibility wrapper around the shared git/runtime command helper."""
+    return refresh_git_ops._run_cmd(cmd, description, cwd=cwd)
 
 
 def _resolve_commit(clone_dir: str) -> str:
-    """Get the full commit hash from a cloned repo."""
-    result = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        capture_output=True,
-        text=True,
-        cwd=clone_dir,
-    )
-    if result.returncode != 0:
-        print(f"  FAILED to resolve commit hash: {result.stderr}")
-        sys.exit(1)
-    return result.stdout.strip()
+    """Compatibility wrapper around the shared git commit resolver."""
+    return refresh_git_ops._resolve_commit(clone_dir)
 
 
 def _copy_source_files(
     clone_dir: str, dest_dir: Path, files: list[str], repo_label: str
 ) -> list[str]:
-    """Copy source files from clone into snapshot directory.
-
-    Returns a list of copied file paths (relative to dest_dir).
-    """
-    copied = []
-    for rel_path in files:
-        src = Path(clone_dir) / rel_path
-        dst = dest_dir / rel_path
-        if src.exists():
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(str(src), str(dst))
-            copied.append(rel_path)
-            print(f"  Copied {repo_label}/{rel_path}")
-        else:
-            print(f"  WARNING: {rel_path} not found in {repo_label} clone at {clone_dir}")
-    return copied
+    """Compatibility wrapper around the shared snapshot copy helper."""
+    return refresh_git_ops._copy_source_files(clone_dir, dest_dir, files, repo_label)
 
 
 def _refresh_repo_snapshot(
@@ -186,29 +150,19 @@ def _refresh_repo_snapshot(
     temp_prefix: str,
     files: list[str],
 ) -> tuple[str, str]:
-    """Clone a repo at a tag and copy the selected source files into snapshots."""
-    tag = version
-    dest_name = f"{dest_prefix}-{version}"
-    dest_dir = SNAPSHOTS_DIR / snapshot_date / dest_name
-
-    print(f"\n=== Refreshing {heading_label} {version} ===")
-
-    with tempfile.TemporaryDirectory(prefix=temp_prefix) as tmpdir:
-        result = _run_cmd(
-            ["git", "clone", "--depth", "1", "--branch", tag, repo_url, tmpdir],
-            f"cloning {clone_label} at {tag}",
-        )
-        if result.returncode != 0:
-            print(f"  Failed to clone {clone_label} at {tag}")
-            sys.exit(1)
-
-        commit = _resolve_commit(tmpdir)
-        print(f"  Resolved commit: {commit}")
-
-        dest_dir.mkdir(parents=True, exist_ok=True)
-        _copy_source_files(tmpdir, dest_dir, files, copy_label)
-
-    return commit, dest_name
+    """Compatibility wrapper around the shared snapshot refresh helper."""
+    return refresh_git_ops._refresh_repo_snapshot(
+        version=version,
+        snapshot_date=snapshot_date,
+        repo_url=repo_url,
+        snapshots_dir=SNAPSHOTS_DIR,
+        dest_prefix=dest_prefix,
+        heading_label=heading_label,
+        clone_label=clone_label,
+        copy_label=copy_label,
+        temp_prefix=temp_prefix,
+        files=files,
+    )
 
 
 def refresh_core(version: str, snapshot_date: str) -> tuple[str, str]:
@@ -253,23 +207,25 @@ def run_runtime_extraction(url: str, version: str, commit: str) -> bool:
     Returns True if successful.
     """
     print("\n--- Running parse_from_api.py ---")
-    result = _run_cmd(
-        [
-            sys.executable,
-            str(SCRIPTS_EXTRACT_DIR / "parse_from_api.py"),
-            "--url",
-            url,
-            "--version",
-            version,
-            "--commit",
-            commit,
-            "--output",
-            str(REFERENCES_RAW_DIR / "object_info_runtime.json"),
-        ],
-        "runtime object_info extraction",
-        cwd=str(REPO_ROOT),
-    )
-    if result.returncode != 0:
+    try:
+        _run_cmd(
+            [
+                sys.executable,
+                str(SCRIPTS_EXTRACT_DIR / "parse_from_api.py"),
+                "--url",
+                url,
+                "--version",
+                version,
+                "--commit",
+                commit,
+                "--output",
+                str(REFERENCES_RAW_DIR / "object_info_runtime.json"),
+            ],
+            "runtime object_info extraction",
+            cwd=str(REPO_ROOT),
+        )
+    except RuntimeError as exc:
+        print(f"  {exc}")
         print("  parse_from_api.py failed")
         return False
     print("  Runtime object_info captured")
@@ -278,33 +234,18 @@ def run_runtime_extraction(url: str, version: str, commit: str) -> bool:
 
 def _run_server_extractor(core_dir: Path, core_version: str, core_commit: str) -> str | None:
     """Run `parse_server.py` for the refreshed core snapshot."""
-    server_path = core_dir / "server.py"
-    if not server_path.exists():
-        return None
-
-    print("\n--- Running parse_server.py ---")
-    result = _run_cmd(
-        [
-            sys.executable,
-            str(SCRIPTS_EXTRACT_DIR / "parse_server.py"),
-            str(server_path),
-            "--version",
+    try:
+        return refresh_pipeline._run_server_extractor(
+            core_dir,
             core_version,
-            "--commit",
             core_commit,
-        ],
-        "parse_server.py extraction",
-        cwd=str(REPO_ROOT),
-    )
-    if result.returncode != 0:
-        print("  parse_server.py failed")
+            python_executable=sys.executable,
+            scripts_extract_dir=SCRIPTS_EXTRACT_DIR,
+            repo_root=REPO_ROOT,
+            run_cmd=_run_cmd,
+        )
+    except RuntimeError:
         sys.exit(1)
-
-    for line in result.stdout.strip().splitlines():
-        if "Extracted" in line and "endpoints" in line:
-            print(f"  {line}")
-            return line
-    return None
 
 
 def _run_hooks_extractor(
@@ -313,38 +254,18 @@ def _run_hooks_extractor(
     frontend_commit: str,
 ) -> str | None:
     """Run `parse_hooks.py` for the refreshed frontend snapshot."""
-    source_paths = [
-        frontend_dir / "src" / "scripts" / "app.ts",
-        frontend_dir / "src" / "types" / "comfy.ts",
-        frontend_dir / "src" / "services" / "litegraphService.ts",
-    ]
-    existing_sources = [str(path) for path in source_paths if path.exists()]
-    if not existing_sources:
-        return None
-
-    print("\n--- Running parse_hooks.py ---")
-    result = _run_cmd(
-        [
-            sys.executable,
-            str(SCRIPTS_EXTRACT_DIR / "parse_hooks.py"),
-            *existing_sources,
-            "--version",
+    try:
+        return refresh_pipeline._run_hooks_extractor(
+            frontend_dir,
             frontend_version,
-            "--commit",
             frontend_commit,
-        ],
-        "parse_hooks.py extraction",
-        cwd=str(REPO_ROOT),
-    )
-    if result.returncode != 0:
-        print("  parse_hooks.py failed")
+            python_executable=sys.executable,
+            scripts_extract_dir=SCRIPTS_EXTRACT_DIR,
+            repo_root=REPO_ROOT,
+            run_cmd=_run_cmd,
+        )
+    except RuntimeError:
         sys.exit(1)
-
-    for line in result.stdout.strip().splitlines():
-        if "Extracted" in line and "hooks" in line:
-            print(f"  {line}")
-            return line
-    return None
 
 
 def _run_node_api_schema_extractor(
@@ -354,40 +275,19 @@ def _run_node_api_schema_extractor(
     runtime_object_info_path: str | None,
 ) -> str | None:
     """Run `parse_node_api_schema.py` for the refreshed core snapshot."""
-    server_path = core_dir / "server.py"
-    io_path = core_dir / "comfy_api" / "latest" / "_io.py"
-    basic_types_path = core_dir / "comfy_api" / "latest" / "_input" / "basic_types.py"
-    if not server_path.exists() or not io_path.exists() or not basic_types_path.exists():
-        return None
-
-    print("\n--- Running parse_node_api_schema.py ---")
-    cmd = [
-        sys.executable,
-        str(SCRIPTS_EXTRACT_DIR / "parse_node_api_schema.py"),
-        str(server_path),
-        str(io_path),
-        str(basic_types_path),
-        "--version",
-        core_version,
-        "--commit",
-        core_commit,
-    ]
-    if runtime_object_info_path:
-        cmd += ["--object-info-runtime-path", runtime_object_info_path]
-    result = _run_cmd(
-        cmd,
-        "parse_node_api_schema.py extraction",
-        cwd=str(REPO_ROOT),
-    )
-    if result.returncode != 0:
-        print("  parse_node_api_schema.py failed")
+    try:
+        return refresh_pipeline._run_node_api_schema_extractor(
+            core_dir,
+            core_version,
+            core_commit,
+            runtime_object_info_path,
+            python_executable=sys.executable,
+            scripts_extract_dir=SCRIPTS_EXTRACT_DIR,
+            repo_root=REPO_ROOT,
+            run_cmd=_run_cmd,
+        )
+    except RuntimeError:
         sys.exit(1)
-
-    for line in result.stdout.strip().splitlines():
-        if "Extracted" in line:
-            print(f"  {line}")
-            return line
-    return None
 
 
 def run_extractors(
@@ -402,37 +302,19 @@ def run_extractors(
 
     Returns a dict with extraction results (counts of endpoints, hooks, etc.).
     """
-    results = {}
-    snapshot_base = SNAPSHOTS_DIR / snapshot_date
-
-    if core_version and core_commit:
-        core_dir = snapshot_base / f"comfyui-core-{core_version}"
-        server_summary = _run_server_extractor(core_dir, core_version, core_commit)
-        if server_summary:
-            results["server_endpoints"] = server_summary
-
-    if frontend_version and frontend_commit:
-        frontend_dir = snapshot_base / f"comfyui-frontend-{frontend_version}"
-        hooks_summary = _run_hooks_extractor(
-            frontend_dir,
-            frontend_version,
-            frontend_commit,
-        )
-        if hooks_summary:
-            results["js_hooks"] = hooks_summary
-
-    if core_version and core_commit:
-        core_dir = snapshot_base / f"comfyui-core-{core_version}"
-        schema_summary = _run_node_api_schema_extractor(
-            core_dir,
-            core_version,
-            core_commit,
-            runtime_object_info_path,
-        )
-        if schema_summary:
-            results["node_api_schema"] = schema_summary
-
-    return results
+    return refresh_pipeline.run_extractors(
+        core_version=core_version,
+        core_commit=core_commit,
+        frontend_version=frontend_version,
+        frontend_commit=frontend_commit,
+        snapshot_date=snapshot_date,
+        runtime_object_info_path=runtime_object_info_path,
+        snapshots_dir=SNAPSHOTS_DIR,
+        python_executable=sys.executable,
+        scripts_extract_dir=SCRIPTS_EXTRACT_DIR,
+        repo_root=REPO_ROOT,
+        run_cmd=_run_cmd,
+    )
 
 
 def run_markdown_generation() -> bool:
@@ -440,43 +322,29 @@ def run_markdown_generation() -> bool:
 
     Returns True if successful.
     """
-    print("\n--- Running md_from_json.py ---")
-    result = _run_cmd(
-        [sys.executable, str(SCRIPTS_GENERATE_DIR / "md_from_json.py")],
-        "markdown generation",
-        cwd=str(REPO_ROOT),
+    return refresh_pipeline.run_markdown_generation(
+        python_executable=sys.executable,
+        scripts_generate_dir=SCRIPTS_GENERATE_DIR,
+        repo_root=REPO_ROOT,
+        run_cmd=_run_cmd,
     )
-    if result.returncode != 0:
-        print("  md_from_json.py failed")
-        return False
-    print(f"  {result.stdout.strip()}")
-    return True
 
 
 def verify_git_available() -> bool:
     """Verify git is available on PATH before refresh work starts."""
-    git_check = subprocess.run(
-        ["git", "--version"],
-        capture_output=True,
-        text=True,
-    )
-    if git_check.returncode != 0:
-        print("Error: git is required but not found on PATH.")
+    try:
+        git_version = refresh_git_ops.verify_git_available()
+    except RuntimeError as exc:
+        print(f"Error: {exc}")
         print("Install git or ensure it is available before running this script.")
         return False
-    print(f"Git version: {git_check.stdout.strip()}")
+    print(f"Git version: {git_version}")
     return True
 
 
 def load_existing_raw_jsons() -> dict[str, dict]:
     """Load the current raw JSON artifacts for later diff reporting."""
-    old_jsons = {}
-    for json_file in REFERENCES_RAW_DIR.glob("*.json"):
-        try:
-            old_jsons[json_file.name] = json.loads(json_file.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            old_jsons[json_file.name] = {}
-    return old_jsons
+    return refresh_pipeline.load_existing_raw_jsons(REFERENCES_RAW_DIR)
 
 
 def refresh_requested_snapshots(
@@ -485,45 +353,37 @@ def refresh_requested_snapshots(
     snapshot_date: str,
 ) -> tuple[str | None, str | None]:
     """Run the requested core and frontend refresh steps."""
-    core_commit = None
-    frontend_commit = None
-
-    if core_version:
-        core_commit, _ = refresh_core(core_version, snapshot_date)
-
-    if frontend_version:
-        frontend_commit, _ = refresh_frontend(frontend_version, snapshot_date)
-
-    return core_commit, frontend_commit
+    return refresh_pipeline.refresh_requested_snapshots(
+        core_version,
+        frontend_version,
+        snapshot_date,
+        refresh_core=refresh_core,
+        refresh_frontend=refresh_frontend,
+    )
 
 
 def capture_runtime_object_info(args: argparse.Namespace, core_commit: str | None) -> str | None:
     """Run the optional runtime object_info capture flow."""
-    if not args.runtime_object_info_url:
-        return None
-
-    version = args.runtime_object_info_version or args.core_version or "unversioned"
-    commit = args.runtime_object_info_commit or core_commit or ""
-    if not run_runtime_extraction(args.runtime_object_info_url, version, commit):
-        raise RuntimeError("Runtime extraction failed.")
-    return str(REFERENCES_RAW_DIR / "object_info_runtime.json")
+    return refresh_pipeline.capture_runtime_object_info(
+        args,
+        core_commit,
+        references_raw_dir=REFERENCES_RAW_DIR,
+        run_runtime_extraction=run_runtime_extraction,
+    )
 
 
 def print_change_summary(old_jsons: dict[str, dict]) -> None:
     """Print the post-refresh diff summary for raw JSON artifacts."""
-    print("\n=== Change Summary ===")
-    for json_file in sorted(REFERENCES_RAW_DIR.glob("*.json")):
-        try:
-            new_data = json.loads(json_file.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            continue
+    refresh_pipeline.print_change_summary(
+        old_jsons,
+        references_raw_dir=REFERENCES_RAW_DIR,
+        compute_diff_summary=compute_diff_summary,
+    )
 
-        old_data = old_jsons.get(json_file.name, {})
-        changes = compute_diff_summary(old_data, new_data, json_file.name)
-        if changes:
-            print(f"\n{json_file.name}:")
-            for change in changes:
-                print(change)
+
+def build_follow_up_commands_from_provenance(provenance_payload: dict) -> list[str]:
+    """Return the ordered post-refresh follow-up commands from provenance state."""
+    return refresh_pipeline.build_follow_up_commands_from_provenance(provenance_payload)
 
 
 def persist_refresh_provenance(
@@ -534,19 +394,15 @@ def persist_refresh_provenance(
     backup_dir: Path | None,
 ) -> Path:
     """Build and write the refresh provenance payload."""
-    provenance_payload = build_refresh_provenance(
-        refresh_date=snapshot_date,
-        requested_core_version=args.core_version,
-        requested_frontend_version=args.frontend_version,
-        resolved_core_commit=core_commit,
-        resolved_frontend_commit=frontend_commit,
-        backup_dir=backup_dir,
-        runtime_object_info_requested=bool(args.runtime_object_info_url),
-        runtime_object_info_merged=bool(
-            args.runtime_object_info_url and not args.skip_runtime_merge
-        ),
+    return refresh_pipeline.persist_refresh_provenance(
+        args,
+        snapshot_date,
+        core_commit,
+        frontend_commit,
+        backup_dir,
+        build_refresh_provenance=build_refresh_provenance,
+        write_refresh_provenance=write_refresh_provenance,
     )
-    return write_refresh_provenance(provenance_payload)
 
 
 def main():
@@ -669,8 +525,12 @@ def main():
         else:
             print("Runtime object_info merged into node_api_schema")
     print(f"Refresh provenance written to: {_repo_relative_path(provenance_path)}")
-    if backup_dir is not None:
-        print(f"Delta summary command: {build_delta_summary_command(backup_dir)}")
+    provenance_payload = json.loads(provenance_path.read_text(encoding="utf-8"))
+    follow_up_commands = build_follow_up_commands_from_provenance(provenance_payload)
+    if follow_up_commands:
+        print("Recommended follow-up commands:")
+        for command in follow_up_commands:
+            print(f"  {command}")
     print("\nReview the changes and commit manually if everything looks correct.")
     return 0
 

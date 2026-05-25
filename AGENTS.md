@@ -1,291 +1,132 @@
 # AGENTS.md
 
-## 0. Quickstart
+## Mission
 
-Always Use Supported Python: `3.11+`
+Source-backed, repo-local reference documentation for ComfyUI development.
 
-Local Python selector:
+This repo publishes:
 
-- The repo now includes a root `.python-version` file containing `3.11` for toolchains that auto-select an interpreter.
-- Treat `.python-version` as a convenience, not a replacement for the Windows launcher rule below.
+- retained human docs under `src/content/docs/`
+- canonical extracted JSON under `references/raw/`
+- published current/versioned artifacts under `public/artifacts/`
+- one merged support index: `public/artifacts/docs-index.json`
 
-Windows interpreter rule:
+Use `AGENTS.md` for startup-critical repo guidance. Use `CONTRIBUTING.md` for the
+deep maintainer playbooks.
 
-- Do not assume `python` points to 3.11.
-- Before running repo commands on Windows, verify `python --version` is `3.11.x`.
-- If the default `python` is not 3.11, use `py -3.11` for every repo command instead of `python`.
-- Prefer these Windows-safe forms when there is any doubt:
+## Hard Rules
+
+- Use Python `3.11+`
+- On Windows, if `python --version` is not `3.11.x`, use `py -3.11` for repo Python commands
+- Use Node.js `24+` for site/framework work
+- Do not claim official behavior without a source citation from `references/snapshots/` or `docs.comfy.org`
+- Do not add emojis or emoticons
+- Normalize JSON paths to forward slashes
+- Extractors write JSON; generators write derived artifacts; do not hand-edit generated outputs
+- Run current verification before claiming completion
+- New verifiers, generators, support artifacts, or published docs sections require an explicit maintenance case and lifecycle decision in `CONTRIBUTING.md`
+
+## Windows Quickstart
 
 ```bash
 py -3.11 -m pip install -r requirements.lock
+py -3.11 -m pip install -e .
 npm ci
 py -3.11 -m unittest discover -s tests -v
 npm run build
 ```
 
+Default maintainer gate:
+
+```bash
+py -3.11 scripts/verify/run_all.py
 ```
-python -m pip install -r requirements.lock
-npm ci
-python -m unittest discover -s tests -v
+
+## Repo Map
+
+- `src/content/docs/` — retained published docs surface
+- `references/raw/` — canonical extracted JSON artifacts
+- `references/docs-index-metadata.json` — curated nested tooling metadata merged into `docs-index.json`
+- `references/snapshots/` — pinned upstream source snapshots
+- `public/artifacts/` — published current/versioned artifacts, schemas, docs index, delta summary, refresh provenance
+- `scripts/common/` — shared helpers
+- `scripts/extract/` — extractors
+- `scripts/generate/` — generators and artifact publication scripts
+- `scripts/verify/` — blocking, supplemental, and advisory verifiers
+- `tests/unit/` — unit tests for scripts
+- `.github/workflows/` — CI, advisory replay, deployment, upstream watch, and optional runtime workflows
+
+## Routing Cues
+
+Use this quick router before exploring the repo:
+
+| Task | Read first | Verify |
+|---|---|---|
+| Edit published docs prose | target page + `src/content/docs/reference/source-evidence-policy.md` + `src/content/docs/reference/writing-style-guide.md` | `py -3.11 scripts/verify/cross_references.py` + `npm run build` |
+| Update docs-index routing metadata | `references/docs-index-metadata.json` + `src/content/docs/reference/machine-readable-artifacts.md` | `py -3.11 scripts/generate/generate_docs_index.py` + `py -3.11 scripts/verify/docs_index_freshness.py` + `py -3.11 scripts/verify/validate_schema.py` |
+| Update extracted references | matching file in `references/raw/` + extractor in `scripts/extract/` | `py -3.11 scripts/verify/validate_schema.py` + relevant narrow checks |
+| Change maintainer Python tooling | `pyproject.toml` + affected `scripts/` modules | `py -3.11 -m pip install -e .` + `py -3.11 -m mypy` + `py -3.11 -m unittest discover -s tests -v` + `py -3.11 scripts/verify/run_all.py` |
+| Add or change a verifier | existing verifier + matching unit test | `py -3.11 -m unittest discover -s tests -v` and place it in blocking/advisory CI intentionally |
+| Change CI workflow | relevant `.github/workflows/*.yml` + `CONTRIBUTING.md` workflow guidance | `py -3.11 -m unittest discover -s tests -v -p "test_run_all.py"` + `py -3.11 scripts/verify/run_all.py` |
+| Refresh upstream baselines | `scripts/refresh_snapshots.py` + `CONTRIBUTING.md` refresh section | follow the printed post-refresh command sequence, then `py -3.11 scripts/verify/run_all.py` |
+
+## Key Commands
+
+```bash
+py -3.11 scripts/verify/run_all.py
+py -3.11 -m unittest discover -s tests -v
+py -3.11 scripts/verify/python_style.py
+py -3.11 scripts/verify/cross_references.py
+py -3.11 scripts/verify/docs_index_freshness.py
+py -3.11 scripts/verify/validate_schema.py
+py -3.11 scripts/verify/verify_artifact_integrity.py
+py -3.11 scripts/verify/sidebar_navigation_coverage.py
+py -3.11 scripts/verify/rendered_links.py
+py -3.11 scripts/verify/evidence_metadata_freshness.py
+py -3.11 -m mypy
+npm run check
 npm run build
 ```
 
-Serve locally: `npm run dev`
+Supplemental/advisory surfaces remain outside `run_all.py` unless promoted
+intentionally.
 
-Always Use Supported Node.js for site/framework work: `24+`
+## Current Blocking vs Advisory Shape
 
-Maintainer dependency contract:
+- Blocking wrapper / CI path:
+  - unit tests
+  - node tests
+  - `python_style.py`
+  - `cross_references.py`
+  - `docs_index_freshness.py`
+  - `validate_schema.py`
+  - `verify_artifact_integrity.py`
+  - `markdown_top_level_spacing.py`
+  - `sidebar_navigation_coverage.py`
+  - `npm run check`
+  - `npm run build`
+  - `rendered_links.py`
+- Advisory examples:
+  - `stale_content.py`
+  - `extraction_idempotency.py`
+  - `upstream_pins.py`
+  - `example_surface_integrity.py`
+  - `evidence_metadata_freshness.py`
+  - `python -m mypy`
 
-- The repo's maintainer tooling metadata now lives in `pyproject.toml`.
-- Install from `requirements.lock`
-- Edit direct dependencies in `requirements.in`
-- Do not hand-edit `requirements.lock`; regenerate it after dependency changes
-- `requirements.txt` is a compatibility shim to `requirements.lock`
+## Common Pitfalls
 
-Lockfile regeneration (Python 3.11+ environment, `pip-tools` installed):
+- `docs-index.json` is the only active support index; do not recreate `tooling-index.json`
+- `public/artifacts/docs-index.json` is generated; regenerate it after navigation or metadata changes
+- `references/docs-index-metadata.json` must only target retained published pages
+- `refresh-provenance.json` is published operator evidence, not a manifest-discovered canonical artifact
+- after `scripts/refresh_snapshots.py`, use the printed `Recommended follow-up commands:` block instead of reconstructing the republish/delta-summary/verification order by hand
+- `npm run build` may print the benign Starlight `Entry docs → 404 was not found.` warning
 
-```bash
-python -m pip install pip-tools
-python -m piptools compile --strip-extras requirements.in --output-file requirements.lock
-```
+## Completion Standard
 
-On Windows when `python` is not 3.11, run the same commands with `py -3.11 -m ...`.
+Do not say the work is complete unless you can state:
 
-Advisory typing check:
-
-```bash
-python -m mypy
-```
-
-The current mypy scope is intentionally narrow and configured in `pyproject.toml`
-for `scripts/common/` plus the split schema-validator modules.
-
-Default maintainer pre-push wrapper:
-
-```bash
-python scripts/verify/run_all.py
-```
-
-On Windows when `python` is not 3.11, use: `py -3.11 scripts/verify/run_all.py`
-
-## 0.5. Decision Tree
-
-| Task | Read first | Edit | Verify |
-|------|-----------|------|--------|
-| Add/fix docs content | `src/content/docs/<topic>/` page + `src/content/docs/reference/source-evidence-policy.md` + `src/content/docs/reference/writing-style-guide.md` | The page + adjacent linked pages + `references/raw/` if citing data; copy from `templates/docs/` or use `scripts/new_doc.py` for new pages | `python scripts/verify/cross_references.py` + `npm run build` |
-| Update extracted references | `references/raw/<file>.json` | Run the matching extractor script | `python scripts/verify/extraction_idempotency.py` |
-| Update community catalog | `references/community/ecosystem_packages.json` + `src/content/docs/reference/community-maintenance-policy.md` | Edit JSON source; regenerate page | `python scripts/verify/validate_schema.py` + `python scripts/verify/community_metadata.py` + `python scripts/verify/community_staleness.py` + `python scripts/generate/generate_community_pages.py` + `python scripts/verify/community_generated_freshness.py` + `python scripts/verify/community_page_coverage.py` + `python scripts/verify/cross_references.py` + `npm run build` |
-| Update Python tooling dependencies or packaging config | `pyproject.toml` + `requirements.in` + affected `scripts/` modules | Edit `pyproject.toml` / `requirements.in`; regenerate `requirements.lock` | `python -m pip install -e .` + `python -m mypy` + `python -m unittest discover -s tests -v` + `python scripts/verify/run_all.py` |
-| Add a new extractor | Existing extractor in `scripts/extract/` | New script + test in `tests/unit/` | `python -m unittest discover -s tests` |
-| Add a verification script | Existing script in `scripts/verify/` | New script + test in `tests/unit/` + intentional `run_all.py` / CI placement | `python -m unittest discover -s tests` |
-| Check pinned upstream releases without refreshing snapshots | `scripts/check_upstream_versions.py` + `.github/workflows/upstream-watch.yml` | Usually no edit; run the watcher script or update it intentionally | `python scripts/check_upstream_versions.py` |
-| Refresh upstream version | `scripts/refresh_snapshots.py` | Run refresh with `--core-version` / `--frontend-version`, note the auto-created repo-local refresh backup directory under `references/_refresh_backups/` and `public/artifacts/refresh-provenance.json`, then republish artifacts and regenerate delta summary | `python scripts/generate/publish_reference_artifacts.py` + `python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output public/artifacts/delta-summary.json` + `python scripts/verify/run_all.py` |
-| Runtime extraction | `scripts/extract/parse_from_api.py` | Run with `--url` and `--output` | `validate_schema.py` passes on output |
-| Change CI workflow | relevant file in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs when operator behavior changes | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then check Ubuntu/Windows Actions runs and any advisory replay workflow after push |
-
-## 0.6. Consumer Agent Orientation
-
-If you are helping a user **build with ComfyUI** (not contribute to this repo), start at `src/content/docs/index.md` and follow the role table to prevent getting lost or introducing context bloat:
-
-| Goal | File |
-|------|------|
-| Custom nodes | `src/content/docs/start-here/author.md` |
-| Extend frontend/server | `src/content/docs/start-here/extension-developer.md` |
-| Service integration | `src/content/docs/start-here/service-integration.md` |
-| Tools/agents | `src/content/docs/start-here/tooling-builder.md` |
-
-Read only the pages listed in that file's reading order. Stop when the question is answered. Do not explore `scripts/`, `references/`, `tests/`, `.github/workflows/`, `src/content/docs/reference/`, or `CONTRIBUTING.md`.
-
-## 1. Mission
-
-Source-backed, repo-local reference documentation for ComfyUI development.
-Covers server API endpoints, JS/server hooks, custom node patterns, and
-extension architecture. Content is extracted from pinned upstream source
-snapshots, not written from memory.
-
-The repo also publishes machine-readable JSON artifacts, a manifest for
-tooling authors and integrators, and a bounded docs-index support artifact.
-These files are packaged into the built site from `public/artifacts/`.
-
-Consumer-facing docs describe the published artifact surface, while repo-local
-maintainer workflows intentionally remain in `AGENTS.md` and `CONTRIBUTING.md`.
-
-Use `AGENTS.md` as the startup-critical quick-reference for session setup,
-constraints, repo map, and key commands. Use `CONTRIBUTING.md` as the
-authoritative home for deeper maintainer playbooks and longer operating
-procedures. Use `CHANGELOG.md` when you need the canonical chronological repo
-history of major docs, artifact, verification, and site-platform milestones
-before making or packaging changes. Use `src/content/docs/whats-new/index.md`
-only as a short curated reader-facing highlights page, not as a second
-changelog.
-
-Non-goals: official docs replacement, community wiki, package registry.
-
-## 2. Hard Rules
-
-- Do not claim official behavior without a source citation from `references/snapshots/` or `docs.comfy.org`
-- Do not add emojis or emoticons to any file
-- All paths in JSON metadata must use forward slashes (never backslashes)
-- Extractors write JSON; generators write markdown; never hand-edit generated markdown
-- For prose doc edits, follow `src/content/docs/reference/source-evidence-policy.md`, `src/content/docs/reference/writing-style-guide.md`, and `src/content/docs/reference/doc-quality-checklist.md`
-- Run verification before claiming completion
-
-## 3. Repo Map
-
-- `src/content/docs/` -- Canonical published documentation pages
-- `public/artifacts/` -- Published JSON artifacts, manifest, docs index support artifact, delta summary, refresh provenance, and checked-in schemas
-- `references/raw/` -- JSON reference data extracted from pinned upstream snapshots
-  - `server_endpoints.json` -- API routes from `parse_server.py`
-  - `js_hooks.json` -- Frontend hooks from `parse_hooks.py`
-  - `node_api_schema.json` -- Node API schema from `parse_node_api_schema.py`
-- `references/community/` -- JSON metadata for community-facing content (editable)
-  - `ecosystem_packages.json` -- Package catalog that drives `src/content/docs/ecosystem/map.md`
-  - `community_pages.json` -- Review metadata for community pages
-- `references/snapshots/` -- Pinned upstream source files organized by date
-- `scripts/common/` -- Shared utility modules used by multiple scripts (for example path normalization and HTTP helpers)
-- `scripts/extract/` -- Extractors that parse source into JSON
-- `scripts/generate/` -- Generators that render markdown from JSON or package artifacts
-  - `md_from_json.py` -- Renders reference docs from `references/raw/`
-  - `generate_community_pages.py` -- Renders `src/content/docs/ecosystem/map.md` from community metadata
-  - `generate_docs_index.py` -- Produces `public/artifacts/docs-index.json` from the published docs surface
-  - `publish_reference_artifacts.py` -- Copies canonical JSON artifacts to `public/artifacts/` and writes `manifest.json`
-  - `generate_snapshot_delta_summary.py` -- Produces deterministic baseline-to-baseline comparison under `public/artifacts/delta-summary.json`
-- `scripts/verify/` -- Verification scripts
-  - Core blocking checks: `python_style.py`, `cross_references.py` (bounded `references/...` path verification plus raw JSON source-path checks), `docs_index_freshness.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `markdown_top_level_spacing.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `sidebar_navigation_coverage.py`, `rendered_links.py`
-  - Supplemental checks: `pipeline_smoke.py`, `shell_examples_syntax.py`, `example_surface_integrity.py`
-  - Non-blocking: `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`
-  - Community: `community_metadata.py`, `community_staleness.py`
-- `scripts/refresh_snapshots.py` -- Fetch new upstream versions and re-run pipeline
-- `tests/unit/` -- Unit tests for all scripts
-- `examples/` -- Hand-authored pattern examples, API calls, and workflows
-- `.github/workflows/` -- CI (`ci.yml`), advisory replay (`advisory-checks.yml`),
-  weekly pin check (`weekly-pin-check.yml`), upstream version watch (`upstream-watch.yml`, scheduled every Monday at 10:00 UTC with manual dispatch also available), and docs deployment (`deploy-pages.yml`)
-  - includes opt-in runtime workflows such as `runtime-smoke.yml` and `headless-runtime-metadata.yml`
-
-## 4. Key Commands
-
-```bash
-# One-command wrapper for the blocking local gate mirrored by CI
-python scripts/verify/run_all.py
-
-# Tests
-python -m unittest discover -s tests -v
-
-# Build docs
-npm run build
-
-# Verification scripts (all should exit 0 on clean repo)
-python scripts/verify/python_style.py
-python -m mypy
-python scripts/verify/cross_references.py
-python scripts/verify/docs_index_freshness.py
-python scripts/verify/community_generated_freshness.py
-python scripts/verify/community_page_coverage.py
-python scripts/verify/stale_content.py
-python scripts/verify/extraction_idempotency.py
-python scripts/verify/upstream_pins.py
-python scripts/verify/validate_schema.py
-python scripts/verify/verify_artifact_integrity.py
-python scripts/verify/markdown_top_level_spacing.py
-python scripts/verify/rendered_links.py
-python scripts/verify/sidebar_navigation_coverage.py
-python scripts/verify/pipeline_smoke.py
-python scripts/verify/shell_examples_syntax.py
-python scripts/verify/example_surface_integrity.py
-
-# Community verifiers (non-blocking in CI)
-python scripts/verify/community_metadata.py
-python scripts/verify/community_staleness.py
-
-# Extractors (run against snapshot files)
-python scripts/extract/parse_server.py <path> --version <v> --commit <sha>
-python scripts/extract/parse_hooks.py <paths...> --version <v> --commit <sha>
-python scripts/extract/parse_node_api_schema.py <server> <io> <types> --version <v> --commit <sha>
-
-# Runtime extractor (opt-in; requires live ComfyUI instance)
-python scripts/extract/parse_from_api.py --url <url> --version <v> --commit <sha> --output references/raw/object_info_runtime.json
-
-# Generators
-python scripts/generate/md_from_json.py
-python scripts/generate/generate_community_pages.py
-python scripts/generate/generate_docs_index.py
-python scripts/generate/publish_reference_artifacts.py
-python scripts/generate/generate_snapshot_delta_summary.py --old <dir> --new <dir> --output public/artifacts/delta-summary.json
-
-# Refresh upstream (clone, extract, generate)
-python scripts/refresh_snapshots.py --core-version v0.22.0
-
-# Upstream watch helper (powers .github/workflows/upstream-watch.yml)
-python scripts/check_upstream_versions.py
-
-# Runtime smoke checks (opt-in; requires live ComfyUI instance)
-python scripts/verify/runtime_smoke.py --url <url>
-
-# Runtime readiness helper (useful for CI-hosted local instances)
-python scripts/verify/wait_for_runtime.py --url <endpoint>
-```
-
-Use narrow checks while iterating. Use `python scripts/verify/run_all.py`
-before calling maintainer workflow changes complete. That wrapper mirrors the
-blocking CI path that now runs on both Ubuntu and Windows; advisory checks stay
-separate and escalate through the dedicated advisory replay workflow.
-
-For `python scripts/verify/shell_examples_syntax.py`, resolve `bash` from the
-CLI flag `--bash-executable`, then `COMFYUI_KB_BASH`, then `PATH`. Do not rely
-on hardcoded Windows install paths.
-
-## 4.5. Local Node.js Baseline
-
-- Use Node.js `24+` when touching site-framework or frontend-build surfaces.
-- The repo enforces this with the root `.nvmrc` file (content: `24`).
-- CI selects the version via `actions/setup-node@v4` with `node-version-file: ".nvmrc"`.
-
-## 5. Task Playbooks
-
-Use this section as a routing aid, not a second full maintainer handbook.
-`CONTRIBUTING.md` owns the deeper step-by-step playbooks and longer operating
-procedures.
-
-- **Editing prose documentation:** read the target page plus the editorial
-  policy stack, then run `python scripts/verify/cross_references.py` and
-  `npm run build`.
-- **Updating `CHANGELOG.md` vs `src/content/docs/whats-new/index.md`:** update
-  `CHANGELOG.md` for chronological repo history; update `whats-new` only when a
-  change materially alters reader navigation, published artifacts, verification
-  expectations readers/maintainers should notice quickly, or major workflow
-  entry paths. Do not mirror changelog entries into `whats-new`.
-- **Updating extracted references:** use the matching extractor/generator flow
-  from `CONTRIBUTING.md`, then verify with the required schema and cross-link
-  checks.
-- **Refreshing upstream baselines:** use `scripts/refresh_snapshots.py`, note
-  the printed backup path and `public/artifacts/refresh-provenance.json`, confirm
-  that the file's `backup_location`, `published`, and `next_steps` fields tell the
-  truth about the attempted path, then use the republish and verification
-  sequence in `CONTRIBUTING.md`. Provenance-structure hardening is not a
-  substitute for a future real refresh rehearsal.
-- **Updating community metadata:** edit the JSON source, regenerate downstream
-  output, and use the community verification pipeline from `CONTRIBUTING.md`.
-- **Adding extractors or verifiers:** keep them test-backed, wire them into
-  `run_all.py` or CI intentionally, and use `CONTRIBUTING.md` for exact
-  placement rules.
-
-## 6. Common Pitfalls
-
-- **Windows backslashes in JSON**: Extractors run on Windows produce `\` in paths. Always use `.replace("\\", "/")` when writing `str(path)` to JSON metadata.
-- **Cross-platform artifact hashes**: The three published artifact checksums are for textual JSON files and must be stable across Windows and Linux checkouts. Hash them after normalizing `CRLF` to `LF`; do not use this normalization rule for future binary artifacts.
-- **Idempotency drift**: Extractors write timestamps (`extracted_date`). The idempotency checker reports byte-level differences as expected; structural differences are the real concern.
-- **Structured returns and traceability are partially inferred**: `server_endpoints.json` now uses structured `returns` objects instead of `"TODO"`. The `kind` field is reliable; `fields`, `summary`, and `traceability` details are best-effort from static analysis.
-- **CI non-blocking steps**: `stale_content`, `extraction_idempotency`, `upstream_pins`, `community_metadata`, `community_staleness`, and `example_surface_integrity` use `continue-on-error: true` in normal push/PR CI. `python_style`, `cross_references`, `docs_index_freshness`, `validate_schema`, `verify_artifact_integrity`, `markdown_top_level_spacing`, `community_generated_freshness`, `community_page_coverage`, `sidebar_navigation_coverage`, and `rendered_links` block the pipeline, and the advisory scripts also replay in `advisory-checks.yml` as a scheduled/manual blocking escalation path. Keep `example_surface_integrity` advisory until maintainers judge the example surface stable enough that false positives are uncommon.
-- **Advisory typing scope is intentionally narrow**: `python -m mypy` is configured in `pyproject.toml` for `scripts/common/` plus the split schema-validator modules and currently stays advisory in CI.
-- **Site-render-sensitive markdown spacing**: leading spaces before top-level markdown headings or metadata labels in hand-authored docs can render raw markdown in the browser output. `scripts/verify/markdown_top_level_spacing.py` blocks that drift.
-- **Supplemental CI checks are intentionally outside `run_all.py`**: `pipeline_smoke.py` reruns the blocking wrapper end-to-end without recursive unit tests, and `shell_examples_syntax.py` depends on a `bash` executable for `examples/**/*.sh` validation resolved from `--bash-executable`, `COMFYUI_KB_BASH`, or `PATH`.
-- **Astro/Starlight 404 build warning is currently benign**: `npm run build` may print `Entry docs → 404 was not found.` while generating `/404.html`. That message comes from Starlight checking for an optional custom `src/content/docs/404.md` entry before falling back to its built-in 404 page. Treat it as expected noise unless the build fails or `dist/404.html` is missing.
-- **Generated community pages must not be hand-edited**: `src/content/docs/ecosystem/map.md` is generated from `references/community/ecosystem_packages.json`. Edit the JSON and rerun the generator.
-- **Examples are not all source-backed**: Treat files under `examples/` as pattern examples unless the page explicitly states they were generated or extracted from pinned upstream sources.
-
-## 7. Completion Standard
-
-Do not say work is complete unless you can state:
 - what changed
 - which files changed
 - which commands were run

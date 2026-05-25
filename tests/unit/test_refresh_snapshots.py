@@ -1,10 +1,13 @@
 """Tests for scripts/refresh_snapshots.py."""
 
 import importlib.util
+import json
 import sys
 import unittest
 from pathlib import Path
 from unittest import mock
+
+from scripts.common import refresh_git_ops
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "refresh_snapshots.py"
@@ -92,9 +95,9 @@ class RefreshSnapshotsArgumentTests(unittest.TestCase):
                 ],
             ),
             mock.patch.object(
-                module.subprocess,
-                "run",
-                return_value=mock.Mock(returncode=0, stdout="git version 2.0.0\n", stderr=""),
+                module,
+                "verify_git_available",
+                return_value=True,
             ),
             mock.patch.object(
                 module,
@@ -191,6 +194,7 @@ class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
         self.assertTrue(callable(module.build_refresh_provenance))
         self.assertTrue(callable(module.write_refresh_provenance))
         self.assertTrue(callable(module.compute_diff_summary))
+        self.assertTrue(callable(module.build_follow_up_commands_from_provenance))
 
     def test_build_delta_summary_command_uses_repo_preferred_python_command(self):
         """Follow-up commands should use the repo's maintainer-friendly Python invocation."""
@@ -252,9 +256,9 @@ class RefreshSnapshotsOrchestrationTests(unittest.TestCase):
         """Git preflight should fail cleanly when git is unavailable."""
         module = _load_module()
         with mock.patch.object(
-            module.subprocess,
-            "run",
-            return_value=mock.Mock(returncode=1, stdout="", stderr="missing"),
+            module.refresh_git_ops,
+            "verify_git_available",
+            side_effect=RuntimeError("FAILED: checking git availability"),
         ):
             self.assertFalse(module.verify_git_available())
 
@@ -304,6 +308,15 @@ class RefreshSnapshotsOrchestrationTests(unittest.TestCase):
     def test_main_success_path_uses_orchestration_helpers(self):
         """main() should delegate to the orchestration helpers and still return 0 on success."""
         module = _load_module()
+        provenance_payload = {
+            "next_steps": {
+                "recommended_follow_up_commands": [
+                    "py -3.11 scripts/generate/publish_reference_artifacts.py",
+                    "py -3.11 scripts/verify/verify_artifact_integrity.py",
+                    "py -3.11 scripts/verify/run_all.py",
+                ]
+            }
+        }
         with (
             mock.patch.object(sys, "argv", [str(SCRIPT_PATH), "--core-version", "v0.20.1"]),
             mock.patch.object(module, "verify_git_available", return_value=True),
@@ -325,6 +338,11 @@ class RefreshSnapshotsOrchestrationTests(unittest.TestCase):
                 "persist_refresh_provenance",
                 return_value=module.PROVENANCE_OUTPUT_PATH,
             ) as provenance_mock,
+            mock.patch.object(
+                module.Path,
+                "read_text",
+                return_value=json.dumps(provenance_payload),
+            ),
         ):
             result = module.main()
 
@@ -339,6 +357,29 @@ class RefreshSnapshotsOrchestrationTests(unittest.TestCase):
 
 class RefreshSnapshotsBoundaryTests(unittest.TestCase):
     """Test clarified clone/copy and extractor helper boundaries."""
+
+    def test_refresh_git_ops_run_cmd_raises_on_failure(self):
+        """Shared git helper should raise instead of silently returning failures."""
+        with mock.patch.object(
+            refresh_git_ops.subprocess,
+            "run",
+            return_value=mock.Mock(returncode=1, stdout="bad", stderr="worse"),
+        ):
+            with self.assertRaises(RuntimeError) as exc:
+                refresh_git_ops._run_cmd(["git", "status"], "git status")
+
+        self.assertIn("FAILED: git status", str(exc.exception))
+
+    def test_refresh_git_ops_verify_git_available_returns_version_string(self):
+        """Shared git availability helper should return the resolved version string."""
+        with mock.patch.object(
+            refresh_git_ops,
+            "_run_cmd",
+            return_value=mock.Mock(stdout="git version 2.50.0\n"),
+        ):
+            version = refresh_git_ops.verify_git_available()
+
+        self.assertEqual(version, "git version 2.50.0")
 
     def test_refresh_core_delegates_to_generic_snapshot_helper(self):
         """refresh_core should bind the core constants to the shared snapshot helper."""
@@ -387,7 +428,7 @@ class RefreshSnapshotsBoundaryTests(unittest.TestCase):
         self.assertEqual(result, ("frontend-sha", "comfyui-frontend-v1.44.13"))
 
     def test_run_extractors_preserves_server_hooks_schema_sequence(self):
-        """run_extractors should keep the server, hooks, then schema extractor order."""
+        """refresh_pipeline.run_extractors should keep the server, hooks, then schema extractor order."""
         module = _load_module()
         events = []
 
@@ -400,28 +441,33 @@ class RefreshSnapshotsBoundaryTests(unittest.TestCase):
 
         with (
             mock.patch.object(
-                module,
+                module.refresh_pipeline,
                 "_run_server_extractor",
                 side_effect=_record("server", "server summary"),
             ),
             mock.patch.object(
-                module,
+                module.refresh_pipeline,
                 "_run_hooks_extractor",
                 side_effect=_record("hooks", "hooks summary"),
             ),
             mock.patch.object(
-                module,
+                module.refresh_pipeline,
                 "_run_node_api_schema_extractor",
                 side_effect=_record("schema", "schema summary"),
             ),
         ):
-            results = module.run_extractors(
+            results = module.refresh_pipeline.run_extractors(
                 core_version="v0.20.1",
                 core_commit="core-sha",
                 frontend_version="v1.44.13",
                 frontend_commit="frontend-sha",
                 snapshot_date="2026-05-14",
                 runtime_object_info_path="references/raw/object_info_runtime.json",
+                snapshots_dir=module.SNAPSHOTS_DIR,
+                python_executable=module.sys.executable,
+                scripts_extract_dir=module.SCRIPTS_EXTRACT_DIR,
+                repo_root=module.REPO_ROOT,
+                run_cmd=module._run_cmd,
             )
 
         self.assertEqual(events, ["server", "hooks", "schema"])
@@ -433,6 +479,87 @@ class RefreshSnapshotsBoundaryTests(unittest.TestCase):
                 "node_api_schema": "schema summary",
             },
         )
+
+    def test_run_extractors_wrapper_delegates_to_refresh_pipeline(self):
+        """run_extractors should remain a thin wrapper over refresh_pipeline."""
+        module = _load_module()
+        expected = {"server_endpoints": "summary"}
+        with mock.patch.object(
+            module.refresh_pipeline,
+            "run_extractors",
+            return_value=expected,
+        ) as pipeline_mock:
+            result = module.run_extractors(
+                core_version="v0.20.1",
+                core_commit="core-sha",
+                frontend_version=None,
+                frontend_commit=None,
+                snapshot_date="2026-05-14",
+                runtime_object_info_path=None,
+            )
+
+        pipeline_mock.assert_called_once()
+        self.assertEqual(result, expected)
+
+    def test_build_follow_up_commands_from_provenance_omits_missing_delta_step(self):
+        """Recommended command rendering should skip the delta step when no backup exists."""
+        module = _load_module()
+        commands = module.build_follow_up_commands_from_provenance(
+            {
+                "next_steps": {
+                    "publish_reference_artifacts_command": "publish",
+                    "verify_artifact_integrity_command": "verify",
+                    "delta_summary_command": None,
+                    "run_all_command": "run-all",
+                }
+            }
+        )
+
+        self.assertEqual(commands, ["publish", "verify", "run-all"])
+
+    def test_persist_refresh_provenance_adds_recommended_follow_up_sequence(self):
+        """Persisted provenance should include the ordered follow-up command sequence."""
+        module = _load_module()
+        args = mock.Mock(
+            core_version="v0.20.1",
+            frontend_version="v1.44.13",
+            runtime_object_info_url=None,
+            skip_runtime_merge=False,
+        )
+        payload = {
+            "next_steps": {
+                "publish_reference_artifacts_command": "publish",
+                "verify_artifact_integrity_command": "verify",
+                "delta_summary_command": "delta",
+                "run_all_command": "run-all",
+            }
+        }
+        with (
+            mock.patch.object(
+                module,
+                "build_refresh_provenance",
+                return_value=payload,
+            ),
+            mock.patch.object(
+                module,
+                "write_refresh_provenance",
+                return_value=module.PROVENANCE_OUTPUT_PATH,
+            ) as write_mock,
+        ):
+            written = module.persist_refresh_provenance(
+                args,
+                "2026-05-18",
+                "core-sha",
+                "frontend-sha",
+                module.REPO_ROOT / "references" / "_refresh_backups" / "raw_20260518T010203Z",
+            )
+
+        persisted_payload = write_mock.call_args.args[0]
+        self.assertEqual(
+            persisted_payload["next_steps"]["recommended_follow_up_commands"],
+            ["publish", "verify", "delta", "run-all"],
+        )
+        self.assertEqual(written, module.PROVENANCE_OUTPUT_PATH)
 
 
 if __name__ == "__main__":

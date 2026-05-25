@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.extract import server_blocks, server_helpers, server_parameters, server_returns
 from tests.unit.helpers.extractor_test_utils import call_main, load_module
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -30,6 +31,59 @@ def _extract_single_sample(sample: str) -> list[dict]:
 
 
 class ParseServerTests(unittest.TestCase):
+    def test_server_helpers_extract_main_body_skips_nested_definitions(self):
+        block = """
+@routes.post(\"/upload/mask\")
+async def upload_mask(request):
+    post = await request.post()
+
+    def nested_helper():
+        return web.Response(status=400)
+
+    return image_upload(post)
+"""
+
+        main_body = server_helpers._extract_main_body(block)
+        self.assertIn("post = await request.post()", main_body)
+        self.assertIn("return image_upload(post)", main_body)
+        self.assertNotIn("return web.Response(status=400)", main_body)
+
+    def test_server_blocks_finds_route_decorators(self):
+        lines = [
+            '@routes.get("/history")',
+            "def history():",
+            "    return None",
+            '@routes.post("/prompt")',
+        ]
+
+        matches = server_blocks._find_decorator_matches(lines)
+        self.assertEqual(len(matches), 2)
+        self.assertEqual(matches[0][1].groups(), ("get", "/history"))
+
+    def test_server_parameters_extract_mapping_parameter_defaults(self):
+        body = 'limit = request.rel_url.query.get("limit", 50)'
+        extracted, _variable_map = server_parameters._extract_mapping_parameters(
+            body,
+            ["request.rel_url.query"],
+            "query",
+            "query_access",
+        )
+
+        self.assertEqual(extracted[0]["name"], "limit")
+        self.assertEqual(extracted[0]["default"], 50)
+
+    def test_server_returns_extracts_augmented_dict_fields(self):
+        block = """
+resp = {"name": "file.png"}
+resp["asset"] = {"id": "123"}
+return web.json_response(resp)
+"""
+
+        fields = server_returns._extract_json_fields_from_arg(
+            block, "resp", block.index("web.json_response")
+        )
+        self.assertEqual({field["name"] for field in fields}, {"name", "asset"})
+
     def test_requires_argument(self):
         result = subprocess.run(
             [sys.executable, str(SCRIPT)],

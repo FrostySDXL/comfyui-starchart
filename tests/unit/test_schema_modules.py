@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 from scripts.verify import (
+    published_schema_validation,
     schema_common,
-    schema_community,
     schema_hooks,
     schema_node_api,
     schema_server,
@@ -60,18 +61,25 @@ class SchemaModuleImportTests(unittest.TestCase):
             schema_node_api.validate_object_info_runtime(data, "object_info_runtime.json"), []
         )
 
-    def test_schema_community_validate_pages_accepts_minimal_entry(self):
+    def test_published_schema_validation_accepts_minimal_docs_index_page(self):
         data = {
+            "artifact": "docs-index.json",
+            "artifact_schema_version": "1.1.0",
+            "scope": {"surface": "test", "excludes": []},
             "pages": [
                 {
-                    "page_path": "src/content/docs/example.md",
-                    "page_kind": "hand_authored_policy",
-                    "evidence_label": "Operational guidance",
-                    "source_type": "repo_local",
-                    "last_verified": "2026-05-20",
-                    "needs_review_after": "2026-06-20",
-                    "maintenance_tier": "maintainer",
+                    "title": "Prompt Submission",
+                    "path": "api/prompt-submission.md",
+                    "nav_section": "API Reference",
+                    "audience": None,
+                    "evidence": "Source-backed from pinned snapshots",
+                    "summary": "Prompt summary.",
                 }
-            ]
+            ],
         }
-        self.assertEqual(schema_community.validate_pages(data, "community_pages.json"), [])
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            data,
+            "docs-index.json",
+            Path("public/artifacts/schemas"),
+        )
+        self.assertEqual(errors, [])

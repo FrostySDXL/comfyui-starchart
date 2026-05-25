@@ -2,41 +2,10 @@
 
 **Last Updated:** 2026-05-24
 
-Thank you for contributing to ComfyUI StarChart. This guide is the
-canonical repo-local maintainer workflow authority for making maintainer-grade
-changes safely and getting them merged.
-
-Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before participating in
-public discussion or review, and use [SECURITY.md](SECURITY.md) for private
-vulnerability reporting.
-
-If you are new to documentation contributions or only need the lighter
-editorial path, start with the editorial policy stack:
-
-- [`src/content/docs/reference/source-evidence-policy.md`](src/content/docs/reference/source-evidence-policy.md)
-- [`src/content/docs/reference/writing-style-guide.md`](src/content/docs/reference/writing-style-guide.md)
-- [`src/content/docs/reference/doc-quality-checklist.md`](src/content/docs/reference/doc-quality-checklist.md)
-
-Move from that lighter path into `CONTRIBUTING.md` when your change crosses
-into maintainer-owned surfaces such as scripts, CI, extracted data, published
-artifacts, or repo-local operational guidance.
-
-For issue intake, use the bug-report template for repo bugs, the docs-request
-template for documentation gaps, the feature-request template for proposed repo
-enhancements, and the upstream-refresh template only for maintainer
-version-refresh tracking.
-
-`CONTRIBUTING.md` is the authoritative repo-local guide for maintainer-grade
-workflows. Use it as the durable owner for deeper operating playbooks,
-verification expectations, refresh procedures, and CI-adjacent guidance that
-should not be duplicated across the other top-level files or the published docs
-site.
-
-`CHANGELOG.md` is the canonical chronological history surface for notable repo
-changes. Keep reader-facing highlights selective in the retained docs surface
-instead of creating a second changelog page.
-
----
+This file is the canonical maintainer workflow guide for ComfyUI StarChart.
+Use `AGENTS.md` for startup-critical orientation. Use this file for deeper
+maintainer playbooks, policy, verification placement, refresh flow, and CI
+surface ownership.
 
 ## Quickstart
 
@@ -48,648 +17,375 @@ python -m unittest discover -s tests -v
 npm run build
 ```
 
-Serve locally: `npm run dev`
+Windows rule:
 
-### Dependency management
+- if `python --version` is not `3.11.x`, use `py -3.11` for repo Python commands
+- prefer `py -3.11 scripts/verify/run_all.py` as the default maintainer gate on Windows
 
-- The repo's Python tooling metadata and local maintainer package config live in `pyproject.toml`.
-- The repo includes a root `.python-version` file containing `3.11` for toolchains that honor it, but Windows maintainers should still prefer `py -3.11` whenever `python` is not 3.11.
-- The supported maintainer and CI install surface is `requirements.lock`.
-- Edit direct dependencies in `requirements.in`.
-- Do not hand-edit `requirements.lock`; regenerate it after direct dependency changes.
-- `requirements.txt` remains only as a compatibility shim to `requirements.lock`.
-
-Regenerate the lockfile from a Python 3.11+ environment with `pip-tools` installed:
-
-```bash
-python -m pip install pip-tools
-python -m piptools compile --strip-extras requirements.in --output-file requirements.lock
-```
-
-The one-command wrapper for local verification:
+Default maintainer gate:
 
 ```bash
 python scripts/verify/run_all.py
 ```
 
-Use `run_all.py` as the default maintainer-grade before-push check. It mirrors
-the CI job's blocking checks in the same order, and that blocking path now runs
-on both Ubuntu and Windows in GitHub Actions. Advisory CI checks remain
-separate and non-blocking in normal push/PR CI, so you only need to run them
-locally when your change touches that surface. The blocking path now runs the
-Ruff-based Python style gate immediately after unit tests, before the existing
-repo-content verifiers. It also includes docs-index freshness verification and
-artifact-integrity verification for the canonical published JSON artifacts. The
-blocking path rejects leading spaces before top-level markdown headings and
-metadata labels in hand-authored docs because those lines render incorrectly in
-the published site.
-
-The repo now also carries a narrow advisory mypy scope configured in
-`pyproject.toml` for `scripts/common/` plus the split schema-validator modules.
-Run it when you touch those surfaces or adjust Python packaging/CI behavior:
+Advisory typing check:
 
 ```bash
 python -m mypy
 ```
 
-Use targeted checks while iterating. Use supplemental commands only when the
-touched surface requires them.
+## What This Repository Is
 
-For focused Python gate iteration, run:
+This repo is a source-backed, version-pinned ComfyUI development reference.
+It publishes:
+
+- retained human docs under `src/content/docs/`
+- extracted JSON artifacts under `references/raw/`
+- published current/versioned artifacts under `public/artifacts/`
+- one merged support index: `public/artifacts/docs-index.json`
+
+Non-goals:
+
+- official docs replacement
+- community wiki
+- package registry
+- unbounded maintainer-handbook content inside the published docs tree
+
+## Repository Map
+
+| Path | Purpose | Hand-edit? |
+|---|---|---|
+| `src/content/docs/` | retained published docs surface | yes |
+| `references/raw/` | canonical extracted JSON from pinned upstream snapshots | no |
+| `references/docs-index-metadata.json` | curated tooling metadata merged into `docs-index.json` | yes |
+| `references/snapshots/` | pinned upstream source files | no |
+| `public/artifacts/current/` | published current canonical artifact copies | no |
+| `public/artifacts/versions/` | bounded versioned artifact history | no |
+| `public/artifacts/docs-index.json` | generated merged support index | no |
+| `public/artifacts/schemas/` | checked-in published schemas | yes |
+| `scripts/common/` | shared helper modules | yes |
+| `scripts/extract/` | extractors | yes |
+| `scripts/generate/` | generators and publication scripts | yes |
+| `scripts/verify/` | blocking, supplemental, and advisory verifiers | yes |
+| `tests/unit/` | unit tests for scripts | yes |
+| `.github/workflows/` | CI, advisory replay, deployment, refresh/watch automation | yes |
+
+## Final Retained Published Surface (30 pages)
+
+This is the active published docs contract under `src/content/docs/`:
+
+1. `src/content/docs/index.md`
+2. `src/content/docs/start-here/author.md`
+3. `src/content/docs/start-here/extension-developer.md`
+4. `src/content/docs/start-here/service-integration.md`
+5. `src/content/docs/start-here/tooling-builder.md`
+6. `src/content/docs/start-here/artifact-consumer.md`
+7. `src/content/docs/reference/machine-readable-artifacts.md`
+8. `src/content/docs/reference/object-info.md`
+9. `src/content/docs/reference/source-evidence-policy.md`
+10. `src/content/docs/reference/writing-style-guide.md`
+11. `src/content/docs/reference/doc-quality-checklist.md`
+12. `src/content/docs/reference/version-pin-status.md`
+13. `src/content/docs/reference/artifact-schema-version-migration.md`
+14. `src/content/docs/reference/topic-scope.md`
+15. `src/content/docs/architecture/overview.md`
+16. `src/content/docs/architecture/execution-pipeline.md`
+17. `src/content/docs/api/endpoints.md`
+18. `src/content/docs/api/websocket.md`
+19. `src/content/docs/api/prompt-submission.md`
+20. `src/content/docs/api/history-queue.md`
+21. `src/content/docs/hooks/javascript-hooks.md`
+22. `src/content/docs/hooks/server-hooks.md`
+23. `src/content/docs/hooks/extension-points.md`
+24. `src/content/docs/custom-nodes/development-guide.md`
+25. `src/content/docs/custom-nodes/node-structure.md`
+26. `src/content/docs/custom-nodes/datatypes.md`
+27. `src/content/docs/custom-nodes/registration.md`
+28. `src/content/docs/deep-dives/execution-model-inversion.md`
+29. `src/content/docs/deep-dives/workflow-json-schema.md`
+30. `src/content/docs/deep-dives/registry-packaging-and-compatibility.md`
+
+Do not add a new published page or section without meeting the new-surface
+admission policy below.
+
+## Decision Tree
+
+| Task | Read first | Verify |
+|---|---|---|
+| Edit published docs prose | target page + `source-evidence-policy.md` + `writing-style-guide.md` | `python scripts/verify/cross_references.py` + `npm run build` |
+| Update docs-index routing metadata | `references/docs-index-metadata.json` + `machine-readable-artifacts.md` | `python scripts/generate/generate_docs_index.py` + `python scripts/verify/docs_index_freshness.py` + `python scripts/verify/validate_schema.py` |
+| Update extracted references | matching file in `references/raw/` + matching extractor | `python scripts/verify/validate_schema.py` + relevant narrow checks |
+| Change maintainer Python tooling | `pyproject.toml` + affected `scripts/` modules | `python -m pip install -e .` + `python -m mypy` + `python -m unittest discover -s tests -v` + `python scripts/verify/run_all.py` |
+| Add or change a verifier | existing verifier + matching tests + policy sections below | `python -m unittest discover -s tests -v` |
+| Change CI workflow | target workflow + composite action + this file | `python -m unittest discover -s tests -v -p "test_run_all.py"` + `python scripts/verify/run_all.py` |
+| Refresh upstream baselines | `scripts/refresh_snapshots.py` + refresh sections below | republish + delta summary + `python scripts/verify/run_all.py` |
+
+## New Surface Admission Policy
+
+Before adding any new published docs section, support artifact, generator, or
+verifier, document and satisfy all of these:
+
+1. clear user/maintainer need that existing surfaces cannot already cover
+2. named owner for ongoing maintenance
+3. explicit verification path
+4. bounded contract and removal criteria
+5. reason the new surface is better than extending an existing one
+
+Stop rule:
+
+- do not add a new published docs section just because content exists
+- do not add a new support artifact when an existing artifact can absorb the data
+- do not add a verifier without an intended blocking/advisory lifecycle
+
+## Verifier Lifecycle Policy
+
+Every verifier must have an explicit lifecycle decision.
+
+Document for each verifier:
+
+- purpose
+- owner
+- target surface
+- false-positive tolerance
+- placement: blocking, supplemental, or advisory
+- promotion criteria
+- demotion criteria
+- removal criteria
+
+Default rollout:
+
+1. add the verifier with unit tests
+2. wire it into advisory replay first if the signal is new or still being tuned
+3. observe false positives and clarify docs/contracts
+4. promote to blocking only when the signal is stable and maintainers can act on failures routinely
+
+Current example:
+
+- `scripts/verify/evidence_metadata_freshness.py` is advisory-first and must stay out of `run_all.py` until the retained page set proves stable under the rule
+
+### Evidence metadata verifier contract
+
+Current advisory failure criteria for `scripts/verify/evidence_metadata_freshness.py`:
+
+- covered pages must include opening `**Evidence:**` and `**Last Updated:**` labels
+- retained API, hooks, custom-node, architecture, object-info, and machine-readable-artifact pages must include an opening `**Baseline verification status:**` line
+- retained deep-dive pages that currently make current-baseline claims must also include that opening baseline-status line
+- non-current baseline exceptions must use one of the approved phrasings from `src/content/docs/reference/source-evidence-policy.md`
+
+Do not expand this verifier's heuristic surface casually. Keep failures deterministic,
+documented, and directly actionable.
+
+## Generated vs Hand-Authored Boundaries
+
+- hand-authored: `src/content/docs/`, `examples/`, top-level maintainer docs, checked-in schemas
+- extracted: `references/raw/*.json` from `scripts/extract/`
+- generated support artifact: `public/artifacts/docs-index.json` from `scripts/generate/generate_docs_index.py`
+- published current/versioned canonical artifacts: `public/artifacts/current/` and `public/artifacts/versions/` from `scripts/generate/publish_reference_artifacts.py`
+- published refresh evidence: `public/artifacts/refresh-provenance.json` from `scripts/refresh_snapshots.py`
+
+Do not hand-edit generated or extracted outputs. Edit their sources and rerun the
+owning script.
+
+## Editing Published Docs
+
+1. Read the target page and nearby linked pages.
+2. Read:
+   - `src/content/docs/reference/source-evidence-policy.md`
+   - `src/content/docs/reference/writing-style-guide.md`
+   - `src/content/docs/reference/doc-quality-checklist.md`
+3. Keep claims tied to `references/snapshots/` or `docs.comfy.org`.
+4. Verify:
 
 ```bash
-python scripts/verify/python_style.py
+python scripts/verify/cross_references.py
+npm run build
 ```
 
-Two supplemental verification commands sit outside `run_all.py`:
+## Updating Docs-Index Metadata
+
+The repo now has one active support index only: `docs-index.json`.
+
+Metadata source of truth:
+
+- `references/docs-index-metadata.json`
+
+Rules:
+
+- target retained published pages only
+- keep `recommended_next_reads` inside the retained 30-page surface
+- keep `related_artifacts` limited to real published artifacts
+- preserve nested shape under `tooling_metadata` in generated output; do not flatten those fields into top-level page keys
+
+Regenerate and verify:
+
+```bash
+python scripts/generate/generate_docs_index.py
+python scripts/verify/docs_index_freshness.py
+python scripts/verify/validate_schema.py
+```
+
+## Updating Extracted References
+
+1. Update pinned snapshot inputs under `references/snapshots/<date>/`, or run the refresh flow.
+2. Run the matching extractor:
+
+```bash
+python scripts/extract/parse_server.py <path> --version <v> --commit <sha>
+python scripts/extract/parse_hooks.py <paths...> --version <v> --commit <sha>
+python scripts/extract/parse_node_api_schema.py <server> <io> <types> --version <v> --commit <sha>
+```
+
+3. Regenerate retained markdown if needed:
+
+```bash
+python scripts/generate/md_from_json.py
+```
+
+4. Verify:
+
+```bash
+python scripts/verify/validate_schema.py
+python scripts/verify/cross_references.py
+python scripts/verify/extraction_idempotency.py
+```
+
+## Adding or Changing a Verifier
+
+1. Add `scripts/verify/<name>.py`
+2. Add `tests/unit/test_<name>.py`
+3. Decide blocking vs advisory vs supplemental before wiring it anywhere
+4. Update this file's lifecycle section if the verifier is durable
+5. Verify:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Only place a verifier in `scripts/verify/run_all.py` and the blocking CI job in
+the same change.
+
+## Changing CI or Workflow Automation
+
+- Keep `.github/workflows/ci.yml` and `scripts/verify/run_all.py` aligned step-for-step for the blocking path
+- Prefer the shared composite setup action where it reduces real duplication
+- Keep workflow-specific logic out of the composite action
+
+Verify:
+
+```bash
+python -m unittest discover -s tests -v -p "test_run_all.py"
+python scripts/verify/run_all.py
+```
+
+## Refreshing Upstream Baselines
+
+Use `scripts/refresh_snapshots.py` when proving or updating the pinned baseline.
+
+Expected flow:
+
+1. run refresh with the requested core/frontend versions
+2. note the backup path under `references/_refresh_backups/`
+3. confirm `public/artifacts/refresh-provenance.json` truthfully records:
+   - requested versions
+   - resolved commits
+   - backup location
+   - runtime-object-info intent
+   - next follow-up commands
+   - the ordered `next_steps.recommended_follow_up_commands` list derived from the recorded provenance state
+   - `published.canonical_artifacts_updated_by_refresh: false` and `published.delta_summary_updated_by_refresh: false` until those post-refresh steps are actually performed
+4. follow the `Recommended follow-up commands:` block printed by `scripts/refresh_snapshots.py`
+5. republish canonical artifacts
+6. regenerate delta summary when comparing against the pre-refresh backup
+7. rerun blocking verification
+
+Commands:
+
+```bash
+python scripts/refresh_snapshots.py --core-version <version> --frontend-version <version>
+python scripts/generate/publish_reference_artifacts.py
+python scripts/verify/verify_artifact_integrity.py
+python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output public/artifacts/delta-summary.json
+python scripts/verify/run_all.py
+```
+
+Version-pin follow-up docs to review after a refresh:
+
+- `README.md`
+- `src/content/docs/index.md`
+- `src/content/docs/reference/version-pin-status.md`
+- any retained docs page that cites the prior snapshot directory or version
+
+## Verification Reference
+
+Run narrow checks while iterating, then use the wrapper before handoff.
+
+### Blocking path (`run_all.py` and main CI)
+
+```bash
+python -m unittest discover -s tests -v
+npm test
+python scripts/verify/python_style.py
+python scripts/verify/cross_references.py
+python scripts/verify/docs_index_freshness.py
+python scripts/verify/validate_schema.py
+python scripts/verify/verify_artifact_integrity.py
+python scripts/verify/markdown_top_level_spacing.py
+python scripts/verify/sidebar_navigation_coverage.py
+npm run check
+npm run build
+python scripts/verify/rendered_links.py
+```
+
+### Supplemental
 
 ```bash
 python scripts/verify/pipeline_smoke.py
 python scripts/verify/shell_examples_syntax.py
 ```
 
-Use `pipeline_smoke.py` when you want one subprocess-level end-to-end pass
-through `run_all.py` without recursively rerunning unit tests. Use
-`shell_examples_syntax.py` when your change touches shell examples under
-`examples/`; it validates them with `bash -n`. The script resolves `bash` from
-`--bash-executable`, then `COMFYUI_KB_BASH`, then `PATH`.
-
-A third supplemental verifier targets example-surface integrity:
+### Advisory
 
 ```bash
+python scripts/verify/stale_content.py
+python scripts/verify/extraction_idempotency.py
+python scripts/verify/upstream_pins.py
 python scripts/verify/example_surface_integrity.py
+python scripts/verify/evidence_metadata_freshness.py
+python -m mypy
 ```
-
-This is a purely static check: it confirms expected example families exist,
-that user-facing example directories contain `README.md`, that routed example
-paths referenced in consumer-facing docs resolve, that JSON files under
-`examples/` parse, and that bounded local README links are not broken. Run it
-when your change touches the example surface or its routing references. It is
-not part of `run_all.py`, but it now also runs in advisory CI so example-surface
-drift stays visible without widening the default blocking path.
-
-Keep this verifier advisory-only in normal push/PR CI while the example surface
-and its routing references are still evolving. The promotion path is: reduce
-false positives, prove the signal stays stable across routine example/docs
-changes, then intentionally move it into `run_all.py` and the blocking CI job in
-the same change.
-
----
-
-## What This Repository Is
-
-This is a source-backed, version-pinned reference documentation project for
-ComfyUI development. We extract facts from pinned upstream source snapshots,
-not from memory. The repo publishes both human-readable documentation and
-machine-readable JSON artifacts.
-
-**Goals:** stable API reference, custom node patterns, extension architecture
-guides, and tooling artifacts.
-
-**Non-goals:** official docs replacement, community wiki, package registry.
-
----
-
-## Repository Map
-
-| Path | What lives here | Can you edit it by hand? |
-|------|-----------------|--------------------------|
-| `src/content/docs/` | Canonical published docs pages for the retained 30-page surface | **Yes** -- this is the main human contribution surface |
-| `examples/` | Hand-authored pattern examples, API calls, workflows | **Yes** |
-| `references/raw/` | Extracted JSON from upstream snapshots (endpoints, hooks, schemas) | **No** -- edit upstream snapshots in `references/snapshots/`, then re-run extractors |
-| `references/community/` | Human-editable metadata for community pages and ecosystem packages | **Yes** -- edit JSON directly, then regenerate downstream artifacts |
-| `references/tooling-index-metadata.json` | Human-editable enrichment metadata for `public/artifacts/tooling-index.json` | **Yes** -- edit the JSON source, then rerun `scripts/generate/generate_tooling_index.py` |
-| `references/snapshots/` | Pinned upstream source files organized by date | **No** -- these are vendored upstream source. Update them with `scripts/refresh_snapshots.py`, not by hand. |
-| `scripts/common/` | Shared utility modules used by multiple scripts (for example path normalization and HTTP helpers) | **Yes** -- keep helpers narrow and script-focused |
-| `scripts/extract/` | Scripts that parse source into JSON | **Yes** -- if you are adding or fixing an extractor |
-| `scripts/generate/` | Scripts that render markdown from JSON | **Yes** -- if you are adding or fixing a generator |
-| `scripts/verify/` | Validation scripts (blocking and non-blocking) | **Yes** -- if you are adding or fixing a verifier |
-| `tests/unit/` | Unit tests for scripts | **Yes** -- every new script needs tests |
-| `public/artifacts/` | Published JSON artifacts, manifest, versioned copies, checked-in schema files, docs-index support artifact, delta summary, and refresh provenance | **Mixed** -- `public/artifacts/schemas/` is hand-authored; `refresh-provenance.json` is written by `scripts/refresh_snapshots.py`; `docs-index.json` is produced by `scripts/generate/generate_docs_index.py`; other canonical published artifact outputs are produced by `scripts/generate/publish_reference_artifacts.py` |
-| `src/content/docs/ecosystem/map.md` | Optional generated community ecosystem page if intentionally restored to the published surface later | **No** -- edit `references/community/ecosystem_packages.json`, then regenerate |
-| `.github/workflows/` | CI and deployment automation | **Yes** -- but test locally first |
-
-
-## Decision Tree: What Should I Do?
-
-| I want to... | Start by reading... | Edit these files... | Run these checks... |
-|--------------|---------------------|---------------------|---------------------|
-| Fix or add a docs page | The target page + `src/content/docs/reference/source-evidence-policy.md` + `src/content/docs/reference/writing-style-guide.md` | `src/content/docs/<topic>/<page>.md`; use `templates/docs/` or `scripts/new_doc.py` | `python scripts/verify/cross_references.py` + `npm run build` |
-| Add or modify shell examples | Existing shell example under `examples/` + adjacent example README | The `.sh` file + any paired README guidance | `python scripts/verify/shell_examples_syntax.py` |
-| Update community metadata | `references/community/ecosystem_packages.json` + `references/community/community_pages.json` + `src/content/docs/reference/topic-scope.md` | The JSON source file(s) | `validate_schema.py`, `community_metadata.py`, `community_staleness.py`, `community_page_coverage.py`; also run `generate_community_pages.py` and `community_generated_freshness.py` only if you intentionally restore a generated community page |
-| Update tooling routing metadata | `references/tooling-index-metadata.json` + `src/content/docs/reference/machine-readable-artifacts.md` | The JSON source file, then regenerate `public/artifacts/tooling-index.json` | `python scripts/generate/generate_tooling_index.py` + `python scripts/verify/tooling_index_freshness.py` + `python scripts/verify/cross_references.py` + `npm run build` |
-| Update Python packaging, locked dependencies, or maintainer tooling config | `pyproject.toml` + `requirements.in` + affected `scripts/` modules | `pyproject.toml`, `requirements.in`, regenerated `requirements.lock`, and any affected script/test files | `python -m pip install -e .` + `python -m mypy` + `python -m unittest discover -s tests -v` + `python scripts/verify/run_all.py` |
-| Update extracted references after a snapshot refresh | Matching extractor in `scripts/extract/` + snapshot files in `references/snapshots/<date>/` | Run the extractor script | `python scripts/verify/extraction_idempotency.py` + `validate_schema.py` |
-| Add a new extractor | An existing extractor in `scripts/extract/` + its test in `tests/unit/` | New script + new test | `python -m unittest discover -s tests -v` |
-| Add a verification script | An existing verifier in `scripts/verify/` + its test in `tests/unit/` | New script + new test + update `run_all.py` / `.github/workflows/ci.yml` intentionally | `python -m unittest discover -s tests -v` |
-| Update repo history | `CHANGELOG.md` | `CHANGELOG.md` | `python scripts/verify/cross_references.py` + `npm run build` |
-| Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Run refresh, note the auto-created repo-local refresh backup directory under `references/_refresh_backups/` plus `public/artifacts/refresh-provenance.json`, republish artifacts, then regenerate the delta summary when comparing baselines | `publish_reference_artifacts.py` + `generate_snapshot_delta_summary.py` + `run_all.py` |
-| Check for newer pinned upstream releases without refreshing snapshots | `scripts/check_upstream_versions.py` + `.github/workflows/upstream-watch.yml` | Usually no edit; update the script/workflow together if the watcher behavior changes | `python scripts/check_upstream_versions.py` |
-| Change CI behavior | Relevant workflow in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then inspect Ubuntu/Windows Actions runs and any advisory replay workflow after push |
-
-
-## Task Playbooks
-
-### Editing Prose Documentation
-
-1. **Read the target page** and the pages it links to or from.
-2. **Read the policy files** before changing evidence labels, tone, or structure:
-   - `src/content/docs/reference/source-evidence-policy.md`
-   - `src/content/docs/reference/writing-style-guide.md`
-   - `src/content/docs/reference/doc-quality-checklist.md`
-3. **Edit the page.** Keep claims tied to sources from `references/snapshots/` or
-   `docs.comfy.org`. Do not write from memory.
-4. **For new pages**, prefer `scripts/new_doc.py` so the title, date, template mode, and path checks start in the right shape. Use the matching mode (`scaffold`, `tutorial`, `reference`, `decision-guide`, or `community-pattern`) and keep the output in the matching docs area when possible:
-   ```bash
-    python scripts/new_doc.py --output src/content/docs/how-to/my-topic.md --mode tutorial --title "My Topic" --primary-source "docs.comfy.org/<page-or-section>"
-   ```
-   If you intentionally need an unusual folder for that mode, add `--allow-path-mismatch` rather than bypassing the guardrails by hand. Copy a template directly only when you need a one-off draft outside the script's normal workflow.
-5. **Verify locally:**
-   ```bash
-   python scripts/verify/cross_references.py
-   npm run build
-   ```
-6. **Review your diff** before committing. Ensure you did not accidentally edit
-   generated files.
-
-### Updating `CHANGELOG.md`
-
-`CHANGELOG.md` is the canonical chronological repo history.
-
-Update it when a change is notable in repo history, including CI,
-verification, docs architecture, artifact publication, maintainer workflow,
-or major retained-surface routing changes.
-
-When you touch either file, verify locally:
-
-```bash
-python scripts/verify/cross_references.py
-npm run build
-```
-
-### Updating Community Metadata
-
-There is currently no generated community catalog page on the retained
-published surface. The underlying community metadata still lives in
-`references/community/`.
-
-1. Edit `references/community/ecosystem_packages.json` for package entries.
-2. Edit `references/community/community_pages.json` for tracked community-page review metadata.
-3. Run the metadata verification pipeline:
-   ```bash
-    python scripts/verify/validate_schema.py
-    python scripts/verify/community_metadata.py
-    python scripts/verify/community_staleness.py
-    python scripts/verify/community_page_coverage.py
-    python scripts/verify/cross_references.py
-    npm run build
-    ```
-4. Only if you intentionally restore a generated community page such as
-   `src/content/docs/ecosystem/map.md`, also run:
-   ```bash
-   python scripts/generate/generate_community_pages.py
-   python scripts/verify/community_generated_freshness.py
-   ```
-   Each step validates a different layer: schema correctness, metadata rules,
-   staleness, tracked-page coverage, optional regeneration freshness,
-   cross-links, and final build.
-
-### Updating Extracted References
-
-1. Place or update upstream source files in `references/snapshots/<date>/`.
-   Alternatively, run:
-   ```bash
-   python scripts/refresh_snapshots.py --core-version <version>
-   ```
-2. Run the matching extractor with `--version` and `--commit` flags:
-   ```bash
-   python scripts/extract/parse_server.py <path> --version <v> --commit <sha>
-   python scripts/extract/parse_hooks.py <paths...> --version <v> --commit <sha>
-   python scripts/extract/parse_node_api_schema.py <server> <io> <types> --version <v> --commit <sha>
-   ```
-3. Optionally enrich with runtime data from a live ComfyUI instance:
-   ```bash
-   python scripts/extract/parse_from_api.py --url <url> --version <v> --commit <sha> --output references/raw/object_info_runtime.json
-   ```
-4. Regenerate markdown:
-   ```bash
-   python scripts/generate/md_from_json.py
-   ```
-5. Verify:
-   ```bash
-   python scripts/verify/cross_references.py
-   python scripts/verify/validate_schema.py
-   python scripts/verify/extraction_idempotency.py
-   ```
-
-### Checking Upstream Version Drift
-
-Use `scripts/check_upstream_versions.py` when you want a non-mutating comparison
-between the repo's pinned versions and the latest upstream tags.
-
-```bash
-python scripts/check_upstream_versions.py
-```
-
-This script is also the engine behind `.github/workflows/upstream-watch.yml`.
-If you change its output contract or invocation assumptions, update the workflow
-in the same change and re-run the relevant CI/workflow verification path.
-
-### Refreshing Upstream Baselines
-
-Use this when you are proving or updating the pinned baseline rather than rerunning a single extractor.
-
-1. Run the refresh pipeline and note the printed backup path:
-   ```bash
-   python scripts/refresh_snapshots.py --core-version <version> --frontend-version <version>
-   ```
-2. Confirm that the script wrote `public/artifacts/refresh-provenance.json`, and that the file truthfully reflects the attempted path:
-   - `backup_location` should contain the repo-local refresh backup directory path under `references/_refresh_backups/` when a prior canonical baseline existed, otherwise `null`
-   - the `published` block should still show that `refresh-provenance.json` is a published support artifact rather than a manifest-discovered canonical artifact
-   - the `next_steps` block should include the repo-local follow-up commands needed to publish artifacts, verify integrity, and optionally regenerate the delta summary
-   - legacy `references/raw_backup_*` directories, if any, remain local historical working copies; leave them in place until you intentionally delete or migrate them after the new backup path is proven in your workflow
-3. Republish the artifact surface:
-   ```bash
-   python scripts/generate/publish_reference_artifacts.py
-   ```
-4. Verify canonical raw artifacts still match the published current copies and
-   manifest checksums:
-   ```bash
-   python scripts/verify/verify_artifact_integrity.py
-   ```
-5. If you are comparing two baselines, generate the published delta summary from the auto-created backup:
-   ```bash
-   python scripts/generate/generate_snapshot_delta_summary.py --old <repo-local-refresh-backup-dir> --new references/raw --output public/artifacts/delta-summary.json
-   ```
-6. Remove the temporary backup after confirming the delta output if you no longer need it. The durable history surfaces remain `references/snapshots/`, `public/artifacts/versions/`, and `public/artifacts/refresh-provenance.json`; the backup directory is only local rollback and comparison working state.
-7. Update version-pin references in docs. A refresh changes the pinned baseline,
-   and three files always carry the current version and commit: `README.md`
-   (version-pin block near the top), `src/content/docs/reference/version-pin-status.md`
-   (version/commit lines, snapshot directory, versioned artifact directory), and
-   `src/content/docs/index.md` ("Current Version Pin" section).
-
-   Also review source-citation paths in `src/content/docs/` pages that cite the
-   old snapshot directory (for example `references/snapshots/2026-04-30/...`).
-   Check `public/artifacts/delta-summary.json` to decide whether updates are
-   mechanical path-only or warrant prose review.
-
-   Find every stale reference before committing (use the old version/commit values):
-   ```bash
-   rg -n "<old-version>|<old-commit>" src/content/docs -g "*.md"
-   ```
-   Skip `public/artifacts/versions/<old-baseline>/` (historical copies) and
-   `references/_refresh_backups/` (pre-refresh backups).
-
-   Verify after updating:
-   ```bash
-   python scripts/verify/cross_references.py
-   ```
-
-   For each stale prose page, decide whether the drift is only mechanical (for
-   example a snapshot path or surrounding citation path changed) or whether the
-   prose itself needs a new current-baseline review. If the prose was not fully
-   re-reviewed, add or update the page's `**Baseline verification status:**`
-   block instead of pretending the page is current. Use the standard wording in
-   `src/content/docs/reference/source-evidence-policy.md` and do not blindly
-   replace old version or snapshot references when the page still truthfully
-   reflects a prior baseline.
-
-8. Run the maintainer verification gate:
-   ```bash
-   python scripts/verify/run_all.py
-   ```
-
-The live clone -> extract -> generate -> publish -> verify closure path was validated end-to-end on 2026-05-21 with core `v0.22.0` and frontend `v1.45.12`. Repeat this workflow when a new upstream baseline is needed.
-
-### Versioned published artifact retention
-
-Treat `public/artifacts/versions/` as durable published history, but keep that
-history bounded.
-
-- keep the current baseline plus a small recent trail of prior baselines by
-  default; the current repo posture is current plus up to three earlier
-  baselines unless there is a documented reason to retain more
-- do not prune a versioned baseline that is still referenced by published docs,
-  `public/artifacts/refresh-provenance.json`, or an active comparison workflow
-- when pruning is appropriate, remove a whole version-key directory
-  intentionally rather than letting the history drift opportunistically
-- after pruning, rerun at minimum `python scripts/verify/cross_references.py`
-  and any artifact-surface verification affected by the change
-
-This retention policy applies only to `public/artifacts/versions/`. It does not
-redefine the temporary local backup policy for `references/_refresh_backups/`,
-which remains rollback and comparison working state rather than durable history.
-
-### Adding a New Verification Script
-
-1. Create `scripts/verify/<name>.py`.
-   - Exit `0` on pass, exit `1` on fail.
-   - Print human-readable error messages.
-2. Add tests in `tests/unit/test_<name>.py`.
-   - Include at minimum: import check, smoke test, edge cases.
-3. Add it to `scripts/verify/run_all.py` if it should be part of the default
-   local blocking gate before push.
-4. Add the script to `.github/workflows/ci.yml` if it should run in CI.
-5. Choose CI placement intentionally:
-   - **Blocking:** add it to the main CI sequence when failure should stop merge
-     and maintainers should normally catch it locally through `run_all.py`.
-   - **Advisory:** add it with `continue-on-error: true` when the signal is
-     useful but still needs human follow-up or is expected to be noisy.
-6. Treat this section as the authoritative home for future verifier placement.
-7. Run the full test suite:
-   ```bash
-   python -m unittest discover -s tests -v
-   ```
-8. If the verifier exercises the orchestrated maintainer pipeline or example shell scripts, decide whether it belongs in the supplemental Ubuntu CI job in `.github/workflows/ci.yml`.
-
-### Adding a New Extractor
-
-1. Create `scripts/extract/<name>.py`.
-   - Read source from `references/snapshots/`.
-   - Write JSON to `references/raw/`.
-   - Include `--version` and `--commit` flags in output metadata.
-   - Normalize all paths to forward slashes in JSON output.
-2. Add tests in `tests/unit/`.
-3. Add a generator in `scripts/generate/` if markdown output is needed.
-4. Run tests and verify the pipeline end-to-end.
-
----
-
-## Generated vs Hand-Authored Boundaries
-
-Understanding this boundary prevents accidentally editing files that will be overwritten later.
-
-- **Hand-authored:** Pages under `src/content/docs/`, files under `examples/`, and editorial reference files.
-- **Generated (currently optional):** `src/content/docs/ecosystem/map.md` is produced by `scripts/generate/generate_community_pages.py` from `references/community/ecosystem_packages.json` when that page is intentionally part of the published surface.
-- **Extracted:** JSON files under `references/raw/` are produced by `scripts/extract/` from `references/snapshots/`.
-- **Published:** Files under `public/artifacts/` are produced by `scripts/generate/publish_reference_artifacts.py`.
-- **Support-artifact exception:** `public/artifacts/docs-index.json` is produced by `scripts/generate/generate_docs_index.py` and stays outside the canonical manifest-discovery contract.
-
-If a file is generated or extracted, change its source and rerun the pipeline rather than editing the output directly.
-
----
-
-## Conventions
-
-- **Source citations required:** Do not claim official ComfyUI behavior without a citation from `references/snapshots/` or `docs.comfy.org`.
-- **No emojis or emoticons** in any file.
-- **Forward slashes only** in JSON metadata paths. If you run extractors on Windows, ensure paths are normalized.
-- **Run verification before opening a PR.** Do not rely on CI to catch issues you could have found locally.
-- **Prefer small, verifiable changes.** Large diffs are harder to review and more likely to introduce errors.
-
----
-
-## Verification Commands Reference
-
-Run the narrowest relevant checks first while iterating, then
-`python scripts/verify/run_all.py` before opening a PR or handing maintainer
-workflow changes to review. The wrapper mirrors the CI job's blocking checks on
-both Ubuntu and Windows; advisory checks remain separate in normal PR CI and
-escalate through the dedicated advisory replay workflow. The blocking freshness
-pair runs in order as `docs_index_freshness.py` followed immediately by
-`tooling_index_freshness.py` before schema validation.
 
 ## Maintainer Failure-Path Quick Guide
 
-Use this section when a push or PR does not fail as one obvious script error.
-Keep the deeper workflow-specific detail in this file's verification and
-rollback sections.
-
-### Broken pushes
-
-- Treat a broken push as a failed maintainer verification path, not just a bad
-  commit message or cosmetic CI hiccup.
-- First rerun the closest local command that matches the failing CI lane:
-  `python scripts/verify/run_all.py` for the blocking path, or the individual
-  advisory script if the failure came from advisory replay.
-- If the same failure reproduces locally, fix the repo state first and rerun the
-  failing verifier before pushing again.
-- If the failure does not reproduce locally, inspect the specific workflow,
-  matrix OS, and job type before changing docs or scripts. Compare the failing
-  GitHub job to `.github/workflows/ci.yml` or
-  `.github/workflows/advisory-checks.yml` rather than guessing.
-
-### Ambiguous CI failures
-
-- Treat ambiguous CI failures as a workflow investigation problem, not an excuse
-  to bypass verification.
-- Distinguish blocking vs advisory first:
-  - blocking failures come from the `blocking-verification` job in
-    `.github/workflows/ci.yml` and should be reproducible from
-    `python scripts/verify/run_all.py`
-  - advisory failures come from the `advisory-checks` job in `ci.yml` or the
-    blocking replay in `.github/workflows/advisory-checks.yml`
-- Rerun locally when the failing step is a repo command you can execute on this
-  machine.
-- Inspect workflow-specific behavior first when the failure depends on:
-  - Ubuntu vs Windows matrix differences
-  - scheduled or manual advisory replay
-  - workflow-dispatch refresh inputs
-  - runtime-only workflows that require a live ComfyUI instance
-
-### Runtime-only optional artifacts
-
-- Treat runtime-only files such as `references/raw/object_info_runtime.json` as
-  optional runtime inputs, not as required outputs of standard local verification
-  or normal push/PR CI.
-- Their absence is normal unless you intentionally ran the live runtime capture
-  path or a runtime-specific workflow.
-
-### Preferred default for most maintainer changes
-
-```bash
-python scripts/verify/run_all.py
-```
-
-Use `run_all.py` as the default maintainer-grade local gate. It already runs the
-blocking verification path in the correct order and avoids the ambiguity of a
-hand-maintained “essential subset” drifting behind the actual CI blockers.
-
-### Common targeted checks while iterating
-
-Use these narrower commands while iterating on a specific surface, then return
-to `python scripts/verify/run_all.py` before handing the change off for review
-or opening a PR.
-
-```bash
-python scripts/verify/python_style.py
-python scripts/verify/cross_references.py
-python scripts/verify/docs_index_freshness.py
-python scripts/verify/tooling_index_freshness.py
-python scripts/verify/verify_artifact_integrity.py
-npm run build
-python scripts/verify/rendered_links.py
-python -m unittest discover -s tests -v
-```
-
-### Community catalog changes
-
-```bash
-python scripts/verify/validate_schema.py
-python scripts/verify/community_metadata.py
-python scripts/verify/community_staleness.py
-python scripts/generate/generate_community_pages.py
-python scripts/verify/community_generated_freshness.py
-python scripts/verify/community_page_coverage.py
-python scripts/verify/cross_references.py
-npm run build
-```
-
-### Full local verification
-
-```bash
-python scripts/verify/run_all.py
-```
-
-This is the recommended maintainer pre-push command for the blocking path.
-
-### Individual verifiers
-
-Scripts marked **[BLOCKING]** will fail CI and prevent merge. Scripts marked
-**[non-blocking]** run in normal push/PR CI but do not stop the pipeline there;
-the same advisory scripts are replayed separately in `.github/workflows/advisory-checks.yml` as a scheduled/manual blocking escalation path.
-
-```bash
-python scripts/verify/python_style.py                  # [BLOCKING]
-python scripts/verify/cross_references.py              # [BLOCKING]
-python scripts/verify/docs_index_freshness.py          # [BLOCKING]
-python scripts/verify/tooling_index_freshness.py       # [BLOCKING]
-python scripts/verify/validate_schema.py               # [BLOCKING]
-python scripts/verify/verify_artifact_integrity.py     # [BLOCKING]
-python scripts/verify/markdown_top_level_spacing.py    # [BLOCKING]
-python scripts/verify/community_generated_freshness.py # [BLOCKING]
-python scripts/verify/community_page_coverage.py       # [BLOCKING]
-python scripts/verify/sidebar_navigation_coverage.py   # [BLOCKING]
-python scripts/verify/rendered_links.py                # [BLOCKING]
-python scripts/verify/stale_content.py                 # [non-blocking]
-python scripts/verify/extraction_idempotency.py        # [non-blocking]
-python scripts/verify/upstream_pins.py                 # [non-blocking]
-python scripts/verify/community_metadata.py            # [non-blocking]
-python scripts/verify/community_staleness.py           # [non-blocking]
-```
-
-### Generators
-
-```bash
-python scripts/generate/md_from_json.py
-python scripts/generate/generate_community_pages.py
-python scripts/generate/generate_tooling_index.py
-python scripts/generate/publish_reference_artifacts.py
-python scripts/generate/generate_snapshot_delta_summary.py --old <dir> --new <dir> --output public/artifacts/delta-summary.json
-```
-
-When generating a refresh delta from the live repo state, `--old` should point at the auto-created repo-local refresh backup directory printed by `refresh_snapshots.py` before it overwrites the canonical raw artifacts in place.
-
-### Runtime testing (optional)
-
-If you have a live ComfyUI instance available, you can optionally validate
-against a real server:
-
-```bash
-python scripts/verify/runtime_smoke.py --url http://127.0.0.1:8188
-python scripts/verify/wait_for_runtime.py --url http://127.0.0.1:8188/object_info
-```
-
-These are not required for most contributions, but are useful when adding or
-modifying runtime extractors.
-
-### When verification fails
-
-- **`validate_schema.py` fails:** The error message usually names the exact file
-  and field that is invalid. Fix the source JSON, not any generated output.
-- **`cross_references.py` fails:** It lists broken `references/...` path mentions
-  in docs or broken source-path metadata in `references/raw/*.json`. Check that
-  the referenced file exists and that the path uses forward slashes.
-- **`verify_artifact_integrity.py` fails:** A canonical raw artifact,
-  published current copy, or manifest checksum is out of sync. Republish with
-  `publish_reference_artifacts.py` and verify that no published copy was
-  hand-edited.
-- **`rendered_links.py` fails:** The built site contains at least one internal
-  navigation link that resolves to a missing HTML page. Re-run `npm run build`,
-  inspect the broken-link report, and fix the source markdown link or route
-  rewriting logic that produced the invalid href.
-- **`npm run build` prints `Entry docs → 404 was not found.` but still exits 0:**
-  This is currently benign Starlight noise, not a broken docs link. Starlight
-  checks for an optional custom `src/content/docs/404.md` page before falling
-  back to its built-in 404 route. Treat it as expected unless the build fails
-  or `dist/404.html` is missing.
-- **`community_generated_freshness.py` fails:** You edited a community JSON file
-  but forgot to rerun `generate_community_pages.py` before verifying.
-- **`extraction_idempotency.py` fails:** See the Common Pitfalls note on
-  idempotency drift.
-
-Always fix the root cause rather than bypassing the check.
-
-## Rollback and Restore Expectations
-
-When maintainer work goes wrong, prefer a small revert or restore to leaving the
-repo in a half-updated state.
-
-- **Doc-only changes:** revert or restore the affected markdown files, then rerun
-  `python scripts/verify/cross_references.py` and `npm run build`.
-- **Canonical artifact publication changes:** restore the intended source of
-  truth first (`references/raw/` or checked-in schema files), rerun
-  `python scripts/generate/publish_reference_artifacts.py`, then rerun
-  `python scripts/verify/verify_artifact_integrity.py` and the relevant
-  verification commands.
-- **Snapshot refresh changes:** use the repo-local refresh backup directory under `references/_refresh_backups/`
-  directory created by `scripts/refresh_snapshots.py` when you need to restore
-  the prior canonical raw baseline. After restore, republish artifacts, rerun
-  integrity verification, regenerate `public/artifacts/delta-summary.json` if the
-  comparison record should stay current, and confirm the latest
-  `public/artifacts/refresh-provenance.json` still tells the truth about what was
-  attempted. Treat that backup as temporary local rollback state, not as the
-  durable history surface; long-term history belongs in `references/snapshots/`,
-  `public/artifacts/versions/`, and the published `refresh-provenance.json` record.
-
-For the full refresh closure, broken-push triage sequence, and workflow-level
-rollback posture, use the refresh, verification, and rollback sections in this
-file directly.
-
----
+- blocking CI failure: reproduce locally with `python scripts/verify/run_all.py`
+- advisory replay failure: rerun the named advisory script locally
+- schema failure: fix the source JSON or schema, not generated outputs by hand
+- docs-index freshness failure: regenerate with `python scripts/generate/generate_docs_index.py`
+- artifact-integrity failure: republish canonical artifacts and recheck the manifest/current copies
+- rendered-links failure: rebuild and fix the source markdown or route mismatch
 
 ## Common Pitfalls
 
-- **Editing generated markdown directly:** if `src/content/docs/ecosystem/map.md` is intentionally restored, treat it as generated output. Edit `references/community/ecosystem_packages.json` and rerun the generator instead.
-- **Windows backslashes in JSON:** If you author or run extractors on Windows, paths written with `str(path)` will contain backslashes. Always normalize with `.replace("\\", "/")` before writing JSON metadata.
-- **Forgetting to regenerate after JSON changes:** If you edit `references/raw/` or `references/community/` JSON files, rerun the matching generator before running `cross_references.py` or `npm run build`.
-- **Misunderstanding CI blocking behavior:** `python_style.py`, `cross_references.py`, `docs_index_freshness.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `markdown_top_level_spacing.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `sidebar_navigation_coverage.py`, and `rendered_links.py` will block CI and prevent merge. `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py` run in CI but do not block the pipeline.
-- **Misreading semantic enrichment fields:** Plan K adds `traceability` markers and richer typed detail to endpoints, hooks, and node schema fields. These are best-effort from static analysis. The `kind` field is reliable; deeper fields should be treated as helpful signals, not strict runtime contracts.
-- **Writing from memory:** Claims about ComfyUI behavior must be traceable to a pinned snapshot or official docs. If you cannot find a source, mark the claim accordingly or leave it out.
-- **Skipping unit tests for script changes:** If you change any script under `scripts/`, add or update the matching test under `tests/unit/` and run the full test suite.
-- **Misreading extraction idempotency failures:** The idempotency checker may report byte-level differences because extractors write timestamps (`extracted_date`). These are expected. Structural differences in the JSON are the real concern.
+- `docs-index.json` is the only active support index; do not recreate `tooling-index.json`
+- `references/docs-index-metadata.json` must only point at retained published pages
+- do not hand-edit `public/artifacts/docs-index.json`
+- keep JSON paths on forward slashes only
+- `refresh-provenance.json` is published operator evidence, not a manifest-discovered canonical artifact
+- `npm run build` may print the benign Starlight `Entry docs → 404 was not found.` warning
+- do not let `AGENTS.md` and `CONTRIBUTING.md` drift into duplicate command inventories or conflicting CI descriptions
 
----
+## Rollback Expectations
 
-## Pull Request Checklist
+- doc-only change: restore the markdown files, then rerun `cross_references.py` and `npm run build`
+- support-index change: restore `references/docs-index-metadata.json`, `generate_docs_index.py`, schema/docs text, then regenerate `public/artifacts/docs-index.json`
+- canonical artifact publication change: restore the real source, rerun `publish_reference_artifacts.py`, then rerun integrity verification
+- refresh failure: use the repo-local backup under `references/_refresh_backups/`, then republish and reverify
 
-Before opening a PR, confirm the following:
+## Completion Standard
 
-- [ ] **The change is scoped:** one logical change per PR (docs fix, catalog update, new script, etc.)
-- [ ] **Generated files were not hand-edited:** verify with `git diff --name-only` that you are not modifying generated outputs without changing their sources
-- [ ] **Verification passes:** the relevant checks from the Decision Tree above exit `0`
-- [ ] **Tests pass:** `python -m unittest discover -s tests -v` exits cleanly (required for script changes; recommended for docs changes)
-- [ ] **Docs build:** `npm run build` completes without errors
-- [ ] **Evidence labels are correct:** docs pages have the right evidence label per `source-evidence-policy.md`
-- [ ] **Style matches conventions:** page mode, tone, and structure follow `writing-style-guide.md`
-- [ ] **Cross-links are intentional:** links resolve to real pages; "Read Next" blocks contain deliberate next steps
+Do not say work is complete unless you can state:
 
-For script or extractor changes, also include:
-- [ ] **The exact command you ran** and its output in the PR description
-- [ ] **A test** covering the new behavior in `tests/unit/`
-
----
-
-## Getting Help
-
-- Read `src/content/docs/reference/source-evidence-policy.md` for trust hierarchy and evidence labeling.
-- Read `src/content/docs/reference/writing-style-guide.md` for page modes and tone.
-- Read `src/content/docs/reference/doc-quality-checklist.md` for a pre-submit review step.
-
-## Local Node.js Baseline
-
-Use Node.js `24+` when touching site-framework or frontend-build surfaces.
-The repo enforces this with the root `.nvmrc` file (content: `24`). CI uses
-`actions/setup-node@v4` with `node-version-file: ".nvmrc"` to select the
-correct version.
-- Review `AGENTS.md` for the full operational reference (machine-oriented, but comprehensive).
+- what changed
+- which files changed
+- which commands were run
+- what those commands returned
+- any remaining gaps or follow-up work
