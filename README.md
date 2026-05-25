@@ -58,7 +58,7 @@ stable, and explicit about what is guaranteed versus best-effort.
 ComfyUI StarChart gives them that surface:
 
 - canonical JSON artifacts for pinned API, hook, and schema data
-- support indexes for docs routing and tooling-task discovery
+- a merged support index for docs routing and tooling-task discovery
 - stable published paths and checksums via `manifest.json`
 - start-here docs for task routing
 
@@ -77,7 +77,7 @@ community breadcrumbs.
 ## Who This Repo Is For
 
 - **Consumers** building custom nodes, extensions, integrations, or tools
-- **Agents** using the tooling schema, support indexes, and JSON artifacts to route, inspect, and interact with the repo's published developer surface
+- **Agents** using the tooling schema, merged support index, and JSON artifacts to route, inspect, and interact with the repo's published developer surface
 - **Contributors** editing docs, examples, or other hand-authored content
 - **Maintainers** running verifiers, refreshes, artifact publication, or CI/workflow changes
 
@@ -131,7 +131,6 @@ Canonical extracted artifacts are published from pinned upstream snapshots:
 Support artifacts are also published for bounded routing and change analysis:
 
 - `artifacts/docs-index.json`
-- `artifacts/tooling-index.json`
 - `artifacts/delta-summary.json`
 - `artifacts/refresh-provenance.json`
 

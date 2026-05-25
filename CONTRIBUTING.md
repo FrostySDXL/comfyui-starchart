@@ -1,6 +1,6 @@
 # Contributing
 
-**Last Updated:** 2026-05-24
+**Last Updated:** 2026-05-25
 
 This file is the canonical maintainer workflow guide for ComfyUI StarChart.
 Use `AGENTS.md` for startup-critical orientation. Use this file for deeper

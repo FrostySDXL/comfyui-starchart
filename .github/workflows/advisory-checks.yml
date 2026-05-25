@@ -11,18 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+      - name: Set up repo
+        uses: ./.github/actions/setup-repo
         with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: requirements.lock
-
-      - name: Install dependencies
-        run: python -m pip install -r requirements.lock
-
-      - name: Install package (editable)
-        run: python -m pip install -e .
+          setup-node: "false"
+          install-node-deps: "false"
 
       # Replay the advisory scripts here as blocking on a weekly schedule and on
       # manual dispatch. This keeps push/PR CI focused on the normal blocking
@@ -36,13 +29,10 @@ jobs:
       - name: Verify upstream pins
         run: python scripts/verify/upstream_pins.py
 
-      - name: Check community metadata
-        run: python scripts/verify/community_metadata.py
-
-      - name: Check community staleness
-        run: python scripts/verify/community_staleness.py
-
       - name: Check example surface integrity
         # Keep this blocking only in advisory replay until maintainers decide the
         # example surface is stable enough for push/PR CI promotion.
         run: python scripts/verify/example_surface_integrity.py
+
+      - name: Check evidence metadata freshness
+        run: python scripts/verify/evidence_metadata_freshness.py

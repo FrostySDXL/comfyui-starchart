@@ -354,6 +354,24 @@ class RefreshSnapshotsOrchestrationTests(unittest.TestCase):
         change_mock.assert_called_once_with({})
         provenance_mock.assert_called_once()
 
+    def test_main_returns_one_when_refresh_requested_snapshots_raises(self):
+        """main() should fail cleanly when the refresh step raises a runtime error."""
+        module = _load_module()
+        with (
+            mock.patch.object(sys, "argv", [str(SCRIPT_PATH), "--core-version", "v0.20.1"]),
+            mock.patch.object(module, "verify_git_available", return_value=True),
+            mock.patch.object(module, "create_pre_refresh_backup", return_value=None),
+            mock.patch.object(module, "load_existing_raw_jsons", return_value={}),
+            mock.patch.object(
+                module,
+                "refresh_requested_snapshots",
+                side_effect=RuntimeError("FAILED: cloning ComfyUI core at v0.20.1"),
+            ),
+        ):
+            result = module.main()
+
+        self.assertEqual(result, 1)
+
 
 class RefreshSnapshotsBoundaryTests(unittest.TestCase):
     """Test clarified clone/copy and extractor helper boundaries."""

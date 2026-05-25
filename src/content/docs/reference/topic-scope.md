@@ -70,6 +70,12 @@ Before adding a new page, ask:
 
 If the answer to the third question is yes, keep it repo-local.
 
+## New Section Stop Rule
+
+Do not add a new published docs section unless maintainers can state the
+maintenance case, owner, verification path, and retirement criteria in
+`CONTRIBUTING.md` before the section lands.
+
 ## Read Next
 
 - [Machine-Readable Artifacts](machine-readable-artifacts.md)

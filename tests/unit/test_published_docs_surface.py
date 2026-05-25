@@ -146,7 +146,7 @@ class PublishedDocsSurfaceTests(unittest.TestCase):
             )
             self.assertEqual([page["path"] for page in pages], ["index.md"])
 
-    def test_known_generated_exclusions_apply_without_banner(self):
+    def test_non_generated_reference_page_is_no_longer_excluded_by_deleted_page_list(self):
         nav_entry = {
             "nav_label": "Server Py Summary",
             "nav_section": "Reference",
@@ -157,7 +157,17 @@ class PublishedDocsSurfaceTests(unittest.TestCase):
             page_path = docs_root / "reference" / "server-py-summary.md"
             page_path.parent.mkdir(parents=True, exist_ok=True)
             page_path.write_text('---\ntitle: "Server Py Summary"\n---\n', encoding="utf-8")
-            self.assertIsNone(published_docs_surface.build_page_entry(nav_entry, docs_root))
+            self.assertEqual(
+                published_docs_surface.build_page_entry(nav_entry, docs_root),
+                {
+                    "title": "Server Py Summary",
+                    "path": "reference/server-py-summary.md",
+                    "nav_section": "Reference",
+                    "audience": None,
+                    "evidence": None,
+                    "summary": None,
+                },
+            )
 
 
 if __name__ == "__main__":

@@ -6,8 +6,7 @@
     "related_artifacts": [
       "docs-index.json",
       "manifest.json",
-      "server_endpoints.json",
-      "tooling-index.json"
+      "server_endpoints.json"
     ],
     "related_routes": [
       "GET /history/{prompt_id}",
@@ -31,8 +30,7 @@
       "monitor-execution"
     ],
     "related_artifacts": [
-      "server_endpoints.json",
-      "tooling-index.json"
+      "server_endpoints.json"
     ],
     "related_routes": [
       "GET /api/jobs",
@@ -59,8 +57,7 @@
       "submit-prompt"
     ],
     "related_artifacts": [
-      "server_endpoints.json",
-      "tooling-index.json"
+      "server_endpoints.json"
     ],
     "related_routes": [
       "POST /prompt"
@@ -87,8 +84,7 @@
       "monitor-execution"
     ],
     "related_artifacts": [
-      "server_endpoints.json",
-      "tooling-index.json"
+      "server_endpoints.json"
     ],
     "related_routes": [
       "GET /ws"
@@ -122,16 +118,15 @@
       "js_hooks.json",
       "manifest.json",
       "node_api_schema.json",
-      "server_endpoints.json",
-      "tooling-index.json"
+      "server_endpoints.json"
     ],
     "related_routes": [],
     "related_events": [],
     "runtime_required": false,
     "stability_tier": "support-routing",
     "recommended_next_reads": [
-      "start-here/artifact-consumer.md",
       "reference/object-info.md",
+      "start-here/artifact-consumer.md",
       "start-here/tooling-builder.md"
     ]
   },
@@ -140,8 +135,7 @@
       "inspect-object-info"
     ],
     "related_artifacts": [
-      "node_api_schema.json",
-      "tooling-index.json"
+      "node_api_schema.json"
     ],
     "related_routes": [
       "GET /object_info",
@@ -163,8 +157,7 @@
     ],
     "related_artifacts": [
       "docs-index.json",
-      "manifest.json",
-      "tooling-index.json"
+      "manifest.json"
     ],
     "related_routes": [],
     "related_events": [],
@@ -182,8 +175,7 @@
     ],
     "related_artifacts": [
       "docs-index.json",
-      "manifest.json",
-      "tooling-index.json"
+      "manifest.json"
     ],
     "related_routes": [],
     "related_events": [],
@@ -191,8 +183,8 @@
     "stability_tier": "support-routing",
     "recommended_next_reads": [
       "api/endpoints.md",
-      "start-here/artifact-consumer.md",
-      "reference/machine-readable-artifacts.md"
+      "reference/machine-readable-artifacts.md",
+      "start-here/artifact-consumer.md"
     ]
   }
 }

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "artifacts/schemas/docs-index.schema.json",
   "title": "ComfyUI StarChart docs-index support artifact",
-  "description": "Bounded structure for the checked-in docs-index.json support artifact used for navigation-aware docs discovery.",
+  "description": "Bounded structure for the checked-in docs-index.json support artifact used for navigation-aware docs discovery with optional tooling-task enrichment.",
   "type": "object",
   "required": [
     "artifact",
@@ -34,7 +34,7 @@
           }
         }
       },
-      "additionalProperties": true
+      "additionalProperties": false
     },
     "pages": {
       "type": "array",
@@ -75,11 +75,68 @@
               "string",
               "null"
             ]
+          },
+          "tooling_metadata": {
+            "type": "object",
+            "required": [
+              "task_intents",
+              "related_artifacts",
+              "related_routes",
+              "related_events",
+              "runtime_required",
+              "stability_tier",
+              "recommended_next_reads"
+            ],
+            "properties": {
+              "task_intents": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "related_artifacts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "related_routes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "related_events": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "runtime_required": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "stability_tier": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "recommended_next_reads": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
           }
         },
-        "additionalProperties": true
+        "additionalProperties": false
       }
     }
   },
-  "additionalProperties": true
+  "additionalProperties": false
 }

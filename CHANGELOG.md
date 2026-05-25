@@ -7,6 +7,33 @@ verification, workflow, and repo structure rather than every commit.
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-05-25 - maintainer refactors and refresh hardening
+
+### Maintainer tooling structure
+
+- Split `scripts/refresh_snapshots.py` into focused helper modules under
+  `scripts/common/` while preserving the existing script entrypoints and wrapper
+  surface.
+- Split `scripts/extract/parse_server.py` into focused helper modules for block
+  scanning, helper-body extraction, parameter inference, and return inference.
+- Extract published-schema validation into
+  `scripts/verify/published_schema_validation.py` and keep
+  `schema_common.py`/`validate_schema.py` compatibility surfaces intact.
+
+### Verification and tests
+
+- Add targeted unit coverage for the new refresh, server-extractor, helper, and
+  published-schema validation boundaries.
+- Harden refresh failure handling so snapshot refresh exits cleanly when the
+  delegated refresh step raises a runtime error.
+
+### Maintainer guidance and published artifact docs
+
+- Refresh `AGENTS.md`, `CONTRIBUTING.md`, and
+  `reference/machine-readable-artifacts.md` so maintainer workflow guidance,
+  follow-up commands, and merged docs-index support-artifact behavior match the
+  implemented repo surface.
+
 ## 2026-05-24 - docs surface reduction and support-surface reconciliation
 
 ### Published docs surface

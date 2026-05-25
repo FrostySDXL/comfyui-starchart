@@ -11,15 +11,13 @@ TITLE_RE = re.compile(r"^\s*#\s+(.+?)\s*$", re.MULTILINE)
 FRONTMATTER_TITLE_RE = re.compile(r'^---\s*\ntitle:\s*"(.+?)"\s*\n---\s*', re.MULTILINE)
 EVIDENCE_RE = re.compile(r"^\s*\*\*Evidence:\*\*\s*(.+?)\s*$", re.MULTILINE)
 GENERATED_BANNER_PREFIX = "<!-- GENERATED FILE:"
-GENERATED_PAGE_EXCLUSIONS = {
-    "ecosystem/map.md",
-    "reference/server-py-summary.md",
-}
+GENERATED_PAGE_EXCLUSIONS: set[str] = set()
 
 AUDIENCE_BY_PATH = {
     "start-here/author.md": "consumer",
     "start-here/artifact-consumer.md": "consumer",
     "start-here/extension-developer.md": "consumer",
+    "reference/topic-scope.md": "contributor",
     "start-here/service-integration.md": "consumer",
     "start-here/tooling-builder.md": "consumer",
 }

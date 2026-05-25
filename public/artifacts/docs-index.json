@@ -1,8 +1,8 @@
 {
   "artifact": "docs-index.json",
-  "artifact_schema_version": "1.0.0",
+  "artifact_schema_version": "1.1.0",
   "scope": {
-    "surface": "hand-authored published docs pages included in the checked-in docs navigation",
+    "surface": "hand-authored published docs pages included in the checked-in docs navigation with optional tooling-oriented enrichment",
     "excludes": [
       "generated markdown pages",
       "built site output",
@@ -49,7 +49,25 @@
       "nav_section": "Start Here",
       "audience": "consumer",
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance for repo-local artifact routing",
-      "summary": "This page is a start-here route for builders. It helps you choose the right ComfyUI tooling surface, then points you to the next page. It does not try to reteach the full API, Manager, or extension architecture."
+      "summary": "This page is a start-here route for builders. It helps you choose the right ComfyUI tooling surface, then points you to the next page. It does not try to reteach the full API, Manager, or extension architecture.",
+      "tooling_metadata": {
+        "task_intents": [
+          "route-docs-task"
+        ],
+        "related_artifacts": [
+          "docs-index.json",
+          "manifest.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "support-routing",
+        "recommended_next_reads": [
+          "api/endpoints.md",
+          "reference/machine-readable-artifacts.md",
+          "start-here/artifact-consumer.md"
+        ]
+      }
     },
     {
       "title": "Start Here: Artifact Consumer",
@@ -57,7 +75,26 @@
       "nav_section": "Start Here",
       "audience": "consumer",
       "evidence": "Operational guidance",
-      "summary": "This page is the shortest start-here route for readers who consume this repo's published JSON artifacts. It covers the manifest-first loading path, the bounded routing-support surface, and the example boundary. It does not restate every artifact field or every API page."
+      "summary": "This page is the shortest start-here route for readers who consume this repo's published JSON artifacts. It covers the manifest-first loading path, the bounded routing-support surface, and the example boundary. It does not restate every artifact field or every API page.",
+      "tooling_metadata": {
+        "task_intents": [
+          "discover-artifacts",
+          "route-docs-task"
+        ],
+        "related_artifacts": [
+          "docs-index.json",
+          "manifest.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "support-routing",
+        "recommended_next_reads": [
+          "reference/machine-readable-artifacts.md",
+          "start-here/service-integration.md",
+          "start-here/tooling-builder.md"
+        ]
+      }
     },
     {
       "title": "Architecture Overview",
@@ -81,7 +118,32 @@
       "nav_section": "API Reference",
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
-      "summary": "ComfyUI declares its HTTP and WebSocket surface directly in `server.py` using `aiohttp` route decorators. The current file defines 25 primary routes on `self.routes`, covering queue control, prompt submission, file upload and viewing, node metadata, system inspection, and job tracking."
+      "summary": "ComfyUI declares its HTTP and WebSocket surface directly in `server.py` using `aiohttp` route decorators. The current file defines 25 primary routes on `self.routes`, covering queue control, prompt submission, file upload and viewing, node metadata, system inspection, and job tracking.",
+      "tooling_metadata": {
+        "task_intents": [
+          "discover-routes"
+        ],
+        "related_artifacts": [
+          "docs-index.json",
+          "manifest.json",
+          "server_endpoints.json"
+        ],
+        "related_routes": [
+          "GET /history/{prompt_id}",
+          "GET /object_info",
+          "GET /queue",
+          "GET /ws",
+          "POST /prompt"
+        ],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "pinned-baseline",
+        "recommended_next_reads": [
+          "api/prompt-submission.md",
+          "api/websocket.md",
+          "reference/machine-readable-artifacts.md"
+        ]
+      }
     },
     {
       "title": "WebSocket",
@@ -89,7 +151,36 @@
       "nav_section": "API Reference",
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
-      "summary": "ComfyUI uses `GET /ws` as the real-time channel for queue state, execution lifecycle messages, UI output updates, and preview images. The route is implemented with `aiohttp.WebSocketResponse` and is the main mechanism that keeps the frontend in sync while a prompt runs."
+      "summary": "ComfyUI uses `GET /ws` as the real-time channel for queue state, execution lifecycle messages, UI output updates, and preview images. The route is implemented with `aiohttp.WebSocketResponse` and is the main mechanism that keeps the frontend in sync while a prompt runs.",
+      "tooling_metadata": {
+        "task_intents": [
+          "monitor-execution"
+        ],
+        "related_artifacts": [
+          "server_endpoints.json"
+        ],
+        "related_routes": [
+          "GET /ws"
+        ],
+        "related_events": [
+          "executed",
+          "executing",
+          "execution_cached",
+          "execution_error",
+          "execution_interrupted",
+          "execution_start",
+          "execution_success",
+          "feature_flags",
+          "status"
+        ],
+        "runtime_required": true,
+        "stability_tier": "pinned-baseline",
+        "recommended_next_reads": [
+          "api/history-queue.md",
+          "api/prompt-submission.md",
+          "architecture/execution-pipeline.md"
+        ]
+      }
     },
     {
       "title": "Prompt Submission",
@@ -97,7 +188,34 @@
       "nav_section": "API Reference",
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
-      "summary": "`POST /prompt` is the main execution entrypoint. The handler accepts a workflow payload, validates it, assigns queue priority, extracts sensitive metadata, and enqueues the prompt for asynchronous execution."
+      "summary": "`POST /prompt` is the main execution entrypoint. The handler accepts a workflow payload, validates it, assigns queue priority, extracts sensitive metadata, and enqueues the prompt for asynchronous execution.",
+      "tooling_metadata": {
+        "task_intents": [
+          "submit-prompt"
+        ],
+        "related_artifacts": [
+          "server_endpoints.json"
+        ],
+        "related_routes": [
+          "POST /prompt"
+        ],
+        "related_events": [
+          "executed",
+          "executing",
+          "execution_cached",
+          "execution_error",
+          "execution_interrupted",
+          "execution_start",
+          "execution_success"
+        ],
+        "runtime_required": true,
+        "stability_tier": "pinned-baseline",
+        "recommended_next_reads": [
+          "api/history-queue.md",
+          "api/websocket.md",
+          "reference/machine-readable-artifacts.md"
+        ]
+      }
     },
     {
       "title": "History and Queue",
@@ -105,7 +223,35 @@
       "nav_section": "API Reference",
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
-      "summary": "ComfyUI splits live scheduling state from completed execution records:"
+      "summary": "ComfyUI splits live scheduling state from completed execution records:",
+      "tooling_metadata": {
+        "task_intents": [
+          "lookup-history",
+          "monitor-execution"
+        ],
+        "related_artifacts": [
+          "server_endpoints.json"
+        ],
+        "related_routes": [
+          "GET /api/jobs",
+          "GET /api/jobs/{job_id}",
+          "GET /history",
+          "GET /history/{prompt_id}",
+          "GET /prompt",
+          "GET /queue",
+          "POST /history",
+          "POST /queue"
+        ],
+        "related_events": [
+          "status"
+        ],
+        "runtime_required": true,
+        "stability_tier": "pinned-baseline",
+        "recommended_next_reads": [
+          "api/prompt-submission.md",
+          "api/websocket.md"
+        ]
+      }
     },
     {
       "title": "JavaScript Hooks and Registration",
@@ -169,7 +315,29 @@
       "nav_section": "Reference",
       "audience": null,
       "evidence": "Operational guidance",
-      "summary": "This page documents the machine-readable JSON artifacts this repository publishes. It covers what artifacts exist, what they contain, and how tooling authors can consume them from the static site or from the repo directly."
+      "summary": "This page documents the machine-readable JSON artifacts this repository publishes. It covers what artifacts exist, what they contain, and how tooling authors can consume them from the static site or from the repo directly.",
+      "tooling_metadata": {
+        "task_intents": [
+          "discover-artifacts",
+          "route-docs-task"
+        ],
+        "related_artifacts": [
+          "docs-index.json",
+          "js_hooks.json",
+          "manifest.json",
+          "node_api_schema.json",
+          "server_endpoints.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "support-routing",
+        "recommended_next_reads": [
+          "reference/object-info.md",
+          "start-here/artifact-consumer.md",
+          "start-here/tooling-builder.md"
+        ]
+      }
     },
     {
       "title": "Object Info",
@@ -177,7 +345,27 @@
       "nav_section": "Reference",
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
-      "summary": "`GET /object_info` is ComfyUI's node discovery endpoint. It returns the metadata the frontend and external tooling need to understand which nodes exist, what inputs they accept, what outputs they produce, and how they should be displayed."
+      "summary": "`GET /object_info` is ComfyUI's node discovery endpoint. It returns the metadata the frontend and external tooling need to understand which nodes exist, what inputs they accept, what outputs they produce, and how they should be displayed.",
+      "tooling_metadata": {
+        "task_intents": [
+          "inspect-object-info"
+        ],
+        "related_artifacts": [
+          "node_api_schema.json"
+        ],
+        "related_routes": [
+          "GET /object_info",
+          "GET /object_info/{node_class}"
+        ],
+        "related_events": [],
+        "runtime_required": true,
+        "stability_tier": "runtime-dependent",
+        "recommended_next_reads": [
+          "api/endpoints.md",
+          "reference/machine-readable-artifacts.md",
+          "start-here/artifact-consumer.md"
+        ]
+      }
     },
     {
       "title": "Artifact Schema Version Migration",
@@ -223,7 +411,7 @@
       "title": "Topic Scope",
       "path": "reference/topic-scope.md",
       "nav_section": "Reference",
-      "audience": null,
+      "audience": "contributor",
       "evidence": "Operational guidance",
       "summary": null
     },

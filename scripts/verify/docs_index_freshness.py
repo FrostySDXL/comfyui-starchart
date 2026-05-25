@@ -56,7 +56,7 @@ def verify_freshness() -> int:
         return 0
 
     print(
-        "ERROR: public/artifacts/docs-index.json is out of sync with the checked-in published docs navigation or page metadata."
+        "ERROR: public/artifacts/docs-index.json is out of sync with the checked-in published docs navigation, page metadata, or merged docs-index metadata."
     )
     print()
     print("Run the generator to fix:")

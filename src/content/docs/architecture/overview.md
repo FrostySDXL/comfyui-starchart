@@ -4,6 +4,7 @@ title: "Architecture Overview"
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
 **Last Updated:** 2026-05-18
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`.
 
 ## Scope
 

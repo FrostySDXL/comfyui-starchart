@@ -471,11 +471,15 @@ def main():
         print("No prior canonical raw baseline found; skipping pre-refresh backup.")
 
     old_jsons = load_existing_raw_jsons()
-    core_commit, frontend_commit = refresh_requested_snapshots(
-        args.core_version,
-        args.frontend_version,
-        snapshot_date,
-    )
+    try:
+        core_commit, frontend_commit = refresh_requested_snapshots(
+            args.core_version,
+            args.frontend_version,
+            snapshot_date,
+        )
+    except RuntimeError as exc:
+        print(f"Error: {exc}")
+        return 1
 
     try:
         runtime_object_info_path = capture_runtime_object_info(args, core_commit)

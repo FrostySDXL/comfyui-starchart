@@ -54,9 +54,6 @@ and refresh-path proof.
   `server.py`, `comfy_api/latest/_io.py`, and `basic_types.py`
 - `references/raw/object_info_runtime.json` is an optional runtime-only capture
   artifact and is not part of the canonical public artifact set
-- `references/community/ecosystem_packages.json` and `community_pages.json`
-  track external community metadata with their own `last_verified` and
-  `needs_review_after` fields, independent of the ComfyUI core/frontend baseline
 
 These artifacts are also published as static files under `public/artifacts/`,
 with current copies and versioned copies keyed to the pinned baseline. See

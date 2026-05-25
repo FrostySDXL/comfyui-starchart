@@ -115,6 +115,28 @@ For pages with mixed entry-level status, say that explicitly in the baseline
 status line and point readers to the inline notes. Do not collapse mixed status
 to a fully current claim.
 
+### Current advisory verifier failure criteria
+
+`scripts/verify/evidence_metadata_freshness.py` currently checks only these deterministic rules:
+
+1. covered pages must include `**Evidence:**` and `**Last Updated:**` in the opening metadata block
+2. retained API, hooks, custom-node, architecture, object-info, and machine-readable-artifact pages must include an opening `**Baseline verification status:**` line
+3. retained deep-dive pages that make current-baseline claims must also include that opening baseline-status line
+4. baseline-status exception wording must match one of the approved phrasings below
+
+The verifier is advisory-first. Do not add extra heuristics there without updating
+this policy and the maintainer lifecycle guidance in `CONTRIBUTING.md`.
+
+Approved non-current exception phrasings:
+
+```markdown
+**Baseline verification status:** Verified against the prior pinned baseline: core `v0.20.1`, frontend `v1.44.13`, snapshots `2026-04-30`. Current-baseline re-review is still pending.
+```
+
+```markdown
+**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
+```
+
 ## When Evidence Is Weak or Incomplete
 
 - say that explicitly

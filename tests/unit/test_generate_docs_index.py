@@ -20,10 +20,13 @@ class GenerateDocsIndexTests(unittest.TestCase):
     def _with_temp_repo_paths(self, root: Path):
         old_docs_root = generate_docs_index.DOCS_ROOT
         old_default_nav_source = generate_docs_index.DEFAULT_NAV_SOURCE
+        old_metadata_path = generate_docs_index.METADATA_PATH
         generate_docs_index.DOCS_ROOT = root / "src" / "content" / "docs"
         generate_docs_index.DEFAULT_NAV_SOURCE = root / "src" / "site" / "sidebar-data.json"
+        generate_docs_index.METADATA_PATH = root / "references" / "docs-index-metadata.json"
         self.addCleanup(setattr, generate_docs_index, "DOCS_ROOT", old_docs_root)
         self.addCleanup(setattr, generate_docs_index, "DEFAULT_NAV_SOURCE", old_default_nav_source)
+        self.addCleanup(setattr, generate_docs_index, "METADATA_PATH", old_metadata_path)
 
     def _write_sidebar_data(self, root: Path, entries: list[dict[str, object]]) -> None:
         sidebar_path = root / "src" / "site" / "sidebar-data.json"
@@ -57,6 +60,12 @@ class GenerateDocsIndexTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
+
+    def _write_metadata(self, root: Path, payload: dict[str, object]) -> Path:
+        metadata_path = root / "references" / "docs-index-metadata.json"
+        metadata_path.parent.mkdir(parents=True, exist_ok=True)
+        metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        return metadata_path
 
     def test_build_docs_index_is_deterministic_and_extracts_expected_fields(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -121,6 +130,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
                 "Operational guidance",
                 "API troubleshooting summary.",
             )
+            self._write_metadata(root, {})
 
             first = generate_docs_index.build_docs_index(root)
             second = generate_docs_index.build_docs_index(root)
@@ -150,6 +160,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             root = Path(tmp)
             self._with_temp_repo_paths(root)
             self._write_sidebar_data(root, [{"label": "Home", "path": "index.md"}])
+            self._write_metadata(root, {})
             page_path = root / "src" / "content" / "docs" / "index.md"
             page_path.parent.mkdir(parents=True, exist_ok=True)
             page_path.write_text(
@@ -193,6 +204,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             )
 
             self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            self._write_metadata(root, {})
             generated_path = root / "src" / "content" / "docs" / "ecosystem" / "map.md"
             generated_path.parent.mkdir(parents=True, exist_ok=True)
             generated_path.write_text(
@@ -218,7 +230,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             docs_index = generate_docs_index.build_docs_index(root)
             self.assertEqual([page["path"] for page in docs_index["pages"]], ["index.md"])
 
-    def test_excludes_known_generated_paths_even_without_banner_marker(self):
+    def test_non_generated_reference_page_is_no_longer_excluded_by_deleted_page_list(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             self._with_temp_repo_paths(root)
@@ -239,6 +251,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             )
 
             self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            self._write_metadata(root, {})
             self._write_page(
                 root,
                 "reference/server-py-summary.md",
@@ -248,7 +261,10 @@ class GenerateDocsIndexTests(unittest.TestCase):
             )
 
             docs_index = generate_docs_index.build_docs_index(root)
-            self.assertEqual([page["path"] for page in docs_index["pages"]], ["index.md"])
+            self.assertEqual(
+                [page["path"] for page in docs_index["pages"]],
+                ["index.md", "reference/server-py-summary.md"],
+            )
 
     def test_sidebar_nav_can_preserve_checked_in_nav_section_semantics(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -276,6 +292,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
                 ],
             )
 
+            self._write_metadata(root, {})
             self._write_page(
                 root,
                 "whats-new/index.md",
@@ -299,6 +316,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             self._with_temp_repo_paths(root)
+            self._write_metadata(root, {})
             custom_nav_path = root / "nav" / "custom-sidebar.json"
             custom_nav_path.parent.mkdir(parents=True, exist_ok=True)
             custom_nav_path.write_text(
@@ -349,6 +367,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             root = Path(tmp)
             self._with_temp_repo_paths(root)
             self._write_sidebar_data(root, [{"label": "Home", "path": "index.md"}])
+            self._write_metadata(root, {})
             page_path = root / "src" / "content" / "docs" / "index.md"
             page_path.parent.mkdir(parents=True, exist_ok=True)
             page_path.write_text(
@@ -389,10 +408,133 @@ class GenerateDocsIndexTests(unittest.TestCase):
             self.assertEqual(data["artifact"], "docs-index.json")
             self.assertEqual(
                 data["scope"]["surface"],
-                "hand-authored published docs pages included in the checked-in docs navigation",
+                "hand-authored published docs pages included in the checked-in docs navigation with optional tooling-oriented enrichment",
             )
             self.assertIn("pages", data)
             self.assertGreater(len(data["pages"]), 0)
+
+    def test_merges_tooling_metadata_under_nested_key(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {"label": "Home", "path": "index.md"},
+                    {
+                        "label": "API",
+                        "items": [
+                            {"label": "Prompt Submission", "path": "api/prompt-submission.md"}
+                        ],
+                    },
+                ],
+            )
+            self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            self._write_page(
+                root,
+                "api/prompt-submission.md",
+                "Prompt Submission",
+                "Source-backed from pinned snapshots",
+                "Prompt summary.",
+            )
+            self._write_metadata(
+                root,
+                {
+                    "api/prompt-submission.md": {
+                        "task_intents": ["submit-prompt"],
+                        "related_artifacts": ["server_endpoints.json", "docs-index.json"],
+                        "related_routes": ["POST /prompt"],
+                        "related_events": ["execution_success", "executing"],
+                        "runtime_required": True,
+                        "stability_tier": "pinned-baseline",
+                        "recommended_next_reads": ["index.md"],
+                    }
+                },
+            )
+
+            docs_index = generate_docs_index.build_docs_index(root)
+            prompt_entry = next(
+                page for page in docs_index["pages"] if page["path"] == "api/prompt-submission.md"
+            )
+            home_entry = next(page for page in docs_index["pages"] if page["path"] == "index.md")
+
+            self.assertNotIn("task_intents", prompt_entry)
+            self.assertEqual(
+                prompt_entry["tooling_metadata"],
+                {
+                    "task_intents": ["submit-prompt"],
+                    "related_artifacts": ["docs-index.json", "server_endpoints.json"],
+                    "related_routes": ["POST /prompt"],
+                    "related_events": ["executing", "execution_success"],
+                    "runtime_required": True,
+                    "stability_tier": "pinned-baseline",
+                    "recommended_next_reads": ["index.md"],
+                },
+            )
+            self.assertNotIn("tooling_metadata", home_entry)
+
+    def test_metadata_target_missing_from_generated_output_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {"label": "Home", "path": "index.md"},
+                    {
+                        "label": "Reference",
+                        "items": [
+                            {
+                                "label": "Generated Summary",
+                                "path": "reference/generated-summary.md",
+                            }
+                        ],
+                    },
+                ],
+            )
+            self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            generated_path = (
+                root / "src" / "content" / "docs" / "reference" / "generated-summary.md"
+            )
+            generated_path.parent.mkdir(parents=True, exist_ok=True)
+            generated_path.write_text(
+                "\n".join(
+                    [
+                        "<!-- GENERATED FILE: do not edit directly -->",
+                        "",
+                        "---",
+                        'title: "Generated Summary"',
+                        "---",
+                        "",
+                        "**Evidence:** Operational guidance",
+                        "",
+                        "## Scope",
+                        "",
+                        "Generated summary.",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            self._write_metadata(
+                root,
+                {
+                    "reference/generated-summary.md": {
+                        "task_intents": ["route-docs-task"],
+                        "related_artifacts": ["docs-index.json"],
+                        "related_routes": [],
+                        "related_events": [],
+                        "runtime_required": False,
+                        "stability_tier": "support-routing",
+                        "recommended_next_reads": ["index.md"],
+                    }
+                },
+            )
+
+            with self.assertRaisesRegex(
+                ValueError, "does not target a retained published docs page"
+            ):
+                generate_docs_index.build_docs_index(root)
 
 
 if __name__ == "__main__":

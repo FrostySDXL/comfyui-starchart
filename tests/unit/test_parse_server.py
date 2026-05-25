@@ -31,6 +31,25 @@ def _extract_single_sample(sample: str) -> list[dict]:
 
 
 class ParseServerTests(unittest.TestCase):
+    def test_server_helpers_get_helper_body_returns_only_target_body(self):
+        source = """
+def first_helper():
+    return web.Response(status=200)
+
+def image_upload(post):
+    image = post.get("image")
+    return web.json_response({"ok": True})
+
+def trailing_helper():
+    return web.Response(status=404)
+"""
+
+        helper_body = server_helpers._get_helper_body(source, "image_upload")
+        self.assertIn('image = post.get("image")', helper_body)
+        self.assertIn('return web.json_response({"ok": True})', helper_body)
+        self.assertNotIn("first_helper", helper_body)
+        self.assertNotIn("trailing_helper", helper_body)
+
     def test_server_helpers_extract_main_body_skips_nested_definitions(self):
         block = """
 @routes.post(\"/upload/mask\")

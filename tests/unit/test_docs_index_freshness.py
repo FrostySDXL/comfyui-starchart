@@ -83,6 +83,57 @@ class DocsIndexFreshnessUnitTests(unittest.TestCase):
                 module.generate_docs_index.build_docs_index = old_build_docs_index
                 module.COMMITTED_PATH = old_committed_path
 
+    def test_freshness_catches_merged_tooling_metadata_drift(self):
+        module = self._import_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            committed_path = tmpdir / "docs-index.json"
+            stale_index = {
+                "artifact": "docs-index.json",
+                "artifact_schema_version": "1.1.0",
+                "scope": {"surface": "test navigation", "excludes": []},
+                "pages": [
+                    {
+                        "title": "Prompt Submission",
+                        "path": "api/prompt-submission.md",
+                        "nav_section": "API",
+                        "audience": None,
+                        "evidence": "Source-backed from pinned snapshots",
+                        "summary": "Prompt summary.",
+                        "tooling_metadata": {
+                            "task_intents": ["submit-prompt"],
+                            "related_artifacts": ["server_endpoints.json"],
+                            "related_routes": ["POST /prompt"],
+                            "related_events": ["executing"],
+                            "runtime_required": True,
+                            "stability_tier": "pinned-baseline",
+                            "recommended_next_reads": ["api/history-queue.md"],
+                        },
+                    }
+                ],
+            }
+            committed_path.write_text(json.dumps(stale_index, indent=2) + "\n", encoding="utf-8")
+
+            fresh_index = json.loads(json.dumps(stale_index))
+            fresh_index["pages"][0]["tooling_metadata"]["related_events"] = [
+                "executing",
+                "execution_success",
+            ]
+
+            old_output_path = module.generate_docs_index.OUTPUT_PATH
+            old_build_docs_index = module.generate_docs_index.build_docs_index
+            old_committed_path = module.COMMITTED_PATH
+            try:
+                module.generate_docs_index.OUTPUT_PATH = committed_path
+                module.COMMITTED_PATH = committed_path
+                module.generate_docs_index.build_docs_index = lambda repo_root: fresh_index
+                result = module.main()
+                self.assertEqual(result, 1)
+            finally:
+                module.generate_docs_index.OUTPUT_PATH = old_output_path
+                module.generate_docs_index.build_docs_index = old_build_docs_index
+                module.COMMITTED_PATH = old_committed_path
+
 
 class DocsIndexFreshnessScriptTests(unittest.TestCase):
     """Tests that the freshness script runs successfully on the real repo."""
