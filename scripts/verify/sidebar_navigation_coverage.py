@@ -22,13 +22,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DOCS_ROOT = REPO_ROOT / "src" / "content" / "docs"
 SIDEBAR_DATA_PATH = REPO_ROOT / "src" / "site" / "sidebar-data.json"
-# Keep these explicit exclusions as a safety rail for generated pages that may
-# be intentionally restored later without becoming part of the retained
-# hand-authored published surface.
-GENERATED_PAGE_EXCLUSIONS = {
-    "ecosystem/map.md",
-    "reference/server-py-summary.md",
-}
+GENERATED_PAGE_EXCLUSIONS: set[str] = set()
 
 
 def normalize_docs_path(path: str) -> str:

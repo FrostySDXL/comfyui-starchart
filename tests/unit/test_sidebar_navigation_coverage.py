@@ -55,22 +55,23 @@ class SidebarNavigationCoverageUnitTests(unittest.TestCase):
         self.assertEqual(paths, [])
         self.assertIn("Invalid sidebar entry at Broken: expected path or items", errors)
 
-    def test_collect_hand_authored_docs_paths_excludes_generated_pages(self):
+    def test_collect_hand_authored_docs_paths_returns_all_markdown_files(self):
         module = _load_module()
 
         with tempfile.TemporaryDirectory() as tmpdir:
             docs_root = Path(tmpdir)
-            (docs_root / "reference").mkdir(parents=True)
-            (docs_root / "reference" / "glossary.md").write_text("# Glossary\n", encoding="utf-8")
-            (docs_root / "reference" / "server-py-summary.md").write_text(
-                "# Generated\n", encoding="utf-8"
-            )
-            (docs_root / "ecosystem").mkdir(parents=True)
-            (docs_root / "ecosystem" / "map.md").write_text("# Generated\n", encoding="utf-8")
+            (docs_root / "section-a").mkdir(parents=True)
+            (docs_root / "section-a" / "page.md").write_text("# Page A\n", encoding="utf-8")
+            (docs_root / "section-b").mkdir(parents=True)
+            (docs_root / "section-b" / "page.md").write_text("# Page B\n", encoding="utf-8")
+            (docs_root / "section-b" / "other.md").write_text("# Other\n", encoding="utf-8")
 
             collected = module.collect_hand_authored_docs_paths(docs_root)
 
-        self.assertEqual(collected, {"reference/glossary.md"})
+        self.assertEqual(
+            collected,
+            {"section-a/page.md", "section-b/other.md", "section-b/page.md"},
+        )
 
 
 class SidebarNavigationCoverageScriptTests(unittest.TestCase):

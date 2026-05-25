@@ -49,8 +49,7 @@ not imply npm publication intent; `package.json` remains `private: true`.
 ### Navigation, artifacts, and metadata
 
 - Reduce `src/site/sidebar-data.json` to the retained surface and regenerate the
-  published `docs-index.json` and `tooling-index.json` support artifacts to
-  match it.
+  merged `docs-index.json` support artifact to match it.
 - Merge `docs-index.json` and `tooling-index.json` into a single support index
   under `public/artifacts/docs-index.json`. The merged schema
   (`docs-index.schema.json` v1.1.0) tightens `additionalProperties` from `true`

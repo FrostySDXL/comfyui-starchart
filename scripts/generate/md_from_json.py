@@ -4,7 +4,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT = REPO_ROOT / "references" / "raw" / "server_endpoints.json"
-DEFAULT_OUTPUT = REPO_ROOT / "src" / "content" / "docs" / "reference" / "server-py-summary.md"
+DEFAULT_OUTPUT: Path | None = None
 
 
 def _format_returns(returns: dict) -> str:
@@ -174,7 +174,7 @@ def main() -> int:
         description="Generate markdown reference pages from extracted JSON"
     )
     parser.add_argument("--input", default=str(DEFAULT_INPUT), help="Input JSON path")
-    parser.add_argument("--output", default=str(DEFAULT_OUTPUT), help="Output markdown path")
+    parser.add_argument("--output", required=True, help="Output markdown path")
     args = parser.parse_args()
 
     input_path = Path(args.input)
