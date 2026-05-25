@@ -134,7 +134,20 @@ have a compatibility reason to stay with V1.
 - custom nodes should expose the narrowest, clearest interface possible
   so caching and graph reasoning stay predictable
 
+## Stable development habits
+
+The reduced surface keeps the most durable custom-node guidance here:
+
+- respect caching and execution semantics; keep outputs deterministic when
+  practical
+- validate as early as possible with strict types, bounds, and explicit options
+- keep interfaces narrow instead of hiding too much behavior behind flexible
+  inputs
+- prefer supported hooks for UI behavior instead of fragile monkey-patching
+- document direct client/server coupling honestly when API-only use will differ
+
 ## Read Next
 
 - [Node Structure](node-structure.md)
 - [Registration](registration.md)
+- [Datatypes](datatypes.md)

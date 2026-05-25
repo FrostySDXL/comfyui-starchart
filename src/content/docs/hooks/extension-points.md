@@ -44,9 +44,16 @@ menus, widget behavior, workflow-load UI adjustments, and other frontend-only
 changes.
 
 If the UI behavior is specifically about active subgraphs, traversal,
-subgraph-aware identifiers, or widget promotion across graph boundaries, route
-to [Subgraph Extension Behavior](subgraph-extension-behavior.md) after the main
-hook-selection pass.
+subgraph-aware identifiers, or widget promotion across graph boundaries, keep
+that work in the frontend layer and treat it as graph-context-sensitive rather
+than as an execution-model guarantee.
+
+Subgraph-sensitive frontend work usually needs to keep these distinctions clear:
+
+- root-graph identity versus active-graph identity
+- traversal through the active graph context rather than a flat node list
+- widget-promotion behavior as editor behavior, not execution behavior
+- cleanup of listeners or graph-context state when views change
 
 ### Prompt preprocessing
 
@@ -63,9 +70,8 @@ surface, not as a large hook inventory.
 ### Request/response integration
 
 If a frontend panel, service, or external tool needs a clear server endpoint,
-prefer [Add Custom Routes](../how-to/add-custom-routes.md). A route is usually a
-better fit than trying to force request/response work through callbacks or UI
-hooks.
+prefer a custom route. A route is usually a better fit than trying to force
+request/response work through callbacks or UI hooks.
 
 ### Graph-capability extension
 
@@ -170,9 +176,7 @@ for the same extension API. They solve different classes of problems.
 
 ## Read Next
 
-- [Server-Side Composition](../architecture/server-side-composition.md)
 - [JavaScript Hooks](javascript-hooks.md)
 - [Server Hooks](server-hooks.md)
-- [Subgraph Extension Behavior](subgraph-extension-behavior.md)
-- [Add Custom Routes](../how-to/add-custom-routes.md)
-- [Extension Patterns](../extensions/patterns.md)
+- [Architecture Overview](../architecture/overview.md)
+- [Custom Node Development Guide](../custom-nodes/development-guide.md)

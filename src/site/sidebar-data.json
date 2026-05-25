@@ -9,160 +9,62 @@
       { "label": "Author", "path": "start-here/author.md" },
       { "label": "Extension Developer", "path": "start-here/extension-developer.md" },
       { "label": "Service Integration", "path": "start-here/service-integration.md" },
-      { "label": "Docs Contributor", "path": "start-here/docs-contributor.md" },
-      { "label": "Tooling Builder", "path": "start-here/tooling-builder.md" }
-    ]
-  },
-  {
-    "label": "Orientation",
-    "items": [
-      { "label": "What's New", "path": "whats-new/index.md", "docs_index_nav_section": "Orientation / What's New" },
-      { "label": "Glossary", "path": "reference/glossary.md", "docs_index_nav_section": "Orientation / Glossary" },
-      { "label": "Quick Reference", "path": "reference/quick-reference.md", "docs_index_nav_section": "Orientation / Quick Reference" },
-      {
-        "label": "Troubleshooting",
-        "items": [
-          { "label": "Troubleshooting", "path": "troubleshooting/index.md" },
-          { "label": "API Integration", "path": "troubleshooting/api-integration.md" },
-          { "label": "Custom Node and Extension Boundaries", "path": "troubleshooting/custom-node-and-extension-boundaries.md" },
-          { "label": "Docs Authoring and Site Build", "path": "troubleshooting/docs-authoring-and-site-build.md" },
-          { "label": "General Diagnostic Workflow", "path": "troubleshooting/diagnostic-workflow.md" }
-        ]
-      },
-      {
-        "label": "Known Limitations",
-        "items": [
-          { "label": "Known Limitations", "path": "known-limitations/index.md", "docs_index_nav_section": "Orientation / Known Limitations" },
-          { "label": "API and Execution Boundaries", "path": "known-limitations/api-execution-boundaries.md", "docs_index_nav_section": "Orientation / Known Limitations" },
-          { "label": "Service Surface Boundaries", "path": "known-limitations/service-surface-boundaries.md", "docs_index_nav_section": "Orientation / Known Limitations" },
-          { "label": "Extension Boundaries", "path": "known-limitations/extension-boundaries.md", "docs_index_nav_section": "Orientation / Known Limitations" }
-        ]
-      }
+      { "label": "Tooling Builder", "path": "start-here/tooling-builder.md" },
+      { "label": "Artifact Consumer", "path": "start-here/artifact-consumer.md" }
     ]
   },
   {
     "label": "Architecture",
     "items": [
       { "label": "Overview", "path": "architecture/overview.md" },
-      { "label": "Execution Pipeline", "path": "architecture/execution-pipeline.md" },
-      { "label": "Server-Side Composition", "path": "architecture/server-side-composition.md" }
+      { "label": "Execution Pipeline", "path": "architecture/execution-pipeline.md" }
     ]
   },
   {
     "label": "API Reference",
     "items": [
-      { "label": "API Section Guide", "path": "api/index.md", "docs_index_nav_section": "API Reference / API Section Guide" },
       { "label": "Endpoints", "path": "api/endpoints.md" },
       { "label": "WebSocket", "path": "api/websocket.md" },
       { "label": "Prompt Submission", "path": "api/prompt-submission.md" },
-      { "label": "History Queue", "path": "api/history-queue.md" },
-      { "label": "Client ID", "path": "api/client-id.md" }
+      { "label": "History Queue", "path": "api/history-queue.md" }
     ]
   },
   {
     "label": "Hooks",
     "items": [
-      { "label": "Hooks Section Guide", "path": "hooks/index.md", "docs_index_nav_section": "Hooks / Hooks Section Guide" },
       { "label": "JavaScript Hooks", "path": "hooks/javascript-hooks.md" },
       { "label": "Server Hooks", "path": "hooks/server-hooks.md" },
-      { "label": "Extension Points", "path": "hooks/extension-points.md" },
-      { "label": "Subgraph Extension Behavior", "path": "hooks/subgraph-extension-behavior.md" }
+      { "label": "Extension Points", "path": "hooks/extension-points.md" }
     ]
   },
   {
     "label": "Custom Nodes",
     "items": [
-      { "label": "Custom Nodes Section Guide", "path": "custom-nodes/index.md", "docs_index_nav_section": "Custom Nodes / Custom Nodes Section Guide" },
       { "label": "Development Guide", "path": "custom-nodes/development-guide.md" },
       { "label": "Node Structure", "path": "custom-nodes/node-structure.md" },
-      { "label": "V1 Reference", "path": "custom-nodes/v1-reference.md" },
       { "label": "Registration", "path": "custom-nodes/registration.md" },
-      { "label": "Datatypes", "path": "custom-nodes/datatypes.md" },
-      { "label": "Best Practices", "path": "custom-nodes/best-practices.md" },
-      { "label": "V1 to V3 Migration", "path": "custom-nodes/v1-to-v3-migration.md" },
-      { "label": "V1 to V3 Case Study Pipe", "path": "custom-nodes/v1-to-v3-case-study-pipe.md" },
-      { "label": "V1 to V3 Case Study Segs", "path": "custom-nodes/v1-to-v3-case-study-segs.md" }
-    ]
-  },
-  {
-    "label": "Extensions",
-    "items": [
-      { "label": "Patterns", "path": "extensions/patterns.md" },
-      { "label": "Extension Lifecycle Boundaries", "path": "extensions/extension-lifecycle-boundaries.md" },
-      { "label": "Route-Backed Panels and Tools", "path": "extensions/route-backed-panels-and-tools.md" },
-      { "label": "ProfilerX Analysis", "path": "extensions/profilerx-analysis.md" },
-      { "label": "Common Architectures", "path": "extensions/common-architectures.md" }
-    ]
-  },
-  {
-    "label": "Tutorials",
-    "items": [
-      { "label": "Tutorials Section Guide", "path": "tutorials/index.md", "docs_index_nav_section": "Tutorials / Tutorials Section Guide" },
-      { "label": "Building First Node", "path": "tutorials/building-first-node.md" },
-      { "label": "Adding Background Metrics", "path": "tutorials/adding-background-metrics.md" },
-      { "label": "Extending Server", "path": "tutorials/extending-server.md" },
-      { "label": "API to Workflow: Prompt Lifecycle", "path": "tutorials/api-to-workflow-prompt-lifecycle.md", "docs_index_nav_section": "Tutorials / API to Workflow: Prompt Lifecycle" },
-      { "label": "API to Workflow: Execution Events", "path": "tutorials/api-to-workflow-execution-events.md", "docs_index_nav_section": "Tutorials / API to Workflow: Execution Events" }
-    ]
-  },
-  {
-    "label": "How-To",
-    "items": [
-      { "label": "How-To Section Guide", "path": "how-to/index.md", "docs_index_nav_section": "How-To / How-To Section Guide" },
-      { "label": "Install Custom Nodes Safely", "path": "how-to/install-custom-nodes-safely.md" },
-      { "label": "Enable and Use Manager on Manual or Portable Installs", "path": "how-to/enable-and-use-manager-on-manual-or-portable-installs.md" },
-      { "label": "Integrate with Manager", "path": "how-to/integrate-with-manager.md" },
-      { "label": "Update ComfyUI with Version Awareness", "path": "how-to/update-comfyui-with-version-awareness.md" },
-      { "label": "Publish a Custom Node to Registry", "path": "how-to/publish-a-custom-node-to-registry.md" },
-      { "label": "Troubleshoot Custom Node Breakage", "path": "how-to/troubleshoot-custom-node-breakage.md" },
-      { "label": "Monitor Execution", "path": "how-to/monitor-execution.md" },
-      { "label": "Run Runtime Verification Locally", "path": "how-to/run-runtime-verification-locally.md" },
-      { "label": "Add Custom Routes", "path": "how-to/add-custom-routes.md" },
-      { "label": "Consumer Starter Examples", "path": "how-to/consumer-starter-examples.md" }
-    ]
-  },
-  {
-    "label": "Decision Trees",
-    "items": [
-      { "label": "API Integration", "path": "decision-trees/api-integration.md" },
-      { "label": "Custom Node Architecture", "path": "decision-trees/custom-node-architecture.md" },
-      { "label": "Distribution Path", "path": "decision-trees/distribution-path.md" }
+      { "label": "Datatypes", "path": "custom-nodes/datatypes.md" }
     ]
   },
   {
     "label": "Reference",
     "items": [
+      { "label": "Machine-Readable Artifacts", "path": "reference/machine-readable-artifacts.md" },
       { "label": "Object Info", "path": "reference/object-info.md" },
-      { "label": "Server Py Summary", "path": "reference/server-py-summary.md" },
       { "label": "Artifact Schema Version Migration", "path": "reference/artifact-schema-version-migration.md" },
       { "label": "Source Evidence Policy", "path": "reference/source-evidence-policy.md" },
       { "label": "Writing Style Guide", "path": "reference/writing-style-guide.md" },
       { "label": "Doc Quality Checklist", "path": "reference/doc-quality-checklist.md" },
-      { "label": "Docs Deprecation and Staleness Policy", "path": "reference/docs-deprecation-and-staleness-policy.md" },
-      { "label": "Community Maintenance Policy", "path": "reference/community-maintenance-policy.md" },
-      { "label": "Community Generated Surfaces", "path": "reference/community-generated-surfaces.md" },
       { "label": "Version Pin Status", "path": "reference/version-pin-status.md" },
-      { "label": "Version History", "path": "reference/version-history.md" },
-      { "label": "Machine-Readable Artifacts", "path": "reference/machine-readable-artifacts.md" },
-      { "label": "Runtime and CI Operations", "path": "reference/runtime-ci-operations.md" }
-    ]
-  },
-  {
-    "label": "Ecosystem",
-    "items": [
-      { "label": "Map", "path": "ecosystem/map.md" },
-      { "label": "Evaluate Packages Safely", "path": "ecosystem/evaluate-packages-safely.md" }
+      { "label": "Topic Scope", "path": "reference/topic-scope.md" }
     ]
   },
   {
     "label": "Deep Dives",
     "items": [
-      { "label": "Deep Dives Section Guide", "path": "deep-dives/index.md", "docs_index_nav_section": "Deep Dives / Deep Dives Section Guide" },
       { "label": "Workflow JSON Schema", "path": "deep-dives/workflow-json-schema.md" },
       { "label": "Execution Model Inversion", "path": "deep-dives/execution-model-inversion.md" },
-      { "label": "Registry Packaging and Compatibility", "path": "deep-dives/registry-packaging-and-compatibility.md" },
-      { "label": "ComfyUI-Manager (Community)", "path": "deep-dives/comfyui-manager.md", "docs_index_nav_section": "Deep Dives / ComfyUI-Manager (Community)" },
-      { "label": "ComfyUI-Impact-Pack (Community)", "path": "deep-dives/comfyui-impact-pack.md", "docs_index_nav_section": "Deep Dives / ComfyUI-Impact-Pack (Community)" }
+      { "label": "Registry Packaging and Compatibility", "path": "deep-dives/registry-packaging-and-compatibility.md" }
     ]
   }
 ]

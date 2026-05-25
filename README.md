@@ -1,6 +1,6 @@
 # ComfyUI StarChart
 
-**Last Updated:** 2026-05-21  
+**Last Updated:** 2026-05-24  
 **ComfyUI Version Pin:** Core `v0.22.0` (`a8d2519058ea766ca3b14916bcc01ecef5efd235`) with official frontend `v1.45.12` (`8ee8dd03c46cc8ba20eb169ea6ff7189fdb21f91`) for the current pinned snapshots and extracted reference data
 
 **Evidence:** Operational guidance
@@ -89,7 +89,7 @@ Start here:
   - [Service Integration](src/content/docs/start-here/service-integration.md)
   - [Tooling Builder](src/content/docs/start-here/tooling-builder.md)
 - **Agents:** start with [Docs home](src/content/docs/index.md), then use [Tooling Builder](src/content/docs/start-here/tooling-builder.md), [Machine-Readable Artifacts](src/content/docs/reference/machine-readable-artifacts.md), and [AGENTS.md](AGENTS.md)
-- **Contributors:** [Docs Contributor](src/content/docs/start-here/docs-contributor.md)
+- **Contributors:** [CONTRIBUTING.md](CONTRIBUTING.md) plus the editorial policy stack under `src/content/docs/reference/`
 - **Maintainers:** [CONTRIBUTING.md](CONTRIBUTING.md) for canonical workflows, plus [AGENTS.md](AGENTS.md) for startup-critical repo guidance
 
 ## Quick Start
@@ -139,7 +139,7 @@ For artifact URLs, contract tiers, schemas, and consumer guidance, see
 [Machine-Readable Artifacts](src/content/docs/reference/machine-readable-artifacts.md).
 
 Consumer starter examples live in
-[src/content/docs/how-to/consumer-starter-examples.md](src/content/docs/how-to/consumer-starter-examples.md)
+[src/content/docs/start-here/artifact-consumer.md](src/content/docs/start-here/artifact-consumer.md)
 and `examples/consumers/`.
 
 ## Maintainer Workflow Entry Points

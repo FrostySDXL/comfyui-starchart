@@ -83,5 +83,5 @@ The current published versioned artifact directory is
   capture time and should not be treated as canonical baselines
 
 When exact version behavior matters, prefer the pinned snapshot files first,
-then reconcile against official docs and release notes. For release-line
-upgrade context, see [Version History](version-history.md).
+then reconcile against official docs and release notes. For artifact-surface
+consumption details, see [Machine-Readable Artifacts](machine-readable-artifacts.md).

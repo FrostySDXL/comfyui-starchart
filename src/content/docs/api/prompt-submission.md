@@ -142,6 +142,15 @@ When `execute_async` begins, it copies the submitted `client_id` into
 `server.client_id`, and most execution lifecycle events are then sent to
 that specific client rather than broadcast globally.
 
+Keep `client_id` and `prompt_id` separate:
+
+- `prompt_id` identifies one queued workflow and its later history entry
+- `client_id` identifies which connected client should receive targeted live
+  execution messages
+
+If you omit `client_id`, the prompt can still run. You simply lose the same
+client-targeted event relationship.
+
 ## Community client patterns
 
 The following patterns show up in community libraries and are useful to
@@ -196,3 +205,4 @@ rather than replacing them.
 
 - [API Endpoints](endpoints.md)
 - [WebSocket](websocket.md)
+- [History and Queue](history-queue.md)

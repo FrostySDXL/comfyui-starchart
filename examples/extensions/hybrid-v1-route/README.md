@@ -3,7 +3,7 @@
 This example shows the smallest repo-local hybrid extension pattern that combines:
 
 - module-level V1 `NODE_CLASS_MAPPINGS` in `__init__.py`
-- one simple `STRING`-based node using the V1 contract described in `src/content/docs/custom-nodes/v1-reference.md`
+- one simple `STRING`-based node using the legacy V1 class/export pattern still seen in older node packs
 - one `PromptServer.instance.routes` route in `routes.py`
 
 ## What each file demonstrates
@@ -32,4 +32,4 @@ That makes it a hybrid package even though it deliberately omits frontend JavaSc
 - runtime validation and persistence helpers
 - advanced startup or lifecycle handling
 
-Use this example as the smallest composition reference. For the V1 node contract itself, read `src/content/docs/custom-nodes/v1-reference.md` instead of treating this README as a second V1 reference.
+Use this example as the smallest composition reference. For the retained custom-node guidance around structure, registration, and modern package shape, read `src/content/docs/custom-nodes/node-structure.md`, `src/content/docs/custom-nodes/registration.md`, and `src/content/docs/custom-nodes/development-guide.md` instead of treating this README as a second node reference.

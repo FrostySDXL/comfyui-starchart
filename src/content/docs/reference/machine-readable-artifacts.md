@@ -458,8 +458,7 @@ They are conceptual and lightweight. They demonstrate bounded consumption
 patterns, not full SDK or OpenAPI generation guarantees.
 
 If you want runnable starter patterns instead of inline conceptual snippets, use
-the self-contained consumer examples summarized on
-[Consumer Starter Examples](../how-to/consumer-starter-examples.md):
+the self-contained consumer examples under `examples/consumers/`:
 
 - Python manifest reader - manifest-first canonical artifact loading with checksum validation
 - JavaScript docs-index routing example - optional `docs-index.json` routing plus separate manifest-based artifact discovery
@@ -564,9 +563,7 @@ The repository can also produce `object_info_runtime.json` via live ComfyUI
 capture. This file is explicitly excluded from the published artifact surface.
 It reflects the specific runtime configuration of the instance it was captured
 from and is not a reproducible baseline. Use it only when your workflow depends
-on live installed-node state or hybrid enrichment. See
-[Runtime and CI Operations](runtime-ci-operations.md) and
-[Object Info](object-info.md).
+on live installed-node state or hybrid enrichment. See [Object Info](object-info.md).
 
 This runtime-only surface remains optional by design. The canonical artifact
 publish step excludes it, `manifest.json` does not discover it, and its
@@ -596,9 +593,9 @@ presence depends on whether someone ran the live runtime capture path at all.
 
 ## Read Next
 
+- [Start Here: Artifact Consumer](../start-here/artifact-consumer.md)
 - [Start Here: Tooling Builder](../start-here/tooling-builder.md)
 - [Version Pin Status](version-pin-status.md)
-- [Runtime and CI Operations](runtime-ci-operations.md)
 - [Source Evidence Policy](source-evidence-policy.md)
 - [API Reference: Endpoints](../api/endpoints.md)
 - [Hooks: JavaScript Hooks](../hooks/javascript-hooks.md)

@@ -11,6 +11,7 @@ Usage:
 Exits 0 if generated output matches committed file, exits 1 with a diff report.
 """
 
+import json
 import sys
 import tempfile
 from pathlib import Path
@@ -18,12 +19,32 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GENERATOR = REPO_ROOT / "scripts" / "generate" / "generate_community_pages.py"
 COMMITTED_PATH = REPO_ROOT / "src" / "content" / "docs" / "ecosystem" / "map.md"
+COMMUNITY_PAGES_JSON = REPO_ROOT / "references" / "community" / "community_pages.json"
+
+
+def load_tracked_generated_pages(json_path: Path | None = None) -> list[dict]:
+    """Return community pages still tracked as generated pages."""
+    resolved_json_path = json_path if json_path is not None else COMMUNITY_PAGES_JSON
+    data = json.loads(resolved_json_path.read_text(encoding="utf-8"))
+    pages = data.get("pages", [])
+    return [
+        page
+        for page in pages
+        if isinstance(page, dict)
+        and (page.get("page_kind") == "generated_catalog" or page.get("generated_from") is not None)
+    ]
 
 
 def main() -> int:
     if not GENERATOR.exists():
         print(f"ERROR: Generator not found at {GENERATOR}")
         return 1
+
+    tracked_generated_pages = load_tracked_generated_pages()
+    if not tracked_generated_pages:
+        print("Generated community pages are fresh.")
+        print("  No tracked generated community pages on current published surface.")
+        return 0
 
     if not COMMITTED_PATH.exists():
         print(f"ERROR: Committed file not found at {COMMITTED_PATH}")
@@ -37,7 +58,6 @@ def main() -> int:
         # that captures output without overwriting the committed file.
         # We import and call build_markdown directly instead.
         import importlib.util
-        import json
 
         spec = importlib.util.spec_from_file_location("generate_community_pages", GENERATOR)
         module = importlib.util.module_from_spec(spec)

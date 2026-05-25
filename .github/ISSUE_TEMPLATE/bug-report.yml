@@ -34,7 +34,7 @@ body:
     attributes:
       label: Affected page, script, or artifact
       description: Name the specific file, page, artifact, or workflow if you know it.
-      placeholder: src/content/docs/start-here/docs-contributor.md, scripts/verify/cross_references.py, public/artifacts/manifest.json
+      placeholder: src/content/docs/start-here/artifact-consumer.md, scripts/verify/cross_references.py, public/artifacts/manifest.json
     validations:
       required: true
   - type: textarea

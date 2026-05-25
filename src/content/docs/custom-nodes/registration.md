@@ -120,4 +120,5 @@ Stay aware of V1 when:
 ## Read Next
 
 - [Node Structure](node-structure.md)
-- [V1 to V3 Migration](v1-to-v3-migration.md)
+- [Development Guide](development-guide.md)
+- [Datatypes](datatypes.md)

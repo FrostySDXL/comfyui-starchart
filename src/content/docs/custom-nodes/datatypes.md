@@ -122,4 +122,4 @@ not default design choices.
 ## Read Next
 
 - [Node Structure](node-structure.md)
-- [Best Practices](best-practices.md)
+- [Development Guide](development-guide.md)

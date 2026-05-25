@@ -60,4 +60,4 @@ Optional flags:
 For the contract and support-artifact boundaries this example assumes, read
 [`src/content/docs/reference/machine-readable-artifacts.md`](../../../src/content/docs/reference/machine-readable-artifacts.md),
 [`src/content/docs/start-here/tooling-builder.md`](../../../src/content/docs/start-here/tooling-builder.md),
-and [`src/content/docs/how-to/consumer-starter-examples.md`](../../../src/content/docs/how-to/consumer-starter-examples.md).
+and [`src/content/docs/start-here/artifact-consumer.md`](../../../src/content/docs/start-here/artifact-consumer.md).

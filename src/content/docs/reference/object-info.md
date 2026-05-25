@@ -106,12 +106,8 @@ a canonical published artifact by itself, and it should not replace the default
 published artifact surface described in
 [Machine-Readable Artifacts](machine-readable-artifacts.md).
 
-See [Runtime and CI Operations](runtime-ci-operations.md) for the hybrid
-evidence model and when to use runtime capture.
-
 ## Read Next
 
 - [API Endpoints](../api/endpoints.md)
 - [Prompt Submission](../api/prompt-submission.md)
 - [Machine-Readable Artifacts](machine-readable-artifacts.md)
-- [Runtime and CI Operations](runtime-ci-operations.md)

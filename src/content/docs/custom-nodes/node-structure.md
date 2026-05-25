@@ -22,9 +22,8 @@ Instead of scattering configuration across multiple legacy class
 attributes, the node declares its public contract in one schema object
 and implements behavior in one execution method.
 
-If you are here for legacy V1 work, jump to the
-[V1 Custom Node Reference](v1-reference.md) for the callable `INPUT_TYPES()`
-pattern, `NODE_CLASS_MAPPINGS`, placement guidance, and minimal STRING example.
+Legacy V1 patterns still appear in older repos, but this reduced surface keeps
+the retained node-structure reference focused on the modern V3 shape.
 
 Minimal V3 shape:
 

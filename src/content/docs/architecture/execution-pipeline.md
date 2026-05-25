@@ -149,13 +149,12 @@ This page does not:
 - document every cache-provider internal
 - guarantee undocumented execution-order behavior
 
-Use it as the architecture map, then move to the narrower API and tutorial pages
-for exact contracts.
+Use it as the architecture map, then move to the narrower retained API pages for
+exact contracts.
 
 ## Read Next
 
 - [Architecture Overview](overview.md)
-- [Server-Side Composition](server-side-composition.md)
-- [API to Workflow: Prompt Lifecycle](../tutorials/api-to-workflow-prompt-lifecycle.md)
-- [API to Workflow: Execution Events](../tutorials/api-to-workflow-execution-events.md)
 - [Prompt Submission](../api/prompt-submission.md)
+- [WebSocket](../api/websocket.md)
+- [History and Queue](../api/history-queue.md)

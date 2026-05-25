@@ -20,7 +20,7 @@ EXPECTED_EXAMPLE_FAMILIES = (
 )
 README_REQUIRED_FAMILIES = ("consumers", "custom-nodes", "extensions")
 ROUTED_DOC_RELATIVE_PATHS = (
-    Path("src/content/docs/how-to/consumer-starter-examples.md"),
+    Path("src/content/docs/start-here/artifact-consumer.md"),
     Path("src/content/docs/start-here/tooling-builder.md"),
 )
 KNOWN_REPO_ROOT_PREFIXES = (

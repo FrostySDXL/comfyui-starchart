@@ -74,5 +74,5 @@ Those cases usually mean baseline review, not guaranteed-structure migration.
 ## Read Next
 
 - [Machine-Readable Artifacts](machine-readable-artifacts.md)
-- [Runtime and CI Operations](runtime-ci-operations.md)
-- [Version History](version-history.md)
+- [Version Pin Status](version-pin-status.md)
+- [Topic Scope](topic-scope.md)

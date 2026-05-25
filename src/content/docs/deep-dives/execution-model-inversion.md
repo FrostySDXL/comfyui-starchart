@@ -145,6 +145,6 @@ inversion, but it should not overclaim undocumented internals.
 
 ## Read Next
 
-- [V1 to V3 Migration Guide](../custom-nodes/v1-to-v3-migration.md)
+- [Custom Node Development Guide](../custom-nodes/development-guide.md)
 - [Prompt Submission](../api/prompt-submission.md)
-- [Extension Patterns](../extensions/patterns.md)
+- [Execution Pipeline](../architecture/execution-pipeline.md)

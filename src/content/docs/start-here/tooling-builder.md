@@ -3,7 +3,7 @@ title: "Start Here: Tooling Builder"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance for repo-local artifact routing
-**Last Updated:** 2026-05-18
+**Last Updated:** 2026-05-24
 
 ## Scope
 
@@ -36,9 +36,9 @@ Start by deciding where your tool will run and what it needs from ComfyUI.
 | MCP | You want model-assisted tool use through the official ComfyUI MCP server surface | Treat this as a bounded orchestration surface, not a replacement for the local API or published artifacts. Official docs describe it as experimental. |
 
 If your code runs inside ComfyUI rather than outside it, you probably need a
-custom node, frontend extension, custom route, or server hook instead of a pure
-tooling integration path. Use the [Decision Tree: API Integration](../decision-trees/api-integration.md)
-when that boundary is still unclear.
+custom node, frontend extension, server hook, or extension-owned route instead
+of a pure tooling integration path. Use the retained extension and custom-node
+pages when that boundary is still unclear.
 
 ## Start with Workflow JSON, Not Transport Details
 
@@ -63,9 +63,7 @@ Use the most stable input that matches your job.
 |------|------------|-----|
 | Canonical pinned artifact discovery | [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) | Start from `manifest.json` when you need version-pinned JSON artifacts and checksum-aware canonical discovery. |
 | Live installed-node discovery | [Object Info](../reference/object-info.md) | `GET /object_info` reflects the current instance, including installed custom nodes. |
-| Conservative published-doc page routing | `artifacts/docs-index.json` via [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) | Use this when you need bounded page discovery without full-site scraping or high-level task labeling. |
-| Higher-level tooling-task routing | `artifacts/tooling-index.json` via [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) | Use this when your tool needs task intents, related routes, runtime hints, or recommended next reads on top of page discovery. |
-| Runtime-only hybrid capture | [Runtime and CI Operations](../reference/runtime-ci-operations.md) | Use this only when the live instance state matters more than the pinned baseline. |
+| Bounded routing support | [Artifact Consumer](artifact-consumer.md) | Use this when you need the shortest retained route for support-index usage and starter-example boundaries. |
 
 Default rule: start from the canonical published artifacts when you need a
 stable, pinned baseline. Add runtime capture only when your tool depends on the
@@ -137,16 +135,18 @@ workflow-handling rules.
 | Local routes | [API Endpoints](../api/endpoints.md) | Prompt submission, queue, history, file/view, and route semantics |
 | Live events | [WebSocket](../api/websocket.md) | Progress, lifecycle messages, and preview delivery |
 | Live node discovery | [Object Info](../reference/object-info.md) | Installed-node capability inspection |
-| Hybrid runtime capture | [Runtime and CI Operations](../reference/runtime-ci-operations.md) | When a live instance must enrich the pinned baseline |
-| Integration triage | [API Integration Troubleshooting](../troubleshooting/api-integration.md) | Standard API vs extension route vs frontend-boundary confusion |
-| Integration choice | [Decision Tree: API Integration](../decision-trees/api-integration.md) | Decide whether you need API, extension, or hybrid behavior |
+| Shortest artifact-consumer route | [Artifact Consumer](artifact-consumer.md) | Support-index orientation and starter-example boundary |
+| Execution model | [Execution Pipeline](../architecture/execution-pipeline.md) | Queueing, validation, and live-event responsibilities |
 
 ## Starter Examples
 
 Use these bounded starter patterns when you want concrete consumer-side examples:
 
-- [Consumer Starter Examples](../how-to/consumer-starter-examples.md)
-- `examples/consumers/prompt-submit-monitor-history/` for the highest-level built-in starter flow in this repo: submit prompt -> watch WebSocket -> fetch history
+- `examples/consumers/prompt-submit-monitor-history/`
+- `examples/consumers/python-manifest-reader/`
+- `examples/consumers/javascript-docs-and-artifacts/`
+- `examples/consumers/shell-jq-artifact-consumer/`
+- `examples/consumers/artifacts-plus-live-api/`
 
 These examples are starter patterns, not a supported SDK surface.
 
@@ -159,9 +159,8 @@ repo-local maintainer workflow in `CONTRIBUTING.md`.
 ## Read Next
 
 - [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md)
+- [Artifact Consumer](artifact-consumer.md)
 - [Execution Pipeline](../architecture/execution-pipeline.md)
 - [API Endpoints](../api/endpoints.md)
 - [WebSocket](../api/websocket.md)
 - [Object Info](../reference/object-info.md)
-- [API Integration Troubleshooting](../troubleshooting/api-integration.md)
-- [Decision Tree: API Integration](../decision-trees/api-integration.md)

@@ -18,10 +18,10 @@ GENERATED_PAGE_EXCLUSIONS = {
 
 AUDIENCE_BY_PATH = {
     "start-here/author.md": "consumer",
+    "start-here/artifact-consumer.md": "consumer",
     "start-here/extension-developer.md": "consumer",
     "start-here/service-integration.md": "consumer",
     "start-here/tooling-builder.md": "consumer",
-    "start-here/docs-contributor.md": "contributor",
 }
 
 

@@ -1,6 +1,6 @@
 # Contributing
 
-**Last Updated:** 2026-05-21
+**Last Updated:** 2026-05-24
 
 Thank you for contributing to ComfyUI StarChart. This guide is the
 canonical repo-local maintainer workflow authority for making maintainer-grade
@@ -11,8 +11,11 @@ public discussion or review, and use [SECURITY.md](SECURITY.md) for private
 vulnerability reporting.
 
 If you are new to documentation contributions or only need the lighter
-editorial path, start with
-[`src/content/docs/start-here/docs-contributor.md`](src/content/docs/start-here/docs-contributor.md).
+editorial path, start with the editorial policy stack:
+
+- [`src/content/docs/reference/source-evidence-policy.md`](src/content/docs/reference/source-evidence-policy.md)
+- [`src/content/docs/reference/writing-style-guide.md`](src/content/docs/reference/writing-style-guide.md)
+- [`src/content/docs/reference/doc-quality-checklist.md`](src/content/docs/reference/doc-quality-checklist.md)
 
 Move from that lighter path into `CONTRIBUTING.md` when your change crosses
 into maintainer-owned surfaces such as scripts, CI, extracted data, published
@@ -30,9 +33,8 @@ should not be duplicated across the other top-level files or the published docs
 site.
 
 `CHANGELOG.md` is the canonical chronological history surface for notable repo
-changes. `src/content/docs/whats-new/index.md` is a short curated reader-facing
-highlights page. Do not turn `whats-new` into a second changelog or mirror the
-two files entry-for-entry.
+changes. Keep reader-facing highlights selective in the retained docs surface
+instead of creating a second changelog page.
 
 ---
 
@@ -152,7 +154,7 @@ guides, and tooling artifacts.
 
 | Path | What lives here | Can you edit it by hand? |
 |------|-----------------|--------------------------|
-| `src/content/docs/` | Canonical published docs pages (reference, tutorials, decision guides) | **Yes** -- this is the main human contribution surface |
+| `src/content/docs/` | Canonical published docs pages for the retained 30-page surface | **Yes** -- this is the main human contribution surface |
 | `examples/` | Hand-authored pattern examples, API calls, workflows | **Yes** |
 | `references/raw/` | Extracted JSON from upstream snapshots (endpoints, hooks, schemas) | **No** -- edit upstream snapshots in `references/snapshots/`, then re-run extractors |
 | `references/community/` | Human-editable metadata for community pages and ecosystem packages | **Yes** -- edit JSON directly, then regenerate downstream artifacts |
@@ -164,7 +166,7 @@ guides, and tooling artifacts.
 | `scripts/verify/` | Validation scripts (blocking and non-blocking) | **Yes** -- if you are adding or fixing a verifier |
 | `tests/unit/` | Unit tests for scripts | **Yes** -- every new script needs tests |
 | `public/artifacts/` | Published JSON artifacts, manifest, versioned copies, checked-in schema files, docs-index support artifact, delta summary, and refresh provenance | **Mixed** -- `public/artifacts/schemas/` is hand-authored; `refresh-provenance.json` is written by `scripts/refresh_snapshots.py`; `docs-index.json` is produced by `scripts/generate/generate_docs_index.py`; other canonical published artifact outputs are produced by `scripts/generate/publish_reference_artifacts.py` |
-| `src/content/docs/ecosystem/map.md` | Generated community ecosystem page | **No** -- edit `references/community/ecosystem_packages.json`, then regenerate |
+| `src/content/docs/ecosystem/map.md` | Optional generated community ecosystem page if intentionally restored to the published surface later | **No** -- edit `references/community/ecosystem_packages.json`, then regenerate |
 | `.github/workflows/` | CI and deployment automation | **Yes** -- but test locally first |
 
 
@@ -174,13 +176,13 @@ guides, and tooling artifacts.
 |--------------|---------------------|---------------------|---------------------|
 | Fix or add a docs page | The target page + `src/content/docs/reference/source-evidence-policy.md` + `src/content/docs/reference/writing-style-guide.md` | `src/content/docs/<topic>/<page>.md`; use `templates/docs/` or `scripts/new_doc.py` | `python scripts/verify/cross_references.py` + `npm run build` |
 | Add or modify shell examples | Existing shell example under `examples/` + adjacent example README | The `.sh` file + any paired README guidance | `python scripts/verify/shell_examples_syntax.py` |
-| Update the community catalog | `references/community/ecosystem_packages.json` + `src/content/docs/reference/community-maintenance-policy.md` | The JSON source file | `validate_schema.py`, `community_metadata.py`, `community_staleness.py`, `generate_community_pages.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `cross_references.py`, `npm run build` |
+| Update community metadata | `references/community/ecosystem_packages.json` + `references/community/community_pages.json` + `src/content/docs/reference/topic-scope.md` | The JSON source file(s) | `validate_schema.py`, `community_metadata.py`, `community_staleness.py`, `community_page_coverage.py`; also run `generate_community_pages.py` and `community_generated_freshness.py` only if you intentionally restore a generated community page |
 | Update tooling routing metadata | `references/tooling-index-metadata.json` + `src/content/docs/reference/machine-readable-artifacts.md` | The JSON source file, then regenerate `public/artifacts/tooling-index.json` | `python scripts/generate/generate_tooling_index.py` + `python scripts/verify/tooling_index_freshness.py` + `python scripts/verify/cross_references.py` + `npm run build` |
 | Update Python packaging, locked dependencies, or maintainer tooling config | `pyproject.toml` + `requirements.in` + affected `scripts/` modules | `pyproject.toml`, `requirements.in`, regenerated `requirements.lock`, and any affected script/test files | `python -m pip install -e .` + `python -m mypy` + `python -m unittest discover -s tests -v` + `python scripts/verify/run_all.py` |
 | Update extracted references after a snapshot refresh | Matching extractor in `scripts/extract/` + snapshot files in `references/snapshots/<date>/` | Run the extractor script | `python scripts/verify/extraction_idempotency.py` + `validate_schema.py` |
 | Add a new extractor | An existing extractor in `scripts/extract/` + its test in `tests/unit/` | New script + new test | `python -m unittest discover -s tests -v` |
 | Add a verification script | An existing verifier in `scripts/verify/` + its test in `tests/unit/` | New script + new test + update `run_all.py` / `.github/workflows/ci.yml` intentionally | `python -m unittest discover -s tests -v` |
-| Update repo history / highlights pages | `CHANGELOG.md` + `src/content/docs/whats-new/index.md` | One or both files depending on audience and scope | `python scripts/verify/cross_references.py` + `npm run build` |
+| Update repo history | `CHANGELOG.md` | `CHANGELOG.md` | `python scripts/verify/cross_references.py` + `npm run build` |
 | Refresh upstream to a new version | `scripts/refresh_snapshots.py` | Run refresh, note the auto-created repo-local refresh backup directory under `references/_refresh_backups/` plus `public/artifacts/refresh-provenance.json`, republish artifacts, then regenerate the delta summary when comparing baselines | `publish_reference_artifacts.py` + `generate_snapshot_delta_summary.py` + `run_all.py` |
 | Check for newer pinned upstream releases without refreshing snapshots | `scripts/check_upstream_versions.py` + `.github/workflows/upstream-watch.yml` | Usually no edit; update the script/workflow together if the watcher behavior changes | `python scripts/check_upstream_versions.py` |
 | Change CI behavior | Relevant workflow in `.github/workflows/` + adjacent operational docs | Edit YAML + linked docs | Inspect YAML carefully, run `python -m unittest discover -s tests -v -p "test_run_all.py"` and `python scripts/verify/run_all.py`, then inspect Ubuntu/Windows Actions runs and any advisory replay workflow after push |
@@ -210,27 +212,13 @@ guides, and tooling artifacts.
 6. **Review your diff** before committing. Ensure you did not accidentally edit
    generated files.
 
-### Updating `CHANGELOG.md` vs `src/content/docs/whats-new/index.md`
+### Updating `CHANGELOG.md`
 
-Treat these as separate surfaces with different jobs:
+`CHANGELOG.md` is the canonical chronological repo history.
 
-- `CHANGELOG.md` is the canonical chronological repo history.
-- `src/content/docs/whats-new/index.md` is a short curated highlights page for
-  readers navigating the published site.
-
-Update `CHANGELOG.md` when a change is notable in repo history, including CI,
-verification, docs architecture, artifact publication, or maintainer workflow
-milestones.
-
-Update `whats-new` only when the change materially affects one or more of:
-
-- reader navigation or entry paths
-- published artifacts or their interpretation
-- verification expectations maintainers or tooling authors should notice quickly
-- major workflow entry points visible from the published docs surface
-
-Do not copy changelog entries into `whats-new`. The highlights page should stay
-selective, thematic, and shorter-lived than the changelog.
+Update it when a change is notable in repo history, including CI,
+verification, docs architecture, artifact publication, maintainer workflow,
+or major retained-surface routing changes.
 
 When you touch either file, verify locally:
 
@@ -239,25 +227,32 @@ python scripts/verify/cross_references.py
 npm run build
 ```
 
-### Updating the Community Catalog
+### Updating Community Metadata
 
-The ecosystem map at `src/content/docs/ecosystem/map.md` is generated. Do not edit it by hand.
+There is currently no generated community catalog page on the retained
+published surface. The underlying community metadata still lives in
+`references/community/`.
 
-1. Edit `references/community/ecosystem_packages.json` for catalog entries.
-2. Edit `references/community/community_pages.json` for page review metadata.
-3. Run the verification and generation pipeline in order:
+1. Edit `references/community/ecosystem_packages.json` for package entries.
+2. Edit `references/community/community_pages.json` for tracked community-page review metadata.
+3. Run the metadata verification pipeline:
    ```bash
-   python scripts/verify/validate_schema.py
-   python scripts/verify/community_metadata.py
-   python scripts/verify/community_staleness.py
+    python scripts/verify/validate_schema.py
+    python scripts/verify/community_metadata.py
+    python scripts/verify/community_staleness.py
+    python scripts/verify/community_page_coverage.py
+    python scripts/verify/cross_references.py
+    npm run build
+    ```
+4. Only if you intentionally restore a generated community page such as
+   `src/content/docs/ecosystem/map.md`, also run:
+   ```bash
    python scripts/generate/generate_community_pages.py
    python scripts/verify/community_generated_freshness.py
-   python scripts/verify/community_page_coverage.py
-   python scripts/verify/cross_references.py
-   npm run build
    ```
    Each step validates a different layer: schema correctness, metadata rules,
-   staleness, regeneration, freshness, coverage, cross-links, and final build.
+   staleness, tracked-page coverage, optional regeneration freshness,
+   cross-links, and final build.
 
 ### Updating Extracted References
 
@@ -425,7 +420,7 @@ which remains rollback and comparison working state rather than durable history.
 Understanding this boundary prevents accidentally editing files that will be overwritten later.
 
 - **Hand-authored:** Pages under `src/content/docs/`, files under `examples/`, and editorial reference files.
-- **Generated:** `src/content/docs/ecosystem/map.md` is produced by `scripts/generate/generate_community_pages.py` from `references/community/ecosystem_packages.json`.
+- **Generated (currently optional):** `src/content/docs/ecosystem/map.md` is produced by `scripts/generate/generate_community_pages.py` from `references/community/ecosystem_packages.json` when that page is intentionally part of the published surface.
 - **Extracted:** JSON files under `references/raw/` are produced by `scripts/extract/` from `references/snapshots/`.
 - **Published:** Files under `public/artifacts/` are produced by `scripts/generate/publish_reference_artifacts.py`.
 - **Support-artifact exception:** `public/artifacts/docs-index.json` is produced by `scripts/generate/generate_docs_index.py` and stays outside the canonical manifest-discovery contract.
@@ -457,8 +452,8 @@ pair runs in order as `docs_index_freshness.py` followed immediately by
 ## Maintainer Failure-Path Quick Guide
 
 Use this section when a push or PR does not fail as one obvious script error.
-Keep the deeper workflow-specific detail in
-[`src/content/docs/reference/runtime-ci-operations.md`](src/content/docs/reference/runtime-ci-operations.md).
+Keep the deeper workflow-specific detail in this file's verification and
+rollback sections.
 
 ### Broken pushes
 
@@ -648,14 +643,14 @@ repo in a half-updated state.
   `public/artifacts/versions/`, and the published `refresh-provenance.json` record.
 
 For the full refresh closure, broken-push triage sequence, and workflow-level
-rollback posture, use
-[`src/content/docs/reference/runtime-ci-operations.md`](src/content/docs/reference/runtime-ci-operations.md).
+rollback posture, use the refresh, verification, and rollback sections in this
+file directly.
 
 ---
 
 ## Common Pitfalls
 
-- **Editing generated markdown directly:** `src/content/docs/ecosystem/map.md` looks like a normal markdown file, but it is produced by a generator. Always edit `references/community/ecosystem_packages.json` and rerun the generator instead.
+- **Editing generated markdown directly:** if `src/content/docs/ecosystem/map.md` is intentionally restored, treat it as generated output. Edit `references/community/ecosystem_packages.json` and rerun the generator instead.
 - **Windows backslashes in JSON:** If you author or run extractors on Windows, paths written with `str(path)` will contain backslashes. Always normalize with `.replace("\\", "/")` before writing JSON metadata.
 - **Forgetting to regenerate after JSON changes:** If you edit `references/raw/` or `references/community/` JSON files, rerun the matching generator before running `cross_references.py` or `npm run build`.
 - **Misunderstanding CI blocking behavior:** `python_style.py`, `cross_references.py`, `docs_index_freshness.py`, `validate_schema.py`, `verify_artifact_integrity.py`, `markdown_top_level_spacing.py`, `community_generated_freshness.py`, `community_page_coverage.py`, `sidebar_navigation_coverage.py`, and `rendered_links.py` will block CI and prevent merge. `stale_content.py`, `extraction_idempotency.py`, `upstream_pins.py`, `community_metadata.py`, and `community_staleness.py` run in CI but do not block the pipeline.
@@ -687,9 +682,8 @@ For script or extractor changes, also include:
 
 ## Getting Help
 
-- Read `src/content/docs/start-here/docs-contributor.md` for an introduction to editorial standards.
-- Read `src/content/docs/reference/writing-style-guide.md` for page modes and tone.
 - Read `src/content/docs/reference/source-evidence-policy.md` for trust hierarchy and evidence labeling.
+- Read `src/content/docs/reference/writing-style-guide.md` for page modes and tone.
 - Read `src/content/docs/reference/doc-quality-checklist.md` for a pre-submit review step.
 
 ## Local Node.js Baseline

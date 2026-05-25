@@ -116,7 +116,8 @@ That means publication is not the conceptual starting point. The deeper model is
 that a node becomes registrable only after it has a coherent package identity,
 publisher identity, and compatibility declaration.
 
-For the procedural steps, use [Publish a Custom Node to Registry](../how-to/publish-a-custom-node-to-registry.md).
+This reduced surface keeps the packaging model and compatibility framing, not a
+step-by-step publication walkthrough.
 
 ## CI/CD is part of the official packaging story
 
@@ -161,6 +162,6 @@ repository structure.
 
 ## Read Next
 
-- [Publish a Custom Node to Registry](../how-to/publish-a-custom-node-to-registry.md)
-- [ComfyUI-Manager](../deep-dives/comfyui-manager.md)
+- [Registration](../custom-nodes/registration.md)
 - [Tooling Builder](../start-here/tooling-builder.md)
+- [Topic Scope](../reference/topic-scope.md)

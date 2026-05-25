@@ -184,13 +184,17 @@ maintenance work rather than a normal extension pattern.
 ## Subgraph-specific cases
 
 If the hook choice depends on active graph context, subgraph traversal, node
-identifier boundaries, or widget-promotion behavior, continue to
-[Subgraph Extension Behavior](subgraph-extension-behavior.md). Keep this page
-focused on hook selection and lifecycle rather than overloading it with the full
-subgraph surface.
+identifier boundaries, or widget-promotion behavior, keep these rules in mind:
+
+- distinguish root-graph identity from active-graph identity
+- treat traversal as graph-context work, not just flat node iteration
+- keep widget-promotion logic in the frontend layer
+- clean up listeners and view-specific state when graph context changes
+
+Keep this page focused on hook selection and lifecycle rather than turning it
+into a full subgraph guide.
 
 ## Read Next
 
 - [Server Hooks](server-hooks.md)
 - [Extension Points](extension-points.md)
-- [Subgraph Extension Behavior](subgraph-extension-behavior.md)

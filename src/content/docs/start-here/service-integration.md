@@ -3,7 +3,7 @@ title: "Start Here: Service Integration"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-20
+**Last Updated:** 2026-05-24
 
 ## Who This Path Is For
 
@@ -54,12 +54,12 @@ behavior to external tools.
 
 Key resources:
 
-- [Custom Routes](../how-to/add-custom-routes.md) -- add extension-owned HTTP
-  endpoints
 - [Server Hooks](../hooks/server-hooks.md) -- react to execution events from
   inside ComfyUI
-- ComfyUI-Tooling-Nodes (community pattern) -- reference implementation of
-  `/api/etn/...` routes for asset transfer and model inspection
+- [Extension Points](../hooks/extension-points.md) -- decide when a custom route
+  is more truthful than a callback or pure API polling
+- [API Endpoints](../api/endpoints.md) -- baseline routes to compare against any
+  extension-owned endpoint
 
 This approach is useful when you need tight integration with ComfyUI internals,
 not just remote execution.
@@ -108,14 +108,17 @@ See the API docs for full parameter and response documentation.
 
 ## Constraints
 
-For integration constraints and limitations, see the
-[Decision Tree: API Integration](../decision-trees/api-integration.md).
+Keep these boundaries explicit:
+
+- local API behavior is not the same as frontend-only behavior
+- custom routes are extension surfaces, not native API routes
+- runtime-specific node state belongs to live `object_info`, not to the pinned
+  canonical artifact contract
 
 If your service also needs the repo's pinned artifact baseline for route,
 hook, or schema-aware validation, start with
-[Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) and the
-consumer starter examples on
-[Consumer Starter Examples](../how-to/consumer-starter-examples.md).
+[Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) and
+[Artifact Consumer](artifact-consumer.md).
 
 ## When to Switch to Repo-Local Workflow Docs
 
@@ -126,15 +129,9 @@ repo's `CONTRIBUTING.md` file for workflow and verification guidance.
 ## Read Next
 
 - [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) -- canonical published artifact contract and support-artifact boundaries
+- [Artifact Consumer](artifact-consumer.md) -- shortest retained route for manifest-first artifact use
 - [Execution Pipeline](../architecture/execution-pipeline.md) -- execution-system map behind prompt validation, queueing, and history
 - [API Endpoints](../api/endpoints.md) -- complete route reference
 - [WebSocket](../api/websocket.md) -- event stream details
 - [Prompt Submission](../api/prompt-submission.md) -- constructing prompts
-- [Decision Tree: API Integration](../decision-trees/api-integration.md) -- choose integration approach
-
-If you want a short map of the API family before reading route details, start
-with the [API Section Guide](../api/index.md).
-
-If you are stuck on API mode expectations, extension routes, or progress
-tracking boundaries, start with
-[API Integration Troubleshooting](../troubleshooting/api-integration.md).
+- [History and Queue](../api/history-queue.md) -- polling and stored outputs

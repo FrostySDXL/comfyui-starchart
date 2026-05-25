@@ -53,7 +53,7 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             self._build_valid_fixture(root)
-            doc_path = root / "src" / "content" / "docs" / "how-to" / "consumer-starter-examples.md"
+            doc_path = root / "src" / "content" / "docs" / "start-here" / "artifact-consumer.md"
             doc_path.write_text(
                 "Repo path: `examples/consumers/missing-example/`\n",
                 encoding="utf-8",
@@ -63,7 +63,7 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
 
         self.assertIn(
             "Missing routed example path: examples/consumers/missing-example/ "
-            "referenced in src/content/docs/how-to/consumer-starter-examples.md",
+            "referenced in src/content/docs/start-here/artifact-consumer.md",
             errors,
         )
 
@@ -131,7 +131,7 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
             path.mkdir(parents=True, exist_ok=True)
 
         files = {
-            root / "src" / "content" / "docs" / "how-to" / "consumer-starter-examples.md": (
+            root / "src" / "content" / "docs" / "start-here" / "artifact-consumer.md": (
                 "Repo path: `examples/consumers/alpha/`\n"
             ),
             root / "src" / "content" / "docs" / "start-here" / "tooling-builder.md": (
@@ -140,7 +140,7 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
             root / "examples" / "api-calls" / "README.md": "# API calls\n",
             root / "examples" / "api-calls" / "payload.json": "{}\n",
             root / "examples" / "consumers" / "alpha" / "README.md": (
-                "See [Consumer Starter Examples](../../../src/content/docs/how-to/consumer-starter-examples.md).\n"
+                "See [Artifact Consumer](../../../src/content/docs/start-here/artifact-consumer.md).\n"
             ),
             root / "examples" / "custom-nodes" / "beta" / "README.md": "# Custom node\n",
             root / "examples" / "extensions" / "gamma" / "README.md": "# Extension\n",

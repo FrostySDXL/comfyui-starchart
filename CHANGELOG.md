@@ -7,6 +7,37 @@ verification, workflow, and repo structure rather than every commit.
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-05-24 - docs surface reduction and support-surface reconciliation
+
+### Published docs surface
+
+- Reduce the published docs tree to the retained 30-page surface and prune the
+  removed routing, tutorial, troubleshooting, ecosystem, and legacy pages.
+- Add `start-here/artifact-consumer.md` and `reference/topic-scope.md` as the
+  new retained entry points for artifact consumers and published-surface scope
+  policy.
+- Rewrite retained start-here, architecture, API, hooks, custom-node, and
+  reference pages so they no longer route readers to deleted docs.
+
+### Navigation, artifacts, and metadata
+
+- Reduce `src/site/sidebar-data.json` to the retained surface and regenerate the
+  published `docs-index.json` and `tooling-index.json` support artifacts to
+  match it.
+- Prune `references/community/community_pages.json` so community tracking now
+  matches the reduced published surface.
+- Prune and retarget `references/tooling-index-metadata.json` so tooling routing
+  no longer references deleted docs paths such as `api/client-id.md`.
+
+### Verification, tests, and repo-local guidance
+
+- Update `community_generated_freshness.py` so it passes cleanly when no
+  generated community page is currently tracked on the published surface.
+- Update affected unit tests and Node sidebar tests to reflect the reduced
+  navigation and the new artifact-consumer routing path.
+- Clean up repo-local guidance and example READMEs so contributor and consumer
+  entry points no longer link to deleted docs pages.
+
 ## 2026-05-21 - packaging follow-up, generator refresh, and agent-facing guidance
 
 ### Packaging, imports, and verification architecture

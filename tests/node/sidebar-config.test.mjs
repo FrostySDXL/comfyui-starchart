@@ -26,10 +26,10 @@ test('toStarlightSidebar converts checked-in paths to Starlight sidebar items', 
   assert.equal(sidebar[0].slug, '');
   assert.equal(sidebar[1].items[0].slug, 'start-here/author');
 
-  const orientationSection = sidebar.find((entry) => entry.label === 'Orientation');
-  assert.ok(orientationSection);
-  const glossaryEntry = orientationSection.items.find((entry) => entry.label === 'Glossary');
-  assert.equal(glossaryEntry.slug, 'reference/glossary');
+  const referenceSection = sidebar.find((entry) => entry.label === 'Reference');
+  assert.ok(referenceSection);
+  const topicScopeEntry = referenceSection.items.find((entry) => entry.label === 'Topic Scope');
+  assert.equal(topicScopeEntry.slug, 'reference/topic-scope');
 });
 
 test('toStarlightSidebar normalizes backslash paths and derives fallback labels deterministically', () => {

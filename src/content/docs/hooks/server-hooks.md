@@ -27,7 +27,7 @@ server-side integrations.
 
 This page covers callback-oriented server hooks. Custom routes are also part of
 the broader server-side extension surface, but they are a different extension
-point and are documented separately in [Add Custom Routes](../how-to/add-custom-routes.md).
+point and should be treated separately from callback hooks.
 
 ## Server-side surface boundaries
 
@@ -178,4 +178,4 @@ tracking.
 
 - [JavaScript Hooks](javascript-hooks.md)
 - [Extension Points](extension-points.md)
-- [Add Custom Routes](../how-to/add-custom-routes.md)
+- [API Endpoints](../api/endpoints.md)

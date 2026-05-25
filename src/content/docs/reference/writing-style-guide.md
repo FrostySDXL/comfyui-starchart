@@ -46,7 +46,8 @@ Tutorials assume the reader is building something and needs instruction.
 **Example opening:** "This tutorial walks through registering a custom node class
 that exposes a widget-based parameter to the ComfyUI frontend."
 
-**Strong example in this repo:** [`src/content/docs/tutorials/building-first-node.md`](../tutorials/building-first-node.md)
+Use the tutorial mode when a page teaches a reader through a concrete sequence
+of steps toward one outcome.
 
 ### Decision Guide
 
@@ -61,7 +62,8 @@ clearly unsuitable.
 choice between direct API calls and the WebSocket transport depends on whether
 you need real-time feedback or simple fire-and-forget requests."
 
-**Strong example in this repo:** [`src/content/docs/decision-trees/api-integration.md`](../decision-trees/api-integration.md)
+Use the decision-guide mode when the page helps a reader choose between options
+by comparing tradeoffs and constraints.
 
 ### Community Pattern Study
 
@@ -76,7 +78,8 @@ with explicit framing that the behavior is external.
 execution graph to collect per-node timing metrics. This page documents its
 analysis approach as a community-observed pattern."
 
-**Strong example in this repo:** [`src/content/docs/extensions/profilerx-analysis.md`](../extensions/profilerx-analysis.md)
+Use the community-pattern mode only when the page documents external behavior
+without implying that it defines native ComfyUI behavior.
 
 ### Scaffold
 

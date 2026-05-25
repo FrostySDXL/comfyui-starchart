@@ -157,16 +157,20 @@ surface after a client submits a prompt and later reconnects.
 Common client flow after `POST /prompt`:
 
 1. record the returned `prompt_id`
-2. use the WebSocket for live execution state when available
-3. call `GET /queue` to detect whether the prompt is still running or
+2. keep the submitted `client_id` if you need targeted WebSocket updates for the
+   same client session
+3. use the WebSocket for live execution state when available
+4. call `GET /queue` to detect whether the prompt is still running or
    pending
-4. call `GET /history/{prompt_id}` once execution finishes
+5. call `GET /history/{prompt_id}` once execution finishes
 
 ## Notes and caveats
 
 - Queue state is intentionally sanitized before being returned.
 - Queue order is influenced by the submission `number` and `front`
   fields from `POST /prompt`.
+- `client_id` targets live execution messages, while `prompt_id` is the durable
+  queue/history lookup key.
 - History is persistent only within ComfyUI's prompt queue/history
   machinery, not a separate long-term database.
 
@@ -192,6 +196,5 @@ practice. They do not add new native queue or history semantics.
 
 ## Read Next
 
-- [Client ID](client-id.md)
 - [Prompt Submission](prompt-submission.md)
 - [WebSocket](websocket.md)

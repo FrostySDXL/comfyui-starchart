@@ -53,16 +53,35 @@ def build_markdown(data: dict) -> str:
             committed_path = tmpdir / "map.md"
             committed_path.write_text("# Generated\n\nTest Map", encoding="utf-8")
 
+            community_pages_path = tmpdir / "community_pages.json"
+            community_pages_path.write_text(
+                json.dumps(
+                    {
+                        "pages": [
+                            {
+                                "page_path": "src/content/docs/ecosystem/map.md",
+                                "page_kind": "generated_catalog",
+                                "generated_from": "references/community/ecosystem_packages.json",
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
             old_generator = module.GENERATOR
             old_committed = module.COMMITTED_PATH
+            old_community_pages = module.COMMUNITY_PAGES_JSON
             try:
                 module.GENERATOR = generator_path
                 module.COMMITTED_PATH = committed_path
+                module.COMMUNITY_PAGES_JSON = community_pages_path
                 result = module.main()
                 self.assertEqual(result, 0)
             finally:
                 module.GENERATOR = old_generator
                 module.COMMITTED_PATH = old_committed
+                module.COMMUNITY_PAGES_JSON = old_community_pages
 
     def test_freshness_fails_when_files_differ(self):
         module = self._import_module()
@@ -78,15 +97,55 @@ def build_markdown(data: dict) -> str:
             committed_path = tmpdir / "map.md"
             committed_path.write_text("# Stale\n\nOld Title", encoding="utf-8")
 
+            community_pages_path = tmpdir / "community_pages.json"
+            community_pages_path.write_text(
+                json.dumps(
+                    {
+                        "pages": [
+                            {
+                                "page_path": "src/content/docs/ecosystem/map.md",
+                                "page_kind": "generated_catalog",
+                                "generated_from": "references/community/ecosystem_packages.json",
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
             old_generator = module.GENERATOR
             old_committed = module.COMMITTED_PATH
+            old_community_pages = module.COMMUNITY_PAGES_JSON
             try:
                 module.GENERATOR = generator_path
                 module.COMMITTED_PATH = committed_path
+                module.COMMUNITY_PAGES_JSON = community_pages_path
                 result = module.main()
                 self.assertEqual(result, 1)
             finally:
                 module.GENERATOR = old_generator
+                module.COMMITTED_PATH = old_committed
+                module.COMMUNITY_PAGES_JSON = old_community_pages
+
+    def test_freshness_passes_when_no_generated_pages_are_tracked(self):
+        module = self._import_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            community_pages_path = tmpdir / "community_pages.json"
+            community_pages_path.write_text(
+                json.dumps({"pages": []}),
+                encoding="utf-8",
+            )
+
+            old_community_pages = module.COMMUNITY_PAGES_JSON
+            old_committed = module.COMMITTED_PATH
+            try:
+                module.COMMUNITY_PAGES_JSON = community_pages_path
+                module.COMMITTED_PATH = tmpdir / "missing-map.md"
+                result = module.main()
+                self.assertEqual(result, 0)
+            finally:
+                module.COMMUNITY_PAGES_JSON = old_community_pages
                 module.COMMITTED_PATH = old_committed
 
 

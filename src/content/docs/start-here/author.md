@@ -3,7 +3,7 @@ title: "Start Here: Custom Node Author"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-07
+**Last Updated:** 2026-05-24
 
 ## Who This Path Is For
 
@@ -17,9 +17,9 @@ You want to build custom nodes for ComfyUI. This could be:
 
 ## First Practical Step
 
-Create a single Python file in `custom_nodes/my_first_node.py` with a minimal
-V1 node class, register it with `NODE_CLASS_MAPPINGS`, and restart ComfyUI.
-Confirm the node appears in the Add Node menu before adding inputs or logic.
+Start with one small server-side node. Define a narrow input/output contract,
+load it in ComfyUI, and confirm it appears in the Add Node menu before adding
+extra UI or packaging concerns.
 
 ## What You Need to Know
 
@@ -36,56 +36,28 @@ server-side Python only.
 ## Recommended Reading Order
 
 1. [Custom Node Development Guide](../custom-nodes/development-guide.md) --
-   mental model, V1 vs V3 overview, core constraints
-2. [Node Structure](../custom-nodes/node-structure.md) -- INPUT_TYPES, RETURN_TYPES,
-   FUNCTION, CATEGORY for V1; io.Schema and execute for V3
-3. [Registration](../custom-nodes/registration.md) -- how ComfyUI discovers and
-   loads your node
-4. [Datatypes](../custom-nodes/datatypes.md) -- IMAGE, MODEL, CLIP, LATENT, STRING,
-   and other built-in types
-5. [Best Practices](../custom-nodes/best-practices.md) -- caching, validation,
-   category naming, API-mode constraints
+   mental model, constraints, and stable authoring habits
+2. [Node Structure](../custom-nodes/node-structure.md) -- schema and execution
+   shape
+3. [Registration](../custom-nodes/registration.md) -- how ComfyUI discovers the
+   node package
+4. [Datatypes](../custom-nodes/datatypes.md) -- built-in types and data-shape
+   expectations
 
-If your task is explicitly legacy V1 work, jump next to the
-[V1 Custom Node Reference](../custom-nodes/v1-reference.md). It consolidates the
-V1 class shape, placement rules, registration exports, and a minimal STRING
-example without changing this page's V3-preferred recommendation.
+## V1 and V3
 
-## V1 vs V3 Decision
+New authoring should prefer the modern guidance in the retained custom-node
+pages. Older V1 patterns still matter when reading legacy repos, but they are no
+longer broken out into separate retained routing pages.
 
-See the [Decision Tree: Custom Node Architecture](../decision-trees/custom-node-architecture.md)
-for a full branching guide on choosing V1, V3, and node structure patterns.
+## Example Boundary
 
-## If You Want to Publish Through Manager
+Use the repo examples as bounded patterns, not as a full curriculum:
 
-Read [Integrate with Manager](../how-to/integrate-with-manager.md) in addition to
-the above. Key requirements:
-
-- git repository (typically GitHub)
-- registration via ComfyUI-Manager's custom-node-list.json or the official
-  registry
-- `requirements.txt` for Python dependencies
-- optional: `install.py`, `enable.py`, `disable.py`, `uninstall.py` lifecycle scripts
-
-## Example Ladder
-
-For incremental learning, work through these examples in order:
-
-1. `examples/custom-nodes/minimal-node-template/` (the base
-   example, corresponding to "example-1" in references) --
-   single node, server-side only, official walkthrough example
-2. `examples/custom-nodes/example-6-v1-string-reference/` --
-   smallest repo-local V1 STRING example -- classmethod INPUT_TYPES,
-   registration dictionaries, and tuple returns only
-3. `examples/custom-nodes/example-2-widgets/` --
-   node with configuration widgets -- INPUT_TYPES with dropdowns and sliders
-4. `examples/custom-nodes/example-3-node-communication/` --
-   node communicating with other nodes -- batch processing, intermediate results
-5. `examples/custom-nodes/example-4-progress-ui/` --
-   node with frontend component -- custom server events and visible progress UI
-6. `examples/custom-nodes/example-5-full-extension-package/` --
-   complete small extension package -- multiple nodes, lifecycle scripts,
-   Manager-ready structure
+- `examples/custom-nodes/minimal-node-template/`
+- `examples/custom-nodes/example-2-widgets/`
+- `examples/custom-nodes/example-3-node-communication/`
+- `examples/custom-nodes/example-4-progress-ui/`
 
 ## When to Switch to Repo-Local Workflow Docs
 
@@ -97,13 +69,7 @@ repo's `CONTRIBUTING.md` file for workflow and verification guidance.
 
 - [Custom Node Development Guide](../custom-nodes/development-guide.md) -- mental model and constraints
 - [Node Structure](../custom-nodes/node-structure.md) -- INPUT_TYPES, RETURN_TYPES, and execution
-- [Decision Tree: Custom Node Architecture](../decision-trees/custom-node-architecture.md) -- choose node type and V1 vs V3
-- [Tutorial: Building Your First Node](../tutorials/building-first-node.md) -- guided walkthrough
-
-If you want a short map of the whole authoring section before diving into one
-page, start with the
-[Custom Nodes Section Guide](../custom-nodes/index.md).
-
-If you are unsure whether a behavior belongs in a frontend extension, a Python
-node, or the boundary between them, see
-[Custom Node and Extension Boundaries](../troubleshooting/custom-node-and-extension-boundaries.md).
+- [Registration](../custom-nodes/registration.md) -- discovery and package exposure
+- [Datatypes](../custom-nodes/datatypes.md) -- built-in types and constraints
+- [Start Here: Extension Developer](extension-developer.md) -- when the behavior
+  crosses into frontend or server extension work
