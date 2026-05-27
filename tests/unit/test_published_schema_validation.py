@@ -183,6 +183,20 @@ class PublishedSchemaValidationTests(unittest.TestCase):
 
         self.assertIsNone(schema)
 
+    def test_manifest_json_is_intentionally_excluded_from_published_artifact_schemas(self):
+        self.assertNotIn(
+            "manifest.json",
+            published_schema_validation.PUBLISHED_ARTIFACT_SCHEMAS,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            schema = published_schema_validation.load_published_artifact_schema(
+                "manifest.json",
+                Path(tmp),
+            )
+
+        self.assertIsNone(schema)
+
     def test_validate_against_published_artifact_schema_validates_additional_properties_dict(self):
         with tempfile.TemporaryDirectory() as tmp:
             schema_dir = Path(tmp)
