@@ -116,8 +116,11 @@
         "related_events": [
           "executed",
           "executing",
+          "execution_cached",
           "execution_error",
+          "execution_interrupted",
           "execution_success",
+          "feature_flags",
           "status"
         ],
         "runtime_required": true,

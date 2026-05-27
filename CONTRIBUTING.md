@@ -265,7 +265,7 @@ Metadata source of truth:
 Rules:
 
 - target retained published pages only
-- keep `recommended_next_reads` inside the retained 30-page surface
+- keep `recommended_next_reads` inside the retained 29-page surface
 - keep `related_artifacts` limited to real published artifacts
 - preserve nested shape under `tooling_metadata` in generated output; do not flatten those fields into top-level page keys
 
