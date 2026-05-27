@@ -97,6 +97,9 @@ Start here:
 Supported Python: `3.11+`  
 Supported Node.js for site/framework work: `24+`
 
+Use Python 3.11+ for repo commands. On Windows, use `py -3.11` if `python`
+is not already `3.11.x`.
+
 ```bash
 python -m pip install -r requirements.lock
 python -m pip install -e .

@@ -3,7 +3,7 @@ title: "Start Here: Tooling Builder"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance for repo-local artifact routing
-**Last Updated:** 2026-05-24
+**Last Updated:** 2026-05-27
 
 ## Scope
 
@@ -68,6 +68,12 @@ Use the most stable input that matches your job.
 Default rule: start from the canonical published artifacts when you need a
 stable, pinned baseline. Add runtime capture only when your tool depends on the
 installed state of a real instance.
+
+For routing discipline:
+
+- build against pinned artifacts when you need a stable baseline for routes, hooks, or schema-aware tooling
+- query live runtime only when runtime-required tasks demand it, such as installed-node inspection or instance-specific validation
+- use [Artifact Consumer](artifact-consumer.md) for the compact manifest-first contract and [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md) for the fuller support-artifact boundaries
 
 ## Local API Mental Model
 

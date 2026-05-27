@@ -3,7 +3,9 @@ title: "Start Here: Extension Developer"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-24
+**Last Updated:** 2026-05-27
+**Primary Sources:** `references/snapshots/2026-05-21/comfyui-frontend-v1.45.12/src/scripts/app.ts`, `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py`
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`.
 
 ## Who This Path Is For
 

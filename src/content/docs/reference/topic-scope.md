@@ -3,13 +3,13 @@ title: "Topic Scope"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-24
+**Last Updated:** 2026-05-27
 
 > **Operational Note:** This page defines what belongs in the published docs
 > surface, what belongs only in repo-local maintainer guidance, and what should
 > be pruned or archived instead of kept live under `src/content/docs/`.
 
-**Primary Sources:** `AGENTS.md`, `CONTRIBUTING.md`, `livedocs/2026-05-24-plan-01-docs-surface-reduction-and-routing.md`
+**Primary Sources:** `AGENTS.md`, `CONTRIBUTING.md`
 
 ## Current Scope Rule
 
@@ -81,4 +81,3 @@ maintenance case, owner, verification path, and retirement criteria in
 - [Machine-Readable Artifacts](machine-readable-artifacts.md)
 - [Source Evidence Policy](source-evidence-policy.md)
 - [Writing Style Guide](writing-style-guide.md)
-- [Doc Quality Checklist](doc-quality-checklist.md)

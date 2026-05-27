@@ -2,7 +2,7 @@
 title: "Writing Style Guide"
 ---
 
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-27
 **Related:** `source-evidence-policy.md` for evidence labeling rules
 **Evidence:** Operational guidance
 
@@ -11,158 +11,121 @@ leading markdown `#` heading.
 
 ## Purpose
 
-This guide defines the editorial standards for contributing to this repository.
-It covers page modes, sentence and paragraph style, section naming conventions,
-and cross-linking rules.
-
-Use this guide alongside `source-evidence-policy.md`, which defines the evidence
-labeling system this repo uses to make trust boundaries explicit.
+This guide defines the published-doc writing standard for this repository. Use
+it with `source-evidence-policy.md` for evidence labels and with
+`CONTRIBUTING.md` for maintainer workflow and the editorial checklist.
 
 ## Page Modes
 
-Every page should read as one primary mode. Choose the mode that fits the page
-purpose and keep the writing consistent with that mode throughout.
+Each page should read as one primary mode. Pick the dominant mode and stay
+consistent.
 
 ### Reference
 
-Documents API surfaces, data structures, schemas, hook catalogs, and other
-items that are looked up rather than read cover-to-cover. Reference pages state
-what exists and how it works, not how to use it in a workflow.
+Use for APIs, schemas, hooks, node structures, and other lookup surfaces.
 
-**Tone:** Declarative. Describe what is, not how to get there.
-
-**Example opening:** "The `ChatOnMessage` server hook fires after any incoming
-WebSocket message is parsed and before any per-type handler runs."
-
-**Strong example in this repo:** [`src/content/docs/reference/object-info.md`](object-info.md)
+**Tone:** declarative. State what exists and how it behaves.
 
 ### Tutorial
 
-Guides a reader through a sequence of steps to achieve a defined outcome.
-Tutorials assume the reader is building something and needs instruction.
+Use for step-by-step instruction toward one defined outcome.
 
-**Tone:** Imperative. Direct the reader with clear action steps.
-
-**Example opening:** "This tutorial walks through registering a custom node class
-that exposes a widget-based parameter to the ComfyUI frontend."
-
-Use the tutorial mode when a page teaches a reader through a concrete sequence
-of steps toward one outcome.
+**Tone:** imperative. Tell the reader what to do next.
 
 ### Decision Guide
 
-Helps a reader choose between options by laying out tradeoffs, constraints, and
-context. Decision guides do not prescribe a single path; they equip the reader
-to decide.
+Use for option comparison, tradeoffs, and routing.
 
-**Tone:** Neutral and balanced. Present options without steering unless one is
-clearly unsuitable.
-
-**Example opening:** "When integrating ComfyUI into an external service, the
-choice between direct API calls and the WebSocket transport depends on whether
-you need real-time feedback or simple fire-and-forget requests."
-
-Use the decision-guide mode when the page helps a reader choose between options
-by comparing tradeoffs and constraints.
+**Tone:** neutral. Explain what favors each option.
 
 ### Community Pattern Study
 
-Documents a pattern observed in an external repository or ecosystem project.
-Use this mode to capture useful examples without implying they define native
-ComfyUI behavior.
+Use for patterns observed in external projects without implying native ComfyUI
+behavior.
 
-**Tone:** Descriptive. Show what a project does and what patterns it demonstrates,
-with explicit framing that the behavior is external.
-
-**Example opening:** "ProfilerX is a ComfyUI extension that instruments the
-execution graph to collect per-node timing metrics. This page documents its
-analysis approach as a community-observed pattern."
-
-Use the community-pattern mode only when the page documents external behavior
-without implying that it defines native ComfyUI behavior.
+**Tone:** descriptive. Use framing such as `observed`, `demonstrates`, or
+`community pattern`.
 
 ### Scaffold
 
-A page that is intentionally incomplete. Scaffolds hold a place for content
-that has not yet been written to the repo's full standard. They should be honest
-about their incompleteness.
+Use only for intentionally incomplete pages.
 
-**Tone:** Direct and honest. State what is missing.
-
-**Example opening:** "This page documents the planned V3 node migration
-checklist. It is currently incomplete: the async execution section is not yet
-written."
-
-**Strong example in this repo:** [`src/content/docs/reference/version-pin-status.md`](version-pin-status.md)
-
-**Do not over-polish scaffold pages.** Mark them with the Scaffold evidence
-label and keep scope statements honest.
+**Tone:** direct and honest. State what is missing and do not over-polish it.
 
 ## Page-Type Decision Matrix
 
-| Page type       | Primary purpose                          | Key signal words            |
-|-----------------|------------------------------------------|------------------------------|
-| Reference       | Look up a fact or API surface            | "is", "returns", "contains"  |
-| Tutorial        | Guided steps toward a concrete outcome  | "first", "then", "finally"   |
-| Decision Guide  | Compare options to make a choice         | "vs", "tradeoff", "choose"   |
-| Community Pattern | Document an external project pattern | "observed in", "external"   |
-| Scaffold        | Hold a place for unwritten content       | "TODO", "incomplete"         |
+| Page type | Primary purpose | Key signal words |
+|---|---|---|
+| Reference | Look up a fact or surface | `is`, `returns`, `contains` |
+| Tutorial | Follow steps to an outcome | `first`, `then`, `finally` |
+| Decision Guide | Compare options | `vs`, `tradeoff`, `choose` |
+| Community Pattern | Document an external pattern | `observed in`, `external` |
+| Scaffold | Hold unfinished content honestly | `TODO`, `incomplete` |
 
-If a page's opening paragraph could plausibly begin with more than one mode's signal words, pick the dominant mode and be consistent. Do not mix modes within a single page.
+If an opening could fit multiple modes, choose the dominant one and avoid mode
+mixing.
 
 ## Minimum Acceptable Standard by Mode
 
-Each mode has a minimum bar that a page must clear before it is considered complete:
+Each mode has a minimum bar before the page is considered complete.
 
 **Reference**
+
 - Evidence label present and correct
 - At least one concrete API item documented (field, method, hook, endpoint)
 - No purely narrative prose; structure follows API item order
 
 **Tutorial**
+
 - Steps are numbered and actionable
 - Each step has a clear before/after state or expected output
 - A "What to expect when it works" section or equivalent closing
 
 **Decision Guide**
+
 - At least two options presented with explicit tradeoffs
 - Explicit "choose X when ..." framing for each option
 - No recommendation unless one option is clearly unsuitable for a stated case
 
 **Community Pattern**
+
 - Source repository or project named and linked
 - Behavior described with "observed" or "demonstrates" framing, not "ComfyUI does"
 - Explicit limitation statement: "this is external behavior, not native ComfyUI"
 
 **Scaffold**
+
 - Scope statement honestly describes what is missing
 - No placeholder text that implies coverage the page does not have
 - Scaffold label applied
 
 ## Start-Here and Decision-Tree Page Anti-Patterns
 
-These pages serve onboarding and choice guidance respectively. They are high-traffic entry points, so weak versions create outsized confusion.
+These pages are high-traffic entry points, so weak routing causes outsized
+confusion.
 
 **Do not do these on start-here pages:**
+
 - Open with a repo overview instead of audience framing ("This repo contains...")
 - List every doc section instead of recommending a specific sequence
 - End without a concrete "first action" or "read this next" step
 - Repeat the same framing that exists on adjacent decision-tree pages
 
 **Do not do these on decision-tree pages:**
+
 - Use decision trees as extended tutorials (branching steps are not the same as tutorial steps)
 - End a branch without sending the reader to a concrete page or resource
 - Cover more than three branching decision levels (readers lose track)
 - Present options without stating what conditions favor each choice
 
-**The difference in practice:** start-here pages say "read these pages in this order." Decision-tree pages say "answer these questions to know which page to read next."
+Start-here pages should say "read these pages in this order." Decision trees
+should say "answer these questions to know where to go next."
 
 ## Paragraph and Sentence Style
 
 ### Prefer short, direct sentences
 
-Long sentences with multiple clauses are harder to scan and easier to
-misread. Break compound sentences when each clause could stand alone.
+Break long multi-clause sentences when each clause can stand on its own.
 
 **Weak:** "The hook system, which is exposed both server-side and client-side,
 allows custom code to register callbacks that run at defined points during
@@ -174,7 +137,7 @@ are available in both contexts."
 
 ### Use active voice
 
-Active voice makes it clearer who or what is acting.
+Active voice makes the actor clearer.
 
 **Weak:** "The widget value is updated by the frontend when the user interacts
 with the control."
@@ -184,13 +147,11 @@ the control."
 
 ### One idea per sentence
 
-If a sentence contains "and" where both clauses could be separate sentences,
-split them. If "and" connects two ideas that must stay together to make sense,
-keep it.
+If a sentence contains two ideas that can stand alone, split them.
 
 ### Avoid filler phrases
 
-Remove phrases that do not add information:
+Cut phrases that do not add meaning:
 
 - "In order to" -> "To"
 - "the fact that" -> omit or restructure
@@ -199,7 +160,7 @@ Remove phrases that do not add information:
 
 ## Section Naming
 
-Use these preferred names consistently where the section type applies:
+Use these names consistently when the section type applies:
 
 | Section | Use for |
 |---------|---------|
@@ -214,32 +175,22 @@ and content.
 
 ## Cross-Linking Rules
 
-### Prefer intentional links over scattered references
+Prefer a few intentional links over scattered inline references. End-of-page
+`Read Next` or `Related Pages` sections usually work better than frequent
+mid-paragraph link drops.
 
-A few deliberate "Read Next" links at the end of a page are more useful than
-many inline references that interrupt the prose.
-
-### Use descriptive link text
-
-Link text should describe what the reader will find, not "click here" or the
-raw URL.
+Link text should describe the destination, not `click here` or a raw URL.
 
 **Weak:** "See https://docs.comfy.org/ for official docs."
 
 **Stronger:** "See the [official ComfyUI documentation](https://docs.comfy.org/)."
 
-### Group related links
-
-Place "Read Next" or "Related Pages" links in a dedicated block rather than
-scattering them through the text.
-
 ## Evidence Labeling
 
-Apply evidence labels as defined in `source-evidence-policy.md`. Place the
-label near the top of the page, after the title and scope statement. Use the
-qualified form when a pinned source is available. Use `Operational guidance`
-for repo-local policy, process, and operations pages; do not use it to support
-claims about ComfyUI behavior.
+Apply evidence labels exactly as defined in `source-evidence-policy.md`. Place
+the label near the top of the page after the title metadata and opening scope.
+Use `Operational guidance` for repo-local policy and process pages only; do not
+use it to support claims about ComfyUI behavior.
 
 If a page depends on the repo's pinned baseline, place the
 `**Baseline verification status:**` block immediately under the opening
@@ -251,9 +202,8 @@ new variants.
 
 ### Audience-routing pages with mixed evidence
 
-Audience-routing pages such as `start-here/` entry points may legitimately use
-mixed evidence labels when they summarize multiple trust sources and send the
-reader to more specific pages.
+`start-here/` pages may need mixed evidence treatment when they combine routing
+guidance with source-backed factual claims.
 
 - `Operational guidance` alone is not sufficient when the page also makes pinned
   behavior claims about routes, hooks, node models, or other ComfyUI surfaces.
@@ -262,26 +212,22 @@ reader to more specific pages.
 - Do not force uniform evidence labels across all routing pages when their claim
   mix is genuinely different.
 
-## Author Workflow Summary
-
-When creating or revising a page:
-
-1. **Pick a mode** using the decision matrix above.
-2. **Check the evidence label** -- which level does your content need?
-3. **Write to the mode's style and minimum standard.**
-4. **Apply the correct evidence label** near the top of the page.
-5. **Run the checklist**, starting with Required items.
-6. **Verify:** `npm run build` and `python scripts/verify/cross_references.py` both pass.
-7. **For new pages:** prefer `scripts/new_doc.py` or copy from `templates/docs/`.
-
-The checklist and this guide are companions. The guide tells you what to do; the checklist tells you when you are done.
-
 ## What This Guide Does Not Cover
 
 - Extractor and generator scripts (see `AGENTS.md`)
 - Machine-readable reference schema and validation
 - Extraction idempotency and upstream pin checks
-- The operational review checklist (see `doc-quality-checklist.md`)
+- The maintainer operational review checklist (see `CONTRIBUTING.md`)
 
 For those topics, refer to `AGENTS.md` and the verification scripts in
 `scripts/verify/`.
+
+## Quick Reference
+
+- Pick one page mode and stay in it.
+- Keep the opening scope honest.
+- Use short sentences, concrete wording, and active voice.
+- Prefer intentional `Read Next` links over scattered inline links.
+- Apply evidence labels and baseline-status wording exactly as defined in
+  `source-evidence-policy.md`.
+- Use `CONTRIBUTING.md` for the maintainer workflow and editorial checklist.

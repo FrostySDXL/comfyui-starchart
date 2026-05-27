@@ -3,7 +3,7 @@ title: "Machine-Readable Artifacts"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-06
+**Last Updated:** 2026-05-27
 **Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`.
 
 ## Scope
@@ -15,6 +15,16 @@ consume them from the static site or from the repo directly.
 The published contract is intentionally bounded. These artifacts are a pinned
 companion reference for tooling and analysis, not a full OpenAPI-grade or fully
 typed description of every ComfyUI behavior.
+
+## Quick Start for Consumers
+
+If you only need the safe consumption path:
+
+- start at `artifacts/manifest.json`
+- load the canonical current copy from `artifacts/current/<name>.json`
+- code only against guaranteed fields and the published schemas
+- verify downloaded current-copy bytes against the manifest `sha256`
+- use `docs-index.json` only as optional routing help, not as the canonical artifact contract
 
 ## Who This Page Is For
 
@@ -97,6 +107,30 @@ to these minimum rules:
 This contract is intentionally lightweight. It defines safe consumption
 behavior for this repo's published artifacts. It does not promise an SDK,
 OpenAPI-grade semantics, or a full runtime truth layer.
+
+## Interpreting delta-summary.json
+
+Use `delta-summary.json` as a bounded comparison aid between two checked-in
+artifact baselines.
+
+- `added` lists keys or entries that appear only in the newer baseline
+- `removed` lists keys or entries that disappeared from the newer baseline
+- `changed` lists stable keys that still exist but differ structurally between the compared baselines
+
+These changes help answer questions such as whether a route, hook, object-info
+field, I/O type, or typed input shape moved between two pinned baselines. They
+do not, by themselves, prove semantic compatibility or runtime impact.
+
+Typical interpretation rules:
+
+- `added` often means a tooling consumer may choose to support a new surface, but existing baseline-targeted code may still work unchanged
+- `removed` is the clearest signal that baseline-targeted tooling may need an update or fallback path
+- `changed` means you should inspect the canonical artifact directly before assuming the difference is breaking, harmless, or runtime-visible
+
+Treat the file as a maintainer and developer comparison shortcut, not as a
+complete compatibility guarantee. When the result matters for parser logic,
+request shaping, or runtime assumptions, re-check the canonical current or
+versioned artifacts directly instead of relying on delta output alone.
 
 ### server_endpoints.json
 

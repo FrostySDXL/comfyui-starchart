@@ -473,6 +473,160 @@ class GenerateDocsIndexTests(unittest.TestCase):
             )
             self.assertNotIn("tooling_metadata", home_entry)
 
+    def test_build_docs_index_accepts_discover_hooks_task_intent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {"label": "Home", "path": "index.md"},
+                    {
+                        "label": "Hooks",
+                        "items": [
+                            {"label": "JavaScript Hooks", "path": "hooks/javascript-hooks.md"}
+                        ],
+                    },
+                ],
+            )
+            self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            self._write_page(
+                root,
+                "hooks/javascript-hooks.md",
+                "JavaScript Hooks",
+                "Source-backed from pinned snapshots",
+                "Hook summary.",
+            )
+            self._write_metadata(
+                root,
+                {
+                    "hooks/javascript-hooks.md": {
+                        "task_intents": ["discover-hooks"],
+                        "related_artifacts": ["docs-index.json", "js_hooks.json"],
+                        "related_routes": [],
+                        "related_events": [],
+                        "runtime_required": False,
+                        "stability_tier": "pinned-baseline",
+                        "recommended_next_reads": ["index.md"],
+                    }
+                },
+            )
+
+            docs_index = generate_docs_index.build_docs_index(root)
+            hook_entry = next(
+                page for page in docs_index["pages"] if page["path"] == "hooks/javascript-hooks.md"
+            )
+
+            self.assertEqual(
+                hook_entry["tooling_metadata"]["task_intents"],
+                ["discover-hooks"],
+            )
+
+    def test_build_docs_index_accepts_custom_node_and_architecture_task_intents(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {"label": "Home", "path": "index.md"},
+                    {
+                        "label": "Architecture",
+                        "items": [{"label": "Overview", "path": "architecture/overview.md"}],
+                    },
+                    {
+                        "label": "Custom Nodes",
+                        "items": [
+                            {
+                                "label": "Development Guide",
+                                "path": "custom-nodes/development-guide.md",
+                            }
+                        ],
+                    },
+                ],
+            )
+            self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            self._write_page(
+                root,
+                "architecture/overview.md",
+                "Architecture Overview",
+                "Operational guidance",
+                "Architecture summary.",
+            )
+            self._write_page(
+                root,
+                "custom-nodes/development-guide.md",
+                "Custom Node Development Guide",
+                "Operational guidance",
+                "Custom node summary.",
+            )
+            self._write_metadata(
+                root,
+                {
+                    "architecture/overview.md": {
+                        "task_intents": ["understand-architecture"],
+                        "related_artifacts": ["docs-index.json"],
+                        "related_routes": [],
+                        "related_events": [],
+                        "runtime_required": False,
+                        "stability_tier": "support-routing",
+                        "recommended_next_reads": ["index.md"],
+                    },
+                    "custom-nodes/development-guide.md": {
+                        "task_intents": ["build-custom-node"],
+                        "related_artifacts": ["docs-index.json", "node_api_schema.json"],
+                        "related_routes": [],
+                        "related_events": [],
+                        "runtime_required": False,
+                        "stability_tier": "support-routing",
+                        "recommended_next_reads": ["index.md"],
+                    },
+                },
+            )
+
+            docs_index = generate_docs_index.build_docs_index(root)
+            architecture_entry = next(
+                page for page in docs_index["pages"] if page["path"] == "architecture/overview.md"
+            )
+            custom_node_entry = next(
+                page
+                for page in docs_index["pages"]
+                if page["path"] == "custom-nodes/development-guide.md"
+            )
+
+            self.assertEqual(
+                architecture_entry["tooling_metadata"]["task_intents"],
+                ["understand-architecture"],
+            )
+            self.assertEqual(
+                custom_node_entry["tooling_metadata"]["task_intents"],
+                ["build-custom-node"],
+            )
+
+    def test_invalid_new_task_intent_is_still_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(root, [{"label": "Home", "path": "index.md"}])
+            self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            self._write_metadata(
+                root,
+                {
+                    "index.md": {
+                        "task_intents": ["invent-unsupported-intent"],
+                        "related_artifacts": ["docs-index.json"],
+                        "related_routes": [],
+                        "related_events": [],
+                        "runtime_required": False,
+                        "stability_tier": "support-routing",
+                        "recommended_next_reads": [],
+                    }
+                },
+            )
+
+            with self.assertRaisesRegex(ValueError, "invalid task_intents values"):
+                generate_docs_index.build_docs_index(root)
+
     def test_metadata_target_missing_from_generated_output_fails(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

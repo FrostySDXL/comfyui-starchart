@@ -22,14 +22,17 @@ METADATA_PATH = REPO_ROOT / "references" / "docs-index-metadata.json"
 OUTPUT_PATH = REPO_ROOT / "public" / "artifacts" / "docs-index.json"
 
 KNOWN_TASK_INTENTS = {
+    "build-custom-node",
     "debug-api-integration",
     "discover-artifacts",
+    "discover-hooks",
     "discover-routes",
     "inspect-object-info",
     "lookup-history",
     "monitor-execution",
     "route-docs-task",
     "submit-prompt",
+    "understand-architecture",
 }
 KNOWN_ARTIFACT_FILENAMES = {
     "docs-index.json",

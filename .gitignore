@@ -27,3 +27,5 @@ credentials*
 livedocs/
 .ruff_cache/
 references/_refresh_backups/
+.opencode/
+.codegraph/

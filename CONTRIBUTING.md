@@ -1,6 +1,6 @@
 # Contributing
 
-**Last Updated:** 2026-05-25
+**Last Updated:** 2026-05-27
 
 This file is the canonical maintainer workflow guide for ComfyUI StarChart.
 Use `AGENTS.md` for startup-critical orientation. Use this file for deeper
@@ -70,7 +70,7 @@ Non-goals:
 | `tests/unit/` | unit tests for scripts | yes |
 | `.github/workflows/` | CI, advisory replay, deployment, refresh/watch automation | yes |
 
-## Final Retained Published Surface (30 pages)
+## Final Retained Published Surface (29 pages)
 
 This is the active published docs contract under `src/content/docs/`:
 
@@ -84,26 +84,25 @@ This is the active published docs contract under `src/content/docs/`:
 8. `src/content/docs/reference/object-info.md`
 9. `src/content/docs/reference/source-evidence-policy.md`
 10. `src/content/docs/reference/writing-style-guide.md`
-11. `src/content/docs/reference/doc-quality-checklist.md`
-12. `src/content/docs/reference/version-pin-status.md`
-13. `src/content/docs/reference/artifact-schema-version-migration.md`
-14. `src/content/docs/reference/topic-scope.md`
-15. `src/content/docs/architecture/overview.md`
-16. `src/content/docs/architecture/execution-pipeline.md`
-17. `src/content/docs/api/endpoints.md`
-18. `src/content/docs/api/websocket.md`
-19. `src/content/docs/api/prompt-submission.md`
-20. `src/content/docs/api/history-queue.md`
-21. `src/content/docs/hooks/javascript-hooks.md`
-22. `src/content/docs/hooks/server-hooks.md`
-23. `src/content/docs/hooks/extension-points.md`
-24. `src/content/docs/custom-nodes/development-guide.md`
-25. `src/content/docs/custom-nodes/node-structure.md`
-26. `src/content/docs/custom-nodes/datatypes.md`
-27. `src/content/docs/custom-nodes/registration.md`
-28. `src/content/docs/deep-dives/execution-model-inversion.md`
-29. `src/content/docs/deep-dives/workflow-json-schema.md`
-30. `src/content/docs/deep-dives/registry-packaging-and-compatibility.md`
+11. `src/content/docs/reference/version-pin-status.md`
+12. `src/content/docs/reference/artifact-schema-version-migration.md`
+13. `src/content/docs/reference/topic-scope.md`
+14. `src/content/docs/architecture/overview.md`
+15. `src/content/docs/architecture/execution-pipeline.md`
+16. `src/content/docs/api/endpoints.md`
+17. `src/content/docs/api/websocket.md`
+18. `src/content/docs/api/prompt-submission.md`
+19. `src/content/docs/api/history-queue.md`
+20. `src/content/docs/hooks/javascript-hooks.md`
+21. `src/content/docs/hooks/server-hooks.md`
+22. `src/content/docs/hooks/extension-points.md`
+23. `src/content/docs/custom-nodes/development-guide.md`
+24. `src/content/docs/custom-nodes/node-structure.md`
+25. `src/content/docs/custom-nodes/datatypes.md`
+26. `src/content/docs/custom-nodes/registration.md`
+27. `src/content/docs/deep-dives/execution-model-inversion.md`
+28. `src/content/docs/deep-dives/workflow-json-schema.md`
+29. `src/content/docs/deep-dives/registry-packaging-and-compatibility.md`
 
 Do not add a new published page or section without meeting the new-surface
 admission policy below.
@@ -192,7 +191,7 @@ owning script.
 2. Read:
    - `src/content/docs/reference/source-evidence-policy.md`
    - `src/content/docs/reference/writing-style-guide.md`
-   - `src/content/docs/reference/doc-quality-checklist.md`
+   - the `Editorial Checklist` section in this file
 3. Keep claims tied to `references/snapshots/` or `docs.comfy.org`.
 4. Verify:
 
@@ -200,6 +199,60 @@ owning script.
 python scripts/verify/cross_references.py
 npm run build
 ```
+
+## Editorial Checklist
+
+Use this checklist before marking any documentation page complete. Items marked
+Required must pass before a page is merged. Recommended items should be
+addressed unless there is a documented reason to defer them. Optional items are
+best-effort polish checks.
+
+### Page shape and mode
+
+- [ ] Required: page mode is explicit and matches the content
+- [ ] Required: the evidence label appears near the top of the page and is correct
+- [ ] Required: the opening paragraph or two includes an honest scope statement
+
+### Prose quality
+
+- [ ] Recommended: sentences stay short and direct, with active voice where it helps
+- [ ] Recommended: filler phrases are removed (`in order to`, `it is important to note that`, similar padding)
+- [ ] Optional: wording is concrete rather than vague or inflated
+- [ ] Optional: the opening avoids filler or repetition from adjacent docs
+
+### Structure and navigation
+
+- [ ] Optional: section order is intentional and fits the page mode
+- [ ] Recommended: `Who This Page Is For` appears when the audience is not obvious
+- [ ] Optional: decision guides include key takeaways or a short decision summary
+- [ ] Recommended: the page ends with intentional `Read Next` or `Related Pages` links
+- [ ] Optional: cross-links are navigational, not scattered incidental references
+- [ ] Optional: no `see also` filler that adds little value
+
+### Evidence and claims
+
+- [ ] Required: no claim of official ComfyUI behavior appears without a citation from `docs.comfy.org` or a pinned upstream source
+- [ ] Recommended: official versus community claims are clearly separated
+- [ ] Recommended: repo-local policy/process pages use `Operational guidance` without implying source-backed ComfyUI behavior claims
+- [ ] Required: after a snapshot refresh, baseline verification wording was reviewed; if the page is not fully current, the opening block says so explicitly
+- [ ] Optional: source citations point to pinned snapshots or official docs where applicable
+- [ ] Optional: `TODO` or `incomplete` markers are honest; incomplete pages use the Scaffold label
+- [ ] Optional: words like `authoritative` or `source of truth` appear only when exact backing exists
+
+### Build and links
+
+- [ ] Required: `npm run build` passes without new errors
+- [ ] Required: `references/` path mentions and navigational links resolve to valid targets
+- [ ] Recommended: no broken or dangling links remain
+
+### When to use this checklist
+
+- before opening a PR that touches documentation
+- before marking a doc page complete during a review session
+- during the weekly doc review pass described in this file
+
+This checklist is not a gate for draft or scaffold pages. Use it when you are
+ready to declare that a page meets the repo's editorial standard.
 
 ## Updating Docs-Index Metadata
 
@@ -353,6 +406,69 @@ python scripts/verify/example_surface_integrity.py
 python scripts/verify/evidence_metadata_freshness.py
 python -m mypy
 ```
+
+## Verifier Inventory
+
+This inventory covers the current direct verifier surfaces and the workflows that
+run or replay them. Helper modules such as `schema_common.py`,
+`schema_server.py`, `schema_hooks.py`, `schema_node_api.py`, and
+`published_schema_validation.py` support these checks but are not standalone
+inventory rows.
+
+### Blocking wrapper and blocking checks
+
+| Verifier / workflow | Purpose | Scope | Blocking/advisory/manual | Unique signal | When to run directly |
+|---|---|---|---|---|---|
+| `scripts/verify/run_all.py` | Run the default maintainer gate in CI-aligned order | Whole repo blocking path | Blocking wrapper | Step-for-step local mirror of the main CI blocking job | Before handoff, before push, and after multi-surface changes |
+| `python -m unittest discover -s tests -v` | Run Python unit coverage for scripts and generators | `tests/` and exercised Python modules | Blocking | Catches logic regressions before narrower verifiers run | Any Python tooling or docs-index generator change |
+| `npm test` | Run Node-side tests | frontend/site test surface | Blocking | Only blocking signal for repo Node-side tests | Site or frontend utility changes |
+| `scripts/verify/python_style.py` | Enforce Ruff lint and format checks | `scripts/`, `tests/` | Blocking | Bundles lint plus format drift into one Python gate | Any Python edit before broader verification |
+| `scripts/verify/cross_references.py` | Validate repo-local `references/` mentions and JSON source paths | published docs plus `references/raw/*.json` metadata | Blocking | Checks repo-path truth without depending on site build output | Any docs edit that touches cited repo paths or extracted metadata |
+| `scripts/verify/docs_index_freshness.py` | Detect stale checked-in `docs-index.json` | docs-index source pages, metadata, generated output | Blocking | In-memory regenerate-and-compare against committed artifact | After docs-index source or metadata changes |
+| `scripts/verify/validate_schema.py` | Validate canonical and selected published/support JSON artifacts against schemas | `references/raw/*.json`, `public/artifacts/docs-index.json`, selected support artifacts | Blocking | Only schema gate spanning canonical raw artifacts plus checked-in published/support JSON | Any extractor, schema, or published JSON contract change |
+| `scripts/verify/verify_artifact_integrity.py` | Confirm canonical raw artifacts match published current copies and manifest hashes | canonical artifact publication chain | Blocking | Hash-level canonical vs published integrity check | After republishing canonical artifacts or manifest-affecting changes |
+| `scripts/verify/markdown_top_level_spacing.py` | Catch leading-space markdown that renders incorrectly | hand-authored docs markdown | Blocking | Prevents raw-markdown leakage caused by indentation drift | After docs prose or formatting edits |
+| `scripts/verify/sidebar_navigation_coverage.py` | Ensure sidebar data matches the retained published docs tree | `src/site/sidebar-data.json` and `src/content/docs/` | Blocking | Detects missing nav entries, dead nav paths, and duplicates | After page additions, removals, or sidebar edits |
+| `npm run check` | Run Astro type/content checks | site build configuration and content graph | Blocking | Framework-aware diagnostics beyond markdown-only checks | After content, config, or site-code changes |
+| `npm run build` | Build the published Starlight site | full rendered docs site | Blocking | Produces the rendered output that downstream link verification depends on | After docs or site changes; always before rendered-links |
+| `scripts/verify/rendered_links.py` | Verify internal links in built HTML resolve | `dist/` output | Blocking | Catches link rewrite and route-resolution bugs that source checks miss | After a successful build |
+
+### Supplemental verifiers
+
+| Verifier / workflow | Purpose | Scope | Blocking/advisory/manual | Unique signal | When to run directly |
+|---|---|---|---|---|---|
+| `python -m mypy` | Advisory typing pass for Python tooling | typed Python surfaces | Supplemental / advisory | Static type signal without blocking the default maintainer gate | Python refactors, interface changes, or before promoting stricter typing |
+| `scripts/verify/pipeline_smoke.py` | Smoke the blocking wrapper without rerunning tests | blocking pipeline minus Python/Node tests | Supplemental | Fastest way to exercise the Starlight-era blocking path end-to-end | Iterating on blocking verifiers or site build behavior |
+| `scripts/verify/shell_examples_syntax.py` | Parse-check repo shell examples with `bash -n` | `examples/**/*.sh` | Supplemental | Only direct syntax check for shell example scripts | After adding or editing shell examples |
+
+### Advisory verifiers and replay workflows
+
+| Verifier / workflow | Purpose | Scope | Blocking/advisory/manual | Unique signal | When to run directly |
+|---|---|---|---|---|---|
+| `scripts/verify/stale_content.py` | Scan for stale markers and aging content | docs plus extracted JSON | Advisory | Finds `TODO`/`TBD`-style drift and old `Last Updated` markers | Cleanup sweeps, doc review passes, or before promoting pages |
+| `scripts/verify/extraction_idempotency.py` | Re-run extractors against pinned inputs and compare outputs | extractor determinism for `references/raw/*.json` | Advisory | Only direct determinism check for extraction reproducibility | Extractor changes or refresh-pipeline review |
+| `scripts/verify/upstream_pins.py` | Confirm pinned tags and commits still resolve upstream | upstream pin validity for canonical JSON metadata | Advisory | External trust check with cached GitHub API resolution | Scheduled pin health review or after suspicious upstream changes |
+| `scripts/verify/example_surface_integrity.py` | Validate example family structure and routed example references | `examples/` plus routed start-here docs | Advisory | Checks example directory completeness and routed example paths together | Example-surface edits or start-here routing updates |
+| `scripts/verify/evidence_metadata_freshness.py` | Enforce opening evidence metadata discipline on retained pages | selected published docs pages | Advisory | Only verifier that checks allowed baseline-status wording patterns directly | Docs policy changes or refreshes affecting evidence blocks |
+| `.github/workflows/advisory-checks.yml` | Replay advisory scripts as blocking on schedule/manual dispatch | weekly/manual advisory escalation path | Advisory workflow | Converts the non-blocking advisory script set into a durable scheduled gate | Use the workflow when maintainers want a blocking replay outside push/PR CI |
+| `.github/workflows/weekly-pin-check.yml` | Run the upstream pin check on its own weekly/manual cadence | upstream pin health | Advisory workflow | Narrow single-purpose replay for upstream pin validity | Use when investigating pin drift without the rest of the advisory bundle |
+
+### Runtime-specific verifiers and workflows
+
+| Verifier / workflow | Purpose | Scope | Blocking/advisory/manual | Unique signal | When to run directly |
+|---|---|---|---|---|---|
+| `scripts/verify/runtime_smoke.py` | Probe a live ComfyUI instance for basic API readiness and prompt submission | live runtime endpoints | Manual runtime-specific | Only repo-local verifier that exercises real HTTP runtime behavior directly | When validating a running ComfyUI instance or runtime-facing examples |
+| `scripts/verify/wait_for_runtime.py` | Poll a live endpoint until JSON readiness | live runtime startup/readiness | Manual runtime-specific | Purpose-built readiness gate for headless runtime workflows | Before runtime capture steps that require a live ComfyUI server |
+| `.github/workflows/runtime-smoke.yml` | Run `runtime_smoke.py` against a user-supplied ComfyUI URL | manual live-runtime smoke workflow | Manual runtime-specific workflow | Reproducible GitHub Actions wrapper for runtime smoke without local setup | When maintainers need remote/manual runtime verification evidence |
+| `.github/workflows/headless-runtime-metadata.yml` | Launch pinned ComfyUI headlessly, wait for readiness, capture runtime metadata, and optionally build a hybrid schema artifact | pinned runtime metadata capture | Manual runtime-specific workflow | Only workflow that clones the pinned runtime and captures fresh `object_info` evidence | When runtime metadata or hybrid-schema evidence is needed |
+
+### Workflow orchestration surfaces
+
+| Verifier / workflow | Purpose | Scope | Blocking/advisory/manual | Unique signal | When to run directly |
+|---|---|---|---|---|---|
+| `.github/workflows/ci.yml` | Main CI entrypoint for blocking, supplemental, advisory-in-CI, and optional refresh jobs | push/PR/manual repo verification | Workflow orchestration | Shows how blocking, supplemental, and non-blocking advisory checks are staged in CI | Inspect when changing verifier placement or CI parity with `run_all.py` |
+| `.github/workflows/deploy-pages.yml` | Publish artifacts, rerun the blocking wrapper, and deploy the built site | deploy pipeline | Workflow orchestration | Couples publication and full blocking verification before Pages deploy | Inspect when changing deployment or publication flow |
+| `.github/workflows/upstream-watch.yml` | Check upstream versions and open/update a tracking issue | upstream monitoring automation | Workflow orchestration | Tracks refresh opportunities rather than repo correctness | Inspect when changing upstream-watch automation or issue workflow |
 
 ## Maintainer Failure-Path Quick Guide
 

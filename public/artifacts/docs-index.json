@@ -17,7 +17,25 @@
       "nav_section": "Home",
       "audience": null,
       "evidence": "Operational guidance",
-      "summary": "This documentation section is the reduced published surface for ComfyUI builders. It keeps the durable reference pages, start-here routes, and artifact consumer guidance that remain useful after the surface reset."
+      "summary": "ComfyUI StarChart is a version-pinned, source-extracted companion reference for ComfyUI developers. It publishes:",
+      "tooling_metadata": {
+        "task_intents": [
+          "route-docs-task"
+        ],
+        "related_artifacts": [
+          "docs-index.json",
+          "manifest.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "support-routing",
+        "recommended_next_reads": [
+          "architecture/overview.md",
+          "start-here/artifact-consumer.md",
+          "start-here/tooling-builder.md"
+        ]
+      }
     },
     {
       "title": "Start Here: Custom Node Author",
@@ -25,7 +43,25 @@
       "nav_section": "Start Here",
       "audience": "consumer",
       "evidence": "Operational guidance",
-      "summary": null
+      "summary": null,
+      "tooling_metadata": {
+        "task_intents": [
+          "build-custom-node"
+        ],
+        "related_artifacts": [
+          "docs-index.json",
+          "node_api_schema.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "support-routing",
+        "recommended_next_reads": [
+          "custom-nodes/development-guide.md",
+          "custom-nodes/node-structure.md",
+          "custom-nodes/registration.md"
+        ]
+      }
     },
     {
       "title": "Start Here: Extension Developer",
@@ -33,7 +69,26 @@
       "nav_section": "Start Here",
       "audience": "consumer",
       "evidence": "Source-backed from pinned snapshots",
-      "summary": null
+      "summary": null,
+      "tooling_metadata": {
+        "task_intents": [
+          "discover-hooks"
+        ],
+        "related_artifacts": [
+          "docs-index.json",
+          "js_hooks.json",
+          "server_endpoints.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "support-routing",
+        "recommended_next_reads": [
+          "hooks/extension-points.md",
+          "hooks/javascript-hooks.md",
+          "hooks/server-hooks.md"
+        ]
+      }
     },
     {
       "title": "Start Here: Service Integration",
@@ -41,7 +96,38 @@
       "nav_section": "Start Here",
       "audience": "consumer",
       "evidence": "Source-backed from pinned snapshots",
-      "summary": null
+      "summary": null,
+      "tooling_metadata": {
+        "task_intents": [
+          "debug-api-integration",
+          "monitor-execution"
+        ],
+        "related_artifacts": [
+          "docs-index.json",
+          "manifest.json",
+          "server_endpoints.json"
+        ],
+        "related_routes": [
+          "GET /history/{prompt_id}",
+          "GET /queue",
+          "GET /ws",
+          "POST /prompt"
+        ],
+        "related_events": [
+          "executed",
+          "executing",
+          "execution_error",
+          "execution_success",
+          "status"
+        ],
+        "runtime_required": true,
+        "stability_tier": "support-routing",
+        "recommended_next_reads": [
+          "api/history-queue.md",
+          "api/prompt-submission.md",
+          "api/websocket.md"
+        ]
+      }
     },
     {
       "title": "Start Here: Tooling Builder",
@@ -102,7 +188,24 @@
       "nav_section": "Architecture",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
-      "summary": "This page is a bounded conceptual overview of ComfyUI architecture for readers who need the system shape before diving into detailed reference pages."
+      "summary": "This page is a bounded conceptual overview of ComfyUI architecture for readers who need the system shape before diving into detailed reference pages.",
+      "tooling_metadata": {
+        "task_intents": [
+          "understand-architecture"
+        ],
+        "related_artifacts": [
+          "docs-index.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "pinned-baseline",
+        "recommended_next_reads": [
+          "architecture/execution-pipeline.md",
+          "start-here/extension-developer.md",
+          "start-here/tooling-builder.md"
+        ]
+      }
     },
     {
       "title": "Execution Pipeline",
@@ -110,7 +213,36 @@
       "nav_section": "Architecture",
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
-      "summary": "This page documents the server-side execution pipeline that turns a submitted prompt into queued work, live events, and stored history. It is an architecture-level map of responsibilities and boundaries, not a step-by-step API tutorial or a full engine internals reference."
+      "summary": "This page documents the server-side execution pipeline that turns a submitted prompt into queued work, live events, and stored history. It is an architecture-level map of responsibilities and boundaries, not a step-by-step API tutorial or a full engine internals reference.",
+      "tooling_metadata": {
+        "task_intents": [
+          "monitor-execution",
+          "understand-architecture"
+        ],
+        "related_artifacts": [
+          "server_endpoints.json"
+        ],
+        "related_routes": [
+          "GET /history/{prompt_id}",
+          "GET /queue",
+          "GET /ws",
+          "POST /prompt"
+        ],
+        "related_events": [
+          "executed",
+          "executing",
+          "execution_error",
+          "execution_start",
+          "execution_success"
+        ],
+        "runtime_required": true,
+        "stability_tier": "pinned-baseline",
+        "recommended_next_reads": [
+          "api/history-queue.md",
+          "api/prompt-submission.md",
+          "api/websocket.md"
+        ]
+      }
     },
     {
       "title": "API Endpoints",
@@ -259,7 +391,25 @@
       "nav_section": "Hooks",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
-      "summary": "ComfyUI's JavaScript extension system calls named hooks on every registered frontend extension by routing through `invokeExtensions()` or `invokeExtensionsAsync()`. These hooks are the main supported way to modify client-side behavior without directly rewriting core UI code."
+      "summary": "ComfyUI's JavaScript extension system calls named hooks on every registered frontend extension by routing through `invokeExtensions()` or `invokeExtensionsAsync()`. These hooks are the main supported way to modify client-side behavior without directly rewriting core UI code.",
+      "tooling_metadata": {
+        "task_intents": [
+          "discover-hooks"
+        ],
+        "related_artifacts": [
+          "docs-index.json",
+          "js_hooks.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "pinned-baseline",
+        "recommended_next_reads": [
+          "hooks/extension-points.md",
+          "start-here/extension-developer.md",
+          "start-here/tooling-builder.md"
+        ]
+      }
     },
     {
       "title": "Server Hooks",
@@ -267,7 +417,33 @@
       "nav_section": "Hooks",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
-      "summary": "The current ComfyUI server exposes a small number of meaningful server-side hook surfaces directly in Python. The most explicit one is the prompt preprocessing hook chain stored in `self.on_prompt_handlers`. Execution also exposes progress and lifecycle messaging through the executor and WebSocket path, which is the main observability surface for server-side integrations."
+      "summary": "The current ComfyUI server exposes a small number of meaningful server-side hook surfaces directly in Python. The most explicit one is the prompt preprocessing hook chain stored in `self.on_prompt_handlers`. Execution also exposes progress and lifecycle messaging through the executor and WebSocket path, which is the main observability surface for server-side integrations.",
+      "tooling_metadata": {
+        "task_intents": [
+          "discover-hooks",
+          "monitor-execution"
+        ],
+        "related_artifacts": [
+          "docs-index.json",
+          "server_endpoints.json"
+        ],
+        "related_routes": [
+          "GET /ws"
+        ],
+        "related_events": [
+          "executed",
+          "executing",
+          "execution_error",
+          "execution_success"
+        ],
+        "runtime_required": true,
+        "stability_tier": "pinned-baseline",
+        "recommended_next_reads": [
+          "architecture/execution-pipeline.md",
+          "hooks/extension-points.md",
+          "start-here/extension-developer.md"
+        ]
+      }
     },
     {
       "title": "Extension Points",
@@ -275,7 +451,27 @@
       "nav_section": "Hooks",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
-      "summary": "ComfyUI extension work splits across a few distinct surfaces rather than one universal plugin API. In practice, you choose between frontend hooks, server-hook callbacks, custom routes, and custom nodes depending on what you are trying to change."
+      "summary": "ComfyUI extension work splits across a few distinct surfaces rather than one universal plugin API. In practice, you choose between frontend hooks, server-hook callbacks, custom routes, and custom nodes depending on what you are trying to change.",
+      "tooling_metadata": {
+        "task_intents": [
+          "discover-hooks",
+          "route-docs-task"
+        ],
+        "related_artifacts": [
+          "docs-index.json",
+          "js_hooks.json",
+          "server_endpoints.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "support-routing",
+        "recommended_next_reads": [
+          "hooks/javascript-hooks.md",
+          "hooks/server-hooks.md",
+          "start-here/extension-developer.md"
+        ]
+      }
     },
     {
       "title": "Custom Node Development Guide",
@@ -283,7 +479,25 @@
       "nav_section": "Custom Nodes",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
-      "summary": "ComfyUI custom nodes extend the platform's client-server model. The server side is Python and performs real work such as model execution, data processing, and file handling. The client side is JavaScript and renders the editor, widgets, and graph interactions."
+      "summary": "ComfyUI custom nodes extend the platform's client-server model. The server side is Python and performs real work such as model execution, data processing, and file handling. The client side is JavaScript and renders the editor, widgets, and graph interactions.",
+      "tooling_metadata": {
+        "task_intents": [
+          "build-custom-node"
+        ],
+        "related_artifacts": [
+          "docs-index.json",
+          "node_api_schema.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "pinned-baseline",
+        "recommended_next_reads": [
+          "custom-nodes/datatypes.md",
+          "custom-nodes/node-structure.md",
+          "custom-nodes/registration.md"
+        ]
+      }
     },
     {
       "title": "V3 Node Structure",
@@ -291,7 +505,24 @@
       "nav_section": "Custom Nodes",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
-      "summary": "This page is the repo's main V3 node structure reference. In V3, a custom node is a Python class derived from `io.ComfyNode`. Instead of scattering configuration across multiple legacy class attributes, the node declares its public contract in one schema object and implements behavior in one execution method."
+      "summary": "This page is the repo's main V3 node structure reference. In V3, a custom node is a Python class derived from `io.ComfyNode`. Instead of scattering configuration across multiple legacy class attributes, the node declares its public contract in one schema object and implements behavior in one execution method.",
+      "tooling_metadata": {
+        "task_intents": [
+          "build-custom-node"
+        ],
+        "related_artifacts": [
+          "node_api_schema.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "pinned-baseline",
+        "recommended_next_reads": [
+          "custom-nodes/datatypes.md",
+          "custom-nodes/development-guide.md",
+          "custom-nodes/registration.md"
+        ]
+      }
     },
     {
       "title": "Registration",
@@ -299,7 +530,24 @@
       "nav_section": "Custom Nodes",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Community pattern study",
-      "summary": "Registration is the step that makes ComfyUI discover your node classes. The exact mechanism depends on whether the package is using legacy V1 or modern V3 conventions."
+      "summary": "Registration is the step that makes ComfyUI discover your node classes. The exact mechanism depends on whether the package is using legacy V1 or modern V3 conventions.",
+      "tooling_metadata": {
+        "task_intents": [
+          "build-custom-node"
+        ],
+        "related_artifacts": [
+          "docs-index.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "support-routing",
+        "recommended_next_reads": [
+          "custom-nodes/development-guide.md",
+          "start-here/author.md",
+          "start-here/extension-developer.md"
+        ]
+      }
     },
     {
       "title": "Datatypes",
@@ -307,7 +555,24 @@
       "nav_section": "Custom Nodes",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
-      "summary": "ComfyUI datatypes serve two roles at once:"
+      "summary": "ComfyUI datatypes serve two roles at once:",
+      "tooling_metadata": {
+        "task_intents": [
+          "build-custom-node"
+        ],
+        "related_artifacts": [
+          "node_api_schema.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "pinned-baseline",
+        "recommended_next_reads": [
+          "custom-nodes/development-guide.md",
+          "custom-nodes/node-structure.md",
+          "custom-nodes/registration.md"
+        ]
+      }
     },
     {
       "title": "Machine-Readable Artifacts",
@@ -373,7 +638,27 @@
       "nav_section": "Reference",
       "audience": null,
       "evidence": "Operational guidance",
-      "summary": "This page explains how tooling consumers should interpret and respond to changes in the published `artifact_schema_version` field."
+      "summary": "This page explains how tooling consumers should interpret and respond to changes in the published `artifact_schema_version` field.",
+      "tooling_metadata": {
+        "task_intents": [
+          "discover-artifacts"
+        ],
+        "related_artifacts": [
+          "js_hooks.json",
+          "manifest.json",
+          "node_api_schema.json",
+          "server_endpoints.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "support-routing",
+        "recommended_next_reads": [
+          "reference/machine-readable-artifacts.md",
+          "start-here/artifact-consumer.md",
+          "start-here/tooling-builder.md"
+        ]
+      }
     },
     {
       "title": "Source Evidence Policy",
@@ -386,14 +671,6 @@
     {
       "title": "Writing Style Guide",
       "path": "reference/writing-style-guide.md",
-      "nav_section": "Reference",
-      "audience": null,
-      "evidence": "Operational guidance",
-      "summary": null
-    },
-    {
-      "title": "Doc Quality Checklist",
-      "path": "reference/doc-quality-checklist.md",
       "nav_section": "Reference",
       "audience": null,
       "evidence": "Operational guidance",
@@ -421,7 +698,26 @@
       "nav_section": "Deep Dives",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
-      "summary": "This page explains why the official workflow JSON specification matters as an interchange surface for ComfyUI tooling. It is not a field-by-field schema reference and not a tutorial for hand-authoring workflows."
+      "summary": "This page explains why the official workflow JSON specification matters as an interchange surface for ComfyUI tooling. It is not a field-by-field schema reference and not a tutorial for hand-authoring workflows.",
+      "tooling_metadata": {
+        "task_intents": [
+          "understand-architecture"
+        ],
+        "related_artifacts": [
+          "docs-index.json"
+        ],
+        "related_routes": [
+          "POST /prompt"
+        ],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "support-routing",
+        "recommended_next_reads": [
+          "api/prompt-submission.md",
+          "architecture/overview.md",
+          "start-here/tooling-builder.md"
+        ]
+      }
     },
     {
       "title": "Deep Dive: Execution Model Inversion",
@@ -429,7 +725,33 @@
       "nav_section": "Deep Dives",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
-      "summary": "This page explains the official execution-model inversion guidance for advanced custom-node and tooling authors. It focuses on what the guide changes about validation, lazy evaluation, node expansion, and migration expectations. It is not a reverse-engineered engine internals page."
+      "summary": "This page explains the official execution-model inversion guidance for advanced custom-node and tooling authors. It focuses on what the guide changes about validation, lazy evaluation, node expansion, and migration expectations. It is not a reverse-engineered engine internals page.",
+      "tooling_metadata": {
+        "task_intents": [
+          "understand-architecture"
+        ],
+        "related_artifacts": [
+          "server_endpoints.json"
+        ],
+        "related_routes": [
+          "GET /history/{prompt_id}",
+          "GET /queue",
+          "POST /prompt"
+        ],
+        "related_events": [
+          "executed",
+          "executing",
+          "execution_start",
+          "execution_success"
+        ],
+        "runtime_required": false,
+        "stability_tier": "pinned-baseline",
+        "recommended_next_reads": [
+          "api/history-queue.md",
+          "api/prompt-submission.md",
+          "architecture/execution-pipeline.md"
+        ]
+      }
     },
     {
       "title": "Deep Dive: Registry Packaging and Compatibility",
@@ -437,7 +759,24 @@
       "nav_section": "Deep Dives",
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
-      "summary": "This page explains the official registry packaging model for ComfyUI custom nodes. It focuses on metadata, compatibility fields, and the distribution model those fields support. It is not a repackaged step-by-step publishing guide."
+      "summary": "This page explains the official registry packaging model for ComfyUI custom nodes. It focuses on metadata, compatibility fields, and the distribution model those fields support. It is not a repackaged step-by-step publishing guide.",
+      "tooling_metadata": {
+        "task_intents": [
+          "build-custom-node"
+        ],
+        "related_artifacts": [
+          "docs-index.json"
+        ],
+        "related_routes": [],
+        "related_events": [],
+        "runtime_required": false,
+        "stability_tier": "support-routing",
+        "recommended_next_reads": [
+          "custom-nodes/registration.md",
+          "start-here/author.md",
+          "start-here/extension-developer.md"
+        ]
+      }
     }
   ]
 }

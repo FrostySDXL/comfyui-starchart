@@ -3,7 +3,9 @@ title: "Start Here: Service Integration"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-05-24
+**Last Updated:** 2026-05-27
+**Primary Sources:** `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py`, `references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`
+**Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`.
 
 ## Who This Path Is For
 
@@ -75,15 +77,19 @@ POST /prompt
 
 The response gives you a `prompt_id` to track execution.
 
-### Monitor Progress
+### Monitor Execution Events (quick-reference subset)
 
 Connect to the WebSocket at `/ws?client_id=...`. Messages include:
 
-- `executing` -- node execution started
-- `progress` -- node progress percentage
-- `executing_node` -- which node is running
+- `status` -- queue status snapshot sent on connect and broader queue updates
+- `executing` -- node execution started for the prompt client
+- `executed` -- node UI output emitted for the prompt client
 - `execution_success` -- prompt completed
 - `execution_error` -- prompt failed
+
+This is a bounded quick-reference subset, not the full canonical event
+inventory. Use [WebSocket](../api/websocket.md) for the retained event reference
+and preview-channel details.
 
 ### Fetch Results
 

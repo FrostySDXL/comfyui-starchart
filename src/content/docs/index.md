@@ -3,13 +3,16 @@ title: "ComfyUI StarChart"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-24
+**Last Updated:** 2026-05-27
 
 ## Scope
 
-This documentation section is the reduced published surface for ComfyUI
-builders. It keeps the durable reference pages, start-here routes, and artifact
-consumer guidance that remain useful after the surface reset.
+ComfyUI StarChart is a version-pinned, source-extracted companion reference for
+ComfyUI developers. It publishes:
+
+- a self-hostable Astro Starlight documentation site
+- extracted JSON artifacts for selected ComfyUI API, hook, and schema surfaces
+- repo-local maintainer tooling for refresh, verification, and publication
 
 Use [docs.comfy.org](https://docs.comfy.org/) for the official human reference.
 Use [Machine-Readable Artifacts](reference/machine-readable-artifacts.md) when
@@ -51,6 +54,18 @@ When you need machine-readable inputs:
   contract interpretation
 - use [Artifact Consumer](start-here/artifact-consumer.md) for the shortest
   consumer route through the retained surface
+
+## StarChart vs Official Docs
+
+Use the official docs when you need native human-facing product guidance,
+current official workflows, or hosted-surface documentation from
+[docs.comfy.org](https://docs.comfy.org/).
+
+Use StarChart when you need pinned source-backed artifacts, retained cross-surface
+reference pages, or bounded tooling guidance tied to this repo's current baseline.
+
+Use both when you need to reconcile the current official guidance with the pinned
+artifact and snapshot context this repo preserves.
 
 ## Scope Boundaries
 

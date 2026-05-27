@@ -10,6 +10,8 @@ PUBLISHED_ARTIFACT_SCHEMAS = {
     "js_hooks.json": "js_hooks.schema.json",
     "node_api_schema.json": "node_api_schema.schema.json",
     "docs-index.json": "docs-index.schema.json",
+    "delta-summary.json": "delta-summary.schema.json",
+    "refresh-provenance.json": "refresh-provenance.schema.json",
 }
 
 JSON_SCHEMA_TYPE_MAP = {

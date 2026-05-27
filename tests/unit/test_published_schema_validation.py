@@ -7,8 +7,120 @@ from pathlib import Path
 
 from scripts.verify import published_schema_validation
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+PUBLISHED_SCHEMA_DIR = REPO_ROOT / "public" / "artifacts" / "schemas"
+
 
 class PublishedSchemaValidationTests(unittest.TestCase):
+    def test_load_published_artifact_schema_resolves_support_artifact_schemas(self):
+        delta_schema = published_schema_validation.load_published_artifact_schema(
+            "delta-summary.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+        refresh_schema = published_schema_validation.load_published_artifact_schema(
+            "refresh-provenance.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertIsNotNone(delta_schema)
+        self.assertEqual(delta_schema["title"], "ComfyUI StarChart delta-summary support artifact")
+        self.assertIsNotNone(refresh_schema)
+        self.assertEqual(
+            refresh_schema["title"],
+            "ComfyUI StarChart refresh-provenance support artifact",
+        )
+
+    def test_validate_against_published_artifact_schema_reports_delta_summary_violation(self):
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            {
+                "comparison": {"old": "references/old", "new": "references/raw"},
+                "notes": [],
+                "artifacts": {
+                    "server_endpoints": {
+                        "old_count": 1,
+                        "new_count": 1,
+                        "added": [],
+                        "removed": [],
+                        "changed": [],
+                    },
+                    "js_hooks": {
+                        "old_count": 1,
+                        "new_count": 1,
+                        "added": [],
+                        "removed": [],
+                        "changed": [],
+                    },
+                    "node_api_schema": {
+                        "object_info_fields": {
+                            "old_count": 1,
+                            "new_count": 1,
+                            "added": [],
+                            "removed": [],
+                            "changed": [],
+                        },
+                        "io_types": {
+                            "old_count": 1,
+                            "new_count": "wrong",
+                            "added": [],
+                            "removed": [],
+                            "changed": [],
+                        },
+                        "typed_input_shapes": {
+                            "old_count": 1,
+                            "new_count": 1,
+                            "added": [],
+                            "removed": [],
+                            "changed": [],
+                        },
+                    },
+                },
+            },
+            "delta-summary.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertTrue(
+            any("node_api_schema.io_types.new_count: expected integer" in e for e in errors)
+        )
+
+    def test_validate_against_published_artifact_schema_reports_refresh_provenance_violation(self):
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            {
+                "backup_location": "references/_refresh_backups/raw_test",
+                "next_steps": {
+                    "publish_reference_artifacts_command": "py -3.11 scripts/generate/publish_reference_artifacts.py",
+                    "verify_artifact_integrity_command": "py -3.11 scripts/verify/verify_artifact_integrity.py",
+                    "delta_summary_command": None,
+                    "run_all_command": "py -3.11 scripts/verify/run_all.py",
+                },
+                "published": {
+                    "manifest_included": False,
+                    "provenance_path": "public/artifacts/refresh-provenance.json",
+                    "canonical_artifacts_updated_by_refresh": False,
+                    "delta_summary_updated_by_refresh": False,
+                },
+                "refresh_date": "2026-05-21",
+                "requested_versions": {
+                    "core": "v0.22.0",
+                    "frontend": "v1.45.12",
+                },
+                "resolved_commits": {
+                    "core": None,
+                    "frontend": 123,
+                },
+                "runtime_object_info": {
+                    "merged_into_node_api_schema": False,
+                    "requested": False,
+                },
+            },
+            "refresh-provenance.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertTrue(
+            any("resolved_commits.frontend: expected string | null" in e for e in errors)
+        )
+
     def test_integer_and_number_do_not_accept_bool(self):
         self.assertFalse(published_schema_validation._instance_matches_json_type(True, "integer"))
         self.assertFalse(published_schema_validation._instance_matches_json_type(True, "number"))

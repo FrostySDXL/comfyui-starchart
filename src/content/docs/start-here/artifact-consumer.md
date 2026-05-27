@@ -3,7 +3,7 @@ title: "Start Here: Artifact Consumer"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-24
+**Last Updated:** 2026-05-27
 
 ## Scope
 
@@ -34,6 +34,16 @@ Use `artifacts/manifest.json` first.
 Read [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md)
 for the exact contract.
 
+## Inline Consumer Contract
+
+Keep the durable contract short and explicit:
+
+- use manifest-first discovery from `artifacts/manifest.json`
+- load the canonical current copy from `artifacts/current/<name>.json`
+- build strict tooling only against guaranteed fields and published schemas
+- verify current-copy downloads against the manifest `sha256`
+- treat `docs-index.json` as optional routing help layered on top of the canonical artifacts
+
 ## Use the Routing Support Surface Sparingly
 
 The repo also publishes a bounded support index for docs and tooling routing.
@@ -43,6 +53,14 @@ artifact discovery.
 - Use it when you need a first-pass page match.
 - Do not treat it as a replacement for `manifest.json`.
 - Do not treat it as full-text search or as a new canonical artifact contract.
+
+## If you are an agent or tool
+
+Use `docs-index.json` when you need a bounded first pass to choose which docs
+page to read next. Ignore it and go straight to the canonical artifacts when you
+already know the route, schema, or artifact surface you need. Do not over-trust
+best-effort routing fields when a manifest entry or canonical artifact answers
+the question directly.
 
 ## Starter Example Boundary
 

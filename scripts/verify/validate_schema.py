@@ -32,6 +32,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 PUBLISHED_SCHEMA_DIR = REPO_ROOT / "public" / "artifacts" / "schemas"
 DOCS_INDEX_PATH = REPO_ROOT / "public" / "artifacts" / "docs-index.json"
+SUPPORT_ARTIFACT_PATHS = [
+    REPO_ROOT / "public" / "artifacts" / "delta-summary.json",
+    REPO_ROOT / "public" / "artifacts" / "refresh-provenance.json",
+]
 
 __all__ = [
     "ENDPOINT_SCHEMA",
@@ -88,6 +92,8 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
         "js_hooks.json",
         "node_api_schema.json",
         "docs-index.json",
+        "delta-summary.json",
+        "refresh-provenance.json",
     }:
         validation_errors.extend(validate_against_published_artifact_schema(data, json_file.name))
 
@@ -109,7 +115,8 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
 def main() -> int:
     all_errors: list[str] = []
     json_files = sorted(REFERENCES_RAW_DIR.glob("*.json"))
-    all_json_files = json_files + [DOCS_INDEX_PATH]
+    # manifest.json remains intentionally excluded from this schema-enforcement wave.
+    all_json_files = json_files + [DOCS_INDEX_PATH, *SUPPORT_ARTIFACT_PATHS]
 
     if not all_json_files:
         print("No JSON reference files found.")

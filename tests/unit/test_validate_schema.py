@@ -1,8 +1,10 @@
 """Tests for scripts/verify/validate_schema.py."""
 
+import io
 import json
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -645,6 +647,194 @@ class ValidateSchemaScriptTests(unittest.TestCase):
             module._validate_json_file(json_file, errors)
         self.assertTrue(any("published schema violation" in e for e in errors))
         self.assertTrue(any("missing required key 'route'" in e for e in errors))
+
+    def test_single_support_artifact_file_reports_published_schema_violation(self):
+        module = self._import_module()
+        payload = {
+            "comparison": {"old": "references/old", "new": "references/raw"},
+            "notes": [],
+            "artifacts": {
+                "server_endpoints": {
+                    "old_count": 1,
+                    "new_count": 1,
+                    "added": [],
+                    "removed": [],
+                    "changed": [],
+                },
+                "js_hooks": {
+                    "old_count": 1,
+                    "new_count": 1,
+                    "added": [],
+                    "removed": [],
+                    "changed": [],
+                },
+                "node_api_schema": {
+                    "object_info_fields": {
+                        "old_count": 1,
+                        "new_count": 1,
+                        "added": [],
+                        "removed": [],
+                        "changed": [],
+                    },
+                    "io_types": {
+                        "old_count": 1,
+                        "new_count": "wrong",
+                        "added": [],
+                        "removed": [],
+                        "changed": [],
+                    },
+                    "typed_input_shapes": {
+                        "old_count": 1,
+                        "new_count": 1,
+                        "added": [],
+                        "removed": [],
+                        "changed": [],
+                    },
+                },
+            },
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            json_file = Path(tmpdir) / "delta-summary.json"
+            json_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+            errors = []
+            module._validate_json_file(json_file, errors)
+        self.assertTrue(any("published schema violation" in e for e in errors))
+        self.assertTrue(any("expected integer" in e for e in errors))
+
+    def test_main_validates_support_artifacts_and_excludes_manifest(self):
+        module = self._import_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            raw_dir = tmp_path / "references" / "raw"
+            raw_dir.mkdir(parents=True)
+            published_dir = tmp_path / "public" / "artifacts"
+            published_dir.mkdir(parents=True)
+            schema_dir = published_dir / "schemas"
+            schema_dir.mkdir(parents=True)
+
+            (schema_dir / "docs-index.schema.json").write_text(
+                (
+                    REPO_ROOT / "public" / "artifacts" / "schemas" / "docs-index.schema.json"
+                ).read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            (schema_dir / "delta-summary.schema.json").write_text(
+                (
+                    REPO_ROOT / "public" / "artifacts" / "schemas" / "delta-summary.schema.json"
+                ).read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            (schema_dir / "refresh-provenance.schema.json").write_text(
+                (
+                    REPO_ROOT
+                    / "public"
+                    / "artifacts"
+                    / "schemas"
+                    / "refresh-provenance.schema.json"
+                ).read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+
+            docs_index_payload = {
+                "artifact": "docs-index.json",
+                "artifact_schema_version": "1.1.0",
+                "scope": {"surface": "test", "excludes": []},
+                "pages": [],
+            }
+            delta_summary_payload = {
+                "comparison": {"old": "references/old", "new": "references/raw"},
+                "notes": [],
+                "artifacts": {
+                    "server_endpoints": {
+                        "old_count": 1,
+                        "new_count": 1,
+                        "added": [],
+                        "removed": [],
+                        "changed": [],
+                    },
+                    "js_hooks": {
+                        "old_count": 1,
+                        "new_count": 1,
+                        "added": [],
+                        "removed": [],
+                        "changed": [],
+                    },
+                    "node_api_schema": {
+                        "object_info_fields": {
+                            "old_count": 1,
+                            "new_count": 1,
+                            "added": [],
+                            "removed": [],
+                            "changed": [],
+                        },
+                        "io_types": {
+                            "old_count": 1,
+                            "new_count": 1,
+                            "added": [],
+                            "removed": [],
+                            "changed": [],
+                        },
+                        "typed_input_shapes": {
+                            "old_count": 1,
+                            "new_count": 1,
+                            "added": [],
+                            "removed": [],
+                            "changed": [],
+                        },
+                    },
+                },
+            }
+            refresh_provenance_payload = {
+                "backup_location": None,
+                "next_steps": {
+                    "publish_reference_artifacts_command": "py -3.11 scripts/generate/publish_reference_artifacts.py",
+                    "verify_artifact_integrity_command": "py -3.11 scripts/verify/verify_artifact_integrity.py",
+                    "delta_summary_command": None,
+                    "run_all_command": "py -3.11 scripts/verify/run_all.py",
+                },
+                "published": {
+                    "manifest_included": False,
+                    "provenance_path": "public/artifacts/refresh-provenance.json",
+                    "canonical_artifacts_updated_by_refresh": False,
+                    "delta_summary_updated_by_refresh": False,
+                },
+                "refresh_date": "2026-05-21",
+                "requested_versions": {"core": "v0.22.0", "frontend": "v1.45.12"},
+                "resolved_commits": {"core": "abc", "frontend": "def"},
+                "runtime_object_info": {"merged_into_node_api_schema": False, "requested": False},
+            }
+
+            docs_index_path = published_dir / "docs-index.json"
+            docs_index_path.write_text(json.dumps(docs_index_payload, indent=2), encoding="utf-8")
+            (published_dir / "delta-summary.json").write_text(
+                json.dumps(delta_summary_payload, indent=2), encoding="utf-8"
+            )
+            (published_dir / "refresh-provenance.json").write_text(
+                json.dumps(refresh_provenance_payload, indent=2), encoding="utf-8"
+            )
+            (published_dir / "manifest.json").write_text("{}", encoding="utf-8")
+
+            original_raw_dir = module.REFERENCES_RAW_DIR
+            original_published_schema_dir = module.PUBLISHED_SCHEMA_DIR
+            original_docs_index_path = module.DOCS_INDEX_PATH
+
+            module.REFERENCES_RAW_DIR = raw_dir
+            module.PUBLISHED_SCHEMA_DIR = schema_dir
+            module.DOCS_INDEX_PATH = docs_index_path
+            try:
+                stdout = io.StringIO()
+                with redirect_stdout(stdout):
+                    result = module.main()
+            finally:
+                module.REFERENCES_RAW_DIR = original_raw_dir
+                module.PUBLISHED_SCHEMA_DIR = original_published_schema_dir
+                module.DOCS_INDEX_PATH = original_docs_index_path
+
+        output = stdout.getvalue()
+        self.assertEqual(result, 0)
+        self.assertIn("Validating delta-summary.json...", output)
+        self.assertIn("Validating refresh-provenance.json...", output)
+        self.assertNotIn("Validating manifest.json...", output)
 
 
 if __name__ == "__main__":

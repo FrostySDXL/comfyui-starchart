@@ -54,7 +54,6 @@
       { "label": "Artifact Schema Version Migration", "path": "reference/artifact-schema-version-migration.md" },
       { "label": "Source Evidence Policy", "path": "reference/source-evidence-policy.md" },
       { "label": "Writing Style Guide", "path": "reference/writing-style-guide.md" },
-      { "label": "Doc Quality Checklist", "path": "reference/doc-quality-checklist.md" },
       { "label": "Version Pin Status", "path": "reference/version-pin-status.md" },
       { "label": "Topic Scope", "path": "reference/topic-scope.md" }
     ]

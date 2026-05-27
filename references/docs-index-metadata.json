@@ -1,4 +1,50 @@
 {
+  "architecture/execution-pipeline.md": {
+    "task_intents": [
+      "monitor-execution",
+      "understand-architecture"
+    ],
+    "related_artifacts": [
+      "server_endpoints.json"
+    ],
+    "related_routes": [
+      "GET /history/{prompt_id}",
+      "GET /queue",
+      "GET /ws",
+      "POST /prompt"
+    ],
+    "related_events": [
+      "executed",
+      "executing",
+      "execution_error",
+      "execution_start",
+      "execution_success"
+    ],
+    "runtime_required": true,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "api/history-queue.md",
+      "api/prompt-submission.md",
+      "api/websocket.md"
+    ]
+  },
+  "architecture/overview.md": {
+    "task_intents": [
+      "understand-architecture"
+    ],
+    "related_artifacts": [
+      "docs-index.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "architecture/execution-pipeline.md",
+      "start-here/extension-developer.md",
+      "start-here/tooling-builder.md"
+    ]
+  },
   "api/endpoints.md": {
     "task_intents": [
       "discover-routes"
@@ -108,6 +154,219 @@
       "architecture/execution-pipeline.md"
     ]
   },
+  "custom-nodes/datatypes.md": {
+    "task_intents": [
+      "build-custom-node"
+    ],
+    "related_artifacts": [
+      "node_api_schema.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "custom-nodes/development-guide.md",
+      "custom-nodes/node-structure.md",
+      "custom-nodes/registration.md"
+    ]
+  },
+  "custom-nodes/development-guide.md": {
+    "task_intents": [
+      "build-custom-node"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "node_api_schema.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "custom-nodes/datatypes.md",
+      "custom-nodes/node-structure.md",
+      "custom-nodes/registration.md"
+    ]
+  },
+  "custom-nodes/node-structure.md": {
+    "task_intents": [
+      "build-custom-node"
+    ],
+    "related_artifacts": [
+      "node_api_schema.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "custom-nodes/datatypes.md",
+      "custom-nodes/development-guide.md",
+      "custom-nodes/registration.md"
+    ]
+  },
+  "custom-nodes/registration.md": {
+    "task_intents": [
+      "build-custom-node"
+    ],
+    "related_artifacts": [
+      "docs-index.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "custom-nodes/development-guide.md",
+      "start-here/author.md",
+      "start-here/extension-developer.md"
+    ]
+  },
+  "deep-dives/execution-model-inversion.md": {
+    "task_intents": [
+      "understand-architecture"
+    ],
+    "related_artifacts": [
+      "server_endpoints.json"
+    ],
+    "related_routes": [
+      "GET /history/{prompt_id}",
+      "GET /queue",
+      "POST /prompt"
+    ],
+    "related_events": [
+      "executed",
+      "executing",
+      "execution_start",
+      "execution_success"
+    ],
+    "runtime_required": false,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "api/history-queue.md",
+      "api/prompt-submission.md",
+      "architecture/execution-pipeline.md"
+    ]
+  },
+  "deep-dives/registry-packaging-and-compatibility.md": {
+    "task_intents": [
+      "build-custom-node"
+    ],
+    "related_artifacts": [
+      "docs-index.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "custom-nodes/registration.md",
+      "start-here/author.md",
+      "start-here/extension-developer.md"
+    ]
+  },
+  "deep-dives/workflow-json-schema.md": {
+    "task_intents": [
+      "understand-architecture"
+    ],
+    "related_artifacts": [
+      "docs-index.json"
+    ],
+    "related_routes": [
+      "POST /prompt"
+    ],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "api/prompt-submission.md",
+      "architecture/overview.md",
+      "start-here/tooling-builder.md"
+    ]
+  },
+  "hooks/extension-points.md": {
+    "task_intents": [
+      "discover-hooks",
+      "route-docs-task"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "js_hooks.json",
+      "server_endpoints.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "hooks/javascript-hooks.md",
+      "hooks/server-hooks.md",
+      "start-here/extension-developer.md"
+    ]
+  },
+  "hooks/javascript-hooks.md": {
+    "task_intents": [
+      "discover-hooks"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "js_hooks.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "hooks/extension-points.md",
+      "start-here/extension-developer.md",
+      "start-here/tooling-builder.md"
+    ]
+  },
+  "hooks/server-hooks.md": {
+    "task_intents": [
+      "discover-hooks",
+      "monitor-execution"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "server_endpoints.json"
+    ],
+    "related_routes": [
+      "GET /ws"
+    ],
+    "related_events": [
+      "executed",
+      "executing",
+      "execution_error",
+      "execution_success"
+    ],
+    "runtime_required": true,
+    "stability_tier": "pinned-baseline",
+    "recommended_next_reads": [
+      "architecture/execution-pipeline.md",
+      "hooks/extension-points.md",
+      "start-here/extension-developer.md"
+    ]
+  },
+  "index.md": {
+    "task_intents": [
+      "route-docs-task"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "manifest.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "architecture/overview.md",
+      "start-here/artifact-consumer.md",
+      "start-here/tooling-builder.md"
+    ]
+  },
   "reference/machine-readable-artifacts.md": {
     "task_intents": [
       "discover-artifacts",
@@ -148,6 +407,94 @@
       "api/endpoints.md",
       "reference/machine-readable-artifacts.md",
       "start-here/artifact-consumer.md"
+    ]
+  },
+  "reference/artifact-schema-version-migration.md": {
+    "task_intents": [
+      "discover-artifacts"
+    ],
+    "related_artifacts": [
+      "js_hooks.json",
+      "manifest.json",
+      "node_api_schema.json",
+      "server_endpoints.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "reference/machine-readable-artifacts.md",
+      "start-here/artifact-consumer.md",
+      "start-here/tooling-builder.md"
+    ]
+  },
+  "start-here/author.md": {
+    "task_intents": [
+      "build-custom-node"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "node_api_schema.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "custom-nodes/development-guide.md",
+      "custom-nodes/node-structure.md",
+      "custom-nodes/registration.md"
+    ]
+  },
+  "start-here/extension-developer.md": {
+    "task_intents": [
+      "discover-hooks"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "js_hooks.json",
+      "server_endpoints.json"
+    ],
+    "related_routes": [],
+    "related_events": [],
+    "runtime_required": false,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "hooks/extension-points.md",
+      "hooks/javascript-hooks.md",
+      "hooks/server-hooks.md"
+    ]
+  },
+  "start-here/service-integration.md": {
+    "task_intents": [
+      "debug-api-integration",
+      "monitor-execution"
+    ],
+    "related_artifacts": [
+      "docs-index.json",
+      "manifest.json",
+      "server_endpoints.json"
+    ],
+    "related_routes": [
+      "GET /history/{prompt_id}",
+      "GET /queue",
+      "GET /ws",
+      "POST /prompt"
+    ],
+    "related_events": [
+      "executed",
+      "executing",
+      "execution_error",
+      "execution_success",
+      "status"
+    ],
+    "runtime_required": true,
+    "stability_tier": "support-routing",
+    "recommended_next_reads": [
+      "api/history-queue.md",
+      "api/prompt-submission.md",
+      "api/websocket.md"
     ]
   },
   "start-here/artifact-consumer.md": {
