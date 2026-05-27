@@ -74,6 +74,12 @@ The consumer examples under `examples/consumers/` are starter patterns only.
 Runtime-dependent examples remain optional. The manifest-first and artifact-only
 parts are the stable starting point.
 
+## When to Switch to Repo-Local Workflow Docs
+
+Stay in the published docs path unless you are contributing to this repository.
+If you start editing docs, scripts, or generated artifacts, switch to the
+repo-local maintainer workflow in `CONTRIBUTING.md`.
+
 ## Read Next
 
 - [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md)

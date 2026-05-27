@@ -2,7 +2,7 @@
 title: "Registration"
 ---
 
-**Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Community pattern study
+**Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Community pattern study based on pinned external version
 **Last Updated:** 2026-05-21
 **Primary Sources:**
 

@@ -137,7 +137,7 @@
       "path": "start-here/tooling-builder.md",
       "nav_section": "Start Here",
       "audience": "consumer",
-      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance for repo-local artifact routing",
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance",
       "summary": "This page is a start-here route for builders. It helps you choose the right ComfyUI tooling surface, then points you to the next page. It does not try to reteach the full API, Manager, or extension architecture.",
       "tooling_metadata": {
         "task_intents": [
@@ -532,7 +532,7 @@
       "path": "custom-nodes/registration.md",
       "nav_section": "Custom Nodes",
       "audience": null,
-      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Community pattern study",
+      "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Community pattern study based on pinned external version",
       "summary": "Registration is the step that makes ComfyUI discover your node classes. The exact mechanism depends on whether the package is using legacy V1 or modern V3 conventions.",
       "tooling_metadata": {
         "task_intents": [

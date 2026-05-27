@@ -231,3 +231,9 @@ For those topics, refer to `AGENTS.md` and the verification scripts in
 - Apply evidence labels and baseline-status wording exactly as defined in
   `source-evidence-policy.md`.
 - Use `CONTRIBUTING.md` for the maintainer workflow and editorial checklist.
+
+## Read Next
+
+- [Source Evidence Policy](source-evidence-policy.md)
+- [Topic Scope](topic-scope.md)
+- [Version Pin Status](version-pin-status.md)

@@ -82,3 +82,9 @@ The current published versioned artifact directory is
 When exact version behavior matters, prefer the pinned snapshot files first,
 then reconcile against official docs and release notes. For artifact-surface
 consumption details, see [Machine-Readable Artifacts](machine-readable-artifacts.md).
+
+## Read Next
+
+- [Machine-Readable Artifacts](machine-readable-artifacts.md)
+- [Artifact Schema Version Migration](artifact-schema-version-migration.md)
+- [Source Evidence Policy](source-evidence-policy.md)

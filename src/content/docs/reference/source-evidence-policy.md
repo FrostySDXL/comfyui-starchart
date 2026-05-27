@@ -191,3 +191,9 @@ When exact evidence is weak or incomplete:
 - avoid words like "authoritative" or "source of truth"
 - prefer phrasing like "source-backed reference", "summary of upstream behavior",
   or "community pattern example"
+
+## Read Next
+
+- [Writing Style Guide](writing-style-guide.md)
+- [Version Pin Status](version-pin-status.md)
+- [Topic Scope](topic-scope.md)
