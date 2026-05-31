@@ -9,22 +9,16 @@ title: "Machine-Readable Artifacts"
 ## Scope
 
 This page documents the machine-readable JSON artifacts this repository publishes.
-It covers what artifacts exist, what they contain, and how tooling authors can
-consume them from the static site or from the repo directly.
+It defines the durable artifact taxonomy, discovery rules, support-artifact
+boundaries, schema expectations, and version/retention policy.
 
 The published contract is intentionally bounded. These artifacts are a pinned
 companion reference for tooling and analysis, not a full OpenAPI-grade or fully
 typed description of every ComfyUI behavior.
 
-## Quick Start for Consumers
-
-If you only need the safe consumption path:
-
-- start at `artifacts/manifest.json`
-- load the canonical current copy from `artifacts/current/<name>.json`
-- code only against guaranteed fields and the published schemas
-- verify downloaded current-copy bytes against the manifest `sha256`
-- use `docs-index.json` only as optional routing help, not as the canonical artifact contract
+If you only need the first-use consumer flow, start with
+[Start Here: Artifact Consumer](../start-here/artifact-consumer.md) and return
+here for the durable contract.
 
 ## Who This Page Is For
 
@@ -365,6 +359,14 @@ published docs-routing aid rather than a canonical extracted artifact.
 `docs-index.json` now carries the former tooling-routing hints directly on the
 retained page entries under an optional nested `tooling_metadata` object.
 
+Every retained published docs page must either carry that `tooling_metadata`
+key or remain intentionally bare under the current bounded policy. The allowed
+bare class is limited to governance, writing-policy, status, and scope-boundary
+pages. In the current retained surface, that means
+`reference/source-evidence-policy.md`, `reference/writing-style-guide.md`,
+`reference/version-pin-status.md`, and `reference/topic-scope.md` may remain
+bare while other retained pages must be enriched.
+
 Each page entry always includes the base page facts:
 
 - `title`
@@ -445,11 +447,12 @@ new version key and new versioned copies. The `current/` copies are overwritten,
 but the versioned copies are preserved until explicitly removed.
 
 Versioned copies under `public/artifacts/versions/` are durable published
-history, but that history is intentionally bounded. Maintainers should normally
-keep the current baseline plus a small recent trail of prior baselines, avoid
-pruning any version still referenced by docs, provenance records, or active
-comparisons, and prune intentionally rather than treating old versions like
-temporary working state.
+history, but that history is intentionally bounded. Keep:
+
+- the current baseline
+- the last 2 prior baselines
+- any older baseline still referenced by active docs, delta artifacts,
+  refresh-provenance records, or migration guidance
 
 This versioned-history policy is distinct from the temporary repo-local refresh
 backup directories created during a refresh in the repo's ignored refresh-backup

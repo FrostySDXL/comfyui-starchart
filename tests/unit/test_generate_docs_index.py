@@ -17,6 +17,32 @@ spec.loader.exec_module(generate_docs_index)
 
 
 class GenerateDocsIndexTests(unittest.TestCase):
+    def _metadata_entry(
+        self,
+        *,
+        task_intents: list[str] | None = None,
+        related_artifacts: list[str] | None = None,
+        related_routes: list[str] | None = None,
+        related_events: list[str] | None = None,
+        runtime_required: bool = False,
+        stability_tier: str = "support-routing",
+        recommended_next_reads: list[str] | None = None,
+    ) -> dict[str, object]:
+        return {
+            "task_intents": task_intents or ["route-docs-task"],
+            "related_artifacts": related_artifacts or ["docs-index.json"],
+            "related_routes": related_routes or [],
+            "related_events": related_events or [],
+            "runtime_required": runtime_required,
+            "stability_tier": stability_tier,
+            "recommended_next_reads": recommended_next_reads or [],
+        }
+
+    def _write_minimal_metadata(self, root: Path, paths: list[str]) -> Path:
+        return self._write_metadata(
+            root, {path: self._metadata_entry(recommended_next_reads=[]) for path in paths}
+        )
+
     def _with_temp_repo_paths(self, root: Path):
         old_docs_root = generate_docs_index.DOCS_ROOT
         old_default_nav_source = generate_docs_index.DEFAULT_NAV_SOURCE
@@ -130,7 +156,15 @@ class GenerateDocsIndexTests(unittest.TestCase):
                 "Operational guidance",
                 "API troubleshooting summary.",
             )
-            self._write_metadata(root, {})
+            self._write_minimal_metadata(
+                root,
+                [
+                    "index.md",
+                    "start-here/tooling-builder.md",
+                    "troubleshooting/index.md",
+                    "troubleshooting/api-integration.md",
+                ],
+            )
 
             first = generate_docs_index.build_docs_index(root)
             second = generate_docs_index.build_docs_index(root)
@@ -160,7 +194,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             root = Path(tmp)
             self._with_temp_repo_paths(root)
             self._write_sidebar_data(root, [{"label": "Home", "path": "index.md"}])
-            self._write_metadata(root, {})
+            self._write_minimal_metadata(root, ["index.md"])
             page_path = root / "src" / "content" / "docs" / "index.md"
             page_path.parent.mkdir(parents=True, exist_ok=True)
             page_path.write_text(
@@ -204,7 +238,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             )
 
             self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
-            self._write_metadata(root, {})
+            self._write_minimal_metadata(root, ["index.md"])
             generated_path = root / "src" / "content" / "docs" / "ecosystem" / "map.md"
             generated_path.parent.mkdir(parents=True, exist_ok=True)
             generated_path.write_text(
@@ -251,7 +285,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             )
 
             self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
-            self._write_metadata(root, {})
+            self._write_minimal_metadata(root, ["index.md", "reference/server-py-summary.md"])
             self._write_page(
                 root,
                 "reference/server-py-summary.md",
@@ -292,7 +326,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
                 ],
             )
 
-            self._write_metadata(root, {})
+            self._write_minimal_metadata(root, ["whats-new/index.md", "troubleshooting/index.md"])
             self._write_page(
                 root,
                 "whats-new/index.md",
@@ -316,7 +350,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             self._with_temp_repo_paths(root)
-            self._write_metadata(root, {})
+            self._write_minimal_metadata(root, ["index.md", "troubleshooting/index.md"])
             custom_nav_path = root / "nav" / "custom-sidebar.json"
             custom_nav_path.parent.mkdir(parents=True, exist_ok=True)
             custom_nav_path.write_text(
@@ -367,7 +401,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             root = Path(tmp)
             self._with_temp_repo_paths(root)
             self._write_sidebar_data(root, [{"label": "Home", "path": "index.md"}])
-            self._write_metadata(root, {})
+            self._write_minimal_metadata(root, ["index.md"])
             page_path = root / "src" / "content" / "docs" / "index.md"
             page_path.parent.mkdir(parents=True, exist_ok=True)
             page_path.write_text(
@@ -440,6 +474,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             self._write_metadata(
                 root,
                 {
+                    "index.md": self._metadata_entry(recommended_next_reads=[]),
                     "api/prompt-submission.md": {
                         "task_intents": ["submit-prompt"],
                         "related_artifacts": ["server_endpoints.json", "docs-index.json"],
@@ -448,7 +483,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
                         "runtime_required": True,
                         "stability_tier": "pinned-baseline",
                         "recommended_next_reads": ["index.md"],
-                    }
+                    },
                 },
             )
 
@@ -456,8 +491,6 @@ class GenerateDocsIndexTests(unittest.TestCase):
             prompt_entry = next(
                 page for page in docs_index["pages"] if page["path"] == "api/prompt-submission.md"
             )
-            home_entry = next(page for page in docs_index["pages"] if page["path"] == "index.md")
-
             self.assertNotIn("task_intents", prompt_entry)
             self.assertEqual(
                 prompt_entry["tooling_metadata"],
@@ -471,7 +504,6 @@ class GenerateDocsIndexTests(unittest.TestCase):
                     "recommended_next_reads": ["index.md"],
                 },
             )
-            self.assertNotIn("tooling_metadata", home_entry)
 
     def test_build_docs_index_accepts_discover_hooks_task_intent(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -500,6 +532,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             self._write_metadata(
                 root,
                 {
+                    "index.md": self._metadata_entry(recommended_next_reads=[]),
                     "hooks/javascript-hooks.md": {
                         "task_intents": ["discover-hooks"],
                         "related_artifacts": ["docs-index.json", "js_hooks.json"],
@@ -508,7 +541,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
                         "runtime_required": False,
                         "stability_tier": "pinned-baseline",
                         "recommended_next_reads": ["index.md"],
-                    }
+                    },
                 },
             )
 
@@ -563,6 +596,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             self._write_metadata(
                 root,
                 {
+                    "index.md": self._metadata_entry(recommended_next_reads=[]),
                     "architecture/overview.md": {
                         "task_intents": ["understand-architecture"],
                         "related_artifacts": ["docs-index.json"],
@@ -620,7 +654,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
                         "runtime_required": False,
                         "stability_tier": "support-routing",
                         "recommended_next_reads": [],
-                    }
+                    },
                 },
             )
 
@@ -673,6 +707,7 @@ class GenerateDocsIndexTests(unittest.TestCase):
             self._write_metadata(
                 root,
                 {
+                    "index.md": self._metadata_entry(recommended_next_reads=[]),
                     "reference/generated-summary.md": {
                         "task_intents": ["route-docs-task"],
                         "related_artifacts": ["docs-index.json"],
@@ -681,13 +716,103 @@ class GenerateDocsIndexTests(unittest.TestCase):
                         "runtime_required": False,
                         "stability_tier": "support-routing",
                         "recommended_next_reads": ["index.md"],
-                    }
+                    },
                 },
             )
 
             with self.assertRaisesRegex(
                 ValueError, "does not target a retained published docs page"
             ):
+                generate_docs_index.build_docs_index(root)
+
+    def test_allowed_bare_pages_pass(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {
+                        "label": "Reference",
+                        "items": [
+                            {
+                                "label": "Source Evidence Policy",
+                                "path": "reference/source-evidence-policy.md",
+                            },
+                            {
+                                "label": "Writing Style Guide",
+                                "path": "reference/writing-style-guide.md",
+                            },
+                            {
+                                "label": "Version Pin Status",
+                                "path": "reference/version-pin-status.md",
+                            },
+                            {"label": "Topic Scope", "path": "reference/topic-scope.md"},
+                        ],
+                    }
+                ],
+            )
+            self._write_page(
+                root,
+                "reference/source-evidence-policy.md",
+                "Source Evidence Policy",
+                "Operational guidance",
+                "Evidence policy summary.",
+            )
+            self._write_page(
+                root,
+                "reference/writing-style-guide.md",
+                "Writing Style Guide",
+                "Operational guidance",
+                "Writing policy summary.",
+            )
+            self._write_page(
+                root,
+                "reference/version-pin-status.md",
+                "Version Pin Status",
+                "Operational guidance",
+                "Status summary.",
+            )
+            self._write_page(
+                root,
+                "reference/topic-scope.md",
+                "Topic Scope",
+                "Operational guidance",
+                "Scope boundary summary.",
+            )
+            self._write_metadata(root, {})
+
+            docs_index = generate_docs_index.build_docs_index(root)
+            for page in docs_index["pages"]:
+                self.assertNotIn("tooling_metadata", page)
+
+    def test_unexpected_bare_page_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {"label": "Home", "path": "index.md"},
+                    {
+                        "label": "API",
+                        "items": [{"label": "Endpoints", "path": "api/endpoints.md"}],
+                    },
+                ],
+            )
+            self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            self._write_page(
+                root,
+                "api/endpoints.md",
+                "API Endpoints",
+                "Operational guidance",
+                "Endpoint summary.",
+            )
+            self._write_metadata(
+                root, {"index.md": self._metadata_entry(recommended_next_reads=[])}
+            )
+
+            with self.assertRaisesRegex(ValueError, "Unexpected bare pages: api/endpoints.md"):
                 generate_docs_index.build_docs_index(root)
 
 

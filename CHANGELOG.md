@@ -40,6 +40,9 @@ not imply npm publication intent; `package.json` remains `private: true`.
 
 - Reduce the published docs tree to the retained 30-page surface and prune the
   removed routing, tutorial, troubleshooting, ecosystem, and legacy pages.
+- Follow-up commit `d01f978` then removed
+  `reference/doc-quality-checklist.md`, producing the current retained 29-page
+  surface.
 - Add `start-here/artifact-consumer.md` and `reference/topic-scope.md` as the
   new retained entry points for artifact consumers and published-surface scope
   policy.

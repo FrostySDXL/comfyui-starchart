@@ -164,7 +164,7 @@
       "nav_section": "Start Here",
       "audience": "consumer",
       "evidence": "Operational guidance",
-      "summary": "This page is the shortest start-here route for readers who consume this repo's published JSON artifacts. It covers the manifest-first loading path, the bounded routing-support surface, and the example boundary. It does not restate every artifact field or every API page.",
+      "summary": "This page is the shortest start-here route for readers who consume this repo's published JSON artifacts. It covers the manifest-first loading path, the bounded routing-support surface, checksum validation, and the example boundary. It does not restate every artifact field or every API page.",
       "tooling_metadata": {
         "task_intents": [
           "discover-artifacts",
@@ -583,7 +583,7 @@
       "nav_section": "Reference",
       "audience": null,
       "evidence": "Operational guidance",
-      "summary": "This page documents the machine-readable JSON artifacts this repository publishes. It covers what artifacts exist, what they contain, and how tooling authors can consume them from the static site or from the repo directly.",
+      "summary": "This page documents the machine-readable JSON artifacts this repository publishes. It defines the durable artifact taxonomy, discovery rules, support-artifact boundaries, schema expectations, and version/retention policy.",
       "tooling_metadata": {
         "task_intents": [
           "discover-artifacts",

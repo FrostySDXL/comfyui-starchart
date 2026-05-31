@@ -18,7 +18,7 @@ deep maintainer playbooks.
 
 - Use Python `3.11+`
 - On Windows, if `python --version` is not `3.11.x`, use `py -3.11` for repo Python commands
-- Use Node.js `24+` for site/framework work
+- Use Node.js `24.x` for site/framework work
 - Do not claim official behavior without a source citation from `references/snapshots/` or `docs.comfy.org`
 - Do not add emojis or emoticons
 - Normalize JSON paths to forward slashes

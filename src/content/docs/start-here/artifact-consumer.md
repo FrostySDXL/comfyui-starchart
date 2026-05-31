@@ -9,8 +9,8 @@ title: "Start Here: Artifact Consumer"
 
 This page is the shortest start-here route for readers who consume this repo's
 published JSON artifacts. It covers the manifest-first loading path, the bounded
-routing-support surface, and the example boundary. It does not restate every
-artifact field or every API page.
+routing-support surface, checksum validation, and the example boundary. It does
+not restate every artifact field or every API page.
 
 ## Who This Path Is For
 
@@ -19,6 +19,18 @@ Use this path when you need to:
 - load the pinned JSON artifacts safely
 - route a tool to the right retained docs page without scraping the whole site
 - inspect the starter consumer examples without treating them as an SDK
+
+## First Practical Consumer Flow
+
+1. Read `artifacts/manifest.json`.
+2. Pick the canonical current copy from `artifacts/current/<name>.json`.
+3. Validate the downloaded bytes against the manifest `sha256`.
+4. Build strict logic only against guaranteed fields and published schemas.
+5. Use `docs-index.json` only if you need bounded docs routing after artifact
+   discovery.
+
+Read [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md)
+for the durable contract, support-artifact boundaries, and retention policy.
 
 ## Start with the Manifest
 
@@ -31,8 +43,16 @@ Use `artifacts/manifest.json` first.
 - Strict tooling should trust guaranteed fields and published schema files, not
   descriptive best-effort prose fields.
 
-Read [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md)
-for the exact contract.
+## Read Guarantees Conservatively
+
+- **Guaranteed**: published schemas, manifest discovery fields, and the canonical
+  current/versioned artifact locations.
+- **Best-effort**: descriptive helper fields inside the artifacts and routing
+  hints inside `docs-index.json`.
+- **Deferred**: any runtime truth the pinned extracted artifacts do not promise.
+
+When a routing hint and a canonical artifact disagree, trust the canonical
+artifact.
 
 ## Inline Consumer Contract
 
@@ -43,6 +63,12 @@ Keep the durable contract short and explicit:
 - build strict tooling only against guaranteed fields and published schemas
 - verify current-copy downloads against the manifest `sha256`
 - treat `docs-index.json` as optional routing help layered on top of the canonical artifacts
+
+## Checksum Validation Path
+
+If you download `artifacts/current/server_endpoints.json`, compare the file's
+SHA-256 to `manifest.json -> artifacts -> server_endpoints.json -> sha256`
+before trusting the bytes as the published current copy.
 
 ## Use the Routing Support Surface Sparingly
 

@@ -12,6 +12,8 @@ packaging==26.2
     # via -r requirements.in
 pathspec==1.1.1
     # via mypy
+pyyaml==6.0.3
+    # via -r requirements.in
 ruff==0.15.13
     # via -r requirements.in
 typing-extensions==4.15.0

@@ -9,6 +9,8 @@ surface ownership.
 
 ## Quickstart
 
+Use Python `3.11+` and Node.js `24.x` for repo/site work.
+
 ```bash
 python -m pip install -r requirements.lock
 python -m pip install -e .
@@ -185,6 +187,18 @@ documented, and directly actionable.
 Do not hand-edit generated or extracted outputs. Edit their sources and rerun the
 owning script.
 
+## Published Artifact Version Retention
+
+Treat `public/artifacts/versions/` as durable but bounded history.
+
+- keep the current baseline
+- keep the last 2 prior baselines
+- keep any older baseline still referenced by active docs, delta artifacts,
+  refresh-provenance records, or migration guidance
+
+`references/_refresh_backups/` is temporary local working state for refresh
+rollback/comparison. It is outside the durable published-history policy.
+
 ## Editing Published Docs
 
 1. Read the target page and nearby linked pages.
@@ -265,6 +279,12 @@ Metadata source of truth:
 Rules:
 
 - target retained published pages only
+- every retained published page must either carry `tooling_metadata` or be
+  intentionally bare under the current policy
+- the intentionally bare class is limited to governance, writing-policy,
+  status, and scope-boundary pages; the current retained bare pages are
+  `reference/source-evidence-policy.md`, `reference/writing-style-guide.md`,
+  `reference/version-pin-status.md`, and `reference/topic-scope.md`
 - keep `recommended_next_reads` inside the retained 29-page surface
 - keep `related_artifacts` limited to real published artifacts
 - preserve nested shape under `tooling_metadata` in generated output; do not flatten those fields into top-level page keys
@@ -451,7 +471,6 @@ inventory rows.
 | `scripts/verify/example_surface_integrity.py` | Validate example family structure and routed example references | `examples/` plus routed start-here docs | Advisory | Checks example directory completeness and routed example paths together | Example-surface edits or start-here routing updates |
 | `scripts/verify/evidence_metadata_freshness.py` | Enforce opening evidence metadata discipline on retained pages | selected published docs pages | Advisory | Only verifier that checks allowed baseline-status wording patterns directly | Docs policy changes or refreshes affecting evidence blocks |
 | `.github/workflows/advisory-checks.yml` | Replay advisory scripts as blocking on schedule/manual dispatch | weekly/manual advisory escalation path | Advisory workflow | Converts the non-blocking advisory script set into a durable scheduled gate | Use the workflow when maintainers want a blocking replay outside push/PR CI |
-| `.github/workflows/weekly-pin-check.yml` | Run the upstream pin check on its own weekly/manual cadence | upstream pin health | Advisory workflow | Narrow single-purpose replay for upstream pin validity | Use when investigating pin drift without the rest of the advisory bundle |
 
 ### Runtime-specific verifiers and workflows
 

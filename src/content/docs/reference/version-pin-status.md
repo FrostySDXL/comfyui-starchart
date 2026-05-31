@@ -36,6 +36,12 @@ Earlier pinned baselines under `references/snapshots/2026-05-18/` and
 `references/snapshots/2026-04-19/` remain preserved for historical comparison
 and refresh-path proof.
 
+Published artifact history is intentionally bounded: keep the current baseline,
+the last 2 prior baselines, and any older baseline still referenced by active
+docs, delta artifacts, refresh-provenance records, or migration guidance.
+`references/_refresh_backups/` remains temporary local working state rather than
+durable published history.
+
 ## Included Pinned Snapshot Material
 
 - core: `server.py`, `execution.py`, `pyproject.toml`, `requirements.txt`,
@@ -65,7 +71,9 @@ The current published versioned artifact directory is
 
 ## Automation
 
-- `.github/workflows/weekly-pin-check.yml` verifies pinned commits still resolve
+- `.github/workflows/advisory-checks.yml` runs `scripts/verify/upstream_pins.py`
+  on a weekly schedule and on manual dispatch as the advisory replay path for
+  pin-validity checks
 - `.github/workflows/upstream-watch.yml` runs every Monday at 10:00 UTC and on
   manual dispatch; scheduled runs detect newer upstream versions and create or
   update tracking issues, while manual runs do not mutate issue state

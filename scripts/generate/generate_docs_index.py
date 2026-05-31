@@ -55,6 +55,14 @@ ALLOWED_METADATA_KEYS = {
     "stability_tier",
     "recommended_next_reads",
 }
+INTENTIONALLY_BARE_PAGE_ALLOWLIST = frozenset(
+    {
+        "reference/source-evidence-policy.md",
+        "reference/writing-style-guide.md",
+        "reference/version-pin-status.md",
+        "reference/topic-scope.md",
+    }
+)
 ROUTE_RE = re.compile(r"^[A-Z]+ /[^\s]+$")
 
 
@@ -151,6 +159,15 @@ def validate_docs_index_metadata(
             raise ValueError(
                 f"{path}: recommended_next_reads targets are not eligible published docs pages: {', '.join(broken_next_reads)}"
             )
+
+    unexpected_bare_pages = sorted(
+        eligible_paths - set(metadata) - INTENTIONALLY_BARE_PAGE_ALLOWLIST
+    )
+    if unexpected_bare_pages:
+        raise ValueError(
+            "Retained published docs pages must declare tooling_metadata unless they are intentionally bare allowlisted pages. "
+            "Unexpected bare pages: " + ", ".join(unexpected_bare_pages)
+        )
 
 
 def normalize_tooling_metadata(entry: dict[str, object]) -> dict[str, object]:

@@ -95,7 +95,7 @@ Start here:
 ## Quick Start
 
 Supported Python: `3.11+`  
-Supported Node.js for site/framework work: `24+`
+Supported Node.js for site/framework work: `24.x`
 
 Use Python 3.11+ for repo commands. On Windows, use `py -3.11` if `python`
 is not already `3.11.x`.
@@ -108,11 +108,7 @@ python -m unittest discover -s tests -v
 npm run build
 ```
 
-Serve locally:
-
-```bash
-npm run dev
-```
+Serve locally with `npm run dev`.
 
 Maintainer notes:
 
@@ -144,25 +140,15 @@ Consumer starter examples live in
 [src/content/docs/start-here/artifact-consumer.md](src/content/docs/start-here/artifact-consumer.md)
 and `examples/consumers/`.
 
-## Maintainer Workflow Entry Points
+## Maintainer Workflow Routing
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) is the canonical maintainer workflow guide
 - [AGENTS.md](AGENTS.md) is the startup-oriented quick reference for repo constraints, commands, and task routing
 - `python scripts/verify/run_all.py` is the default blocking local verification wrapper
-- `python scripts/check_upstream_versions.py` powers `.github/workflows/upstream-watch.yml`
 
-Use `CONTRIBUTING.md` for lockfile regeneration, extractor/generator workflows,
-snapshot refreshes, runtime capture, and the full verification matrix.
-
-## CI at a Glance
-
-- `.github/workflows/ci.yml` runs the blocking verification path on Ubuntu and Windows, with supplemental checks kept in a separate job
-- advisory checks stay non-blocking in normal push/PR CI and escalate through `.github/workflows/advisory-checks.yml`
-- `.github/workflows/upstream-watch.yml` monitors newer upstream releases
-- `.github/workflows/deploy-pages.yml` republishes artifacts and deploys the site
-
-For workflow details, verification boundaries, and maintainer expectations, use
-[CONTRIBUTING.md](CONTRIBUTING.md).
+Use `CONTRIBUTING.md` for workflow inventory, lockfile regeneration,
+extractor/generator workflows, snapshot refreshes, runtime capture, and the
+full verification matrix.
 
 ## Scope Boundaries
 
