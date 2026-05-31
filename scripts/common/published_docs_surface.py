@@ -7,8 +7,9 @@ import json
 import re
 from pathlib import Path
 
+import yaml
+
 TITLE_RE = re.compile(r"^\s*#\s+(.+?)\s*$", re.MULTILINE)
-FRONTMATTER_TITLE_RE = re.compile(r'^---\s*\ntitle:\s*"(.+?)"\s*\n---\s*', re.MULTILINE)
 EVIDENCE_RE = re.compile(r"^\s*\*\*Evidence:\*\*\s*(.+?)\s*$", re.MULTILINE)
 GENERATED_BANNER_PREFIX = "<!-- GENERATED FILE:"
 # Published-docs surface generation does not carry explicit generated-page
@@ -108,9 +109,17 @@ def flatten_nav_from_source(repo_root: Path, nav_source: str | Path) -> list[dic
 
 
 def extract_title(text: str, fallback: str) -> str:
-    frontmatter_match = FRONTMATTER_TITLE_RE.search(text)
-    if frontmatter_match:
-        return frontmatter_match.group(1).strip()
+    if text.startswith("---"):
+        parts = text.split("---", 2)
+        if len(parts) >= 3:
+            try:
+                frontmatter = yaml.safe_load(parts[1])
+                if isinstance(frontmatter, dict) and "title" in frontmatter:
+                    title = frontmatter["title"]
+                    if isinstance(title, str):
+                        return title.strip()
+            except yaml.YAMLError:
+                pass
     match = TITLE_RE.search(text)
     return match.group(1).strip() if match else fallback
 

@@ -631,5 +631,6 @@ presence depends on whether someone ran the live runtime capture path at all.
 - [Start Here: Tooling Builder](../start-here/tooling-builder.md)
 - [Version Pin Status](version-pin-status.md)
 - [Source Evidence Policy](source-evidence-policy.md)
+- [Topic Scope](topic-scope.md)
 - [API Reference: Endpoints](../api/endpoints.md)
 - [Hooks: JavaScript Hooks](../hooks/javascript-hooks.md)

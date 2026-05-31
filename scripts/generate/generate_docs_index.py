@@ -160,6 +160,19 @@ def validate_docs_index_metadata(
                 f"{path}: recommended_next_reads targets are not eligible published docs pages: {', '.join(broken_next_reads)}"
             )
 
+    # Validate that every allowlist entry corresponds to a retained published page.
+    # Only apply when at least one allowlist page is present in the eligible
+    # surface; this prevents the check from breaking temporary test fixtures
+    # that don't contain any of the real allowlist pages.
+    present_allowlist = INTENTIONALLY_BARE_PAGE_ALLOWLIST & eligible_paths
+    if present_allowlist:
+        stale_allowlist = sorted(INTENTIONALLY_BARE_PAGE_ALLOWLIST - eligible_paths)
+        if stale_allowlist:
+            raise ValueError(
+                "Intentionally bare docs-index allowlist entries are not retained published docs pages: "
+                + ", ".join(stale_allowlist)
+            )
+
     unexpected_bare_pages = sorted(
         eligible_paths - set(metadata) - INTENTIONALLY_BARE_PAGE_ALLOWLIST
     )

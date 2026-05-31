@@ -181,7 +181,7 @@ comparison points.
   current-baseline review; those pages should declare that with a baseline
   verification status block near the top
 - this policy now formally integrates with the writing style guide at
-  `docs/reference/writing-style-guide.md`
+  `writing-style-guide.md`
 
 ## Writing Standard
 

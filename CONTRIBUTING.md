@@ -342,6 +342,12 @@ the same change.
 - Keep `.github/workflows/ci.yml` and `scripts/verify/run_all.py` aligned step-for-step for the blocking path
 - Prefer the shared composite setup action where it reduces real duplication
 - Keep workflow-specific logic out of the composite action
+- `npm audit` is intentionally excluded from the blocking CI path and from
+  `scripts/verify/run_all.py`. This repo has a small dependency surface and no
+  current automation for dependency vulnerability scanning (Dependabot, Renovate,
+  or advisory replay). This is an accepted gap for now; if dependency risk
+  warrants it, add a non-blocking advisory signal rather than restoring
+  `npm audit` to the blocking path.
 
 Verify:
 

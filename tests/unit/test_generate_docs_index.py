@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "generate" / "generate_docs_index.py"
@@ -814,6 +815,217 @@ class GenerateDocsIndexTests(unittest.TestCase):
 
             with self.assertRaisesRegex(ValueError, "Unexpected bare pages: api/endpoints.md"):
                 generate_docs_index.build_docs_index(root)
+
+    def test_allowlisted_page_with_metadata_passes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {
+                        "label": "Reference",
+                        "items": [
+                            {
+                                "label": "Source Evidence Policy",
+                                "path": "reference/source-evidence-policy.md",
+                            },
+                            {
+                                "label": "Writing Style Guide",
+                                "path": "reference/writing-style-guide.md",
+                            },
+                            {
+                                "label": "Version Pin Status",
+                                "path": "reference/version-pin-status.md",
+                            },
+                            {"label": "Topic Scope", "path": "reference/topic-scope.md"},
+                        ],
+                    }
+                ],
+            )
+            self._write_page(
+                root,
+                "reference/source-evidence-policy.md",
+                "Source Evidence Policy",
+                "Operational guidance",
+                "Evidence policy summary.",
+            )
+            self._write_page(
+                root,
+                "reference/writing-style-guide.md",
+                "Writing Style Guide",
+                "Operational guidance",
+                "Writing policy summary.",
+            )
+            self._write_page(
+                root,
+                "reference/version-pin-status.md",
+                "Version Pin Status",
+                "Operational guidance",
+                "Status summary.",
+            )
+            self._write_page(
+                root,
+                "reference/topic-scope.md",
+                "Topic Scope",
+                "Operational guidance",
+                "Scope boundary summary.",
+            )
+            self._write_metadata(
+                root,
+                {
+                    "reference/source-evidence-policy.md": {
+                        "task_intents": ["route-docs-task"],
+                        "related_artifacts": ["docs-index.json"],
+                        "related_routes": [],
+                        "related_events": [],
+                        "runtime_required": False,
+                        "stability_tier": "support-routing",
+                        "recommended_next_reads": [],
+                    },
+                },
+            )
+
+            docs_index = generate_docs_index.build_docs_index(root)
+            enriched = next(
+                page
+                for page in docs_index["pages"]
+                if page["path"] == "reference/source-evidence-policy.md"
+            )
+            self.assertIn("tooling_metadata", enriched)
+            bare = next(
+                page for page in docs_index["pages"] if page["path"] == "reference/topic-scope.md"
+            )
+            self.assertNotIn("tooling_metadata", bare)
+
+    def test_stale_allowlist_entry_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {"label": "Home", "path": "index.md"},
+                    {
+                        "label": "Reference",
+                        "items": [
+                            {
+                                "label": "Source Evidence Policy",
+                                "path": "reference/source-evidence-policy.md",
+                            },
+                        ],
+                    },
+                ],
+            )
+            self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            self._write_page(
+                root,
+                "reference/source-evidence-policy.md",
+                "Source Evidence Policy",
+                "Operational guidance",
+                "Evidence policy summary.",
+            )
+            self._write_metadata(
+                root, {"index.md": self._metadata_entry(recommended_next_reads=[])}
+            )
+            stale_allowlist = frozenset(
+                {
+                    "reference/source-evidence-policy.md",
+                    "reference/stale-removed-page.md",
+                }
+            )
+            with patch.object(
+                generate_docs_index, "INTENTIONALLY_BARE_PAGE_ALLOWLIST", stale_allowlist
+            ):
+                with self.assertRaisesRegex(ValueError, "allowlist entries are not retained"):
+                    generate_docs_index.build_docs_index(root)
+
+    def test_null_task_intents_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(root, [{"label": "Home", "path": "index.md"}])
+            self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            self._write_metadata(
+                root,
+                {
+                    "index.md": {
+                        "task_intents": None,
+                        "related_artifacts": [],
+                        "related_routes": [],
+                        "related_events": [],
+                        "runtime_required": False,
+                        "stability_tier": "support-routing",
+                        "recommended_next_reads": [],
+                    },
+                },
+            )
+
+            with self.assertRaisesRegex(ValueError, "task_intents must be an array of strings"):
+                generate_docs_index.build_docs_index(root)
+
+    def test_all_pages_have_metadata_passes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(
+                root,
+                [
+                    {"label": "Home", "path": "index.md"},
+                    {
+                        "label": "API",
+                        "items": [{"label": "Endpoints", "path": "api/endpoints.md"}],
+                    },
+                    {
+                        "label": "Architecture",
+                        "items": [{"label": "Overview", "path": "architecture/overview.md"}],
+                    },
+                ],
+            )
+            self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home summary.")
+            self._write_page(
+                root,
+                "api/endpoints.md",
+                "API Endpoints",
+                "Operational guidance",
+                "Endpoint summary.",
+            )
+            self._write_page(
+                root,
+                "architecture/overview.md",
+                "Architecture Overview",
+                "Operational guidance",
+                "Architecture summary.",
+            )
+            self._write_metadata(
+                root,
+                {
+                    "index.md": self._metadata_entry(recommended_next_reads=[]),
+                    "api/endpoints.md": {
+                        "task_intents": ["discover-routes"],
+                        "related_artifacts": ["server_endpoints.json"],
+                        "related_routes": [],
+                        "related_events": [],
+                        "runtime_required": False,
+                        "stability_tier": "pinned-baseline",
+                        "recommended_next_reads": ["index.md"],
+                    },
+                    "architecture/overview.md": {
+                        "task_intents": ["understand-architecture"],
+                        "related_artifacts": ["docs-index.json"],
+                        "related_routes": [],
+                        "related_events": [],
+                        "runtime_required": False,
+                        "stability_tier": "support-routing",
+                        "recommended_next_reads": ["index.md"],
+                    },
+                },
+            )
+
+            docs_index = generate_docs_index.build_docs_index(root)
+            self.assertEqual(len(docs_index["pages"]), 3)
+            for page in docs_index["pages"]:
+                self.assertIn("tooling_metadata", page)
 
 
 if __name__ == "__main__":

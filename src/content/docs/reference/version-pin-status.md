@@ -3,7 +3,7 @@ title: "Version Pin Status"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-21
+**Last Updated:** 2026-05-27
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.
