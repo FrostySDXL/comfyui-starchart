@@ -69,9 +69,11 @@ def extract_source_paths_from_json(data: dict) -> list[str]:
     return paths
 
 
-# Runtime-only artifacts that are not expected to exist on disk in a clean repo.
+# Runtime-only artifacts and temporary directories that are not expected
+# to exist on disk in a clean repo.
 RUNTIME_ONLY_PATHS = {
     "references/raw/object_info_runtime.json",
+    "references/_refresh_backups/",
 }
 
 
