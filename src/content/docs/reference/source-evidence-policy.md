@@ -141,6 +141,12 @@ Approved non-current exception phrasings:
 **Baseline verification status:** This page has not been re-reviewed against the current baseline.
 ```
 
+Approved current-baseline phrasings:
+
+```markdown
+**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
+```
+
 ## When Evidence Is Weak or Incomplete
 
 - say that explicitly

@@ -3,7 +3,7 @@ title: "Registration"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Community pattern study based on pinned external version
-**Last Updated:** 2026-05-21
+**Last Updated:** 2026-06-01
 **Primary Sources:**
 
 - https://docs.comfy.org/custom-nodes/overview

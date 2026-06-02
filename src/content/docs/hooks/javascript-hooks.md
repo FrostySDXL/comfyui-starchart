@@ -3,16 +3,16 @@ title: "JavaScript Hooks and Registration"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-05-21
+**Last Updated:** 2026-06-01
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
-**Baseline verification status:** This page has not been re-reviewed against the current baseline.
+**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Primary Sources
 
 - https://docs.comfy.org/custom-nodes/js/javascript_hooks
 - https://docs.comfy.org/custom-nodes/js/javascript_overview
 - https://docs.comfy.org/custom-nodes/js/javascript_objects_and_hijacking
-- `references/snapshots/2026-05-21/comfyui-frontend-v1.45.12/src/scripts/app.ts` (v1.45.12, commit 8ee8dd03c46cc8ba20eb169ea6ff7189fdb21f91)
+- `references/snapshots/2026-06-01/comfyui-frontend-v1.46.6/src/scripts/app.ts` (v1.46.6, commit 9e32b7db5173bc2879d4c19c1d058d733b3074b8)
 
 ## Scope
 
@@ -55,12 +55,12 @@ on which supported hook to choose once the extension is being registered.
 
 ## Hook Inventory
 
-### `init()`
+### `init(app)`
 
 Called when the Comfy page is loaded after the graph object exists, but before
-nodes are registered or created. This is the earliest lifecycle hook and is the
-right place for app-level setup that must happen before node definitions are
-processed.
+nodes are registered or created. Receives the main `app` (ComfyApp) object. This
+is the earliest lifecycle hook and is the right place for app-level setup that
+must happen before node definitions are processed.
 
 Choose `init` when the extension needs early access to the app or graph shell.
 Do not use it for logic that assumes full startup has already completed.
@@ -86,34 +86,39 @@ Choose this hook when the job is node-type customization rather than one-off
 instance setup. The official docs call it the most common and usually the most
 useful hook for node-focused UI work.
 
-### `nodeCreated(node)`
+### `nodeCreated(node, app)`
 
-Called when an individual node instance is created. Use it for
+Called when an individual node instance is created. Receives the created
+`node` (LGraphNode) and the main `app` (ComfyApp). Use it for
 instance-specific changes rather than class-wide prototype behavior.
 
 Choose this hook when the behavior belongs to a concrete node instance, such as
 instance state, per-node widgets, or one-off event wiring.
 
-### `beforeConfigureGraph()`
+### `beforeConfigureGraph(graphData, missingNodeTypes, app)`
 
-Called before a workflow is configured into the graph. Use it when workflow-load
-logic must run before node configuration finishes.
+Called before a workflow is configured into the graph. Receives the
+`graphData` (ComfyWorkflowJSON), a `missingNodeTypes` array, and the
+`app` (ComfyApp). Use it when workflow-load logic must run before node
+configuration finishes.
 
 This is the better fit for pre-load workflow handling than `setup`, because it
 belongs to the workflow-loading path instead of general application startup.
 
-### `afterConfigureGraph()`
+### `afterConfigureGraph(missingNodeTypes, app)`
 
-Called after workflow configuration completes. Use it for workflow-load behavior
-that depends on configured nodes already existing.
+Called after workflow configuration completes. Receives a `missingNodeTypes`
+array and the `app` (ComfyApp). Use it for workflow-load behavior that depends
+on configured nodes already existing.
 
 Choose this hook for post-load reconciliation, graph-aware UI refreshes, or
 other logic that should happen after the workflow has been applied.
 
-### `setup()`
+### `setup(app)`
 
-Called at the end of startup. The official docs recommend this for
-adding event listeners or global UI integrations.
+Called at the end of startup. Receives the main `app` (ComfyApp). The
+official docs recommend this for adding event listeners or global UI
+integrations.
 
 Choose `setup` when the extension needs late startup wiring and expects the rest
 of the application bootstrap to be complete.
@@ -127,9 +132,9 @@ The official docs include measured hook sequences.
 ```text
 invokeExtensionsAsync init
 invokeExtensionsAsync addCustomNodeDefs
-invokeExtensionsAsync getCustomWidgets
 invokeExtensionsAsync beforeRegisterNodeDef    [repeated multiple times]
 invokeExtensionsAsync registerCustomNodes
+invokeExtensions beforeRegisterVueAppNodeDefs
 invokeExtensionsAsync beforeConfigureGraph
 invokeExtensionsAsync nodeCreated
 invokeExtensions loadedGraphNode

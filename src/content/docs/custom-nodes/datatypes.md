@@ -3,9 +3,9 @@ title: "Datatypes"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-05-21
+**Last Updated:** 2026-06-01
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/datatypes
-**Baseline verification status:** This page has not been re-reviewed against the current baseline.
+**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Primary Sources
 
@@ -53,8 +53,11 @@ Important runtime datatypes include:
 - `IMAGE` -> `torch.Tensor` shaped `[B, H, W, C]`
 - `MASK` -> `torch.Tensor` shaped `[H, W]` or batched variants
 - `LATENT` -> `dict` containing at least `samples`, usually shaped
-  `[B, C, H, W]`
+  `[B, C, H, W]`, with optional fields `noise_mask`, `batch_index`,
+  and `type` (for audio or hunyuan3dv2 uses)
 - `AUDIO` -> `dict` containing `waveform` and `sample_rate`
+  (the upstream `_io.py` TypedDict uses `sampler_rate`; the
+  `basic_types.py` TypedDict and the artifact use `sample_rate`)
 
 From the current datatype guidance:
 
@@ -77,6 +80,28 @@ The backend docs also call out more advanced pipeline types such as:
 These are important for advanced sampling nodes, but many node authors
 can avoid them initially and focus on `IMAGE`, `MASK`, `LATENT`, and
 primitive types.
+
+Additional execution types defined in the v0.23.0 IO type registry
+include `HOOKS`, `HOOK_KEYFRAMES`, `TIMESTEPS_RANGE`,
+`LATENT_OPERATION`, `FLOW_CONTROL`, `ACCUMULATION`, `TRACKS`,
+`LOAD_3D`, and `LOAD_3D_ANIMATION`. See the pinned
+`node_api_schema.json` artifact for the full 76-type inventory.
+
+### 3D data types (v0.23.0)
+
+The current baseline adds six 3D IO types:
+
+- `SPLAT` -> `SPLAT` custom type for Gaussian splat data
+- `FILE_3D_PLY` -> `File3DPLY` for PLY mesh files
+- `FILE_3D_SPLAT` -> `File3DSPLAT` for splat file loading
+- `FILE_3D_SPZ` -> `File3DSPZ` for compressed splat files
+- `FILE_3D_KSPLAT` -> `File3DKSPLAT` for K-splat files
+- `LOAD3D_MODEL_INFO` -> `Load3DModelInfo` for 3D model metadata
+
+These join the existing 3D file types (`FILE_3D`, `FILE_3D_GLB`,
+`FILE_3D_GLTF`, `FILE_3D_FBX`, `FILE_3D_OBJ`, `FILE_3D_STL`,
+`FILE_3D_USDZ`). Use the narrowest applicable file type for your
+node rather than the generic `FILE_3D` wildcard.
 
 ## Custom Patterns
 

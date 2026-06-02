@@ -5,7 +5,7 @@ title: "History and Queue"
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-06-01
 **Primary Source:** ComfyUI core v0.23.0 `server.py` (pinned snapshot)
-**Baseline verification status:** This page has not been re-reviewed against the current baseline.
+**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Primary Sources
 

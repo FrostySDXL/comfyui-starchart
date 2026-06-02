@@ -2,7 +2,7 @@
 title: "Writing Style Guide"
 ---
 
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 **Related:** `source-evidence-policy.md` for evidence labeling rules
 **Evidence:** Operational guidance
 

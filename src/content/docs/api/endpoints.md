@@ -5,7 +5,7 @@ title: "API Endpoints"
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-06-01
 **Primary Source:** ComfyUI core v0.23.0 `server.py` (pinned snapshot)
-**Baseline verification status:** This page has not been re-reviewed against the current baseline.
+**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Primary Sources
 
@@ -44,7 +44,9 @@ behavior documented in prose.
 - `POST /prompt` — validates and enqueues a workflow
 - `GET /queue` — returns `queue_running` and `queue_pending`
 - `POST /queue` — clears queued items or deletes specific prompt IDs
-- `POST /interrupt` — interrupts all processing or one running prompt
+- `POST /interrupt` — interrupts processing; accepts optional JSON body
+  `{"prompt_id": "..."}` for targeted interruption, otherwise does a
+  global interrupt
 - `POST /free` — sets unload/free-memory flags
 - `GET /history` — returns prompt history with optional paging
 - `GET /history/{prompt_id}` — returns history for one prompt
@@ -71,7 +73,7 @@ behavior documented in prose.
 
 ### System and job inspection
 
-- `GET /system_stats` — returns host, RAM, VRAM, Python, template/version requirements, and package-version info
+- `GET /system_stats` — returns nested `{system: {os, ram_total, ram_free, comfyui_version, ...}, devices: [{name, type, index, vram_total, vram_free, ...}]}` with per-device VRAM breakdown, plus Python and package-version info
 - `GET /api/jobs` — returns filtered and paginated job listings
 - `GET /api/jobs/{job_id}` — returns one job record
 

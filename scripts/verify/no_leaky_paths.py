@@ -33,9 +33,6 @@ before this verifier is promoted to blocking CI):
   creates a ``Call`` node that is not recognized as path-like.
 - String concatenation: ``"path: " + str(path_var)`` produces a
   ``BinOp`` AST node not handled by any of the four sub-checks.
-- Non-``print`` output sinks: ``sys.stdout.write(str(p))``,
-  ``logging.info(p)``, and ``subprocess.run(["echo", str(p)])`` are
-  not scanned. Only ``print(...)`` calls are checked.
 - Qualified ``Path()``: ``pathlib.Path(...)`` (dotted access) is
   not matched; only bare ``Path(...)`` calls are flagged.
 """
@@ -123,6 +120,13 @@ REDACTING_HELPERS: frozenset[str] = frozenset({"display_path", "display_command"
 # ``://`` is treated as informational, not a path leak.
 URL_SCHEME: str = "://"
 
+# Logging method names on the ``logging`` module that are treated
+# as output sinks. A ``logging.info(str(p))`` call is inspected
+# with the same path-leak checks as ``print(...)``.
+_LOGGING_LEVELS: frozenset[str] = frozenset(
+    {"debug", "info", "warning", "error", "critical", "exception", "log"}
+)
+
 
 def _is_redacting_call(node: ast.AST) -> bool:
     """True if ``node`` is a call to ``display_path`` or ``display_command``."""
@@ -134,6 +138,19 @@ def _is_redacting_call(node: ast.AST) -> bool:
     if isinstance(func, ast.Attribute):
         return func.attr in REDACTING_HELPERS
     return False
+
+
+def _is_logging_call(node: ast.AST) -> bool:
+    """True if ``node`` is a call to ``logging.<level>(...)``."""
+    if not isinstance(node, ast.Call):
+        return False
+    func = node.func
+    if not isinstance(func, ast.Attribute):
+        return False
+    if func.attr not in _LOGGING_LEVELS:
+        return False
+    # Check that func.value is a Name node resolving to "logging"
+    return isinstance(func.value, ast.Name) and func.value.id == "logging"
 
 
 def _string_literal_looks_like_path(node: ast.AST) -> bool:
@@ -205,7 +222,8 @@ def _print_arg_is_path_like(node: ast.AST) -> bool:
 
 
 def scan_source_for_leaky_prints(source: str) -> list[tuple[int, str]]:
-    """Return ``(line_number, snippet)`` for every leaky ``print()`` call.
+    """Return ``(line_number, snippet)`` for every leaky ``print()`` or
+    ``logging.<level>()`` call.
 
     ``snippet`` is the stripped text of the offending line.
     """
@@ -218,14 +236,16 @@ def scan_source_for_leaky_prints(source: str) -> list[tuple[int, str]]:
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
-        if not (isinstance(node.func, ast.Name) and node.func.id == "print"):
+        is_print = isinstance(node.func, ast.Name) and node.func.id == "print"
+        is_logging = _is_logging_call(node)
+        if not (is_print or is_logging):
             continue
         for arg in node.args:
             if _print_arg_is_path_like(arg):
                 line_index = node.lineno - 1
                 snippet = lines[line_index].strip() if 0 <= line_index < len(lines) else ""
                 findings.append((node.lineno, snippet))
-                break  # one report per print() call
+                break  # one report per call
     return findings
 
 
@@ -251,12 +271,12 @@ def main() -> int:
     findings = verify_repo(REPO_ROOT)
     if not findings:
         print(
-            f"OK: no leaky print() calls detected across "
+            f"OK: no leaky print() or logging output detected across "
             f"{len(DEFAULT_SCAN_RELATIVE_PATHS)} scanned files."
         )
         return 0
     print(
-        f"FAIL: {len(findings)} leaky print() call(s) detected in "
+        f"FAIL: {len(findings)} leaky print()/logging call(s) detected in "
         f"{len({rel for rel, _, _ in findings})} file(s):"
     )
     for rel, line_number, snippet in findings:

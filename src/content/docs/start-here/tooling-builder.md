@@ -3,7 +3,7 @@ title: "Start Here: Tooling Builder"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 **Baseline verification status:** This page has not been re-reviewed against the current baseline.
 
 ## Scope

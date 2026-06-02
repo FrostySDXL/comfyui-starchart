@@ -380,10 +380,10 @@ ImageInput = torch.Tensor
                 "defined_in": "references/snapshots/comfy_api/latest/_io.py",
             },
         )
-        # H-2: text_input and conditioning entries must share the same
-        # base key set. ``supports_multiline_parameter`` is allowed as a
-        # STRING-specific extension (set to True/False for text widgets)
-        # and is not present on CONDITIONING entries.
+        # Base-key parity: text_input and conditioning entries must share
+        # the same base key set. ``supports_multiline_parameter`` is
+        # allowed as a STRING-specific extension (set to True/False for
+        # text widgets) and is not present on CONDITIONING entries.
         base_keys = {
             "io_type",
             "class_name",
@@ -426,7 +426,7 @@ ImageInput = torch.Tensor
         )
 
     def test_prompt_conditioning_surface_source_only_mode(self):
-        """H-4: source-only mode (no runtime_object_info) must still
+        """Source-only mode (no runtime_object_info) must still
         return text and conditioning entries with empty runtime fields."""
         module = _load_parse_node_api_schema()
 
@@ -466,7 +466,9 @@ ImageInput = torch.Tensor
         # even when no runtime snapshot is provided.
         self.assertEqual(len(surface["text_input_io_types"]), 1)
         self.assertEqual(len(surface["conditioning_io_types"]), 1)
-        # H-2: base-key shape parity (with STRING-specific extension).
+        # Base-key parity (source-only mode): text and conditioning
+        # entries must share the same key set, with STRING-specific
+        # extension.
         base_keys = {
             "io_type",
             "class_name",
@@ -480,6 +482,96 @@ ImageInput = torch.Tensor
         cond_keys = set(surface["conditioning_io_types"][0].keys())
         self.assertEqual(text_keys - {"supports_multiline_parameter"}, base_keys)
         self.assertEqual(cond_keys, base_keys)
+
+    def test_prompt_conditioning_surface_empty_io_types(self):
+        """Empty io_types list produces empty text_input and conditioning arrays
+        while runtime_node_output_summary still populates from runtime_object_info."""
+        module = _load_parse_node_api_schema()
+
+        io_types: list = []
+        runtime_object_info = {
+            "CLIPTextEncode": {
+                "input": {"required": {"text": ["STRING", {"multiline": True}]}},
+                "output": ["CONDITIONING"],
+            }
+        }
+
+        surface = module.build_prompt_conditioning_surface(io_types, runtime_object_info)
+        self.assertEqual(surface["text_input_io_types"], [])
+        self.assertEqual(surface["conditioning_io_types"], [])
+        self.assertEqual(len(surface["runtime_node_output_summary"]), 1)
+        self.assertEqual(surface["runtime_node_output_summary"][0]["class_name"], "CLIPTextEncode")
+
+    def test_prompt_conditioning_surface_string_without_multiline(self):
+        """STRING entry without 'multiline' in input_parameters must have
+        supports_multiline_parameter=False."""
+        module = _load_parse_node_api_schema()
+
+        io_types = [
+            {
+                "io_type": "STRING",
+                "class_name": "String",
+                "input_parameters": ["default"],
+                "output_parameters": [],
+                "is_widget": True,
+                "type_hint": "str",
+                "defined_in": "references/snapshots/comfy_api/latest/_io.py",
+            }
+        ]
+
+        surface = module.build_prompt_conditioning_surface(io_types)
+        self.assertEqual(len(surface["text_input_io_types"]), 1)
+        self.assertFalse(surface["text_input_io_types"][0]["supports_multiline_parameter"])
+
+    def test__runtime_input_type_variants(self):
+        """Direct unit coverage for _runtime_input_type helper function."""
+        module = _load_parse_node_api_schema()
+
+        # Bare string -> list with one element
+        self.assertEqual(module._runtime_input_type("STRING"), ["STRING"])
+
+        # List of strings -> first element wrapped
+        self.assertEqual(module._runtime_input_type(["STRING"]), ["STRING"])
+
+        # List with a dict variant -> first string element extracted
+        self.assertEqual(module._runtime_input_type(["STRING", {"multiline": True}]), ["STRING"])
+
+        # Empty list -> empty list
+        self.assertEqual(module._runtime_input_type([]), [])
+
+        # Non-list, non-str -> empty list
+        self.assertEqual(module._runtime_input_type(42), [])
+
+    def test__runtime_input_types_variants(self):
+        """Direct unit coverage for _runtime_input_types helper function.
+        The function extracts ``input_info = node_info.get("input", {})``
+        first, so test fixtures must wrap sections under ``input``."""
+        module = _load_parse_node_api_schema()
+
+        # Normal node_info dict with input key wrapping sections
+        node_info = {
+            "input": {
+                "required": {"prompt": ["STRING", {"multiline": True}]},
+                "optional": {"negative": ["STRING", {"multiline": True}]},
+                "hidden": {"seed": ["INT"]},
+            }
+        }
+        result = module._runtime_input_types(node_info)
+        self.assertEqual(result, {"prompt": ["STRING"], "negative": ["STRING"], "seed": ["INT"]})
+
+        # Empty input dict
+        self.assertEqual(module._runtime_input_types({}), {})
+
+        # Non-dict input value in node_info
+        node_info_with_bad = {
+            "input": {
+                "required": {"prompt": ["STRING"]},
+                "optional": "not_a_dict",
+                "hidden": {},
+            }
+        }
+        result = module._runtime_input_types(node_info_with_bad)
+        self.assertEqual(result, {"prompt": ["STRING"]})
 
     def test_bracket_aware_parameter_parsing(self):
         """Parameters with nested generic types like Dict[str, List[float]] should not produce bogus names."""

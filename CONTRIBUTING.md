@@ -199,6 +199,28 @@ Treat `public/artifacts/versions/` as durable but bounded history.
 `references/_refresh_backups/` is temporary local working state for refresh
 rollback/comparison. It is outside the durable published-history policy.
 
+### Versioned Artifact Regeneration
+
+Versioned artifacts under `public/artifacts/versions/` are keyed to a frozen
+upstream source baseline (tag + commit + snapshot date). When extractors or
+schemas change, a regeneration pass may update versioned artifacts to reflect
+the current extraction logic applied to the same frozen source. This means:
+
+- **Structural content** (sections, fields, shape) reflects the extractor
+  version, not the historical extraction date. If the extractor learns a new
+  section (e.g., `prompt_conditioning_surface`), that section will appear in
+  regenerated versioned artifacts for earlier baselines.
+- **The extracted source is frozen.** The pinned snapshot files under
+  `references/snapshots/` that feed the extractor do not change for a given
+  version key.
+- **`extracted_date`** in the artifact metadata records when the extraction
+  was run (operator local date), not the upstream release date.
+
+This is a deliberate tradeoff: the artifacts are "what the current tooling
+produces for this baseline" rather than a strict historical timestamp. If a
+strict historical record is needed, compare against the pinned snapshot
+source files directly.
+
 ## Editing Published Docs
 
 1. Read the target page and nearby linked pages.

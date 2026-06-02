@@ -3,7 +3,7 @@ title: "Custom Node Development Guide"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-05-21
+**Last Updated:** 2026-06-01
 **Primary Source:** https://docs.comfy.org/custom-nodes/overview
 **Baseline verification status:** This page has not been re-reviewed against the current baseline.
 

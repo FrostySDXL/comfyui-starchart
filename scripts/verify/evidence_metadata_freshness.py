@@ -17,6 +17,7 @@ ALLOWED_BASELINE_PREFIXES = (
 ALLOWED_BASELINE_EXACT = {
     "**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.",
     "**Baseline verification status:** This page has not been re-reviewed against the current baseline.",
+    "**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.",
 }
 
 BASELINE_REQUIRED_PATHS = {

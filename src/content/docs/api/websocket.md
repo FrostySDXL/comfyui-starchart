@@ -5,7 +5,7 @@ title: "WebSocket"
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-06-01
 **Primary Source:** ComfyUI core v0.23.0 `server.py` (pinned snapshot)
-**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
+**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Primary Sources
 
@@ -64,7 +64,9 @@ The following events are visible in `server.py` and `execution.py`:
 - `status` — queue status snapshot, including session ID on connect
 - `feature_flags` — server feature capability response
 - `executing` — emitted before a node executes; includes `node`,
-  `display_node`, and `prompt_id`
+  `display_node`, and `prompt_id`. On WebSocket reconnect, the
+  `executing` message may only contain `node` (without `display_node`
+  or `prompt_id`).
 - `executed` — emitted after a node produces UI output; includes node
   identifiers, UI output, and `prompt_id`
 - `execution_start` — emitted when a prompt begins executing

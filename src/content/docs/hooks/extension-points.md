@@ -5,7 +5,7 @@ title: "Extension Points"
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
 **Last Updated:** 2026-06-01
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
-**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
+**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Primary Sources
 
@@ -101,6 +101,12 @@ Official frontend hooks include:
   `afterConfigureGraph`
 
 These are the preferred way to modify client-side behavior.
+
+For the full inventory of all 19 frontend hooks (including menu extensions,
+auth hooks, and additional lifecycle hooks), see
+[JavaScript Extension Hooks](javascript-hooks.md) and
+`public/artifacts/current/js_hooks.json` for the complete machine-readable
+catalog.
 
 ### 2. Server hooks
 

@@ -3,7 +3,7 @@ title: "Topic Scope"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 > **Operational Note:** This page defines what belongs in the published docs
 > surface, what belongs only in repo-local maintainer guidance, and what should

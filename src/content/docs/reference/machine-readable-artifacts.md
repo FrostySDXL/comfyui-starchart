@@ -4,7 +4,7 @@ title: "Machine-Readable Artifacts"
 
 **Evidence:** Operational guidance
 **Last Updated:** 2026-06-01
-**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
+**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Scope
 
@@ -70,6 +70,14 @@ Read each artifact through these tiers:
 
 Tooling can depend on guaranteed structure. Treat best-effort fields as useful
 helpers, not strict contracts.
+
+**node_api_schema.json contract:**
+
+| Tier | Fields |
+|---|---|
+| Guaranteed | `metadata`, `object_info_fields`, `io_types`, `basic_input_shapes`, `coverage` |
+| Best-effort | `typed_input_shapes`, `prompt_conditioning_surface.text_input_io_types`, `prompt_conditioning_surface.conditioning_io_types`, `prompt_conditioning_surface.runtime_node_output_summary` |
+| Deferred | runtime `/object_info` response, custom node definitions, per-node `INPUT_TYPES` schemas |
 
 The published JSON Schema files intentionally encode only the guaranteed
 structure. They do not hard-contract every descriptive or inferred field that

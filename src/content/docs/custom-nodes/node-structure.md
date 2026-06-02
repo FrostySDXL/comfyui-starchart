@@ -3,9 +3,9 @@ title: "V3 Node Structure"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-05-21
+**Last Updated:** 2026-06-01
 **Primary Source:** https://docs.comfy.org/custom-nodes/v3_migration
-**Baseline verification status:** This page has not been re-reviewed against the current baseline.
+**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Primary Sources
 
@@ -63,6 +63,8 @@ Important `io.Schema` fields include:
 - `is_input_list` — receive list inputs as lists
 - `not_idempotent` — disables normal caching assumptions
 - `accept_all_inputs` — accept arbitrary inputs
+- `price_badge` — optional pricing badge declaration (client-evaluated)
+- `enable_expand` — allow NodeOutput `expand` property (default false)
 - `search_aliases` — alternate search terms
 
 The most important required field is `node_id`. Keep it unique and
