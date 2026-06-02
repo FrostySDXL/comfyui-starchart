@@ -201,7 +201,29 @@ def main() -> int:
     print(f"  Current:  {display_path(CURRENT_DIR)}")
     print(f"  Versioned: {display_path(versioned_dir)}")
     print(f"  Manifest: {display_path(manifest_path)}")
+
+    _update_provenance_publish_flags()
     return 0
+
+
+def _update_provenance_publish_flags() -> None:
+    """Update refresh-provenance.json published flags after successful publish.
+
+    Sets canonical_artifacts_updated_by_refresh and manifest_included to
+    true so the provenance record accurately reflects that this follow-up
+    step completed.  No-op if the provenance file does not exist (e.g. a
+    manual publish run outside the refresh workflow).
+    """
+    provenance_path = OUTPUT_ROOT / "refresh-provenance.json"
+    if not provenance_path.is_file():
+        return
+    data = load_json(provenance_path)
+    published = data.setdefault("published", {})
+    published["canonical_artifacts_updated_by_refresh"] = True
+    published["manifest_included"] = True
+    published.setdefault("provenance_path", "public/artifacts/refresh-provenance.json")
+    write_json(provenance_path, data)
+    print(f"Updated {display_path(provenance_path)} published flags.")
 
 
 if __name__ == "__main__":

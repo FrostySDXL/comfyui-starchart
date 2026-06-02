@@ -13,9 +13,9 @@
     "verify_artifact_integrity_command": "py -3.11 scripts/verify/verify_artifact_integrity.py"
   },
   "published": {
-    "canonical_artifacts_updated_by_refresh": false,
-    "delta_summary_updated_by_refresh": false,
-    "manifest_included": false,
+    "canonical_artifacts_updated_by_refresh": true,
+    "delta_summary_updated_by_refresh": true,
+    "manifest_included": true,
     "provenance_path": "public/artifacts/refresh-provenance.json"
   },
   "refresh_date": "2026-06-01",

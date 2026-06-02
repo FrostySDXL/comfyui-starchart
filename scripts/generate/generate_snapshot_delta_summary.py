@@ -309,7 +309,29 @@ def main() -> int:
         json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     print(f"Generated snapshot delta summary at {display_path(output_path)}")
+
+    _update_provenance_delta_flag()
     return 0
+
+
+def _update_provenance_delta_flag() -> None:
+    """Update refresh-provenance.json published flag after successful delta-summary generation.
+
+    Sets delta_summary_updated_by_refresh to true so the provenance record
+    accurately reflects that this follow-up step completed.  No-op if the
+    provenance file does not exist.
+    """
+    provenance_path = REPO_ROOT / "public" / "artifacts" / "refresh-provenance.json"
+    if not provenance_path.is_file():
+        return
+    data = _load_json(provenance_path)
+    published = data.setdefault("published", {})
+    published["delta_summary_updated_by_refresh"] = True
+    published.setdefault("provenance_path", "public/artifacts/refresh-provenance.json")
+    provenance_path.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    print(f"Updated {display_path(provenance_path)} published flags.")
 
 
 if __name__ == "__main__":
