@@ -10,8 +10,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-from scripts.common.display_path import display_path
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLES_DIR = REPO_ROOT / "examples"
 
@@ -63,7 +61,7 @@ def validate_shell_scripts(
 
     failed = False
     for script in scripts:
-        print(f"Checking shell syntax: {display_path(script)}")
+        print(f"Checking shell syntax: {script.as_posix()}")
         result = subprocess.run(
             [bash_executable, "-n", script.as_posix()],
             capture_output=True,
@@ -72,7 +70,7 @@ def validate_shell_scripts(
         )
         if result.returncode != 0:
             failed = True
-            print(f"FAILED: {display_path(script)}", file=sys.stderr)
+            print(f"FAILED: {script.as_posix()}", file=sys.stderr)
             if result.stderr:
                 print(result.stderr, file=sys.stderr, end="")
 

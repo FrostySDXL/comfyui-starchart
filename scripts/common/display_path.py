@@ -54,6 +54,8 @@ def display_path(path: Path | str | None, *, repo_root: Path | None = None) -> s
     # behavior of Path("").
     if isinstance(path, str) and path == "":
         return ""
+    if isinstance(path, Path) and not str(path):
+        return ""
     if isinstance(path, str) and _looks_like_url(path):
         return path
     if repo_root is None:

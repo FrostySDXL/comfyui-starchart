@@ -95,8 +95,8 @@ consumption details, see [Machine-Readable Artifacts](machine-readable-artifacts
 ## Known Baseline Deltas (v0.22.0 -> v0.23.0)
 
 - **`GET /system_stats` field flattening:** The extracted `server_endpoints.json`
-  artifact corrected how per-device GPU fields are represented (no longer listed
-  as flat top-level fields; the `devices` array remains present in the actual
+  artifact removed per-device GPU fields that were incorrectly listed as flat
+  top-level entries; the `devices` array remains present in the actual
   API response). The 3D file type additions (SPLAT, FILE_3D_PLY, etc.) are
   recorded in `delta-summary.json`.
 

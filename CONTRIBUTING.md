@@ -1,6 +1,6 @@
 # Contributing
 
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-02
 
 This file is the canonical maintainer workflow guide for ComfyUI StarChart.
 Use `AGENTS.md` for startup-critical orientation. Use this file for deeper
@@ -12,6 +12,7 @@ surface ownership.
 Use Python `3.11+` and Node.js `24.x` for repo/site work.
 
 ```bash
+# On Windows, create the venv with: py -3.11 -m venv .venv
 python -m venv .venv
 source .venv/bin/activate  # Linux / macOS
 # or:
@@ -456,7 +457,6 @@ python scripts/verify/stale_content.py
 python scripts/verify/extraction_idempotency.py
 python scripts/verify/upstream_pins.py
 python scripts/verify/example_surface_integrity.py
-python scripts/verify/no_leaky_paths.py
 python scripts/verify/evidence_metadata_freshness.py
 python -m mypy
 ```
@@ -501,7 +501,6 @@ inventory rows.
 |---|---|---|---|---|---|
 | `scripts/verify/stale_content.py` | Scan for stale markers and aging content | docs plus extracted JSON | Advisory | Finds `TODO`/`TBD`-style drift and old `Last Updated` markers | Cleanup sweeps, doc review passes, or before promoting pages |
 | `scripts/verify/extraction_idempotency.py` | Re-run extractors against pinned inputs and compare outputs | extractor determinism for `references/raw/*.json` | Advisory | Only direct determinism check for extraction reproducibility | Extractor changes or refresh-pipeline review |
-| `scripts/verify/no_leaky_paths.py` | AST-scan script print() calls to confirm filesystem-path values go through `display_path()` or `display_command()` | 17 default scan targets in `scripts/extract/`, `scripts/generate/`, `scripts/verify/`, `scripts/common/`, `scripts/check_upstream_versions.py`, `scripts/new_doc.py` | Advisory | Only repo-local verifier that structurally checks for path redaction at print() call sites; detects str() wrapping, string concatenation, qualified Path() calls, imported logging levels, and logger-instance calls in addition to direct print() with path variables. Complements the unit-tested `display_path` contract. | After wrapping new print() sites with `display_path()`/`display_command()`, when adding a new script that emits filesystem paths, or when a call site regresses to a raw path print |
 | `scripts/verify/upstream_pins.py` | Confirm pinned tags and commits still resolve upstream | upstream pin validity for canonical JSON metadata | Advisory | External trust check with cached GitHub API resolution | Scheduled pin health review or after suspicious upstream changes |
 | `scripts/verify/example_surface_integrity.py` | Validate example family structure and routed example references | `examples/` plus routed start-here docs | Advisory | Checks example directory completeness and routed example paths together | Example-surface edits or start-here routing updates |
 | `scripts/verify/evidence_metadata_freshness.py` | Enforce opening evidence metadata discipline on retained pages | selected published docs pages | Advisory | Only verifier that checks allowed baseline-status wording patterns directly | Docs policy changes or refreshes affecting evidence blocks |

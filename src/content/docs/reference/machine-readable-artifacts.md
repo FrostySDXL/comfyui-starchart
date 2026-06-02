@@ -413,6 +413,35 @@ include:
 - `stability_tier`
 - `recommended_next_reads`
 
+**`task_intents` controlled vocabulary:**
+
+The following strings are the canonical set of `task_intents` values used in
+`docs-index.json`. When adding new pages with curated routing enrichment, use
+an existing intent where it fits or add a new value to this list.
+
+| Intent | Meaning |
+|---|---|
+| `route-docs-task` | Match the page best suited for a given task from a tooling query |
+| `discover-routes` | Enumerate or explore API endpoints |
+| `discover-artifacts` | Locate canonical published JSON artifacts |
+| `discover-hooks` | Enumerate frontend or server-side extension hooks |
+| `submit-prompt` | Submit a workflow for execution via the REST API |
+| `extract-prompt-text` | Extract the user-facing prompt text from a workflow JSON payload |
+| `inspect-prompt-payload` | Inspect the structure and fields of a prompt API request |
+| `inspect-object-info` | Read or interpret a node's `object_info` metadata |
+| `inspect-conditioning-graph` | Trace how conditioning flows through a prompt graph |
+| `understand-architecture` | Understand the high-level execution and pipeline architecture |
+| `understand-prompt-topology` | Understand the node graph and prompt submission lifecycle |
+| `monitor-execution` | Monitor node execution progress or status |
+| `lookup-history` | Retrieve or query prompt execution history |
+| `observe-server-lifecycle` | Observe server-side lifecycle events and hooks |
+| `build-custom-node` | Build or develop a ComfyUI custom node |
+| `debug-api-integration` | Debug integration issues with the ComfyUI REST or WebSocket API |
+
+> **Stability note:** New intents may be added without a schema version bump.
+> Tooling consumers should treat unknown intents as a soft signal and fall back
+> to other routing signals rather than failing.
+
 Use this merged artifact when a tool needs to answer questions like:
 
 - which docs page best matches a task such as route discovery, prompt

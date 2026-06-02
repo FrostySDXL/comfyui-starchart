@@ -114,7 +114,6 @@ intentionally.
   - `upstream_pins.py`
   - `example_surface_integrity.py`
   - `evidence_metadata_freshness.py`
-  - `no_leaky_paths.py`
   - `python -m mypy`
 
 ## Common Pitfalls

@@ -123,6 +123,19 @@ integrations.
 Choose `setup` when the extension needs late startup wiring and expects the rest
 of the application bootstrap to be complete.
 
+### `beforeRegisterVueAppNodeDefs`
+
+Called synchronously during initial page load after `registerCustomNodes` and
+before `beforeConfigureGraph`. This hook uses `invokeExtensions` (sync) rather
+than `invokeExtensionsAsync`, so async extension logic is not supported here.
+
+**Evidence status:** This hook is documented only in the [measured call
+order](#call-order) from the official docs and in the frontend type
+definitions. A full signature and recommended use case are not yet confirmed
+against upstream documentation. Until more source evidence is available,
+treat this as an internal lifecycle event rather than a stable extension
+hook.
+
 ## Call Order
 
 The official docs include measured hook sequences.

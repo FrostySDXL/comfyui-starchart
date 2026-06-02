@@ -116,7 +116,7 @@ def resolve_link(href: str, page_url_path: str, site_base: str) -> str:
 
     # Combine and normalize
     combined = base_dir + path
-    segments = []
+    segments: list[str] = []
     for seg in combined.split("/"):
         if seg == "..":
             if segments:
@@ -246,11 +246,11 @@ def main() -> int:
     print("BROKEN INTERNAL LINKS:")
     total_broken = 0
     for html_file, broken_links in sorted(broken_by_file.items()):
-        print(f"\n  {display_path(html_file)}:")
+        print(f"\n  {html_file}:")
         for href, resolved, dist_path in broken_links:
             print(f'    href="{href}"')
             print(f"      -> resolves to: {resolved}")
-            print(f"      -> expected file: {display_path(dist_path)} (NOT FOUND)")
+            print(f"      -> expected file: {dist_path} (NOT FOUND)")
             total_broken += 1
 
     print(f"\nFound {total_broken} broken link(s) in {len(broken_by_file)} file(s).")

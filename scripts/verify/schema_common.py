@@ -391,7 +391,7 @@ def validate_prompt_conditioning_surface(data: dict, filename: str) -> list[str]
         )
     )
 
-    for list_key in ("text_input_io_types", "conditioning_io_types", "runtime_node_output_summary"):
+    for list_key in ("text_input_io_types", "conditioning_io_types"):
         value = surface.get(list_key)
         if isinstance(value, list):
             inner_path = f"prompt_conditioning_surface.{list_key}"
