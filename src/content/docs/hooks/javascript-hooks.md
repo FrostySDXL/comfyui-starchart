@@ -5,7 +5,7 @@ title: "JavaScript Hooks and Registration"
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-21
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
-**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
+**Baseline verification status:** This page has not been re-reviewed against the current baseline.
 
 ## Primary Sources
 

@@ -68,6 +68,8 @@ DEFAULT_SCAN_RELATIVE_PATHS: list[str] = [
     "scripts/verify/sidebar_navigation_coverage.py",
     "scripts/verify/shell_examples_syntax.py",
     "scripts/new_doc.py",
+    # H-1 follow-up: refresh_git_ops was also updated to use display_command
+    "scripts/common/refresh_git_ops.py",
 ]
 
 # Variable names that strongly suggest a filesystem path. Used to flag
@@ -144,6 +146,10 @@ def _string_literal_looks_like_path(node: ast.AST) -> bool:
     if URL_SCHEME in value:
         return False
     if "\\" in value:
+        # TODO: before promoting to blocking CI, tighten this heuristic.
+        # Any backslash triggers a path match, which flags escape sequences
+        # like "\n" as false positives. Consider also requiring a drive
+        # letter or known path prefix alongside the backslash.
         return True
     # Drive letter prefix like "C:" or "g:".
     if len(value) >= 2 and value[1] == ":" and value[0].isalpha():

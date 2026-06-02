@@ -5,7 +5,7 @@ title: "Deep Dive: Registry Packaging and Compatibility"
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-13
 **Primary Sources:** https://docs.comfy.org/registry/specifications; https://docs.comfy.org/registry/publishing; https://docs.comfy.org/registry/cicd
-**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
+**Baseline verification status:** This page has not been re-reviewed against the current baseline.
 
 ## Scope
 

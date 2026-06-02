@@ -5,7 +5,7 @@ title: "Deep Dive: Execution Model Inversion"
 **Evidence:** Official docs-backed from docs.comfy.org
 **Last Updated:** 2026-05-13
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/execution_model_inversion_guide
-**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
+**Baseline verification status:** This page has not been re-reviewed against the current baseline.
 
 ## Scope
 

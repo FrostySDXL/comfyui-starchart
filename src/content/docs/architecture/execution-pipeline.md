@@ -5,8 +5,8 @@ title: "Execution Pipeline"
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-06-01
 **Primary Sources:**
-- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py` (v0.22.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
-- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py` (v0.22.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
+- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py` (v0.23.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
+- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py` (v0.23.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
 **Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
 
 ## Scope

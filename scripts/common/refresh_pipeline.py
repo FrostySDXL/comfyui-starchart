@@ -213,9 +213,13 @@ def run_markdown_generation(
     repo_root: Path,
     run_cmd,
 ) -> bool:
-    """Re-run the markdown generator."""
-    print("\n--- Running md_from_json.py ---")
-    print("  No generated markdown output is configured; skipping md_from_json.py")
+    """Run the markdown generator (currently disabled).
+
+    Markdown generation from JSON extracts is disabled. When an output
+    path is configured, restore the subprocess call to md_from_json.py.
+    """
+    print("\n--- Skipping md_from_json.py ---")
+    print("  Markdown generation is currently disabled; skipping md_from_json.py")
     return True
 
 

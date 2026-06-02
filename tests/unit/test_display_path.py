@@ -59,6 +59,10 @@ class DisplayPathTests(unittest.TestCase):
         module = _load_module()
         self.assertEqual(module.display_path(None, repo_root=FAKE_REPO), "")
 
+    def test_empty_string_returns_empty_string(self):
+        module = _load_module()
+        self.assertEqual(module.display_path("", repo_root=FAKE_REPO), "")
+
     def test_display_command_replaces_sys_executable_with_python(self):
         module = _load_module()
         self.assertEqual(

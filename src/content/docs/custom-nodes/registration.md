@@ -8,9 +8,9 @@ title: "Registration"
 
 - https://docs.comfy.org/custom-nodes/overview
 - https://docs.comfy.org/custom-nodes/backend/server_overview
-- `references/snapshots/2026-05-21/comfyui-frontend-v1.45.12/src/types/comfy.ts` (ComfyExtension interface)
-- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py` (io.Schema, io.ComfyNode, NodeOutput)
-**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
+- `references/snapshots/2026-06-01/comfyui-frontend-v1.46.6/src/types/comfy.ts` (ComfyExtension interface)
+- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py` (io.Schema, io.ComfyNode, NodeOutput)
+**Baseline verification status:** This page has not been re-reviewed against the current baseline.
 
 ## Scope
 

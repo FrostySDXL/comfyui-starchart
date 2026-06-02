@@ -11,8 +11,8 @@ title: "Extension Points"
 
 - https://docs.comfy.org/custom-nodes/js/javascript_hooks
 - https://docs.comfy.org/custom-nodes/js/javascript_objects_and_hijacking
-- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py` (v0.22.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
-- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py` (v0.22.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
+- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py` (v0.23.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
+- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py` (v0.23.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
 
 ## Scope
 
