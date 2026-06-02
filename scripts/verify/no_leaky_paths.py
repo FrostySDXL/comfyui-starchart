@@ -26,6 +26,18 @@ False-positive tolerance:
 - The heuristic flags variables whose names match the
   ``PATH_VARIABLE_NAMES`` set. Custom variable names outside this set
   are not flagged (acceptable false-negative for the advisory pass).
+
+Known AST bypass patterns (not detected; documented here for awareness
+before this verifier is promoted to blocking CI):
+- ``str(path_var)`` wrapping: wrapping a path variable in ``str()``
+  creates a ``Call`` node that is not recognized as path-like.
+- String concatenation: ``"path: " + str(path_var)`` produces a
+  ``BinOp`` AST node not handled by any of the four sub-checks.
+- Non-``print`` output sinks: ``sys.stdout.write(str(p))``,
+  ``logging.info(p)``, and ``subprocess.run(["echo", str(p)])`` are
+  not scanned. Only ``print(...)`` calls are checked.
+- Qualified ``Path()``: ``pathlib.Path(...)`` (dotted access) is
+  not matched; only bare ``Path(...)`` calls are flagged.
 """
 
 from __future__ import annotations
@@ -90,6 +102,14 @@ PATH_VARIABLE_NAMES: frozenset[str] = frozenset(
         "url",
         "target",
         "destination",
+        "out_dir",
+        "target_dir",
+        "cache_dir",
+        "snapshot_dir",
+        "result_path",
+        "clone_dir",
+        "backup_path",
+        "provenance_path",
     }
 )
 

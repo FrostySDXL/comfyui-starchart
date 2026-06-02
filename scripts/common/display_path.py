@@ -48,6 +48,12 @@ def display_path(path: Path | str | None, *, repo_root: Path | None = None) -> s
     """
     if path is None:
         return ""
+    # Empty string must behave identically to None per the module contract
+    # ("None and empty input render as the empty string"). An explicit
+    # guard here avoids depending on the accidental exception-fallback
+    # behavior of Path("").
+    if isinstance(path, str) and path == "":
+        return ""
     if isinstance(path, str) and _looks_like_url(path):
         return path
     if repo_root is None:

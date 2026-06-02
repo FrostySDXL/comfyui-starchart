@@ -4,12 +4,12 @@ title: "Object Info"
 
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-06-01
-**Primary Source:** ComfyUI core v0.22.0 `server.py` (pinned snapshot)
+**Primary Source:** ComfyUI core v0.23.0 `server.py` (pinned snapshot)
 **Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
 
 ## Primary Sources
 
-- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py` (v0.22.0, commit a8d2519058ea766ca3b14916bcc01ecef5efd235)
+- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py` (v0.22.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
 
 ## Scope
 

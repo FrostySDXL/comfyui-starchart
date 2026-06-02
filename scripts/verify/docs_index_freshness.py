@@ -18,6 +18,8 @@ import json
 import sys
 from pathlib import Path
 
+from scripts.common.display_path import display_path
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GENERATOR = REPO_ROOT / "scripts" / "generate" / "generate_docs_index.py"
 
@@ -39,11 +41,11 @@ def render_docs_index_text(docs_index: dict[str, object]) -> str:
 
 def verify_freshness() -> int:
     if not GENERATOR.exists():
-        print(f"ERROR: Generator not found at {GENERATOR}")
+        print(f"ERROR: Generator not found at {display_path(GENERATOR)}")
         return 1
 
     if not COMMITTED_PATH.exists():
-        print(f"ERROR: Committed file not found at {COMMITTED_PATH}")
+        print(f"ERROR: Committed file not found at {display_path(COMMITTED_PATH)}")
         return 1
 
     generated = render_docs_index_text(

@@ -5,7 +5,7 @@
       "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
       "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_input/basic_types.py"
     ],
-    "extracted_date": "2026-06-01",
+    "extracted_date": "2026-05-21",
     "version": "v0.22.0",
     "commit": "a8d2519058ea766ca3b14916bcc01ecef5efd235",
     "provenance": {
@@ -14,8 +14,7 @@
         "object_info_fields",
         "io_types",
         "basic_input_shapes",
-        "typed_input_shapes",
-        "prompt_conditioning_surface"
+        "typed_input_shapes"
       ],
       "runtime_sections": []
     }
@@ -2616,50 +2615,6 @@
       "is_widget": true
     }
   ],
-  "prompt_conditioning_surface": {
-    "traceability": {
-      "source_type": "source-backed",
-      "strategy": "derived_from_io_type_definitions",
-      "runtime_bounded_sections": []
-    },
-    "text_input_io_types": [
-      {
-        "io_type": "STRING",
-        "class_name": "String",
-        "type_hint": "str",
-        "is_widget": true,
-        "input_parameters": [
-          "display_name",
-          "optional",
-          "tooltip",
-          "lazy",
-          "multiline",
-          "placeholder",
-          "default",
-          "dynamic_prompts",
-          "socketless",
-          "force_input",
-          "extra_dict",
-          "raw_link",
-          "advanced"
-        ],
-        "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
-        "supports_multiline_parameter": true
-      }
-    ],
-    "conditioning_io_types": [
-      {
-        "io_type": "CONDITIONING",
-        "class_name": "Conditioning",
-        "type_hint": "CondList",
-        "is_widget": false,
-        "input_parameters": [],
-        "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
-        "output_parameters": []
-      }
-    ],
-    "runtime_node_output_summary": []
-  },
   "basic_input_shapes": {
     "ImageInput": "An image in format [B, H, W, C] where B is the batch size, C is the number of channels,",
     "MaskInput": "A mask in format [B, H, W] where B is the batch size"
@@ -2724,19 +2679,6 @@
       "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_input/basic_types.py"
     ],
     "runtime_enriched": false,
-    "guaranteed_fields": [
-      "metadata",
-      "object_info_fields",
-      "io_types",
-      "basic_input_shapes",
-      "coverage"
-    ],
-    "best_effort_fields": [
-      "typed_input_shapes",
-      "prompt_conditioning_surface.text_input_io_types",
-      "prompt_conditioning_surface.conditioning_io_types",
-      "prompt_conditioning_surface.runtime_node_output_summary"
-    ],
     "deferred": [
       "runtime /object_info response",
       "custom node definitions",

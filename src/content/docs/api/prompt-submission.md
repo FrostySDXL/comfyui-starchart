@@ -4,13 +4,13 @@ title: "Prompt Submission"
 
 **Evidence:** Source-backed from pinned snapshots
 **Last Updated:** 2026-06-01
-**Primary Source:** ComfyUI core v0.22.0 `server.py` (pinned snapshot)
+**Primary Source:** ComfyUI core v0.23.0 `server.py` (pinned snapshot)
 **Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
 
 ## Primary Sources
 
-- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py` (v0.22.0, commit a8d2519058ea766ca3b14916bcc01ecef5efd235)
-- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py` (v0.22.0, commit a8d2519058ea766ca3b14916bcc01ecef5efd235)
+- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py` (v0.22.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
+- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py` (v0.22.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
 - https://docs.comfy.org/development/comfyui-server/comms_routes
 
 ## Scope
@@ -76,19 +76,19 @@ Minimal request shape:
 The submitted `prompt` value is an API prompt graph, not the editor-exported
 workflow JSON document. The pinned `/prompt` handler passes this graph directly
 to `execution.validate_prompt` before queueing it. Source-backed from pinned
-snapshots: `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py`.
+snapshots: `references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py`.
 
 At validation time, each graph entry is keyed by a node ID. Each node must name a
 `class_type`, and its `inputs` object may contain literal values or linked
 inputs. A linked input is a two-item list in the form `[node_id, slot_index]`.
 Source-backed from pinned snapshots:
-`references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`.
+`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
 
 This topology matters for prompt extraction. A prompt-bearing text field may be a
 literal string on a known node, but it may also feed another node through a linked
 input. The API contract validates links and types; it does not promise that all
 prompt text lives in one flat request field. Source-backed from pinned snapshots:
-`references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`.
+`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
 
 ## Linked Inputs
 
@@ -96,13 +96,13 @@ When an input value is a list, validation treats it as a graph edge and expects
 exactly two items: the upstream node ID and the upstream output slot index. The
 validator checks the upstream node's declared return type against the receiving
 input type before accepting that edge. Source-backed from pinned snapshots:
-`references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`.
+`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
 
 Literal values stay on the node's `inputs` object. During validation, primitive
 literal values may be coerced to `INT`, `FLOAT`, `STRING`, or `BOOLEAN`, and
 bounded or combo values are checked against their declared limits. Source-backed
 from pinned snapshots:
-`references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`.
+`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
 
 ## Validation Behavior
 
@@ -152,26 +152,26 @@ role, the prompt-bearing input is a literal string, and the field's node class i
 present in the submitted graph. In that case, the submitted graph contains the
 candidate text without requiring execution-time reconstruction. Source-backed
 from pinned snapshots:
-`references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`.
+`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
 
 Extraction becomes ambiguous when conditioning has been transformed, composed, or
 routed through linked inputs. During execution, `get_input_data` resolves linked
 inputs from cached upstream outputs, and execution can work with runtime objects
 rather than the original literal text. Source-backed from pinned snapshots:
-`references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`.
+`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
 
 Not every conditioning terminal is textual. The validator and executor operate on
 declared input and output types, so a graph can carry conditioning or model data
 without preserving a recoverable text string at the terminal node. Source-backed
 from pinned snapshots:
-`references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`.
+`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
 
 Use object-info and node-schema artifacts as bounded hints, not as proof that a
 submitted graph has recoverable prompt text. `/object_info` reports class input
 and output declarations, while `/prompt` validation only proves that this graph
 is executable against the loaded node classes. Source-backed from pinned
-snapshots: `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py` and
-`references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`.
+snapshots: `references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py` and
+`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
 
 ## Response and Execution Flow
 

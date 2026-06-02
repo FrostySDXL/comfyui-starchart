@@ -4,7 +4,7 @@ title: "Server Hooks"
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
 **Last Updated:** 2026-06-01
-**Primary Source:** ComfyUI core v0.22.0 `server.py` and `execution.py`, plus the pinned v0.19.3 `comfy_execution/progress.py` snapshot retained intentionally because the current pinned snapshot set still does not include an equivalent `comfy_execution/progress.py` path
+**Primary Source:** ComfyUI core v0.23.0 `server.py` and `execution.py`, plus the pinned v0.19.3 `comfy_execution/progress.py` snapshot retained intentionally because the current pinned snapshot set still does not include an equivalent `comfy_execution/progress.py` path
 **Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
 
 This page also retains one older pinned source at `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` because the current snapshot set does not include an equivalent `comfy_execution/progress.py` path; see the Primary Sources section and inline notes.
@@ -14,8 +14,8 @@ This page also retains one older pinned source at `references/snapshots/2026-04-
 - https://docs.comfy.org/development/comfyui-server/comms_overview
 - https://docs.comfy.org/development/comfyui-server/comms_messages
 - https://docs.comfy.org/development/comfyui-server/comms_routes
-- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py` (v0.22.0, commit a8d2519058ea766ca3b14916bcc01ecef5efd235)
-- `references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py` (v0.22.0, commit a8d2519058ea766ca3b14916bcc01ecef5efd235)
+- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py` (v0.22.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
+- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py` (v0.22.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
 - `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` (v0.19.3, commit 308602640) -- intentionally retained because the current pinned snapshot set does not include an equivalent `comfy_execution/progress.py` path
 
 ## Scope
@@ -93,7 +93,7 @@ invokes `trigger_on_prompt(json_data)` immediately after reading the request bod
 and before queue numbering, validation, node replacement, and queue insertion.
 That callback surface is the server-side hook point for observing or reshaping a
 submitted prompt graph before it becomes queued work. Source-backed from pinned
-snapshots: `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py`.
+snapshots: `references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py`.
 
 ### Progress handling
 
@@ -138,8 +138,8 @@ Execution lifecycle messages are WebSocket-facing events, not general Python
 callbacks. `PromptExecutor.add_message(...)` records lifecycle messages and uses
 `server.send_sync(...)` to enqueue them for WebSocket delivery; it does not expose
 an extension callback registry for each event. Source-backed from pinned
-snapshots: `references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`
-and `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py`.
+snapshots: `references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`
+and `references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py`.
 
 Use the event stream for observation and correlation. Use `on_prompt` handlers
 only when the integration needs prompt-time inspection or normalization before
