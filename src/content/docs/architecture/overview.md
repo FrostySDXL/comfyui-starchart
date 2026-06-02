@@ -3,7 +3,7 @@ title: "Architecture Overview"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-05-18
+**Last Updated:** 2026-06-01
 **Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Scope

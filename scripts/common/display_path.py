@@ -59,7 +59,10 @@ def display_path(path: Path | str | None, *, repo_root: Path | None = None) -> s
     if repo_root is None:
         # Default repo root: this file's location's great-grandparent (scripts/common -> repo).
         repo_root = Path(__file__).resolve().parents[2]
-    p = Path(path)
+    try:
+        p = Path(path)
+    except TypeError:
+        return ""
     try:
         return p.relative_to(repo_root).as_posix()
     except ValueError:

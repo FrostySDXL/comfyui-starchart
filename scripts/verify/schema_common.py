@@ -114,6 +114,29 @@ NODE_API_COVERAGE_SCHEMA = {
     "deferred": (list, True),
 }
 
+PROMPT_CONDITIONING_ENTRY_SCHEMA = {
+    "io_type": (str, True),
+    "class_name": (str, True),
+    "input_class": ((str, type(None)), False),
+    "input_parameters": (list, False),
+    "output_parameters": (list, False),
+    "input_parameter_details": (list, False),
+    "output_parameter_details": (list, False),
+    "type_hint": ((str, type(None)), False),
+    "defined_in": (str, False),
+    "is_widget": (bool, False),
+    "io_type_description": (str, False),
+    "supports_multiline_parameter": (bool, False),
+    "traceability": (dict, False),
+}
+
+PROMPT_CONDITIONING_SURFACE_SCHEMA = {
+    "traceability": (dict, False),
+    "text_input_io_types": (list, False),
+    "conditioning_io_types": (list, False),
+    "runtime_node_output_summary": (list, False),
+}
+
 
 def _check_type(value, expected_type) -> bool:
     if isinstance(expected_type, tuple):
@@ -340,4 +363,65 @@ def validate_returns(returns: dict, filename: str, path: str) -> list[str]:
     traceability = returns.get("traceability")
     if isinstance(traceability, dict):
         errors.extend(validate_traceability(traceability, filename, f"{path}.traceability"))
+    return errors
+
+
+def validate_prompt_conditioning_surface(data: dict, filename: str) -> list[str]:
+    errors: list[str] = []
+    surface = data.get("prompt_conditioning_surface")
+    if surface is None:
+        return errors
+    if not isinstance(surface, dict):
+        return [
+            f"{filename}: prompt_conditioning_surface expected dict, got {type(surface).__name__}"
+        ]
+
+    path_prefix = "prompt_conditioning_surface"
+    schema = PROMPT_CONDITIONING_SURFACE_SCHEMA
+    for key, (expected_type, required) in schema.items():
+        if key not in surface:
+            if required:
+                errors.append(f"{filename}: {path_prefix} missing required key '{key}'")
+            continue
+        if not _check_type(surface[key], expected_type):
+            errors.append(
+                f"{filename}: {path_prefix}.{key} expected {_type_label(expected_type)}, got {type(surface[key]).__name__}"
+            )
+
+    unexpected = set(surface.keys()) - set(schema.keys())
+    if unexpected:
+        errors.append(f"{filename}: unexpected {path_prefix} keys: {sorted(unexpected)}")
+
+    for list_key in ("text_input_io_types", "conditioning_io_types", "runtime_node_output_summary"):
+        value = surface.get(list_key)
+        if isinstance(value, list):
+            inner_path = f"{path_prefix}.{list_key}"
+            for index, item in enumerate(value):
+                if not isinstance(item, dict):
+                    errors.append(
+                        f"{filename}: {inner_path}[{index}] expected dict, got {type(item).__name__}"
+                    )
+                    continue
+                for field_name, (
+                    expected_type,
+                    required,
+                ) in PROMPT_CONDITIONING_ENTRY_SCHEMA.items():
+                    if field_name not in item:
+                        if required:
+                            errors.append(
+                                f"{filename}: {inner_path}[{index}] missing required key '{field_name}'"
+                            )
+                        continue
+                    if not _check_type(item[field_name], expected_type):
+                        errors.append(
+                            f"{filename}: {inner_path}[{index}].{field_name} expected {_type_label(expected_type)}, got {type(item[field_name]).__name__}"
+                        )
+                traceability = item.get("traceability")
+                if isinstance(traceability, dict):
+                    errors.extend(
+                        validate_traceability(
+                            traceability, filename, f"{inner_path}[{index}].traceability"
+                        )
+                    )
+
     return errors

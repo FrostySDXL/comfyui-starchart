@@ -451,6 +451,7 @@ python scripts/verify/stale_content.py
 python scripts/verify/extraction_idempotency.py
 python scripts/verify/upstream_pins.py
 python scripts/verify/example_surface_integrity.py
+python scripts/verify/no_leaky_paths.py
 python scripts/verify/evidence_metadata_freshness.py
 python -m mypy
 ```

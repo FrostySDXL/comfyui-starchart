@@ -11,6 +11,7 @@ from scripts.verify.schema_common import (
     SCHEMAS,
     validate_coverage,
     validate_metadata,
+    validate_prompt_conditioning_surface,
     validate_returns,
     validate_top_level,
 )
@@ -104,6 +105,7 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
     elif json_file.name == "node_api_schema.json":
         validation_errors.extend(validate_io_types(data, json_file.name))
         validation_errors.extend(validate_typed_input_shapes(data, json_file.name))
+        validation_errors.extend(validate_prompt_conditioning_surface(data, json_file.name))
     elif json_file.name == "object_info_runtime.json":
         validation_errors.extend(validate_object_info_runtime(data, json_file.name))
 

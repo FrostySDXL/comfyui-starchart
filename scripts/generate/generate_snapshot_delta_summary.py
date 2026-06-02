@@ -179,7 +179,19 @@ def _hook_map(data: dict) -> dict[str, dict]:
     return {hook.get("name", ""): hook for hook in data.get("hooks", [])}
 
 
+def _normalize_prompt_conditioning_entry(entry: dict) -> dict:
+    """Normalize a single prompt conditioning entry for comparison."""
+    return {
+        **entry,
+        "defined_in": _normalize_snapshot_source_path(entry.get("defined_in")),
+        "traceability": _normalize_traceability_for_comparison(entry.get("traceability")),
+    }
+
+
 def _node_sections(data: dict) -> dict[str, dict]:
+    prompt = data.get("prompt_conditioning_surface", {})
+    prompt_text = prompt.get("text_input_io_types", [])
+    prompt_cond = prompt.get("conditioning_io_types", [])
     return {
         "object_info_fields": {field: field for field in data.get("object_info_fields", [])},
         "io_types": {
@@ -187,6 +199,17 @@ def _node_sections(data: dict) -> dict[str, dict]:
             for entry in data.get("io_types", [])
         },
         "typed_input_shapes": data.get("typed_input_shapes", {}),
+        "prompt_conditioning_surface": {
+            "text_input_io_types": {
+                f"{entry.get('io_type', '')}:{entry.get('class_name', '')}": entry
+                for entry in prompt_text
+            },
+            "conditioning_io_types": {
+                f"{entry.get('io_type', '')}:{entry.get('class_name', '')}": entry
+                for entry in prompt_cond
+            },
+        },
+        "basic_input_shapes": data.get("basic_input_shapes", {}),
     }
 
 
@@ -226,6 +249,23 @@ def build_delta_summary(
                 "typed_input_shapes": _compare_mapping(
                     old_node["typed_input_shapes"],
                     new_node["typed_input_shapes"],
+                    normalizer=_normalize_typed_input_shape_for_comparison,
+                ),
+                "prompt_conditioning_surface": {
+                    "text_input_io_types": _compare_mapping(
+                        old_node["prompt_conditioning_surface"]["text_input_io_types"],
+                        new_node["prompt_conditioning_surface"]["text_input_io_types"],
+                        normalizer=_normalize_prompt_conditioning_entry,
+                    ),
+                    "conditioning_io_types": _compare_mapping(
+                        old_node["prompt_conditioning_surface"]["conditioning_io_types"],
+                        new_node["prompt_conditioning_surface"]["conditioning_io_types"],
+                        normalizer=_normalize_prompt_conditioning_entry,
+                    ),
+                },
+                "basic_input_shapes": _compare_mapping(
+                    old_node["basic_input_shapes"],
+                    new_node["basic_input_shapes"],
                     normalizer=_normalize_typed_input_shape_for_comparison,
                 ),
             },

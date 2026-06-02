@@ -138,6 +138,12 @@ jobs:
         run: python scripts/verify/example_surface_integrity.py
         continue-on-error: true
 
+      - name: Check for leaky filesystem paths
+        # Non-blocking: advisory-first until AST heuristics are proven across
+        # normal refresh and docs-edit flows with low false-positive noise.
+        run: python scripts/verify/no_leaky_paths.py
+        continue-on-error: true
+
       - name: Check evidence metadata freshness
         # Non-blocking: advisory-first until retained-page metadata coverage and
         # wording stability are proven across normal refresh and docs-edit flows.

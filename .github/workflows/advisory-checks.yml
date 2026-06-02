@@ -34,5 +34,8 @@ jobs:
         # example surface is stable enough for push/PR CI promotion.
         run: python scripts/verify/example_surface_integrity.py
 
+      - name: Check for leaky filesystem paths
+        run: python scripts/verify/no_leaky_paths.py
+
       - name: Check evidence metadata freshness
         run: python scripts/verify/evidence_metadata_freshness.py

@@ -35,6 +35,13 @@ before this verifier is promoted to blocking CI):
   ``BinOp`` AST node not handled by any of the four sub-checks.
 - Qualified ``Path()``: ``pathlib.Path(...)`` (dotted access) is
   not matched; only bare ``Path(...)`` calls are flagged.
+- Imported logging levels: ``from logging import info; info(str(p))``
+  produces a bare ``ast.Name`` call rather than a
+  ``logging.<level>()`` attribute chain. Only the
+  ``logging.<level>()`` form is detected.
+- Logger instances: ``logger = logging.getLogger(__name__)`` followed
+  by ``logger.info(str(p))`` is not detected; only calls through the
+  module-global ``logging`` name are checked.
 """
 
 from __future__ import annotations
