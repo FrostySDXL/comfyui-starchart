@@ -10,45 +10,11 @@ from tests.unit.helpers.extractor_test_utils import call_main, load_module
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "extract" / "parse_node_api_schema.py"
 
+# ---------------------------------------------------------------------------
+# Shared sample fixtures for extraction tests.
+# ---------------------------------------------------------------------------
 
-def _load_validate_schema():
-    return load_module("validate_schema", REPO_ROOT / "scripts" / "verify" / "validate_schema.py")
-
-
-def _load_parse_node_api_schema():
-    return load_module("parse_node_api_schema", SCRIPT)
-
-
-def _run_parse_node_api_schema_main(
-    server_path: Path,
-    io_path: Path,
-    basic_types_path: Path,
-    *extra_args: str,
-):
-    module = _load_parse_node_api_schema()
-    return call_main(
-        module,
-        str(server_path),
-        str(io_path),
-        str(basic_types_path),
-        *extra_args,
-    )
-
-
-class ParseNodeApiSchemaTests(unittest.TestCase):
-    def test_requires_arguments(self):
-        result = subprocess.run(
-            [sys.executable, str(SCRIPT)],
-            capture_output=True,
-            text=True,
-            cwd=REPO_ROOT,
-        )
-
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("usage", (result.stdout + result.stderr).lower())
-
-    def test_extracts_object_info_and_io_types(self):
-        server_sample = """
+_SERVER_SAMPLE_FULL = """\
 def node_info(node_class):
     info = {}
     info['input'] = obj_class.INPUT_TYPES()
@@ -59,7 +25,7 @@ def node_info(node_class):
     return info
 """
 
-        io_sample = """
+_IO_SAMPLE_FULL = """\
 @comfytype(io_type="BOOLEAN")
 class Boolean(ComfyTypeIO):
     Type = bool
@@ -100,7 +66,7 @@ class Histogram(ComfyTypeIO):
         pass
 """
 
-        basic_types_sample = '''
+_BASIC_TYPES_SAMPLE_FULL = '''\
 ImageInput = torch.Tensor
 """
 An image in format [B, H, W, C]
@@ -124,14 +90,153 @@ class AudioInput(TypedDict):
     sample_rate: int
 '''
 
+
+def _load_validate_schema():
+    return load_module("validate_schema", REPO_ROOT / "scripts" / "verify" / "validate_schema.py")
+
+
+def _load_parse_node_api_schema():
+    return load_module("parse_node_api_schema", SCRIPT)
+
+
+def _run_parse_node_api_schema_main(
+    server_path: Path,
+    io_path: Path,
+    basic_types_path: Path,
+    *extra_args: str,
+):
+    module = _load_parse_node_api_schema()
+    return call_main(
+        module,
+        str(server_path),
+        str(io_path),
+        str(basic_types_path),
+        *extra_args,
+    )
+
+
+class ParseNodeApiSchemaTests(unittest.TestCase):
+    def test_requires_arguments(self):
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT)],
+            capture_output=True,
+            text=True,
+            cwd=REPO_ROOT,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("usage", (result.stdout + result.stderr).lower())
+
+    # -- Focused extraction tests (decomposed from former monolithic test) --
+
+    def test_extract_object_info_fields_returns_expected_keys(self):
+        module = _load_parse_node_api_schema()
+        fields = module.extract_object_info_fields(_SERVER_SAMPLE_FULL)
+        self.assertIn("input", fields)
+        self.assertIn("display_name", fields)
+
+    def test_extract_io_types_boolean(self):
+        module = _load_parse_node_api_schema()
+        with tempfile.TemporaryDirectory() as tmp:
+            io_path = Path(tmp) / "_io.py"
+            io_path.write_text(_IO_SAMPLE_FULL, encoding="utf-8")
+            io_types = module.extract_io_types(_IO_SAMPLE_FULL, str(io_path))
+
+            boolean = next(e for e in io_types if e["io_type"] == "BOOLEAN")
+            self.assertEqual(boolean["input_class"], "WidgetInput")
+            self.assertIn("default", boolean["input_parameters"])
+            self.assertEqual(boolean["input_parameter_details"][0]["name"], "default")
+            self.assertEqual(boolean["input_parameter_details"][0]["type_hint"], "bool")
+            self.assertEqual(boolean["type_hint"], "bool")
+            self.assertTrue(boolean["is_widget"])
+            self.assertEqual(boolean["defined_in"], str(io_path).replace("\\", "/"))
+
+    def test_extract_io_types_string(self):
+        module = _load_parse_node_api_schema()
+        with tempfile.TemporaryDirectory() as tmp:
+            io_path = Path(tmp) / "_io.py"
+            io_path.write_text(_IO_SAMPLE_FULL, encoding="utf-8")
+            io_types = module.extract_io_types(_IO_SAMPLE_FULL, str(io_path))
+
+            string = next(e for e in io_types if e["io_type"] == "STRING")
+            self.assertEqual(string["type_hint"], "str")
+            self.assertEqual(
+                string["output_parameters"],
+                ["display_name", "tooltip", "is_output_list"],
+            )
+
+    def test_extract_io_types_inheritance(self):
+        module = _load_parse_node_api_schema()
+        with tempfile.TemporaryDirectory() as tmp:
+            io_path = Path(tmp) / "_io.py"
+            io_path.write_text(_IO_SAMPLE_FULL, encoding="utf-8")
+            io_types = module.extract_io_types(_IO_SAMPLE_FULL, str(io_path))
+
+            loader = next(e for e in io_types if e["io_type"] == "LOAD_3D_ANIMATION")
+            self.assertEqual(loader["type_hint"], "Model3DDict")
+
+    def test_extract_io_types_point_comment_stripping(self):
+        module = _load_parse_node_api_schema()
+        with tempfile.TemporaryDirectory() as tmp:
+            io_path = Path(tmp) / "_io.py"
+            io_path.write_text(_IO_SAMPLE_FULL, encoding="utf-8")
+            io_types = module.extract_io_types(_IO_SAMPLE_FULL, str(io_path))
+
+            point = next(e for e in io_types if e["io_type"] == "POINT")
+            self.assertEqual(point["type_hint"], "Any")
+
+    def test_extract_io_types_histogram_no_input(self):
+        module = _load_parse_node_api_schema()
+        with tempfile.TemporaryDirectory() as tmp:
+            io_path = Path(tmp) / "_io.py"
+            io_path.write_text(_IO_SAMPLE_FULL, encoding="utf-8")
+            io_types = module.extract_io_types(_IO_SAMPLE_FULL, str(io_path))
+
+            hist = next(e for e in io_types if e["io_type"] == "HISTOGRAM")
+            self.assertEqual(hist["input_class"], None)
+            self.assertEqual(hist["input_parameters"], [])
+
+    def test_extract_basic_input_shapes_captures_docstring(self):
+        module = _load_parse_node_api_schema()
+        shapes = module.extract_basic_input_shapes(_BASIC_TYPES_SAMPLE_FULL)
+        self.assertEqual(shapes["ImageInput"], "An image in format [B, H, W, C]")
+
+    def test_extract_typed_input_shapes_audio(self):
+        module = _load_parse_node_api_schema()
+        with tempfile.TemporaryDirectory() as tmp:
+            basic_path = Path(tmp) / "basic_types.py"
+            basic_path.write_text(_BASIC_TYPES_SAMPLE_FULL, encoding="utf-8")
+            typed = module.extract_typed_input_shapes(_BASIC_TYPES_SAMPLE_FULL, str(basic_path))
+
+            self.assertIn("AudioInput", typed)
+            audio = typed["AudioInput"]
+            self.assertEqual(audio["description"], "TypedDict representing audio input.")
+            self.assertEqual(
+                audio["defined_in"],
+                str(basic_path).replace("\\", "/"),
+            )
+            self.assertIn("waveform", audio["fields"])
+            self.assertEqual(audio["fields"]["waveform"]["type"], "torch.Tensor")
+            self.assertIn(
+                "Tensor in format [B, C, T].",
+                audio["fields"]["waveform"]["description"],
+            )
+            self.assertEqual(
+                audio["fields"]["waveform"]["traceability"]["strategy"],
+                "typed_dict_field",
+            )
+
+    def test_full_pipeline_produces_schema_valid_output(self):
+        """Integration test: the full extraction pipeline produces
+        schema-valid output with all required top-level sections."""
+        module = _load_parse_node_api_schema()
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
             io_path = tmp_path / "_io.py"
             basic_types_path = tmp_path / "basic_types.py"
-            io_path.write_text(io_sample, encoding="utf-8")
-            basic_types_path.write_text(basic_types_sample, encoding="utf-8")
+            io_path.write_text(_IO_SAMPLE_FULL, encoding="utf-8")
+            basic_types_path.write_text(_BASIC_TYPES_SAMPLE_FULL, encoding="utf-8")
 
-            parse_node_api_schema = _load_parse_node_api_schema()
             data = {
                 "metadata": {
                     "sources": ["tmp/server.py", "tmp/_io.py", "tmp/basic_types.py"],
@@ -149,111 +254,49 @@ class AudioInput(TypedDict):
                         "runtime_sections": [],
                     },
                 },
-                "object_info_fields": parse_node_api_schema.extract_object_info_fields(
-                    server_sample
-                ),
-                "io_types": parse_node_api_schema.extract_io_types(io_sample, str(io_path)),
-                "basic_input_shapes": parse_node_api_schema.extract_basic_input_shapes(
-                    basic_types_sample
-                ),
-                "typed_input_shapes": parse_node_api_schema.extract_typed_input_shapes(
-                    basic_types_sample, str(basic_types_path)
+                "object_info_fields": module.extract_object_info_fields(_SERVER_SAMPLE_FULL),
+                "io_types": module.extract_io_types(_IO_SAMPLE_FULL, str(io_path)),
+                "basic_input_shapes": module.extract_basic_input_shapes(_BASIC_TYPES_SAMPLE_FULL),
+                "typed_input_shapes": module.extract_typed_input_shapes(
+                    _BASIC_TYPES_SAMPLE_FULL, str(basic_types_path)
                 ),
                 "coverage": {
-                    "description": (
-                        "Extracted from pinned source files only. "
-                        "Runtime-only data such as per-node INPUT_TYPES schemas and custom node types are deferred beyond pinned-snapshot extraction."
-                    ),
-                    "sources_covered": ["tmp/server.py", "tmp/_io.py", "tmp/basic_types.py"],
+                    "description": "test",
+                    "sources_covered": ["tmp/server.py"],
                     "runtime_enriched": False,
-                    "deferred": [
-                        "runtime /object_info response",
-                        "custom node definitions",
-                        "per-node INPUT_TYPES schemas",
-                    ],
+                    "deferred": [],
                 },
             }
 
             self.assertEqual(data["metadata"]["version"], "v-test")
-            self.assertEqual(data["metadata"]["commit"], "abc123")
-            self.assertIn("input", data["object_info_fields"])
-            self.assertIn("display_name", data["object_info_fields"])
-
-            io_types = {entry["io_type"]: entry for entry in data["io_types"]}
-            self.assertIn("BOOLEAN", io_types)
-            self.assertEqual(io_types["BOOLEAN"]["input_class"], "WidgetInput")
-            self.assertIn("default", io_types["BOOLEAN"]["input_parameters"])
-            self.assertEqual(io_types["BOOLEAN"]["input_parameter_details"][0]["name"], "default")
-            self.assertEqual(io_types["BOOLEAN"]["input_parameter_details"][0]["type_hint"], "bool")
-            self.assertEqual(io_types["BOOLEAN"]["type_hint"], "bool")
-            self.assertTrue(io_types["BOOLEAN"]["is_widget"])
-            self.assertEqual(io_types["BOOLEAN"]["defined_in"], str(io_path).replace("\\", "/"))
-
-            self.assertEqual(io_types["STRING"]["type_hint"], "str")
-            self.assertEqual(
-                io_types["STRING"]["output_parameters"],
-                ["display_name", "tooltip", "is_output_list"],
-            )
-            self.assertEqual(io_types["LOAD_3D_ANIMATION"]["type_hint"], "Model3DDict")
-            self.assertEqual(io_types["POINT"]["type_hint"], "Any")
-            self.assertEqual(io_types["HISTOGRAM"]["input_class"], None)
-            self.assertEqual(io_types["HISTOGRAM"]["input_parameters"], [])
-
-            self.assertEqual(
-                data["basic_input_shapes"]["ImageInput"], "An image in format [B, H, W, C]"
-            )
-            self.assertIn("AudioInput", data["typed_input_shapes"])
-            self.assertEqual(
-                data["typed_input_shapes"]["AudioInput"]["description"],
-                "TypedDict representing audio input.",
-            )
-            self.assertEqual(
-                data["typed_input_shapes"]["AudioInput"]["defined_in"],
-                str(basic_types_path).replace("\\", "/"),
-            )
-            self.assertIn("waveform", data["typed_input_shapes"]["AudioInput"]["fields"])
-            self.assertEqual(
-                data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["type"],
-                "torch.Tensor",
-            )
-            self.assertIn(
-                "Tensor in format [B, C, T].",
-                data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["description"],
-            )
-            self.assertEqual(
-                data["typed_input_shapes"]["AudioInput"]["fields"]["waveform"]["traceability"][
-                    "strategy"
-                ],
-                "typed_dict_field",
-            )
-
-            self.assertIn("coverage", data)
-            self.assertIn("description", data["coverage"])
-            self.assertIn("deferred", data["coverage"])
-
-            validate_schema = _load_validate_schema()
-            errors = validate_schema.validate_top_level(
-                data, validate_schema.SCHEMAS["node_api_schema.json"], "node_api_schema.json"
-            )
-            errors.extend(validate_schema.validate_metadata(data, "node_api_schema.json"))
-            errors.extend(validate_schema.validate_io_types(data, "node_api_schema.json"))
-            errors.extend(validate_schema.validate_typed_input_shapes(data, "node_api_schema.json"))
-            self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
-
             self.assertIn("metadata", data)
             self.assertIn("object_info_fields", data)
             self.assertIn("io_types", data)
             self.assertIn("basic_input_shapes", data)
             self.assertIn("typed_input_shapes", data)
             for entry in data["io_types"]:
-                self.assertIn("io_type", entry)
-                self.assertIn("class_name", entry)
-                self.assertIn("input_class", entry)
-                self.assertIn("input_parameters", entry)
-                self.assertIn("input_parameter_details", entry)
-                self.assertIn("type_hint", entry)
-                self.assertIn("is_widget", entry)
-                self.assertIn("defined_in", entry)
+                for key in (
+                    "io_type",
+                    "class_name",
+                    "input_class",
+                    "input_parameters",
+                    "input_parameter_details",
+                    "type_hint",
+                    "is_widget",
+                    "defined_in",
+                ):
+                    self.assertIn(key, entry)
+
+            validate_schema = _load_validate_schema()
+            errors = validate_schema.validate_top_level(
+                data,
+                validate_schema.SCHEMAS["node_api_schema.json"],
+                "node_api_schema.json",
+            )
+            errors.extend(validate_schema.validate_metadata(data, "node_api_schema.json"))
+            errors.extend(validate_schema.validate_io_types(data, "node_api_schema.json"))
+            errors.extend(validate_schema.validate_typed_input_shapes(data, "node_api_schema.json"))
+            self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
 
     def test_metadata_sources_and_defined_in_are_repo_relative_when_inputs_are_in_repo(self):
         server_sample = """

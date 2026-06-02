@@ -97,7 +97,7 @@ consumption details, see [Machine-Readable Artifacts](machine-readable-artifacts
 - **`GET /system_stats` field flattening:** The extracted `server_endpoints.json`
   artifact removed per-device GPU fields that were incorrectly listed as flat
   top-level entries; the `devices` array remains present in the actual
-  API response). The 3D file type additions (SPLAT, FILE_3D_PLY, etc.) are
+  API response. The 3D file type additions (SPLAT, FILE_3D_PLY, etc.) are
   recorded in `delta-summary.json`.
 
 ## Read Next

@@ -7,6 +7,50 @@ verification, workflow, and repo structure rather than every commit.
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-06-01 - baseline refresh to core v0.23.0 / frontend v1.46.6
+
+### Pinned baseline update
+
+- Refresh upstream source snapshots to ComfyUI core v0.23.0 (commit
+  `a88e02b`) and ComfyUI frontend v1.46.6 (commit `9e32b7d`).
+- Add 11 new pinned snapshot files under `references/snapshots/2026-06-01/`.
+- Regenerate all canonical extracted references and published artifacts.
+
+### Artifact surface changes
+
+- Six new 3D IO types in `node_api_schema.json`: SPLAT, FILE_3D_SPLAT,
+  FILE_3D_PLY, FILE_3D_KSPLAT, FILE_3D_SPZ, LOAD3D_MODEL_INFO.
+- Add `prompt_conditioning_surface` with source-backed STRING and
+  CONDITIONING summaries plus optional runtime node output enrichment.
+- `POST /interrupt` now documents optional JSON body for targeted
+  interruption.
+- `GET /system_stats` return type corrected to remove incorrectly
+  flattened per-device GPU fields.
+- Add `output_parameters` and `output_parameter_details` to IO type
+  entries.
+
+### Docs re-review
+
+- Re-review retained published pages for the v0.23.0 transition, bumping
+  baseline verification status and snapshot references.
+- Add prompt routing intents to `docs-index.json` tooling metadata.
+
+### Maintainer tooling
+
+- Add `scripts/common/display_path.py` to prevent script output from
+  leaking host filesystem paths. Integrated into all extractors,
+  generators, and verifiers. Supersedes the `no_leaky_paths` verifier.
+- Add `scripts/verify/schema_common.py` shared schema-validation
+  infrastructure.
+- Add bracket-aware `parse_parameter_details` with `Literal` choice
+  capture for IO type extraction.
+- Resolve 29 mypy type errors across 11 scripts.
+- Add `types-PyYAML` dependency.
+- Update AGENTS.md and CONTRIBUTING.md for venv-based Windows workflow
+  and current verifier shape.
+- Apply multiple passes of PR review audit findings across docs, scripts,
+  metadata, and tests.
+
 ## 2026-05-25 - maintainer refactors and refresh hardening
 
 ### Maintainer tooling structure

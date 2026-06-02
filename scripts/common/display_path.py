@@ -23,6 +23,7 @@ Contract for ``display_path`` and ``display_command``:
 
 from __future__ import annotations
 
+import shlex
 import sys
 from pathlib import Path
 from typing import Iterable
@@ -78,7 +79,7 @@ def display_command(cmd: Iterable[str]) -> str:
     if parts and parts[0] == sys.executable:
         parts = ["python", *parts[1:]]
     parts = [p if not _looks_like_absolute_path(p) else display_path(p) for p in parts]
-    return " ".join(parts)
+    return shlex.join(parts)
 
 
 def _looks_like_absolute_path(token: object) -> bool:

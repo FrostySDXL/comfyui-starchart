@@ -82,12 +82,15 @@ python scripts/verify/cross_references.py
 python scripts/verify/docs_index_freshness.py
 python scripts/verify/validate_schema.py
 python scripts/verify/verify_artifact_integrity.py
+python scripts/verify/markdown_top_level_spacing.py
 python scripts/verify/sidebar_navigation_coverage.py
 python scripts/verify/rendered_links.py
-python scripts/verify/evidence_metadata_freshness.py
-python -m mypy
 npm run check
 npm run build
+
+# Advisory checks (not in run_all.py):
+# python scripts/verify/evidence_metadata_freshness.py
+# python -m mypy
 ```
 
 Supplemental/advisory surfaces remain outside `run_all.py` unless promoted
