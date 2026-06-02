@@ -114,7 +114,7 @@ NODE_API_COVERAGE_SCHEMA = {
     "deferred": (list, True),
 }
 
-PROMPT_CONDITIONING_ENTRY_SCHEMA = {
+PROMPT_CONDITIONING_ENTRY_SCHEMA: dict[str, tuple[Any, bool]] = {
     "io_type": (str, True),
     "class_name": (str, True),
     "input_class": ((str, type(None)), False),
@@ -150,22 +150,37 @@ def _type_label(expected_type) -> str:
     return expected_type.__name__
 
 
-def validate_top_level(data: dict, schema: dict, filename: str) -> list[str]:
-    errors = []
+def _validate_schema_shape(
+    data: dict,
+    schema: dict[str, tuple[Any, bool]],
+    filename: str,
+    section: str,
+) -> list[str]:
+    """Validate *data* against *schema* of ``(expected_type, required)`` pairs.
+
+    *section* is used in error messages (e.g. ``"top-level"``,
+    ``"coverage"``, ``"prompt_conditioning_surface"``).
+    """
+    errors: list[str] = []
     for key, (expected_type, required) in schema.items():
         if key not in data:
             if required:
-                errors.append(f"{filename}: missing required key '{key}'")
+                errors.append(f"{filename}: {section} missing required key '{key}'")
             continue
-        if not isinstance(data[key], expected_type):
+        if not _check_type(data[key], expected_type):
             errors.append(
-                f"{filename}: key '{key}' expected {expected_type.__name__}, got {type(data[key]).__name__}"
+                f"{filename}: {section}.{key} expected {_type_label(expected_type)}, "
+                f"got {type(data[key]).__name__}"
             )
 
     unexpected = set(data.keys()) - set(schema.keys())
     if unexpected:
-        errors.append(f"{filename}: unexpected top-level keys: {sorted(unexpected)}")
+        errors.append(f"{filename}: unexpected {section} keys: {sorted(unexpected)}")
     return errors
+
+
+def validate_top_level(data: dict, schema: dict, filename: str) -> list[str]:
+    return _validate_schema_shape(data, schema, filename, "top-level")
 
 
 def validate_metadata(data: dict, filename: str) -> list[str]:
@@ -243,19 +258,7 @@ def validate_coverage(data: dict, filename: str) -> list[str]:
         return [f"{filename}: coverage expected dict, got {type(coverage).__name__}"]
 
     schema = NODE_API_COVERAGE_SCHEMA if filename == "node_api_schema.json" else COVERAGE_SCHEMA
-    for key, (expected_type, required) in schema.items():
-        if key not in coverage:
-            if required:
-                errors.append(f"{filename}: coverage missing required key '{key}'")
-            continue
-        if not _check_type(coverage[key], expected_type):
-            errors.append(
-                f"{filename}: coverage.{key} expected {_type_label(expected_type)}, got {type(coverage[key]).__name__}"
-            )
-
-    unexpected = set(coverage.keys()) - set(schema.keys())
-    if unexpected:
-        errors.append(f"{filename}: unexpected coverage keys: {sorted(unexpected)}")
+    errors.extend(_validate_schema_shape(coverage, schema, filename, "coverage"))
 
     for list_key in ("guaranteed_fields", "best_effort_fields", "deferred", "sources_covered"):
         value = coverage.get(list_key)
@@ -376,26 +379,19 @@ def validate_prompt_conditioning_surface(data: dict, filename: str) -> list[str]
             f"{filename}: prompt_conditioning_surface expected dict, got {type(surface).__name__}"
         ]
 
-    path_prefix = "prompt_conditioning_surface"
-    schema = PROMPT_CONDITIONING_SURFACE_SCHEMA
-    for key, (expected_type, required) in schema.items():
-        if key not in surface:
-            if required:
-                errors.append(f"{filename}: {path_prefix} missing required key '{key}'")
-            continue
-        if not _check_type(surface[key], expected_type):
-            errors.append(
-                f"{filename}: {path_prefix}.{key} expected {_type_label(expected_type)}, got {type(surface[key]).__name__}"
-            )
-
-    unexpected = set(surface.keys()) - set(schema.keys())
-    if unexpected:
-        errors.append(f"{filename}: unexpected {path_prefix} keys: {sorted(unexpected)}")
+    errors.extend(
+        _validate_schema_shape(
+            surface,
+            PROMPT_CONDITIONING_SURFACE_SCHEMA,
+            filename,
+            "prompt_conditioning_surface",
+        )
+    )
 
     for list_key in ("text_input_io_types", "conditioning_io_types", "runtime_node_output_summary"):
         value = surface.get(list_key)
         if isinstance(value, list):
-            inner_path = f"{path_prefix}.{list_key}"
+            inner_path = f"prompt_conditioning_surface.{list_key}"
             for index, item in enumerate(value):
                 if not isinstance(item, dict):
                     errors.append(

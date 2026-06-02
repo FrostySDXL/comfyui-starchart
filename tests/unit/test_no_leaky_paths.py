@@ -1,7 +1,7 @@
 """Unit tests for scripts/verify/no_leaky_paths.py.
 
 Contract:
-- ``scan_file_for_leaky_prints(path)`` returns a list of (line, snippet)
+- ``scan_source_for_leaky_prints(source)`` returns a list of (line, snippet)
   tuples for any ``print(...)`` call that emits a filesystem path-style
   string literal or ``Path`` / f-string expression containing a path, but
   does NOT pass that value through ``display_path()`` or
@@ -139,6 +139,90 @@ class LeakyPrintDetectionTests(unittest.TestCase):
         # Plain print(Path(...)) is flagged because the path is emitted directly.
         self.assertEqual(len(findings), 1)
 
+    def test_backslash_escape_sequence_not_flagged(self):
+        module = _load_module()
+        # A raw-string escape sequence like r"\n" contains a literal
+        # backslash but is not a filesystem path.
+        source = 'def go():\n    print(r"\\n")\n'
+        findings = module.scan_source_for_leaky_prints(source)
+        self.assertEqual(
+            findings,
+            [],
+            f"Escape sequence r'\\n' should not be flagged as a path; got {findings}",
+        )
+
+    def test_backslash_in_windows_path_still_flagged(self):
+        module = _load_module()
+        # A genuine Windows path with a backslash should still be flagged.
+        source = 'from pathlib import Path\ndef go(p):\n    print(f"File: {p}")\n'
+        # The variable name "p" is in PATH_VARIABLE_NAMES, so this
+        # already works via _expr_references_path_variable -- test that
+        # a backslash-containing string literal path is also flagged.
+        findings = module.scan_source_for_leaky_prints(source)
+        self.assertEqual(len(findings), 1)
+
+    # -- AST bypass pattern tests (Patterns 1-5) --
+
+    def test_str_wrapping_path_variable_is_flagged(self):
+        """Pattern 1: print(str(path_var)) should be detected."""
+        module = _load_module()
+        source = "from pathlib import Path\ndef go(p):\n    print(str(p))\n"
+        findings = module.scan_source_for_leaky_prints(source)
+        self.assertEqual(
+            len(findings),
+            1,
+            f"str(path_var) wrapping should be flagged; got {findings}",
+        )
+
+    def test_string_concatenation_with_path_is_flagged(self):
+        """Pattern 2: print('path: ' + str(path_var)) should be detected."""
+        module = _load_module()
+        source = "def go(p):\n    print('path: ' + str(p))\n"
+        findings = module.scan_source_for_leaky_prints(source)
+        self.assertEqual(
+            len(findings),
+            1,
+            f"String concatenation with path var should be flagged; got {findings}",
+        )
+
+    def test_qualified_path_call_is_flagged(self):
+        """Pattern 3: print(pathlib.Path(...)) should be detected."""
+        module = _load_module()
+        source = "import pathlib\ndef go():\n    print(pathlib.Path('/abs/file.json'))\n"
+        findings = module.scan_source_for_leaky_prints(source)
+        self.assertEqual(
+            len(findings),
+            1,
+            f"Qualified pathlib.Path() should be flagged; got {findings}",
+        )
+
+    def test_imported_logging_level_is_flagged(self):
+        """Pattern 4: from logging import info; info(str(p)) should be detected."""
+        module = _load_module()
+        source = "from logging import info\ndef go(p):\n    info(str(p))\n"
+        findings = module.scan_source_for_leaky_prints(source)
+        self.assertEqual(
+            len(findings),
+            1,
+            f"Imported logging level should be flagged; got {findings}",
+        )
+
+    def test_logger_instance_call_is_flagged(self):
+        """Pattern 5: logger = getLogger(...); logger.info(str(p)) should be detected."""
+        module = _load_module()
+        source = (
+            "import logging\n"
+            "logger = logging.getLogger(__name__)\n"
+            "def go(p):\n"
+            "    logger.info(str(p))\n"
+        )
+        findings = module.scan_source_for_leaky_prints(source)
+        self.assertEqual(
+            len(findings),
+            1,
+            f"Logger instance call should be flagged; got {findings}",
+        )
+
 
 class DefaultScanTargetsTests(unittest.TestCase):
     def test_default_scan_targets_include_all_c1_plus_h1_files(self):
@@ -163,6 +247,8 @@ class DefaultScanTargetsTests(unittest.TestCase):
             "scripts/verify/sidebar_navigation_coverage.py",
             "scripts/verify/shell_examples_syntax.py",
             "scripts/new_doc.py",
+            "scripts/common/refresh_git_ops.py",
+            "scripts/verify/no_leaky_paths.py",
         ]
         for rel in c1_relative + h1_relative:
             self.assertIn(

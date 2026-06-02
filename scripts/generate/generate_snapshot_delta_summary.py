@@ -135,7 +135,9 @@ def _normalize_typed_input_shape_field(field: object) -> object:
     return field
 
 
-def _normalize_typed_input_shape_for_comparison(shape: dict) -> dict:
+def _normalize_typed_input_shape_for_comparison(shape: object) -> object:
+    if not isinstance(shape, dict):
+        return shape  # basic_input_shapes values are plain type-name strings
     fields = shape.get("fields", {})
     normalized_fields = (
         {name: _normalize_typed_input_shape_field(value) for name, value in fields.items()}

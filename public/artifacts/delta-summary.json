@@ -52,6 +52,31 @@
         "added": [],
         "removed": [],
         "changed": []
+      },
+      "prompt_conditioning_surface": {
+        "text_input_io_types": {
+          "old_count": 1,
+          "new_count": 1,
+          "added": [],
+          "removed": [],
+          "changed": [
+            "STRING:String"
+          ]
+        },
+        "conditioning_io_types": {
+          "old_count": 1,
+          "new_count": 1,
+          "added": [],
+          "removed": [],
+          "changed": []
+        }
+      },
+      "basic_input_shapes": {
+        "old_count": 2,
+        "new_count": 2,
+        "added": [],
+        "removed": [],
+        "changed": []
       }
     }
   }

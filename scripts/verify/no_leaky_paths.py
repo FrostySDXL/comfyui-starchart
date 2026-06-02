@@ -2,8 +2,9 @@
 """AST-based verifier: ensure script output never leaks absolute filesystem paths.
 
 This verifier walks the AST of each default scan target and flags any
-``print(...)`` call that emits a filesystem-path-style value without
-first passing it through ``display_path()`` or ``display_command()``.
+``print(...)`` or ``logging.<level>()`` call that emits a
+filesystem-path-style value without first passing it through
+``display_path()`` or ``display_command()``.
 
 Placement: advisory (not part of the blocking wrapper yet). See
 ``CONTRIBUTING.md`` -> "Verifier Inventory" for current lifecycle and
@@ -11,11 +12,12 @@ the documented promotion/demotion/removal criteria.
 
 Scope:
 - Default scan targets are the 12 files updated by the c1
-  display_path fix plus the 3 follow-up files wrapped under H-1.
-- The heuristic is intentionally narrow: it catches the most common
-  leak shapes (raw ``Path``/f-string in a ``print()`` call) and
-  ignores pure informational messages. False negatives are accepted
-  in exchange for low false-positive noise during advisory rollout.
+  display_path fix, plus the 3 follow-up files wrapped under
+  H-1, plus the verifier itself (self-scan).
+- The heuristic catches the most common leak shapes: raw ``Path`` or
+  f-string in a ``print()`` call, ``str()`` wrapping, string
+  concatenation, qualified ``pathlib.Path()`` calls, imported
+  ``logging`` levels, and logger instances.
 
 False-positive tolerance:
 - A ``print()`` call whose argument is a call to ``display_path()``
@@ -23,25 +25,11 @@ False-positive tolerance:
 - String literals containing ``://`` (URL schemes) are ignored.
 - String literals without path-like content (no backslash, no drive
   letter, no slash + extension) are ignored.
+- Backslash characters followed by standard Python escape characters
+  (n, t, r, etc.) are treated as escape sequences, not paths.
 - The heuristic flags variables whose names match the
   ``PATH_VARIABLE_NAMES`` set. Custom variable names outside this set
   are not flagged (acceptable false-negative for the advisory pass).
-
-Known AST bypass patterns (not detected; documented here for awareness
-before this verifier is promoted to blocking CI):
-- ``str(path_var)`` wrapping: wrapping a path variable in ``str()``
-  creates a ``Call`` node that is not recognized as path-like.
-- String concatenation: ``"path: " + str(path_var)`` produces a
-  ``BinOp`` AST node not handled by any of the four sub-checks.
-- Qualified ``Path()``: ``pathlib.Path(...)`` (dotted access) is
-  not matched; only bare ``Path(...)`` calls are flagged.
-- Imported logging levels: ``from logging import info; info(str(p))``
-  produces a bare ``ast.Name`` call rather than a
-  ``logging.<level>()`` attribute chain. Only the
-  ``logging.<level>()`` form is detected.
-- Logger instances: ``logger = logging.getLogger(__name__)`` followed
-  by ``logger.info(str(p))`` is not detected; only calls through the
-  module-global ``logging`` name are checked.
 """
 
 from __future__ import annotations
@@ -53,7 +41,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Files whose ``print(...)`` calls must redact filesystem paths.
-# Sourced from the c1 (display_path) commit and the H-1 follow-up.
+# Sourced from the c1 (display_path) commit, the H-1 follow-up, and self-scan.
 DEFAULT_SCAN_RELATIVE_PATHS: list[str] = [
     # c1: 12 files updated when display_path was introduced
     "scripts/extract/parse_from_api.py",
@@ -74,6 +62,8 @@ DEFAULT_SCAN_RELATIVE_PATHS: list[str] = [
     "scripts/new_doc.py",
     # H-1 follow-up: refresh_git_ops was also updated to use display_command
     "scripts/common/refresh_git_ops.py",
+    # Self-scan: the verifier must also pass its own leak detection
+    "scripts/verify/no_leaky_paths.py",
 ]
 
 # Variable names that strongly suggest a filesystem path. Used to flag
@@ -147,17 +137,48 @@ def _is_redacting_call(node: ast.AST) -> bool:
     return False
 
 
-def _is_logging_call(node: ast.AST) -> bool:
-    """True if ``node`` is a call to ``logging.<level>(...)``."""
+def _is_logging_call(node: ast.AST, logging_names: frozenset[str] = frozenset()) -> bool:
+    """True if ``node`` is a call to ``logging.<level>(...)``, an
+    imported logging level (``from logging import info``), or a logger
+    instance method (``logger.info(...)`` where ``logger`` was assigned
+    via ``logging.getLogger(...)``)."""
     if not isinstance(node, ast.Call):
         return False
     func = node.func
-    if not isinstance(func, ast.Attribute):
-        return False
-    if func.attr not in _LOGGING_LEVELS:
-        return False
-    # Check that func.value is a Name node resolving to "logging"
-    return isinstance(func.value, ast.Name) and func.value.id == "logging"
+    # logging.<level>() -- module-global
+    if isinstance(func, ast.Attribute) and func.attr in _LOGGING_LEVELS:
+        if isinstance(func.value, ast.Name):
+            if func.value.id == "logging":
+                return True
+            # logger instance: logger = logging.getLogger(...)
+            if func.value.id in logging_names:
+                return True
+    # from logging import <level>; <level>(...)
+    if isinstance(func, ast.Name) and func.id in logging_names:
+        return True
+    return False
+
+
+def _collect_logging_names(tree: ast.AST) -> frozenset[str]:
+    """Collect names imported from ``logging`` and variables assigned
+    ``logging.getLogger(...)`` results (logger instances)."""
+    names: set[str] = set()
+    for node in ast.walk(tree):
+        # from logging import info, debug, ...
+        if isinstance(node, ast.ImportFrom):
+            if node.module == "logging":
+                for alias in node.names:
+                    names.add(alias.asname if alias.asname is not None else alias.name)
+        # logger = logging.getLogger(__name__)
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and isinstance(node.value, ast.Call):
+                    if (
+                        isinstance(node.value.func, ast.Attribute)
+                        and node.value.func.attr == "getLogger"
+                    ):
+                        names.add(target.id)
+    return frozenset(names)
 
 
 def _string_literal_looks_like_path(node: ast.AST) -> bool:
@@ -170,11 +191,16 @@ def _string_literal_looks_like_path(node: ast.AST) -> bool:
     if URL_SCHEME in value:
         return False
     if "\\" in value:
-        # TODO: before promoting to blocking CI, tighten this heuristic.
-        # Any backslash triggers a path match, which flags escape sequences
-        # like "\n" as false positives. Consider also requiring a drive
-        # letter or known path prefix alongside the backslash.
-        return True
+        # A backslash followed by a standard Python escape character
+        # (n, t, r, \\, etc.) is likely an escape sequence, not a path.
+        # Require at least one backslash that is NOT followed by a
+        # standard escape character to treat the value as path-like.
+        _ESCAPE_CHARS = frozenset("ntr\\'\"abfv0")
+        for i, ch in enumerate(value):
+            if ch == "\\" and i + 1 < len(value):
+                if value[i + 1] not in _ESCAPE_CHARS:
+                    return True
+        # All backslashes are part of escape sequences -- not a path.
     # Drive letter prefix like "C:" or "g:".
     if len(value) >= 2 and value[1] == ":" and value[0].isalpha():
         return True
@@ -200,7 +226,8 @@ def _expr_contains_url(node: ast.AST) -> bool:
 
 def _expr_references_path_variable(node: ast.AST) -> bool:
     """True if ``node`` is a Name matching PATH_VARIABLE_NAMES (case-insensitive),
-    a JoinedStr that references such a Name, or a Call to ``Path(...)``."""
+    a JoinedStr that references such a Name, a Call to ``Path(...)`` (bare or
+    qualified), or a ``str(...)`` wrapping of a path-like expression."""
     if isinstance(node, ast.Name):
         if node.id.lower() in PATH_VARIABLE_NAMES:
             return True
@@ -209,10 +236,30 @@ def _expr_references_path_variable(node: ast.AST) -> bool:
             if isinstance(value, ast.FormattedValue):
                 if _expr_references_path_variable(value.value):
                     return True
-    if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-        if node.func.id == "Path":
+    if isinstance(node, ast.Call):
+        # Bare Path(...) call: Path("/abs/path")
+        if isinstance(node.func, ast.Name) and node.func.id == "Path":
             return True
+        # Qualified Path call: pathlib.Path(...) or Path("...")
+        if isinstance(node.func, ast.Attribute) and node.func.attr == "Path":
+            return True
+        # str() wrapping: print(str(path_var)) -- recurse into args
+        if isinstance(node.func, ast.Name) and node.func.id == "str":
+            return any(_expr_references_path_variable(arg) for arg in node.args)
     return False
+
+
+def _expr_is_path_binop(node: ast.AST) -> bool:
+    """True if *node* is a ``BinOp`` (``+``) whose left or right operand
+    is path-like."""
+    if not isinstance(node, ast.BinOp) or not isinstance(node.op, ast.Add):
+        return False
+    return (
+        _expr_references_path_variable(node.left)
+        or _print_arg_is_path_like(node.left)
+        or _expr_references_path_variable(node.right)
+        or _print_arg_is_path_like(node.right)
+    )
 
 
 def _print_arg_is_path_like(node: ast.AST) -> bool:
@@ -224,6 +271,8 @@ def _print_arg_is_path_like(node: ast.AST) -> bool:
     if _string_literal_looks_like_path(node):
         return True
     if _expr_references_path_variable(node):
+        return True
+    if _expr_is_path_binop(node):
         return True
     return False
 
@@ -239,12 +288,13 @@ def scan_source_for_leaky_prints(source: str) -> list[tuple[int, str]]:
         tree = ast.parse(source)
     except SyntaxError:
         return findings
+    logging_names = _collect_logging_names(tree)
     lines = source.splitlines()
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
         is_print = isinstance(node.func, ast.Name) and node.func.id == "print"
-        is_logging = _is_logging_call(node)
+        is_logging = _is_logging_call(node, logging_names)
         if not (is_print or is_logging):
             continue
         for arg in node.args:
