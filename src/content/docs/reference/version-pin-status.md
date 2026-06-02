@@ -3,7 +3,7 @@ title: "Version Pin Status"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.
@@ -19,22 +19,22 @@ reference data.
 
 Pinned source set:
 
-- ComfyUI core tag `v0.22.0`
-- core commit `a8d2519058ea766ca3b14916bcc01ecef5efd235`
-- official frontend package version `1.45.12`
-- official frontend tag `v1.45.12`
-- frontend commit `8ee8dd03c46cc8ba20eb169ea6ff7189fdb21f91`
+- ComfyUI core tag `v0.23.0`
+- core commit `a88e02b18576283b1ff25a4b564548c5dc42cbf6`
+- official frontend package version `1.46.6`
+- official frontend tag `v1.46.6`
+- frontend commit `9e32b7db5173bc2879d4c19c1d058d733b3074b8`
 
-The active pinned files now live under `references/snapshots/2026-05-21/` and
+The active pinned files now live under `references/snapshots/2026-06-01/` and
 the extracted JSON in `references/raw/` points at those snapshot files.
 
 Prose docs may lag this canonical artifact baseline. When they do, they should
 declare that explicitly with a `**Baseline verification status:**` block rather
 than implying current-baseline review that did not happen.
 
-Earlier pinned baselines under `references/snapshots/2026-05-18/` and
-`references/snapshots/2026-04-19/` remain preserved for historical comparison
-and refresh-path proof.
+Earlier pinned baselines under `references/snapshots/2026-05-21/`,
+`references/snapshots/2026-05-18/`, and `references/snapshots/2026-04-19/`
+remain preserved for historical comparison and refresh-path proof.
 
 Published artifact history is intentionally bounded: keep the current baseline,
 the last 2 prior baselines, and any older baseline still referenced by active
@@ -67,7 +67,7 @@ with current copies and versioned copies keyed to the pinned baseline. See
 and consumption details.
 
 The current published versioned artifact directory is
-`public/artifacts/versions/core-v0.22.0_frontend-v1.45.12_2026-05-21/`.
+`public/artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-01/`.
 
 ## Automation
 

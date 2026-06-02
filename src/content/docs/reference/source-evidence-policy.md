@@ -100,7 +100,7 @@ mechanical citation updates after a refresh.
 Use the wording patterns below instead of inventing page-by-page variants:
 
 ```markdown
-**Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`.
+**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
 ```
 
 ```markdown
@@ -169,9 +169,9 @@ If a feature is in `master` but not yet in a pinned snapshot, note it: "Source-b
 
 The active pinned baseline is tracked on
 [Version Pin Status](version-pin-status.md). The current pinned snapshot set now
-lives under `references/snapshots/2026-05-21/`, while older pinned snapshot
-directories such as `2026-05-18/`, `2026-04-19/`, and `2026-04-30/` remain useful historical
-comparison points.
+lives under `references/snapshots/2026-06-01/`, while older pinned snapshot
+directories such as `2026-05-21/`, `2026-05-18/`, `2026-04-30/`, and
+`2026-04-19/` remain useful historical comparison points.
 
 - official docs are cited across the repo
 - several pages also cite upstream source URLs or pinned snapshot paths
