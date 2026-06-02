@@ -181,6 +181,8 @@ core source. Useful for:
 - validating node surface assumptions before running a workflow
 - building datatype-aware tooling or linting
 - comparing schema behavior across ComfyUI versions
+- identifying source-backed text-input and conditioning I/O surfaces before
+  falling back to live object-info inspection
 
 This is the strongest pinned-source-derived schema contract in the published
 artifact set. It still does not make runtime-only custom-node state canonical by
@@ -192,9 +194,25 @@ it, including:
 - `io_types[].input_parameter_details` / `output_parameter_details`
 - `typed_input_shapes[*].defined_in`
 - field-level `traceability` markers for extracted `TypedDict` fields
+- `prompt_conditioning_surface`, a best-effort helper that summarizes pinned
+  `STRING` widget input parameters and `CONDITIONING` type metadata from `_io.py`
+  while keeping per-node output summaries runtime-bounded when optional
+  `runtime_object_info` is present
 
 These additions remain source-backed only. They do not imply full runtime node
 coverage.
+
+Source-backed from pinned snapshots: the current `_io.py` snapshot defines
+`STRING` as an I/O type with a `WidgetInput` carrying parameters such as
+`multiline`, `placeholder`, `default`, and `dynamic_prompts`; it also defines
+`CONDITIONING` as an I/O type whose `Type` is `CondList`. See
+`references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py`.
+
+Treat `prompt_conditioning_surface` as routing metadata, not prompt recovery
+proof. It can tell tooling which pinned I/O datatypes look text-like or
+conditioning-related, and runtime-enriched copies can summarize node output
+types from live `object_info`; it cannot prove that every text-bearing node,
+custom node, or composed conditioning path has recoverable literal prompt text.
 
 ### delta-summary.json
 

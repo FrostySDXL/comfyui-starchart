@@ -106,6 +106,13 @@ a canonical published artifact by itself, and it should not replace the default
 published artifact surface described in
 [Machine-Readable Artifacts](machine-readable-artifacts.md).
 
+When runtime enrichment is present, `node_api_schema.json` can also include a
+bounded `prompt_conditioning_surface.runtime_node_output_summary` derived from
+the same live `object_info` payload. Use that summary to see node class names,
+input names, input datatypes, output datatypes, and whether an output list
+contains `CONDITIONING`; do not treat it as canonical coverage for custom nodes
+unless it was generated from the ComfyUI instance you plan to inspect.
+
 ## Read Next
 
 - [API Endpoints](../api/endpoints.md)

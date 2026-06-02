@@ -26,6 +26,7 @@ SCHEMAS = {
         "metadata": (dict, True),
         "object_info_fields": (list, True),
         "io_types": (list, True),
+        "prompt_conditioning_surface": (dict, False),
         "basic_input_shapes": (dict, True),
         "typed_input_shapes": (dict, False),
         "coverage": (dict, True),
@@ -108,6 +109,8 @@ NODE_API_COVERAGE_SCHEMA = {
     "description": (str, True),
     "sources_covered": (list, True),
     "runtime_enriched": (bool, True),
+    "guaranteed_fields": (list, False),
+    "best_effort_fields": (list, False),
     "deferred": (list, True),
 }
 

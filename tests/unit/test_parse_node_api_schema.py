@@ -309,6 +309,96 @@ ImageInput = torch.Tensor
                 {},
             )
 
+    def test_prompt_conditioning_surface_summarizes_source_and_runtime_metadata(self):
+        module = _load_parse_node_api_schema()
+
+        io_types = [
+            {
+                "io_type": "STRING",
+                "class_name": "String",
+                "input_class": "WidgetInput",
+                "input_parameters": ["multiline", "default"],
+                "output_parameters": ["display_name"],
+                "input_parameter_details": [
+                    {"name": "multiline", "default": False},
+                    {"name": "default", "type_hint": "str"},
+                ],
+                "output_parameter_details": [{"name": "display_name", "type_hint": "str"}],
+                "type_hint": "str",
+                "defined_in": "references/snapshots/comfy_api/latest/_io.py",
+                "is_widget": True,
+            },
+            {
+                "io_type": "CONDITIONING",
+                "class_name": "Conditioning",
+                "input_class": None,
+                "input_parameters": [],
+                "output_parameters": [],
+                "input_parameter_details": [],
+                "output_parameter_details": [],
+                "type_hint": "CondList",
+                "defined_in": "references/snapshots/comfy_api/latest/_io.py",
+                "is_widget": False,
+            },
+        ]
+        runtime_object_info = {
+            "CLIPTextEncode": {
+                "input": {"required": {"text": ["STRING"], "clip": ["CLIP"]}},
+                "output": ["CONDITIONING"],
+            },
+            "PreviewText": {
+                "input": {"required": {"text": ["STRING"]}},
+                "output": ["STRING"],
+            },
+        }
+
+        surface = module.build_prompt_conditioning_surface(io_types, runtime_object_info)
+
+        self.assertEqual(surface["traceability"]["source_type"], "source-backed")
+        self.assertEqual(
+            surface["text_input_io_types"][0],
+            {
+                "io_type": "STRING",
+                "class_name": "String",
+                "type_hint": "str",
+                "is_widget": True,
+                "input_parameters": ["multiline", "default"],
+                "supports_multiline_parameter": True,
+                "defined_in": "references/snapshots/comfy_api/latest/_io.py",
+            },
+        )
+        self.assertEqual(
+            surface["conditioning_io_types"][0],
+            {
+                "io_type": "CONDITIONING",
+                "class_name": "Conditioning",
+                "type_hint": "CondList",
+                "is_widget": False,
+                "input_parameters": [],
+                "output_parameters": [],
+                "defined_in": "references/snapshots/comfy_api/latest/_io.py",
+            },
+        )
+        self.assertEqual(
+            surface["runtime_node_output_summary"],
+            [
+                {
+                    "class_name": "CLIPTextEncode",
+                    "input_names": ["clip", "text"],
+                    "input_types": {"clip": ["CLIP"], "text": ["STRING"]},
+                    "output_types": ["CONDITIONING"],
+                    "output_includes_conditioning": True,
+                },
+                {
+                    "class_name": "PreviewText",
+                    "input_names": ["text"],
+                    "input_types": {"text": ["STRING"]},
+                    "output_types": ["STRING"],
+                    "output_includes_conditioning": False,
+                },
+            ],
+        )
+
     def test_bracket_aware_parameter_parsing(self):
         """Parameters with nested generic types like Dict[str, List[float]] should not produce bogus names."""
         # Import the module directly to test parse_parameters

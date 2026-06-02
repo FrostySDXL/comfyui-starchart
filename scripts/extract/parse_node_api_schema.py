@@ -315,6 +315,88 @@ def extract_io_types(io_text: str, io_path: str) -> list[dict]:
     return results
 
 
+def _runtime_input_type(value) -> list[str]:
+    if isinstance(value, (list, tuple)) and value:
+        return [str(value[0])]
+    if isinstance(value, str):
+        return [value]
+    return []
+
+
+def _runtime_input_types(node_info: dict) -> dict[str, list[str]]:
+    input_info = node_info.get("input", {})
+    if not isinstance(input_info, dict):
+        return {}
+
+    result: dict[str, list[str]] = {}
+    for section_name in ["required", "optional", "hidden"]:
+        section = input_info.get(section_name, {})
+        if not isinstance(section, dict):
+            continue
+        for input_name, input_value in section.items():
+            result[input_name] = _runtime_input_type(input_value)
+    return result
+
+
+def build_prompt_conditioning_surface(
+    io_types: list[dict], runtime_object_info: dict | None = None
+) -> dict:
+    text_input_io_types = []
+    conditioning_io_types = []
+
+    for entry in io_types:
+        io_type = entry.get("io_type")
+        item = {
+            "io_type": io_type,
+            "class_name": entry.get("class_name"),
+            "type_hint": entry.get("type_hint"),
+            "is_widget": entry.get("is_widget"),
+            "input_parameters": entry.get("input_parameters", []),
+            "defined_in": entry.get("defined_in"),
+        }
+        if io_type == "STRING":
+            item["supports_multiline_parameter"] = "multiline" in item["input_parameters"]
+            text_input_io_types.append(item)
+        if io_type == "CONDITIONING":
+            conditioning_item = dict(item)
+            conditioning_item["output_parameters"] = entry.get("output_parameters", [])
+            conditioning_io_types.append(conditioning_item)
+
+    runtime_node_output_summary = []
+    if runtime_object_info:
+        for class_name in sorted(runtime_object_info):
+            node_info = runtime_object_info[class_name]
+            if not isinstance(node_info, dict):
+                continue
+            input_types = _runtime_input_types(node_info)
+            output_types = node_info.get("output", [])
+            if not isinstance(output_types, list):
+                output_types = []
+            output_types = [str(output_type) for output_type in output_types]
+            runtime_node_output_summary.append(
+                {
+                    "class_name": class_name,
+                    "input_names": sorted(input_types),
+                    "input_types": {name: input_types[name] for name in sorted(input_types)},
+                    "output_types": output_types,
+                    "output_includes_conditioning": "CONDITIONING" in output_types,
+                }
+            )
+
+    return {
+        "traceability": {
+            "source_type": "source-backed",
+            "strategy": "derived_from_io_type_definitions",
+            "runtime_bounded_sections": ["runtime_node_output_summary"]
+            if runtime_object_info
+            else [],
+        },
+        "text_input_io_types": text_input_io_types,
+        "conditioning_io_types": conditioning_io_types,
+        "runtime_node_output_summary": runtime_node_output_summary,
+    }
+
+
 def extract_basic_input_shapes(basic_types_text: str) -> dict[str, str]:
     return {
         name: " ".join(description.split())
@@ -435,12 +517,16 @@ def main() -> int:
         "io_types",
         "basic_input_shapes",
         "typed_input_shapes",
+        "prompt_conditioning_surface",
     ]
     runtime_sections = []
     if runtime_snapshot:
         runtime_sections.append("runtime_object_info")
 
     mode = "hybrid" if runtime_snapshot else "source-only"
+
+    io_types = extract_io_types(io_text, str(io_path))
+    runtime_object_info = runtime_snapshot.get("object_info", {}) if runtime_snapshot else None
 
     payload = {
         "metadata": {
@@ -458,7 +544,10 @@ def main() -> int:
             },
         },
         "object_info_fields": extract_object_info_fields(server_text),
-        "io_types": extract_io_types(io_text, str(io_path)),
+        "io_types": io_types,
+        "prompt_conditioning_surface": build_prompt_conditioning_surface(
+            io_types, runtime_object_info
+        ),
         "basic_input_shapes": extract_basic_input_shapes(basic_types_text),
         "typed_input_shapes": extract_typed_input_shapes(basic_types_text, str(basic_types_path)),
         "coverage": {
@@ -474,6 +563,19 @@ def main() -> int:
                 normalize_repo_relative_path(basic_types_path, REPO_ROOT),
             ],
             "runtime_enriched": bool(runtime_snapshot),
+            "guaranteed_fields": [
+                "metadata",
+                "object_info_fields",
+                "io_types",
+                "basic_input_shapes",
+                "coverage",
+            ],
+            "best_effort_fields": [
+                "typed_input_shapes",
+                "prompt_conditioning_surface.text_input_io_types",
+                "prompt_conditioning_surface.conditioning_io_types",
+                "prompt_conditioning_surface.runtime_node_output_summary",
+            ],
             "deferred": [
                 "custom node definitions",
                 "per-node INPUT_TYPES schemas",
@@ -488,7 +590,7 @@ def main() -> int:
     }
 
     if runtime_snapshot:
-        payload["runtime_object_info"] = runtime_snapshot.get("object_info", {})
+        payload["runtime_object_info"] = runtime_object_info
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)

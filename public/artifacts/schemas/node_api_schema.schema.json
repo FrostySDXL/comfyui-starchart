@@ -78,6 +78,10 @@
         "additionalProperties": true
       }
     },
+    "prompt_conditioning_surface": {
+      "type": "object",
+      "additionalProperties": true
+    },
     "basic_input_shapes": {
       "type": "object",
       "additionalProperties": true
@@ -106,6 +110,18 @@
         },
         "runtime_enriched": {
           "type": "boolean"
+        },
+        "guaranteed_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "best_effort_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "deferred": {
           "type": "array",

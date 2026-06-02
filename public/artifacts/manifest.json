@@ -40,10 +40,10 @@
     "node_api_schema.json": {
       "current_url": "artifacts/current/node_api_schema.json",
       "versioned_url": "artifacts/versions/core-v0.22.0_frontend-v1.45.12_2026-05-21/node_api_schema.json",
-      "sha256": "c5873337137525129ed32f60d3a74a2ca929356f1038e352c2d2083c7d7e8cdb",
+      "sha256": "877a3430849b869529df30fc119655067873a5e42646496f4edaed83781c2b5a",
       "version": "v0.22.0",
       "commit": "a8d2519058ea766ca3b14916bcc01ecef5efd235",
-      "extracted_date": "2026-05-21",
+      "extracted_date": "2026-06-01",
       "sources": [
         "references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py",
         "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
