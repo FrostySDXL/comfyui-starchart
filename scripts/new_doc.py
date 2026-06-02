@@ -8,6 +8,8 @@ import datetime
 import sys
 from pathlib import Path
 
+from scripts.common.display_path import display_path
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCS_ROOT = (REPO_ROOT / "src" / "content" / "docs").resolve()
 TEMPLATES_DIR = REPO_ROOT / "templates" / "docs"
@@ -142,7 +144,7 @@ def main():
 
     template_path = TEMPLATES_DIR / MODE_TO_TEMPLATE[args.mode]
     if not template_path.exists():
-        print(f"Template not found: {template_path}", file=sys.stderr)
+        print(f"Template not found: {display_path(template_path)}", file=sys.stderr)
         sys.exit(1)
 
     try:
@@ -153,7 +155,7 @@ def main():
         sys.exit(1)
 
     if output_path.exists() and not args.overwrite:
-        print(f"File already exists: {output_path}", file=sys.stderr)
+        print(f"File already exists: {display_path(output_path)}", file=sys.stderr)
         sys.exit(1)
 
     content = template_path.read_text(encoding="utf-8")

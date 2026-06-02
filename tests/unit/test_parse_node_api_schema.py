@@ -364,6 +364,7 @@ ImageInput = torch.Tensor
                 "is_widget": True,
                 "input_parameters": ["multiline", "default"],
                 "supports_multiline_parameter": True,
+                "output_parameters": ["display_name"],
                 "defined_in": "references/snapshots/comfy_api/latest/_io.py",
             },
         )
@@ -378,6 +379,31 @@ ImageInput = torch.Tensor
                 "output_parameters": [],
                 "defined_in": "references/snapshots/comfy_api/latest/_io.py",
             },
+        )
+        # H-2: text_input and conditioning entries must share the same
+        # base key set. ``supports_multiline_parameter`` is allowed as a
+        # STRING-specific extension (set to True/False for text widgets)
+        # and is not present on CONDITIONING entries.
+        base_keys = {
+            "io_type",
+            "class_name",
+            "type_hint",
+            "is_widget",
+            "input_parameters",
+            "output_parameters",
+            "defined_in",
+        }
+        text_keys = set(surface["text_input_io_types"][0].keys())
+        cond_keys = set(surface["conditioning_io_types"][0].keys())
+        self.assertEqual(
+            text_keys - {"supports_multiline_parameter"},
+            base_keys,
+            f"text_input_io_types[0] must have all base keys, got {text_keys}",
+        )
+        self.assertEqual(
+            cond_keys,
+            base_keys,
+            f"conditioning_io_types[0] must have all base keys, got {cond_keys}",
         )
         self.assertEqual(
             surface["runtime_node_output_summary"],
@@ -398,6 +424,62 @@ ImageInput = torch.Tensor
                 },
             ],
         )
+
+    def test_prompt_conditioning_surface_source_only_mode(self):
+        """H-4: source-only mode (no runtime_object_info) must still
+        return text and conditioning entries with empty runtime fields."""
+        module = _load_parse_node_api_schema()
+
+        io_types = [
+            {
+                "io_type": "STRING",
+                "class_name": "String",
+                "input_class": "WidgetInput",
+                "input_parameters": ["multiline"],
+                "output_parameters": ["display_name"],
+                "input_parameter_details": [{"name": "multiline", "default": False}],
+                "output_parameter_details": [{"name": "display_name", "type_hint": "str"}],
+                "type_hint": "str",
+                "defined_in": "references/snapshots/comfy_api/latest/_io.py",
+                "is_widget": True,
+            },
+            {
+                "io_type": "CONDITIONING",
+                "class_name": "Conditioning",
+                "input_class": None,
+                "input_parameters": [],
+                "output_parameters": [],
+                "input_parameter_details": [],
+                "output_parameter_details": [],
+                "type_hint": "CondList",
+                "defined_in": "references/snapshots/comfy_api/latest/_io.py",
+                "is_widget": False,
+            },
+        ]
+
+        surface = module.build_prompt_conditioning_surface(io_types, None)
+
+        self.assertEqual(surface["runtime_node_output_summary"], [])
+        self.assertEqual(surface["traceability"]["runtime_bounded_sections"], [])
+        self.assertEqual(surface["traceability"]["source_type"], "source-backed")
+        # Both text and conditioning entries must still be extracted
+        # even when no runtime snapshot is provided.
+        self.assertEqual(len(surface["text_input_io_types"]), 1)
+        self.assertEqual(len(surface["conditioning_io_types"]), 1)
+        # H-2: base-key shape parity (with STRING-specific extension).
+        base_keys = {
+            "io_type",
+            "class_name",
+            "type_hint",
+            "is_widget",
+            "input_parameters",
+            "output_parameters",
+            "defined_in",
+        }
+        text_keys = set(surface["text_input_io_types"][0].keys())
+        cond_keys = set(surface["conditioning_io_types"][0].keys())
+        self.assertEqual(text_keys - {"supports_multiline_parameter"}, base_keys)
+        self.assertEqual(cond_keys, base_keys)
 
     def test_bracket_aware_parameter_parsing(self):
         """Parameters with nested generic types like Dict[str, List[float]] should not produce bogus names."""

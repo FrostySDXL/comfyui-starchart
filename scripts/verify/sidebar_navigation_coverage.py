@@ -19,6 +19,8 @@ import json
 import sys
 from pathlib import Path
 
+from scripts.common.display_path import display_path
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DOCS_ROOT = REPO_ROOT / "src" / "content" / "docs"
 SIDEBAR_DATA_PATH = REPO_ROOT / "src" / "site" / "sidebar-data.json"
@@ -75,10 +77,10 @@ def collect_hand_authored_docs_paths(docs_root: Path) -> set[str]:
 
 def main() -> int:
     if not SIDEBAR_DATA_PATH.exists():
-        print(f"ERROR: sidebar data file not found: {SIDEBAR_DATA_PATH}")
+        print(f"ERROR: sidebar data file not found: {display_path(SIDEBAR_DATA_PATH)}")
         return 1
     if not DOCS_ROOT.exists():
-        print(f"ERROR: docs root not found: {DOCS_ROOT}")
+        print(f"ERROR: docs root not found: {display_path(DOCS_ROOT)}")
         return 1
 
     sidebar_entries = load_sidebar_data(SIDEBAR_DATA_PATH)

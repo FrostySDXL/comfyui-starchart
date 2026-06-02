@@ -353,6 +353,7 @@ def build_prompt_conditioning_surface(
             "type_hint": entry.get("type_hint"),
             "is_widget": entry.get("is_widget"),
             "input_parameters": entry.get("input_parameters", []),
+            "output_parameters": entry.get("output_parameters", []),
             "defined_in": entry.get("defined_in"),
         }
         if io_type == "STRING":
@@ -360,7 +361,6 @@ def build_prompt_conditioning_surface(
             text_input_io_types.append(item)
         if io_type == "CONDITIONING":
             conditioning_item = dict(item)
-            conditioning_item["output_parameters"] = entry.get("output_parameters", [])
             conditioning_io_types.append(conditioning_item)
 
     runtime_node_output_summary = []
