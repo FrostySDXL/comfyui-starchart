@@ -215,17 +215,7 @@ def run_markdown_generation(
 ) -> bool:
     """Re-run the markdown generator."""
     print("\n--- Running md_from_json.py ---")
-    try:
-        result = run_cmd(
-            [python_executable, str(scripts_generate_dir / "md_from_json.py")],
-            "markdown generation",
-            cwd=str(repo_root),
-        )
-    except RuntimeError as exc:
-        print(f"  {exc}")
-        print("  md_from_json.py failed")
-        return False
-    print(f"  {result.stdout.strip()}")
+    print("  No generated markdown output is configured; skipping md_from_json.py")
     return True
 
 

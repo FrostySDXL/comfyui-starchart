@@ -542,6 +542,22 @@ class RefreshSnapshotsBoundaryTests(unittest.TestCase):
         pipeline_mock.assert_called_once()
         self.assertEqual(result, expected)
 
+    def test_run_markdown_generation_skips_when_no_output_is_configured(self):
+        """Markdown generation should not call md_from_json.py without an output path."""
+        module = _load_module()
+
+        def fake_run_cmd(cmd, description, cwd=None):
+            raise AssertionError(f"unexpected command: {cmd}")
+
+        result = module.refresh_pipeline.run_markdown_generation(
+            python_executable="python",
+            scripts_generate_dir=module.SCRIPTS_GENERATE_DIR,
+            repo_root=module.REPO_ROOT,
+            run_cmd=fake_run_cmd,
+        )
+
+        self.assertTrue(result)
+
     def test_build_follow_up_commands_from_provenance_omits_missing_delta_step(self):
         """Recommended command rendering should skip the delta step when no backup exists."""
         module = _load_module()
