@@ -33,7 +33,8 @@ declare that explicitly with a `**Baseline verification status:**` block rather
 than implying current-baseline review that did not happen.
 
 Earlier pinned baselines under `references/snapshots/2026-05-21/`,
-`references/snapshots/2026-05-18/`, and `references/snapshots/2026-04-19/`
+`references/snapshots/2026-05-18/`, `references/snapshots/2026-04-30/`, and
+`references/snapshots/2026-04-19/`
 remain preserved for historical comparison and refresh-path proof.
 
 Published artifact history is intentionally bounded: keep the current baseline,

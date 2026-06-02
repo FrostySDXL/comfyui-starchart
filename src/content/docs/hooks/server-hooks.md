@@ -3,7 +3,7 @@ title: "Server Hooks"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-05-21
+**Last Updated:** 2026-06-01
 **Primary Source:** ComfyUI core v0.22.0 `server.py` and `execution.py`, plus the pinned v0.19.3 `comfy_execution/progress.py` snapshot retained intentionally because the current pinned snapshot set still does not include an equivalent `comfy_execution/progress.py` path
 **Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
 

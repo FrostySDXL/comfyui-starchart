@@ -3,7 +3,7 @@ title: "Source Evidence Policy"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-21
+**Last Updated:** 2026-06-01
 **Primary Sources:** https://docs.comfy.org/, https://github.com/Comfy-Org/ComfyUI
 
 ## Purpose

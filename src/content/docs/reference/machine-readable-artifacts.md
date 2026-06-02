@@ -3,7 +3,7 @@ title: "Machine-Readable Artifacts"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 **Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
 
 ## Scope
@@ -206,7 +206,7 @@ Source-backed from pinned snapshots: the current `_io.py` snapshot defines
 `STRING` as an I/O type with a `WidgetInput` carrying parameters such as
 `multiline`, `placeholder`, `default`, and `dynamic_prompts`; it also defines
 `CONDITIONING` as an I/O type whose `Type` is `CondList`. See
-`references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py`.
+`references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py`.
 
 Treat `prompt_conditioning_surface` as routing metadata, not prompt recovery
 proof. It can tell tooling which pinned I/O datatypes look text-like or

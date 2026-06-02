@@ -110,8 +110,9 @@ intentionally.
   - `stale_content.py`
   - `extraction_idempotency.py`
   - `upstream_pins.py`
-  - `example_surface_integrity.py`
+  - `example_surface integrity.py`
   - `evidence_metadata_freshness.py`
+  - `no_leaky_paths.py`
   - `python -m mypy`
 
 ## Common Pitfalls
