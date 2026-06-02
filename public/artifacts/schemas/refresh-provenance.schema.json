@@ -72,7 +72,8 @@
       "additionalProperties": true
     },
     "refresh_date": {
-      "type": "string"
+      "type": "string",
+      "description": "Snapshot content date in operator local time (YYYY-MM-DD). May differ by one day from the backup_location UTC timestamp if the refresh pipeline crossed a UTC midnight boundary during execution."
     },
     "requested_versions": {
       "type": "object",
