@@ -7,6 +7,32 @@ verification, workflow, and repo structure rather than every commit.
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-06-02 - extraction contract fixes and provenance hardening
+
+### Artifact surface
+
+- Add `price_badge` to `object_info_fields` in `node_api_schema.json`. The
+  field is populated by `Schema.get_v1_info()` rather than through direct
+  `info[...]` assignment, so the static extractor previously missed it.
+
+### Extraction and pipeline
+
+- Harden `build_prompt_conditioning_surface` so an empty runtime dict `{}` is
+  distinguished from `None`. Traceability metadata now correctly reports
+  runtime-bounded mode even when zero nodes were collected.
+- Replace `cast(str, snapshot_date)` in `refresh_pipeline.py` with an explicit
+  `None` guard for clearer failure messages.
+- Harden `display_path` URL detection to cover `Path`-wrapped URL strings on
+  POSIX platforms.
+- Add platform-aware test coverage for the new `display_path` URL-as-`Path`
+  edge case.
+
+### Provenance
+
+- Self-correct `refresh-provenance.json` published flags after artifact publish
+  and delta-summary generation complete so the provenance record truthfully
+  reflects that follow-up steps ran.
+
 ## 2026-06-01 - baseline refresh to core v0.23.0 / frontend v1.46.6
 
 ### Pinned baseline update

@@ -39,6 +39,13 @@ def extract_object_info_fields(server_text: str) -> list[str]:
         if field not in seen:
             seen.add(field)
             fields.append(field)
+    # ``price_badge`` is populated by ``Schema.get_v1_info()`` and is
+    # not individually indexed as ``info['price_badge']`` in the
+    # server ``node_info`` handler, so the regex pass above misses it.
+    # Only inject it when other fields were found (non-empty extraction).
+    if fields and "price_badge" not in seen:
+        seen.add("price_badge")
+        fields.append("price_badge")
     return fields
 
 
@@ -365,7 +372,7 @@ def build_prompt_conditioning_surface(
             conditioning_io_types.append(conditioning_item)
 
     runtime_node_output_summary = []
-    if runtime_object_info:
+    if runtime_object_info is not None:
         for class_name in sorted(runtime_object_info):
             node_info = runtime_object_info[class_name]
             if not isinstance(node_info, dict):
@@ -390,7 +397,7 @@ def build_prompt_conditioning_surface(
             "source_type": "source-backed",
             "strategy": "derived_from_io_type_definitions",
             "runtime_bounded_sections": ["runtime_node_output_summary"]
-            if runtime_object_info
+            if runtime_object_info is not None
             else [],
         },
         "text_input_io_types": text_input_io_types,

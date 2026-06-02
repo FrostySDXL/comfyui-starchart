@@ -1,6 +1,6 @@
 # ComfyUI StarChart
 
-**Last Updated:** 2026-06-01  
+**Last Updated:** 2026-06-01
 **ComfyUI Version Pin:** Core `v0.23.0` (`a88e02b18576283b1ff25a4b564548c5dc42cbf6`) with official frontend `v1.46.6` (`9e32b7db5173bc2879d4c19c1d058d733b3074b8`) for the current pinned snapshots and extracted reference data
 
 **Evidence:** Operational guidance
@@ -94,7 +94,7 @@ Start here:
 
 ## Quick Start
 
-Supported Python: `3.11+`  
+Supported Python: `3.11+`
 Supported Node.js for site/framework work: `24.x`
 
 **Windows bootstrap:**

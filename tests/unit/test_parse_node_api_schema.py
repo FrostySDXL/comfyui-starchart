@@ -134,6 +134,7 @@ class ParseNodeApiSchemaTests(unittest.TestCase):
         fields = module.extract_object_info_fields(_SERVER_SAMPLE_FULL)
         self.assertIn("input", fields)
         self.assertIn("display_name", fields)
+        self.assertIn("price_badge", fields)
 
     def test_extract_io_types_boolean(self):
         module = _load_parse_node_api_schema()
@@ -525,6 +526,33 @@ ImageInput = torch.Tensor
         cond_keys = set(surface["conditioning_io_types"][0].keys())
         self.assertEqual(text_keys - {"supports_multiline_parameter"}, base_keys)
         self.assertEqual(cond_keys, base_keys)
+
+    def test_prompt_conditioning_surface_empty_dict_distinct_from_none(self):
+        """Empty dict ``{}`` must be treated as runtime-data-provided
+        (distinct from ``None``), populating ``runtime_bounded_sections``
+        even though ``runtime_node_output_summary`` is empty."""
+        module = _load_parse_node_api_schema()
+
+        io_types = [
+            {
+                "io_type": "STRING",
+                "class_name": "String",
+                "input_parameters": ["multiline"],
+                "output_parameters": ["display_name"],
+                "type_hint": "str",
+                "defined_in": "references/snapshots/comfy_api/latest/_io.py",
+                "is_widget": True,
+            }
+        ]
+
+        surface = module.build_prompt_conditioning_surface(io_types, {})
+
+        self.assertEqual(surface["runtime_node_output_summary"], [])
+        self.assertEqual(
+            surface["traceability"]["runtime_bounded_sections"],
+            ["runtime_node_output_summary"],
+            "runtime_bounded_sections must be populated when runtime data is provided, even if empty",
+        )
 
     def test_prompt_conditioning_surface_empty_io_types(self):
         """Empty io_types list produces empty text_input and conditioning arrays

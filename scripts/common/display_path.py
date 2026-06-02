@@ -57,8 +57,8 @@ def display_path(path: Path | str | None, *, repo_root: Path | None = None) -> s
         return ""
     if isinstance(path, Path) and not str(path):
         return ""
-    if isinstance(path, str) and _looks_like_url(path):
-        return path
+    if _looks_like_url(path) or (isinstance(path, Path) and _looks_like_url(str(path))):
+        return str(path)
     if repo_root is None:
         # Default repo root: this file's location's great-grandparent (scripts/common -> repo).
         repo_root = Path(__file__).resolve().parents[2]

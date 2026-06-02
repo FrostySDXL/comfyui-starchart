@@ -138,6 +138,26 @@ class DisplayPathTests(unittest.TestCase):
             "g://host/path",
         )
 
+    def test_display_path_preserves_url_wrapped_as_path_object(self):
+        module = _load_module()
+        # On POSIX, ``Path("g://host/path")`` preserves the ``://``
+        # separator and the URL guard fires.  On Windows, ``Path()``
+        # normalises ``://`` to ``:\\``, treating a single-letter
+        # scheme as a drive letter, so a ``Path``-wrapped URL is
+        # indistinguishable from a filesystem path.  The test
+        # asserts the URL-preserving behaviour only on platforms
+        # where the guard can actually fire.
+        if os.name == "nt":
+            self.assertEqual(
+                module.display_path(Path("g://host/path"), repo_root=FAKE_REPO),
+                "path",
+            )
+        else:
+            self.assertEqual(
+                module.display_path(Path("g://host/path"), repo_root=FAKE_REPO),
+                "g://host/path",
+            )
+
     def test_relative_path_returns_basename(self):
         module = _load_module()
         rel = Path("foo/bar/x.txt")

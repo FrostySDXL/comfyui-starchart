@@ -1,7 +1,6 @@
 import argparse
 import json
 from pathlib import Path
-from typing import cast
 
 
 def _run_server_extractor(
@@ -159,7 +158,9 @@ def run_extractors(
 ) -> dict:
     """Re-run all extractors against the new snapshot files."""
     results = {}
-    snapshot_base = snapshots_dir / cast(str, snapshot_date)
+    if snapshot_date is None:
+        raise ValueError("snapshot_date is required for extraction")
+    snapshot_base = snapshots_dir / snapshot_date
 
     if core_version and core_commit:
         core_dir = snapshot_base / f"comfyui-core-{core_version}"
