@@ -100,7 +100,9 @@
       "tooling_metadata": {
         "task_intents": [
           "debug-api-integration",
-          "monitor-execution"
+          "inspect-prompt-payload",
+          "monitor-execution",
+          "observe-server-lifecycle"
         ],
         "related_artifacts": [
           "docs-index.json",
@@ -219,8 +221,11 @@
       "summary": "This page documents the server-side execution pipeline that turns a submitted prompt into queued work, live events, and stored history. It is an architecture-level map of responsibilities and boundaries, not a step-by-step API tutorial or a full engine internals reference.",
       "tooling_metadata": {
         "task_intents": [
+          "inspect-prompt-payload",
           "monitor-execution",
-          "understand-architecture"
+          "observe-server-lifecycle",
+          "understand-architecture",
+          "understand-prompt-topology"
         ],
         "related_artifacts": [
           "server_endpoints.json"
@@ -234,7 +239,9 @@
         "related_events": [
           "executed",
           "executing",
+          "execution_cached",
           "execution_error",
+          "execution_interrupted",
           "execution_start",
           "execution_success"
         ],
@@ -289,7 +296,8 @@
       "summary": "ComfyUI uses `GET /ws` as the real-time channel for queue state, execution lifecycle messages, UI output updates, and preview images. The route is implemented with `aiohttp.WebSocketResponse` and is the main mechanism that keeps the frontend in sync while a prompt runs.",
       "tooling_metadata": {
         "task_intents": [
-          "monitor-execution"
+          "monitor-execution",
+          "observe-server-lifecycle"
         ],
         "related_artifacts": [
           "server_endpoints.json"
@@ -326,9 +334,14 @@
       "summary": "`POST /prompt` is the main execution entrypoint. The handler accepts a workflow payload, validates it, assigns queue priority, extracts sensitive metadata, and enqueues the prompt for asynchronous execution.",
       "tooling_metadata": {
         "task_intents": [
-          "submit-prompt"
+          "extract-prompt-text",
+          "inspect-conditioning-graph",
+          "inspect-prompt-payload",
+          "submit-prompt",
+          "understand-prompt-topology"
         ],
         "related_artifacts": [
+          "node_api_schema.json",
           "server_endpoints.json"
         ],
         "related_routes": [
@@ -348,7 +361,9 @@
         "recommended_next_reads": [
           "api/history-queue.md",
           "api/websocket.md",
-          "reference/machine-readable-artifacts.md"
+          "deep-dives/workflow-json-schema.md",
+          "reference/machine-readable-artifacts.md",
+          "reference/object-info.md"
         ]
       }
     },
@@ -424,19 +439,25 @@
       "tooling_metadata": {
         "task_intents": [
           "discover-hooks",
-          "monitor-execution"
+          "inspect-prompt-payload",
+          "monitor-execution",
+          "observe-server-lifecycle"
         ],
         "related_artifacts": [
           "docs-index.json",
           "server_endpoints.json"
         ],
         "related_routes": [
-          "GET /ws"
+          "GET /ws",
+          "POST /prompt"
         ],
         "related_events": [
           "executed",
           "executing",
+          "execution_cached",
           "execution_error",
+          "execution_interrupted",
+          "execution_start",
           "execution_success"
         ],
         "runtime_required": true,
@@ -458,6 +479,7 @@
       "tooling_metadata": {
         "task_intents": [
           "discover-hooks",
+          "observe-server-lifecycle",
           "route-docs-task"
         ],
         "related_artifacts": [
@@ -587,6 +609,8 @@
       "tooling_metadata": {
         "task_intents": [
           "discover-artifacts",
+          "extract-prompt-text",
+          "inspect-conditioning-graph",
           "route-docs-task"
         ],
         "related_artifacts": [
@@ -616,6 +640,8 @@
       "summary": "`GET /object_info` is ComfyUI's node discovery endpoint. It returns the metadata the frontend and external tooling need to understand which nodes exist, what inputs they accept, what outputs they produce, and how they should be displayed.",
       "tooling_metadata": {
         "task_intents": [
+          "extract-prompt-text",
+          "inspect-conditioning-graph",
           "inspect-object-info"
         ],
         "related_artifacts": [
@@ -704,7 +730,8 @@
       "summary": "This page explains why the official workflow JSON specification matters as an interchange surface for ComfyUI tooling. It is not a field-by-field schema reference and not a tutorial for hand-authoring workflows.",
       "tooling_metadata": {
         "task_intents": [
-          "understand-architecture"
+          "understand-architecture",
+          "understand-prompt-topology"
         ],
         "related_artifacts": [
           "docs-index.json"

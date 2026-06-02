@@ -27,12 +27,17 @@ KNOWN_TASK_INTENTS = {
     "discover-artifacts",
     "discover-hooks",
     "discover-routes",
+    "extract-prompt-text",
+    "inspect-conditioning-graph",
     "inspect-object-info",
+    "inspect-prompt-payload",
     "lookup-history",
     "monitor-execution",
+    "observe-server-lifecycle",
     "route-docs-task",
     "submit-prompt",
     "understand-architecture",
+    "understand-prompt-topology",
 }
 KNOWN_ARTIFACT_FILENAMES = {
     "docs-index.json",
