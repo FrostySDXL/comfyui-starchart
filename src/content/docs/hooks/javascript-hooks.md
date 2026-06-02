@@ -155,6 +155,10 @@ invokeExtensionsAsync afterConfigureGraph
 invokeExtensionsAsync setup
 ```
 
+`getCustomWidgets` is no longer called during the default startup sequence
+starting with frontend v1.46.6. The hook signature remains in the type
+definitions and may still be invoked by extension-defined call paths.
+
 ### Loading a workflow
 
 ```text

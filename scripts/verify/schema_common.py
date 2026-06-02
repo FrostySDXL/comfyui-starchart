@@ -271,6 +271,20 @@ def validate_coverage(data: dict, filename: str) -> list[str]:
                     errors.append(
                         f"{filename}: coverage.{list_key}[{index}] expected str, got {type(item).__name__}"
                     )
+
+    # Validate dot-notation paths in guaranteed_fields and best_effort_fields
+    # resolve to actual top-level keys (only applicable to node_api_schema.json
+    # where prompt_conditioning_surface subsections use dotted paths).
+    if filename == "node_api_schema.json":
+        for list_key in ("guaranteed_fields", "best_effort_fields"):
+            for entry in coverage.get(list_key, []):
+                if isinstance(entry, str) and "." in entry:
+                    parent_key = entry.split(".", 1)[0]
+                    if parent_key not in data:
+                        errors.append(
+                            f"{filename}: coverage.{list_key} path '{entry}' "
+                            f"references unknown top-level key '{parent_key}'"
+                        )
     return errors
 
 

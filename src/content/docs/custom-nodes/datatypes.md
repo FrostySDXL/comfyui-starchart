@@ -56,7 +56,9 @@ Important runtime datatypes include:
   `[B, C, H, W]`, with optional fields `noise_mask` and `batch_index`
 - `AUDIO` -> `dict` containing `waveform` and `sample_rate`
   (the upstream `_io.py` TypedDict uses `sampler_rate`; the
-  `basic_types.py` TypedDict and the artifact use `sample_rate`)
+  `basic_types.py` TypedDict and the artifact use `sample_rate`.
+  Prefer `sample_rate` -- it matches the published TypedDict in
+  `basic_types.py` and the extracted artifact.)
 
 From the current datatype guidance:
 

@@ -78,31 +78,28 @@ workflow JSON document. The pinned `/prompt` handler passes this graph directly
 to `execution.validate_prompt` before queueing it. Source-backed from pinned
 snapshots: `references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py`.
 
+The sub-sections below are Source-backed from pinned snapshots:
+`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
+
 At validation time, each graph entry is keyed by a node ID. Each node must name a
 `class_type`, and its `inputs` object may contain literal values or linked
 inputs. A linked input is a two-item list in the form `[node_id, slot_index]`.
-Source-backed from pinned snapshots:
-`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
 
 This topology matters for prompt extraction. A prompt-bearing text field may be a
 literal string on a known node, but it may also feed another node through a linked
 input. The API contract validates links and types; it does not promise that all
-prompt text lives in one flat request field. Source-backed from pinned snapshots:
-`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
+prompt text lives in one flat request field.
 
 ## Linked Inputs
 
 When an input value is a list, validation treats it as a graph edge and expects
 exactly two items: the upstream node ID and the upstream output slot index. The
 validator checks the upstream node's declared return type against the receiving
-input type before accepting that edge. Source-backed from pinned snapshots:
-`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
+input type before accepting that edge.
 
 Literal values stay on the node's `inputs` object. During validation, primitive
 literal values may be coerced to `INT`, `FLOAT`, `STRING`, or `BOOLEAN`, and
-bounded or combo values are checked against their declared limits. Source-backed
-from pinned snapshots:
-`references/snapshots/2026-06-01/comfyui-core-v0.23.0/execution.py`.
+bounded or combo values are checked against their declared limits.
 
 ## Validation Behavior
 

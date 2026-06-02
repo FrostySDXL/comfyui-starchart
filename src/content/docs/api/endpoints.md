@@ -73,7 +73,7 @@ behavior documented in prose.
 
 ### System and job inspection
 
-- `GET /system_stats` — returns nested `{system: {os, ram_total, ram_free, comfyui_version, ...}, devices: [{name, type, index, vram_total, vram_free, ...}]}` with per-device VRAM breakdown, plus Python and package-version info
+- `GET /system_stats` — returns nested `{system: {os, ram_total, ram_free, comfyui_version, ...}, devices: [{name, type, index, vram_total, vram_free, ...}]}` with per-device VRAM breakdown, plus Python and package-version info. **Privacy note:** The `argv` field in this response exposes the full server command-line arguments, which may include local filesystem paths and configuration values.
 - `GET /api/jobs` — returns filtered and paginated job listings
 - `GET /api/jobs/{job_id}` — returns one job record
 

@@ -35,10 +35,10 @@ class RefreshSupportImportTests(unittest.TestCase):
 class RefreshSupportCommandTests(unittest.TestCase):
     """Test repo-preferred maintainer command rendering."""
 
-    def test_recommended_python_command_uses_windows_launcher(self):
-        """Windows follow-up commands should use the repo's Python launcher rule."""
+    def test_recommended_python_command_uses_python_on_windows(self):
+        """Windows follow-up commands should use `python` (venv-activated)."""
         module = _load_module()
-        self.assertEqual(module.recommended_python_command("win32"), "py -3.11")
+        self.assertEqual(module.recommended_python_command("win32"), "python")
 
     def test_recommended_python_command_uses_python_on_non_windows(self):
         """Non-Windows follow-up commands should stay portable."""

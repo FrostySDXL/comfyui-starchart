@@ -1,16 +1,16 @@
 {
   "backup_location": "references/_refresh_backups/raw_20260602T022958Z",
   "next_steps": {
-    "delta_summary_command": "py -3.11 scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260602T022958Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
-    "publish_reference_artifacts_command": "py -3.11 scripts/generate/publish_reference_artifacts.py",
+    "delta_summary_command": "python scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260602T022958Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
+    "publish_reference_artifacts_command": "python scripts/generate/publish_reference_artifacts.py",
     "recommended_follow_up_commands": [
-      "py -3.11 scripts/generate/publish_reference_artifacts.py",
-      "py -3.11 scripts/verify/verify_artifact_integrity.py",
-      "py -3.11 scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260602T022958Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
-      "py -3.11 scripts/verify/run_all.py"
+      "python scripts/generate/publish_reference_artifacts.py",
+      "python scripts/verify/verify_artifact_integrity.py",
+      "python scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260602T022958Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
+      "python scripts/verify/run_all.py"
     ],
-    "run_all_command": "py -3.11 scripts/verify/run_all.py",
-    "verify_artifact_integrity_command": "py -3.11 scripts/verify/verify_artifact_integrity.py"
+    "run_all_command": "python scripts/verify/run_all.py",
+    "verify_artifact_integrity_command": "python scripts/verify/verify_artifact_integrity.py"
   },
   "published": {
     "canonical_artifacts_updated_by_refresh": true,

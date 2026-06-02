@@ -6,8 +6,6 @@ from pathlib import Path
 
 def recommended_python_command(platform_name: str) -> str:
     """Return the repo-preferred Python command for follow-up maintainer steps."""
-    if platform_name.startswith("win"):
-        return "py -3.11"
     return "python"
 
 

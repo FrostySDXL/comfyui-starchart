@@ -154,6 +154,8 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                     "class_name": "Boolean",
                     "input_class": "WidgetInput",
                     "input_parameters": ["default"],
+                    "type_hint": "BOOLEAN",
+                    "defined_in": "references/snapshots/_io.py",
                     "input_parameter_details": [
                         {
                             "name": "default",

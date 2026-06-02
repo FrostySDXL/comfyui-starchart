@@ -53,7 +53,9 @@
           "io_type",
           "class_name",
           "input_class",
-          "input_parameters"
+          "input_parameters",
+          "type_hint",
+          "defined_in"
         ],
         "properties": {
           "io_type": {

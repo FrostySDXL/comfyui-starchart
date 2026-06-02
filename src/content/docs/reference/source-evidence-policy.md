@@ -108,7 +108,7 @@ Use the wording patterns below instead of inventing page-by-page variants:
 ```
 
 ```markdown
-**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
+**Baseline verification status:** This page has not been re-reviewed against the current baseline.
 ```
 
 For pages with mixed entry-level status, say that explicitly in the baseline
