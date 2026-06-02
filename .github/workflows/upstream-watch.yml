@@ -5,6 +5,15 @@ name: Upstream Watch
     - cron: "0 10 * * 1"  # Every Monday at 10:00 UTC
   workflow_dispatch:
 
+# Default GITHUB_TOKEN is read-only; label create and issue write both
+# require explicit issues: write. Without this block the label-ensure
+# step silently fails (its stderr is redirected and the command is
+# followed by `|| true`) and the next step then errors with
+# "could not add label: 'upstream-watch' not found".
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   upstream-watch:
     runs-on: ubuntu-latest
@@ -34,10 +43,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh label create upstream-watch \
-            --color "ededed" \
-            --description "Upstream version watch tracking" \
-            2>/dev/null || true
+          # Create the label; ignore "already exists" but surface any other failure.
+          if ! gh label create upstream-watch \
+              --color "ededed" \
+              --description "Upstream version watch tracking" 2>label.err; then
+            if ! grep -q "already exists" label.err; then
+              cat label.err
+              exit 1
+            fi
+          fi
+          rm -f label.err
 
       - name: Create or update tracking issue (scheduled runs only)
         if: github.event_name == 'schedule'
