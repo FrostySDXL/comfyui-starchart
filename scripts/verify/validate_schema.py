@@ -81,7 +81,7 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
     validation_errors: list[str] = []
     schema = SCHEMAS.get(json_file.name)
     if schema:
-        validation_errors.extend(validate_top_level(data, schema, json_file.name))
+        validation_errors.extend(validate_top_level(data, schema, json_file.name))  # type: ignore[arg-type]
 
     if json_file.name in SCHEMAS:
         validation_errors.extend(validate_metadata(data, json_file.name))

@@ -43,7 +43,7 @@ def find_stale_in_json() -> list[tuple[str, int, str]]:
 
     Returns a list of (file, line_number, marker_text) tuples.
     """
-    stale = []
+    stale: list[tuple[str, int, str]] = []
     for json_file in sorted(REFERENCES_RAW_DIR.glob("*.json")):
         try:
             content = json.loads(json_file.read_text(encoding="utf-8"))

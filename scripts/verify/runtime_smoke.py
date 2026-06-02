@@ -15,6 +15,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import Any, cast
 
 from scripts.common import http_utils
 from scripts.common.display_path import display_path
@@ -26,12 +27,12 @@ DEFAULT_PROMPT_PATH = REPO_ROOT / "examples" / "api-calls" / "post-prompt.json"
 
 def _fetch_json(url: str, timeout: int = 30) -> dict:
     """Fetch JSON from a URL."""
-    return http_utils.get_json(url, timeout=timeout)
+    return cast(dict[str, Any], http_utils.get_json(url, timeout=timeout))
 
 
 def _post_json(url: str, payload: dict, timeout: int = 30) -> dict:
     """POST JSON to a URL and return the response."""
-    return http_utils.post_json(url, payload, timeout=timeout)
+    return cast(dict[str, Any], http_utils.post_json(url, payload, timeout=timeout))
 
 
 def check_features(base_url: str, timeout: int) -> bool:

@@ -5,6 +5,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 from scripts.common.display_path import display_path
 from scripts.common.path_normalization import normalize_repo_relative_path
@@ -50,7 +51,7 @@ def parse_parameters(signature_text: str) -> list[str]:
     compact = " ".join(signature_text.replace("\n", " ").split())
     names: list[str] = []
     depth = 0
-    current = []
+    current: list[str] = []
     for char in compact:
         if char == "," and depth == 0:
             item = "".join(current).strip()
@@ -83,7 +84,7 @@ def parse_parameter_details(signature_text: str) -> list[dict]:
     compact = " ".join(signature_text.replace("\n", " ").split())
     details: list[dict] = []
     depth = 0
-    current = []
+    current: list[str] = []
 
     def flush(item_text: str) -> None:
         item = item_text.strip()
@@ -532,7 +533,7 @@ def main() -> int:
     io_types = extract_io_types(io_text, str(io_path))
     runtime_object_info = runtime_snapshot.get("object_info", {}) if runtime_snapshot else None
 
-    payload = {
+    payload: dict[str, Any] = {
         "metadata": {
             "sources": [
                 normalize_repo_relative_path(p, REPO_ROOT)

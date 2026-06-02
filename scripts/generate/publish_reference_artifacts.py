@@ -20,6 +20,7 @@ Usage:
 import shutil
 from datetime import date, datetime
 from pathlib import Path
+from typing import Any
 
 from scripts.common.display_path import display_path
 from scripts.common.json_utils import compute_textual_json_sha256, load_json, write_json
@@ -112,7 +113,7 @@ def build_manifest(
     input artifacts. Idempotency matters for git diff hygiene and freshness
     verification.
     """
-    manifest = {
+    manifest: dict[str, Any] = {
         "artifact_schema_version": ARTIFACT_SCHEMA_VERSION,
         "version_key": version_key,
         "schemas": {},

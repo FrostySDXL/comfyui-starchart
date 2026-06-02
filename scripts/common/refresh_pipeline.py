@@ -1,6 +1,7 @@
 import argparse
 import json
 from pathlib import Path
+from typing import cast
 
 
 def _run_server_extractor(
@@ -148,7 +149,7 @@ def run_extractors(
     core_commit: str | None,
     frontend_version: str | None,
     frontend_commit: str | None,
-    snapshot_date: str,
+    snapshot_date: str | None,
     runtime_object_info_path: str | None,
     snapshots_dir: Path,
     python_executable: str,
@@ -158,7 +159,7 @@ def run_extractors(
 ) -> dict:
     """Re-run all extractors against the new snapshot files."""
     results = {}
-    snapshot_base = snapshots_dir / snapshot_date
+    snapshot_base = snapshots_dir / cast(str, snapshot_date)
 
     if core_version and core_commit:
         core_dir = snapshot_base / f"comfyui-core-{core_version}"

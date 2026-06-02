@@ -38,7 +38,7 @@ HOOK_COVERAGE = {
 
 def _split_signature_arguments(signature_text: str) -> list[str]:
     items = []
-    current = []
+    current: list[str] = []
     depth = 0
     for char in signature_text:
         if char == "," and depth == 0:
@@ -70,7 +70,7 @@ def _parse_hook_arguments(signature_text: str) -> list[dict]:
 
 
 def _extract_typed_signature(lines: list[str], start_index: int) -> tuple[dict | None, int]:
-    signature_lines = []
+    signature_lines: list[str] = []
     index = start_index
     paren_depth = 0
     while index < len(lines):

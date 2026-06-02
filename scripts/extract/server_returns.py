@@ -147,12 +147,12 @@ def _infer_json_response(block: str) -> dict:
     notes = []
 
     if best_arg and "status=" in best_arg:
-        effective_codes = set()
+        code_set: set[int] = set()
         for match in STATUS_RE.finditer(best_arg):
-            effective_codes.add(int(match.group(1)))
-        if not effective_codes:
-            effective_codes.add(200)
-        effective_codes = sorted(effective_codes)
+            code_set.add(int(match.group(1)))
+        if not code_set:
+            code_set.add(200)
+        effective_codes: list[int] = sorted(code_set)
     elif best_arg:
         effective_codes = sorted({200, *block_status_codes})
     else:

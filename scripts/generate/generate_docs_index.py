@@ -7,6 +7,7 @@ import argparse
 import json
 import re
 from pathlib import Path
+from typing import Any
 
 from scripts.common.display_path import display_path
 from scripts.common.published_docs_surface import (
@@ -189,7 +190,7 @@ def validate_docs_index_metadata(
         )
 
 
-def normalize_tooling_metadata(entry: dict[str, object]) -> dict[str, object]:
+def normalize_tooling_metadata(entry: dict[str, Any]) -> dict[str, object]:
     return {
         "task_intents": _sorted_strings(list(entry.get("task_intents", []))),
         "related_artifacts": _sorted_strings(list(entry.get("related_artifacts", []))),
@@ -210,7 +211,7 @@ def build_docs_index(
     resolved_nav_source = nav_source if nav_source is not None else DEFAULT_NAV_SOURCE
     resolved_metadata_path = metadata_path if metadata_path is not None else METADATA_PATH
     pages = build_published_docs_surface(repo_root, resolved_nav_source, DOCS_ROOT)
-    eligible_paths = {page["path"] for page in pages}
+    eligible_paths: set[str] = {str(page["path"]) for page in pages}
     nav_paths = _nav_paths_for_validation(repo_root, resolved_nav_source)
     resolved_metadata = (
         metadata if metadata is not None else load_docs_index_metadata(resolved_metadata_path)
@@ -220,7 +221,7 @@ def build_docs_index(
     merged_pages = []
     for page in pages:
         merged = dict(page)
-        page_metadata = resolved_metadata.get(page["path"])
+        page_metadata = resolved_metadata.get(str(page["path"]))
         if page_metadata is not None:
             merged["tooling_metadata"] = normalize_tooling_metadata(page_metadata)
         merged_pages.append(merged)

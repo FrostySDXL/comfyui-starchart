@@ -291,12 +291,12 @@ def _run_node_api_schema_extractor(
 
 
 def run_extractors(
-    core_version: str = None,
-    core_commit: str = None,
-    frontend_version: str = None,
-    frontend_commit: str = None,
-    snapshot_date: str = None,
-    runtime_object_info_path: str = None,
+    core_version: str | None = None,
+    core_commit: str | None = None,
+    frontend_version: str | None = None,
+    frontend_commit: str | None = None,
+    snapshot_date: str | None = None,
+    runtime_object_info_path: str | None = None,
 ) -> dict:
     """Re-run all extractors against the new snapshot files.
 
