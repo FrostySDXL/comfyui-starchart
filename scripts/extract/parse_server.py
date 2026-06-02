@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+from scripts.common.display_path import display_path
 from scripts.common.path_normalization import normalize_repo_relative_path
 from scripts.extract.server_blocks import _find_decorator_matches, _get_function_block
 from scripts.extract.server_parameters import extract_parameters
@@ -114,7 +115,7 @@ def main() -> int:
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    print(f"Extracted {len(endpoints)} endpoints to {output_path}")
+    print(f"Extracted {len(endpoints)} endpoints to {display_path(output_path)}")
     return 0
 
 

@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 
 from scripts.common import http_utils
+from scripts.common.display_path import display_path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -72,7 +73,7 @@ def check_object_info(base_url: str, timeout: int) -> bool:
 def check_post_prompt(base_url: str, prompt_path: Path, timeout: int) -> bool:
     """Verify POST /prompt accepts a valid payload and returns a dict."""
     if not prompt_path.exists():
-        print(f"SKIP: prompt payload not found at {prompt_path}")
+        print(f"SKIP: prompt payload not found at {display_path(prompt_path)}")
         return True
 
     payload = json.loads(prompt_path.read_text(encoding="utf-8"))

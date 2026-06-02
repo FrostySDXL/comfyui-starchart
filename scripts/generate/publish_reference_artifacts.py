@@ -21,6 +21,7 @@ import shutil
 from datetime import date, datetime
 from pathlib import Path
 
+from scripts.common.display_path import display_path
 from scripts.common.json_utils import compute_textual_json_sha256, load_json, write_json
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -149,7 +150,7 @@ def _ensure_published_schema_files_exist() -> bool:
         schema_name = name.replace(".json", ".schema.json")
         schema_path = SCHEMAS_DIR / schema_name
         if not schema_path.exists():
-            print(f"ERROR: Published schema file not found: {schema_path}")
+            print(f"ERROR: Published schema file not found: {display_path(schema_path)}")
             missing = True
     return not missing
 
@@ -162,7 +163,7 @@ def main() -> int:
     for name in ARTIFACT_FILES:
         path = SOURCE_DIR / name
         if not path.exists():
-            print(f"ERROR: Required artifact not found: {path}")
+            print(f"ERROR: Required artifact not found: {display_path(path)}")
             return 1
         artifacts[name] = load_json(path)
 
@@ -195,10 +196,10 @@ def main() -> int:
     manifest_path = OUTPUT_ROOT / "manifest.json"
     write_json(manifest_path, manifest)
 
-    print(f"Published artifacts to {OUTPUT_ROOT}")
-    print(f"  Current:  {CURRENT_DIR}")
-    print(f"  Versioned: {versioned_dir}")
-    print(f"  Manifest: {manifest_path}")
+    print(f"Published artifacts to {display_path(OUTPUT_ROOT)}")
+    print(f"  Current:  {display_path(CURRENT_DIR)}")
+    print(f"  Versioned: {display_path(versioned_dir)}")
+    print(f"  Manifest: {display_path(manifest_path)}")
     return 0
 
 

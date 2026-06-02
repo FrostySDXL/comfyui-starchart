@@ -14,6 +14,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from scripts.common.display_path import display_command
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RUN_ALL_SCRIPT = REPO_ROOT / "scripts" / "verify" / "run_all.py"
 
@@ -33,7 +35,7 @@ def main() -> int:
     parser.parse_args()
 
     command = build_command()
-    print(f"Running pipeline smoke: {' '.join(command)}")
+    print(f"Running pipeline smoke: {display_command(command)}")
     try:
         result = subprocess.run(command, capture_output=True, text=True, cwd=str(REPO_ROOT))
     except FileNotFoundError as exc:

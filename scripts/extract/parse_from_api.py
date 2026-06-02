@@ -14,6 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 from scripts.common import http_utils
+from scripts.common.display_path import display_path
 from scripts.common.json_utils import compute_bytes_sha256
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -79,7 +80,7 @@ def main() -> int:
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(snapshot, indent=2) + "\n", encoding="utf-8")
-    print(f"Extracted runtime object_info to {output_path}")
+    print(f"Extracted runtime object_info to {display_path(output_path)}")
     return 0
 
 

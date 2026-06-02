@@ -697,7 +697,8 @@ ImageInput = torch.Tensor
             self.assertTrue(output_path.exists())
             data = json.loads(output_path.read_text(encoding="utf-8"))
             self.assertEqual(data["metadata"]["version"], "v-test")
-            self.assertIn(str(output_path), stdout)
+            # Script output redacts the absolute user path; only the basename appears.
+            self.assertIn(output_path.name, stdout)
 
 
 if __name__ == "__main__":

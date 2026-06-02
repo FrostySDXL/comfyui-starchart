@@ -16,6 +16,7 @@ from pathlib import Path
 from packaging.version import InvalidVersion, Version
 
 from scripts.common import http_utils
+from scripts.common.display_path import display_path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -210,11 +211,11 @@ def main() -> int:
 
     if args.output_json:
         Path(args.output_json).write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-        print(f"Wrote JSON summary to {args.output_json}")
+        print(f"Wrote JSON summary to {display_path(args.output_json)}")
 
     if args.output_md:
         Path(args.output_md).write_text(markdown, encoding="utf-8")
-        print(f"Wrote markdown summary to {args.output_md}")
+        print(f"Wrote markdown summary to {display_path(args.output_md)}")
 
     return 0
 

@@ -3,12 +3,14 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from scripts.common.display_path import display_command, display_path
+
 
 def _run_cmd(
     cmd: list[str], description: str, cwd: str | None = None
 ) -> subprocess.CompletedProcess:
     """Run a command and raise on failure."""
-    print(f"  Running: {' '.join(cmd)}")
+    print(f"  Running: {display_command(cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
     if result.returncode != 0:
         message_lines = [f"FAILED: {description}"]
@@ -40,7 +42,9 @@ def _copy_source_files(
             copied.append(rel_path)
             print(f"  Copied {repo_label}/{rel_path}")
         else:
-            print(f"  WARNING: {rel_path} not found in {repo_label} clone at {clone_dir}")
+            print(
+                f"  WARNING: {rel_path} not found in {repo_label} clone at {display_path(clone_dir)}"
+            )
     return copied
 
 

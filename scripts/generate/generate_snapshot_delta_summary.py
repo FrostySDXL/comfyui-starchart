@@ -5,6 +5,8 @@ import argparse
 import json
 from pathlib import Path
 
+from scripts.common.display_path import display_path
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = REPO_ROOT / "public" / "artifacts" / "delta-summary.json"
 CANONICAL_ARTIFACTS = [
@@ -264,7 +266,7 @@ def main() -> int:
     output_path.write_text(
         json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
-    print(f"Generated snapshot delta summary at {output_path}")
+    print(f"Generated snapshot delta summary at {display_path(output_path)}")
     return 0
 
 

@@ -8,6 +8,7 @@ import json
 import re
 from pathlib import Path
 
+from scripts.common.display_path import display_path
 from scripts.common.published_docs_surface import (
     build_published_docs_surface,
     flatten_nav_from_source,
@@ -280,7 +281,7 @@ def main() -> int:
     )
     output_path = Path(args.output)
     write_docs_index(docs_index, output_path)
-    print(f"Generated docs index at {output_path}")
+    print(f"Generated docs index at {display_path(output_path)}")
     return 0
 
 

@@ -20,6 +20,8 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
+from scripts.common.display_path import display_path
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DIST_DIR = REPO_ROOT / "dist"
 # Must match the `base` setting in astro.config.mjs and the SITE_BASE constant in
@@ -231,7 +233,7 @@ def main() -> int:
     args = parser.parse_args()
 
     if not args.dist_dir.exists():
-        print(f"ERROR: dist directory not found: {args.dist_dir}")
+        print(f"ERROR: dist directory not found: {display_path(args.dist_dir)}")
         print("Run 'npm run build' first to generate the site.")
         return 1
 
@@ -244,11 +246,11 @@ def main() -> int:
     print("BROKEN INTERNAL LINKS:")
     total_broken = 0
     for html_file, broken_links in sorted(broken_by_file.items()):
-        print(f"\n  {html_file}:")
+        print(f"\n  {display_path(html_file)}:")
         for href, resolved, dist_path in broken_links:
             print(f'    href="{href}"')
             print(f"      -> resolves to: {resolved}")
-            print(f"      -> expected file: {dist_path} (NOT FOUND)")
+            print(f"      -> expected file: {display_path(dist_path)} (NOT FOUND)")
             total_broken += 1
 
     print(f"\nFound {total_broken} broken link(s) in {len(broken_by_file)} file(s).")

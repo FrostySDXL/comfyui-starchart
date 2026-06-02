@@ -6,6 +6,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from scripts.common.display_path import display_path
 from scripts.common.path_normalization import normalize_repo_relative_path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -510,7 +511,10 @@ def main() -> int:
         if runtime_path.exists():
             runtime_snapshot = json.loads(runtime_path.read_text(encoding="utf-8"))
         else:
-            print(f"WARNING: runtime snapshot not found at {runtime_path}", file=sys.stderr)
+            print(
+                f"WARNING: runtime snapshot not found at {display_path(runtime_path)}",
+                file=sys.stderr,
+            )
 
     source_sections = [
         "object_info_fields",
@@ -595,7 +599,7 @@ def main() -> int:
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    print(f"Extracted node API schema to {output_path}")
+    print(f"Extracted node API schema to {display_path(output_path)}")
     return 0
 
 
