@@ -124,7 +124,7 @@ intentionally.
 - `references/docs-index-metadata.json` must only target retained published pages
 - `refresh-provenance.json` is published operator evidence, not a manifest-discovered canonical artifact
 - after `scripts/refresh_snapshots.py`, use the printed `Recommended follow-up commands:` block instead of reconstructing the republish/delta-summary/verification order by hand
-- `npm run build` may print the benign Starlight `Entry docs → 404 was not found.` warning
+- `npm run build` may print the benign Starlight `Entry docs -> 404 was not found.` warning
 
 ## Completion Standard
 

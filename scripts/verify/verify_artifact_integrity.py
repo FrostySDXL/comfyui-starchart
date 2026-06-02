@@ -13,6 +13,7 @@ import json
 import sys
 from pathlib import Path
 
+from scripts.common.display_path import display_path
 from scripts.common.json_utils import compute_textual_json_sha256, load_json
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -50,26 +51,26 @@ def verify_integrity(
     errors = []
 
     if not manifest_path.exists():
-        return [f"Missing manifest: {manifest_path}"]
+        return [f"Missing manifest: {display_path(manifest_path)}"]
 
     try:
         manifest = load_manifest(manifest_path)
     except (json.JSONDecodeError, OSError) as exc:
-        return [f"Failed to read manifest {manifest_path}: {exc}"]
+        return [f"Failed to read manifest {display_path(manifest_path)}: {exc}"]
 
     manifest_artifacts = manifest.get("artifacts")
     if not isinstance(manifest_artifacts, dict):
-        return [f"Manifest artifacts block is missing or invalid: {manifest_path}"]
+        return [f"Manifest artifacts block is missing or invalid: {display_path(manifest_path)}"]
 
     for name in ARTIFACT_FILES:
         canonical_path = canonical_dir / name
         published_path = published_dir / name
 
         if not canonical_path.exists():
-            errors.append(f"Missing canonical artifact: {canonical_path}")
+            errors.append(f"Missing canonical artifact: {display_path(canonical_path)}")
             continue
         if not published_path.exists():
-            errors.append(f"Missing published artifact: {published_path}")
+            errors.append(f"Missing published artifact: {display_path(published_path)}")
             continue
 
         manifest_entry = manifest_artifacts.get(name)

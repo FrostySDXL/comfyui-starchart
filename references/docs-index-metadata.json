@@ -14,6 +14,7 @@
       "GET /history/{prompt_id}",
       "GET /queue",
       "GET /ws",
+      "POST /interrupt",
       "POST /prompt"
     ],
     "related_events": [
@@ -134,7 +135,7 @@
       "api/websocket.md",
       "deep-dives/workflow-json-schema.md",
       "reference/object-info.md",
-      "reference/machine-readable-artifacts.md"
+      "api/endpoints.md"
     ]
   },
   "api/websocket.md": {
@@ -515,6 +516,7 @@
       "execution_cached",
       "execution_error",
       "execution_interrupted",
+      "execution_start",
       "execution_success",
       "feature_flags",
       "status"

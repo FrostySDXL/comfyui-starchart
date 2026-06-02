@@ -151,13 +151,20 @@ class LeakyPrintDetectionTests(unittest.TestCase):
             f"Escape sequence r'\\n' should not be flagged as a path; got {findings}",
         )
 
-    def test_backslash_in_windows_path_still_flagged(self):
+    def test_known_path_variable_name_flagged_via_expr_references_path_variable(self):
         module = _load_module()
-        # A genuine Windows path with a backslash should still be flagged.
-        source = 'from pathlib import Path\ndef go(p):\n    print(f"File: {p}")\n'
         # The variable name "p" is in PATH_VARIABLE_NAMES, so this
-        # already works via _expr_references_path_variable -- test that
-        # a backslash-containing string literal path is also flagged.
+        # passes via _expr_references_path_variable without needing
+        # backslash detection.
+        source = 'from pathlib import Path\ndef go(p):\n    print(f"File: {p}")\n'
+        findings = module.scan_source_for_leaky_prints(source)
+        self.assertEqual(len(findings), 1)
+
+    def test_backslash_containing_string_literal_is_flagged(self):
+        module = _load_module()
+        # A string literal containing a genuine Windows backslash path
+        # must be detected by _string_literal_looks_like_path.
+        source = 'def go():\n    print("C:\\\\Users\\\\file.json")\n'
         findings = module.scan_source_for_leaky_prints(source)
         self.assertEqual(len(findings), 1)
 

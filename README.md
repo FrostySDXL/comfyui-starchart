@@ -97,8 +97,21 @@ Start here:
 Supported Python: `3.11+`  
 Supported Node.js for site/framework work: `24.x`
 
-Use Python 3.11+ for repo commands. On Windows, use `py -3.11` if `python`
-is not already `3.11.x`.
+**Windows bootstrap:**
+
+```bash
+py -3.11 -m venv .venv
+.venv\Scripts\activate
+```
+
+**Linux / macOS bootstrap:**
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+**After activation (all platforms):**
 
 ```bash
 python -m pip install -r requirements.lock
@@ -110,13 +123,20 @@ npm run build
 
 Serve locally with `npm run dev`.
 
+After the first bootstrap, use the activated venv for all subsequent commands:
+
+```bash
+.venv\Scripts\activate       # Windows
+source .venv/bin/activate    # Linux / macOS
+```
+
 Maintainer notes:
 
 - `.python-version` contains `3.11` for toolchains that auto-select Python
 - install from `requirements.lock`
 - edit direct Python dependencies in `requirements.in`
 - use `python scripts/verify/run_all.py` as the default maintainer-grade local gate
-- on Windows, prefer `py -3.11` whenever `python` is not already 3.11
+- once the venv is active, `python` resolves to the venv interpreter and version is always `3.11.x`
 
 ## Machine-Readable Artifacts
 

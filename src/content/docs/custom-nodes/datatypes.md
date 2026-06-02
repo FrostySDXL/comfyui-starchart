@@ -53,8 +53,7 @@ Important runtime datatypes include:
 - `IMAGE` -> `torch.Tensor` shaped `[B, H, W, C]`
 - `MASK` -> `torch.Tensor` shaped `[H, W]` or batched variants
 - `LATENT` -> `dict` containing at least `samples`, usually shaped
-  `[B, C, H, W]`, with optional fields `noise_mask`, `batch_index`,
-  and `type` (for audio or hunyuan3dv2 uses)
+  `[B, C, H, W]`, with optional fields `noise_mask` and `batch_index`
 - `AUDIO` -> `dict` containing `waveform` and `sample_rate`
   (the upstream `_io.py` TypedDict uses `sampler_rate`; the
   `basic_types.py` TypedDict and the artifact use `sample_rate`)

@@ -138,6 +138,22 @@ class DisplayPathTests(unittest.TestCase):
             "g://host/path",
         )
 
+    def test_relative_path_returns_basename(self):
+        module = _load_module()
+        rel = Path("foo/bar/x.txt")
+        self.assertEqual(
+            module.display_path(rel, repo_root=FAKE_REPO),
+            "x.txt",
+        )
+
+    def test_non_path_object_returns_empty_string(self):
+        module = _load_module()
+        # display_path catches TypeError from Path(int) and returns ""
+        self.assertEqual(
+            module.display_path(42, repo_root=FAKE_REPO),
+            "",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

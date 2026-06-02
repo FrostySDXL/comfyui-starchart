@@ -64,6 +64,8 @@ DEFAULT_SCAN_RELATIVE_PATHS: list[str] = [
     "scripts/common/refresh_git_ops.py",
     # Self-scan: the verifier must also pass its own leak detection
     "scripts/verify/no_leaky_paths.py",
+    # verify_artifact_integrity: 5 error-return f-strings interpolate Path objects
+    "scripts/verify/verify_artifact_integrity.py",
 ]
 
 # Variable names that strongly suggest a filesystem path. Used to flag

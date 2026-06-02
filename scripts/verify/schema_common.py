@@ -106,6 +106,9 @@ COVERAGE_SCHEMA = {
 }
 
 NODE_API_COVERAGE_SCHEMA = {
+    # node_api_schema.json coverage may legitimately omit guaranteed_fields
+    # and best_effort_fields for sections such as prompt_conditioning_surface
+    # that are best-effort by nature. Other artifact schemas require them.
     "description": (str, True),
     "sources_covered": (list, True),
     "runtime_enriched": (bool, True),
