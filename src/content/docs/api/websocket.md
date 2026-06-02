@@ -76,6 +76,18 @@ The following events are visible in `server.py` and `execution.py`:
 `add_message()` in `PromptExecutor` also adds a millisecond `timestamp`
 to lifecycle messages before they are sent.
 
+These are WebSocket message types. They are useful for consumers that need live
+state, but they are not evidence of a Python callback hook for each lifecycle
+transition. `send_json()` wraps each event as `{ "type": event, "data": data }`
+before sending it to connected sockets. Source-backed from pinned snapshots:
+`references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py`.
+
+The event sequence starts after the prompt has already passed the `/prompt`
+submission boundary and been picked up for execution. Use
+[Prompt Submission](prompt-submission.md) for the request contract and extraction
+limits, then use this page to follow the live execution messages for the matching
+`client_id` and `prompt_id`.
+
 ### Binary preview events
 
 The server also sends binary image previews:
@@ -102,6 +114,9 @@ all connected sockets.
 
 - Use the WebSocket when you need live progress, node execution state, or
   preview frames.
+- Use the prompt-submission page when you need to inspect the submitted prompt
+  graph itself; WebSocket events report execution lifecycle state rather than a
+  full copy of the original request body.
 - Use HTTP routes like `/history` and `/queue` when polling is simpler or
   when reconnecting after a disconnected session.
 - Treat the WebSocket `sid` and the prompt `client_id` as related but not

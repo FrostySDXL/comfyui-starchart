@@ -86,6 +86,13 @@ the remaining chain.
 
 Execution-side observability is driven by `execution.py`.
 
+The lifecycle starts before execution, at prompt submission. `POST /prompt`
+invokes `trigger_on_prompt(json_data)` immediately after reading the request body
+and before queue numbering, validation, node replacement, and queue insertion.
+That callback surface is the server-side hook point for observing or reshaping a
+submitted prompt graph before it becomes queued work. Source-backed from pinned
+snapshots: `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py`.
+
 ### Progress handling
 
 During `PromptExecutor.execute_async`, ComfyUI calls:
@@ -124,6 +131,18 @@ frontend clients and monitoring-style extensions.
 
 Treat this as an event and observability surface. Do not read it as evidence of
 a broad Python hook catalog.
+
+Execution lifecycle messages are WebSocket-facing events, not general Python
+callbacks. `PromptExecutor.add_message(...)` records lifecycle messages and uses
+`server.send_sync(...)` to enqueue them for WebSocket delivery; it does not expose
+an extension callback registry for each event. Source-backed from pinned
+snapshots: `references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`
+and `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py`.
+
+Use the event stream for observation and correlation. Use `on_prompt` handlers
+only when the integration needs prompt-time inspection or normalization before
+validation and queueing. Use routes when the integration needs request/response
+control rather than passive lifecycle observation.
 
 ## Route-based extension surfaces
 

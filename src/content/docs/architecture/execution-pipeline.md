@@ -37,6 +37,13 @@ run?" while execution answers "which work must actually happen right now?"
 `server.py` handles `POST /prompt` by reading JSON, applying prompt hooks, and
 assigning queue priority.
 
+The submitted `prompt` is already the API prompt graph at this boundary. Each
+graph entry is keyed by node ID, names a `class_type`, and carries `inputs` that
+may be literal values or linked-input pairs. Use [Prompt Submission](../api/prompt-submission.md)
+for the request contract and extraction limits. Source-backed from pinned
+snapshots: `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py`
+and `references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`.
+
 - `number` controls explicit queue ordering when provided.
 - `front: true` negates the generated queue number so the prompt runs earlier.
 - `prompt_id` is caller-supplied when present, otherwise generated.
@@ -45,6 +52,12 @@ assigning queue priority.
 Before validation, the server also calls `self.node_replace_manager.apply_replacements(prompt)`.
 That means the pipeline can rewrite node class usage before the validator and
 executor see the final graph.
+
+Prompt hooks run before validation and queue insertion, so they are the pipeline
+surface for prompt-time inspection or normalization. WebSocket lifecycle events
+start later, after queued work is picked up for execution. Source-backed from
+pinned snapshots: `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py`
+and `references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`.
 
 ## Stage 2: Validation
 
@@ -111,6 +124,12 @@ The live event surface is separate from the HTTP submission path:
 
 That split is why WebSocket monitoring complements the API but does not replace
 queue and history lookup.
+
+These lifecycle names are WebSocket-facing event types, not proof of a separate
+Python callback hook for each transition. Use hook docs for extension timing and
+the WebSocket page for event envelopes, targeting, and live state. Source-backed
+from pinned snapshots: `references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py`
+and `references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`.
 
 ## Stage 6: History Assembly
 

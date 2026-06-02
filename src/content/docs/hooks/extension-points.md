@@ -67,6 +67,14 @@ If the goal is to watch execution progress, lifecycle, or status transitions,
 use runtime messages and execution events. Treat these as an observability
 surface, not as a large hook inventory.
 
+For prompt-history or telemetry tools, split the job by lifecycle boundary:
+inspect submitted prompt graphs with the prompt hook surface, then observe
+execution progress through WebSocket lifecycle events. The hook can see the
+request before validation and queueing; the event stream reports what happens
+after queued work starts. Source-backed from pinned snapshots:
+`references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py` and
+`references/snapshots/2026-05-21/comfyui-core-v0.22.0/execution.py`.
+
 ### Request/response integration
 
 If a frontend panel, service, or external tool needs a clear server endpoint,
@@ -106,7 +114,14 @@ Runtime observability flows through the executor and the server WebSocket
 event stream:
 
 - progress handling via `WebUIProgressHandler`
-- lifecycle events like `executing`, `executed`, and `execution_error`
+- lifecycle events like `execution_start`, `execution_cached`, `executing`,
+  `executed`, `execution_success`, `execution_error`, and
+  `execution_interrupted`
+
+Use [WebSocket](../api/websocket.md) for event payload and targeting details, and
+use [Execution Pipeline](../architecture/execution-pipeline.md) for the
+submission-to-history sequence. This chooser page intentionally avoids copying
+those narrower contracts.
 
 ### 4. Custom routes and route-owning managers
 
