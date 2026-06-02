@@ -1,13 +1,13 @@
 {
   "metadata": {
     "sources": [
-      "references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py",
-      "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
-      "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_input/basic_types.py"
+      "references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py",
+      "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+      "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_input/basic_types.py"
     ],
     "extracted_date": "2026-06-01",
-    "version": "v0.22.0",
-    "commit": "a8d2519058ea766ca3b14916bcc01ecef5efd235",
+    "version": "v0.23.0",
+    "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
     "provenance": {
       "mode": "source-only",
       "source_sections": [
@@ -173,7 +173,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "bool",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": true
     },
     {
@@ -336,7 +336,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "int",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": true
     },
     {
@@ -509,7 +509,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "float",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": true
     },
     {
@@ -652,7 +652,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "str",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": true
     },
     {
@@ -847,7 +847,7 @@
         }
       ],
       "type_hint": "str",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": true
     },
     {
@@ -990,7 +990,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "list[str]",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": true
     },
     {
@@ -1002,7 +1002,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "torch.Tensor",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1014,7 +1014,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "torch.Tensor",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1117,7 +1117,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "str",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": true
     },
     {
@@ -1129,7 +1129,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "torch.Tensor",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1141,7 +1141,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "LatentDict",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1153,7 +1153,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "CondList",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1165,7 +1165,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Sampler",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1177,7 +1177,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "torch.Tensor",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1189,7 +1189,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "torch.Tensor",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1201,7 +1201,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "CFGGuider",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1213,7 +1213,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "CLIP",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1225,7 +1225,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "ControlNet",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1237,7 +1237,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "VAE",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1249,7 +1249,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "ModelPatcher",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1261,7 +1261,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "BackgroundRemovalModel",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1273,7 +1273,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "ClipVisionModel",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1285,7 +1285,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "ClipVisionOutput_",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1297,7 +1297,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "StyleModel_",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1309,7 +1309,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "ModelPatcher",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1321,7 +1321,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "ImageModelDescriptor",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1333,7 +1333,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Any",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1345,7 +1345,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "AudioDict",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1357,7 +1357,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "VideoInput",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1369,7 +1369,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "_SVG",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1381,7 +1381,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "dict[str, torch.Tensor]",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1393,7 +1393,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "LossMapDict",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1405,7 +1405,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "VOXEL",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1417,7 +1417,19 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "MESH",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+      "is_widget": false
+    },
+    {
+      "io_type": "SPLAT",
+      "class_name": "Splat",
+      "input_class": null,
+      "input_parameters": [],
+      "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
+      "type_hint": "SPLAT",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1429,7 +1441,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "File3D",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1441,7 +1453,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "File3D",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1453,7 +1465,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "File3D",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1465,7 +1477,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "File3D",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1477,7 +1489,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "File3D",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1489,7 +1501,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "File3D",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1501,7 +1513,55 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "File3D",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+      "is_widget": false
+    },
+    {
+      "io_type": "FILE_3D_PLY",
+      "class_name": "File3DPLY",
+      "input_class": null,
+      "input_parameters": [],
+      "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
+      "type_hint": "File3D",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+      "is_widget": false
+    },
+    {
+      "io_type": "FILE_3D_SPLAT",
+      "class_name": "File3DSPLAT",
+      "input_class": null,
+      "input_parameters": [],
+      "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
+      "type_hint": "File3D",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+      "is_widget": false
+    },
+    {
+      "io_type": "FILE_3D_SPZ",
+      "class_name": "File3DSPZ",
+      "input_class": null,
+      "input_parameters": [],
+      "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
+      "type_hint": "File3D",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+      "is_widget": false
+    },
+    {
+      "io_type": "FILE_3D_KSPLAT",
+      "class_name": "File3DKSPLAT",
+      "input_class": null,
+      "input_parameters": [],
+      "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
+      "type_hint": "File3D",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1513,7 +1573,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "HookGroup",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1525,7 +1585,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "HookKeyframeGroup",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1537,7 +1597,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "tuple[int, int]",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1549,7 +1609,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Callable[[torch.Tensor], torch.Tensor]",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1561,7 +1621,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "tuple[str, Any]",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1573,7 +1633,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "AccumulationDict",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1585,7 +1645,19 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "CameraInfo",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+      "is_widget": false
+    },
+    {
+      "io_type": "LOAD3D_MODEL_INFO",
+      "class_name": "Load3DModelInfo",
+      "input_class": null,
+      "input_parameters": [],
+      "output_parameters": [],
+      "input_parameter_details": [],
+      "output_parameter_details": [],
+      "type_hint": "list[Model3DTransform]",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1597,7 +1669,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Model3DDict",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1609,7 +1681,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Model3DDict",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1621,7 +1693,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Any",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1633,7 +1705,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Any",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1645,7 +1717,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Any",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1657,7 +1729,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Any",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1669,7 +1741,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Any",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1681,7 +1753,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Any",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1693,7 +1765,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Any",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1705,7 +1777,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Any",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1717,7 +1789,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "Any",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1810,7 +1882,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "TrackDict",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -1945,7 +2017,7 @@
         }
       ],
       "type_hint": null,
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -2018,7 +2090,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "dict[str, Any]",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -2091,7 +2163,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "dict[str, Any]",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -2164,7 +2236,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "dict[str, Any]",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -2229,7 +2301,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "dict",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": true
     },
     {
@@ -2305,7 +2377,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "str",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": true
     },
     {
@@ -2390,7 +2462,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "BoundingBoxDict",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": true
     },
     {
@@ -2465,7 +2537,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "CurveInput_",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": true
     },
     {
@@ -2477,7 +2549,7 @@
       "input_parameter_details": [],
       "output_parameter_details": [],
       "type_hint": "list[int]",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": false
     },
     {
@@ -2612,7 +2684,7 @@
       ],
       "output_parameter_details": [],
       "type_hint": "RangeInput",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
       "is_widget": true
     }
   ],
@@ -2643,7 +2715,7 @@
           "raw_link",
           "advanced"
         ],
-        "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+        "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
         "supports_multiline_parameter": true
       }
     ],
@@ -2654,7 +2726,7 @@
         "type_hint": "CondList",
         "is_widget": false,
         "input_parameters": [],
-        "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
+        "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
         "output_parameters": []
       }
     ],
@@ -2667,7 +2739,7 @@
   "typed_input_shapes": {
     "AudioInput": {
       "description": "TypedDict representing audio input.",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_input/basic_types.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_input/basic_types.py",
       "fields": {
         "waveform": {
           "type": "torch.Tensor",
@@ -2688,7 +2760,7 @@
     },
     "LatentInput": {
       "description": "TypedDict representing latent input.",
-      "defined_in": "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_input/basic_types.py",
+      "defined_in": "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_input/basic_types.py",
       "fields": {
         "samples": {
           "type": "torch.Tensor",
@@ -2719,9 +2791,9 @@
   "coverage": {
     "description": "Extracted from pinned source files only. Runtime-only data such as per-node INPUT_TYPES schemas and custom node types are deferred beyond pinned-snapshot extraction.",
     "sources_covered": [
-      "references/snapshots/2026-05-21/comfyui-core-v0.22.0/server.py",
-      "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_io.py",
-      "references/snapshots/2026-05-21/comfyui-core-v0.22.0/comfy_api/latest/_input/basic_types.py"
+      "references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py",
+      "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+      "references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_input/basic_types.py"
     ],
     "runtime_enriched": false,
     "guaranteed_fields": [

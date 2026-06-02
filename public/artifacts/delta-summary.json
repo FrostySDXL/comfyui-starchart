@@ -1,6 +1,6 @@
 {
   "comparison": {
-    "old": "references/_refresh_backups/raw_20260521T055150Z",
+    "old": "references/_refresh_backups/raw_20260602T022958Z",
     "new": "references/raw"
   },
   "notes": [
@@ -34,8 +34,15 @@
       },
       "io_types": {
         "old_count": 70,
-        "new_count": 70,
-        "added": [],
+        "new_count": 76,
+        "added": [
+          "FILE_3D_KSPLAT:File3DKSPLAT",
+          "FILE_3D_PLY:File3DPLY",
+          "FILE_3D_SPLAT:File3DSPLAT",
+          "FILE_3D_SPZ:File3DSPZ",
+          "LOAD3D_MODEL_INFO:Load3DModelInfo",
+          "SPLAT:Splat"
+        ],
         "removed": [],
         "changed": []
       },
