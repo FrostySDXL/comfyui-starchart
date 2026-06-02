@@ -154,6 +154,18 @@ class DisplayPathTests(unittest.TestCase):
             "",
         )
 
+    def test_display_path_uses_default_repo_root(self):
+        """When repo_root is omitted, resolves from this module's location."""
+        module = _load_module()
+        # Use a path that we know is inside the actual repo.
+        tests_dir = str(Path(__file__).resolve().parent)
+        result = module.display_path(tests_dir)
+        # Should produce a POSIX path relative to repo root, ending in tests/unit.
+        self.assertTrue(
+            result.endswith("tests/unit"),
+            f"Expected path ending in 'tests/unit', got: {result}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

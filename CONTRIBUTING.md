@@ -12,11 +12,13 @@ surface ownership.
 Use Python `3.11+` and Node.js `24.x` for repo/site work.
 
 ```bash
-# On Windows, create the venv with: py -3.11 -m venv .venv
+# Windows:
+py -3.11 -m venv .venv
+.venv\Scripts\activate
+
+# Linux / macOS:
 python -m venv .venv
-source .venv/bin/activate  # Linux / macOS
-# or:
-.venv\Scripts\activate  # Windows
+source .venv/bin/activate
 python -m pip install -r requirements.lock
 python -m pip install -e .
 npm ci

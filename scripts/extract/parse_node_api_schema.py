@@ -317,7 +317,7 @@ def extract_io_types(io_text: str, io_path: str) -> list[dict]:
     return results
 
 
-def _runtime_input_type(value) -> list[str]:
+def _runtime_input_type(value: object) -> list[str]:
     if isinstance(value, (list, tuple)) and value:
         return [str(value[0])]
     if isinstance(value, str):

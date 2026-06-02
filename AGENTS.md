@@ -123,6 +123,7 @@ intentionally.
 
 - `docs-index.json` is the only active support index; do not recreate `tooling-index.json`
 - `public/artifacts/docs-index.json` is generated; regenerate it after navigation or metadata changes
+- all repo Python commands must be run from an activated venv; running them outside the venv uses a different interpreter and may fail mypy or unit tests
 - `references/docs-index-metadata.json` must only target retained published pages
 - `refresh-provenance.json` is published operator evidence, not a manifest-discovered canonical artifact
 - after `scripts/refresh_snapshots.py`, use the printed `Recommended follow-up commands:` block instead of reconstructing the republish/delta-summary/verification order by hand

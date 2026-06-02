@@ -543,6 +543,54 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors = module.validate_object_info_runtime(data, "object_info_runtime.json")
         self.assertTrue(any("object_info['KSampler'] is not a dict" in e for e in errors))
 
+    def test_validate_prompt_conditioning_surface_valid_returns_empty(self):
+        """Valid surface with both io_type lists passes validation."""
+        module = self._import_module()
+        data = {
+            "prompt_conditioning_surface": {
+                "text_input_io_types": [
+                    {
+                        "io_type": "STRING",
+                        "class_name": "String",
+                        "supports_multiline_parameter": True,
+                        "traceability": {
+                            "source_type": "source-backed",
+                            "strategy": "python_signature",
+                        },
+                    }
+                ],
+                "conditioning_io_types": [],
+            }
+        }
+        errors = module.validate_prompt_conditioning_surface(data, "test.json")
+        self.assertEqual(errors, [])
+
+    def test_validate_prompt_conditioning_surface_missing_io_type(self):
+        """Entry without required 'io_type' returns an error."""
+        module = self._import_module()
+        data = {
+            "prompt_conditioning_surface": {
+                "text_input_io_types": [
+                    {"class_name": "String", "supports_multiline_parameter": False}
+                ],
+                "conditioning_io_types": [],
+            }
+        }
+        errors = module.validate_prompt_conditioning_surface(data, "test.json")
+        self.assertTrue(any("missing required key 'io_type'" in e for e in errors))
+
+    def test_validate_prompt_conditioning_surface_wrong_type(self):
+        """Entry with int where str is expected returns a type error."""
+        module = self._import_module()
+        data = {
+            "prompt_conditioning_surface": {
+                "text_input_io_types": [{"io_type": 42, "class_name": "String"}],
+                "conditioning_io_types": [],
+            }
+        }
+        errors = module.validate_prompt_conditioning_surface(data, "test.json")
+        self.assertTrue(any("expected str" in e for e in errors))
+
 
 class ValidateSchemaScriptTests(unittest.TestCase):
     """Tests that the validation script runs successfully on the repo."""

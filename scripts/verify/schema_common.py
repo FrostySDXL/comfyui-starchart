@@ -141,13 +141,13 @@ PROMPT_CONDITIONING_SURFACE_SCHEMA = {
 }
 
 
-def _check_type(value, expected_type) -> bool:
+def _check_type(value: object, expected_type: type | tuple[type, ...]) -> bool:
     if isinstance(expected_type, tuple):
         return isinstance(value, expected_type)
     return isinstance(value, expected_type)
 
 
-def _type_label(expected_type) -> str:
+def _type_label(expected_type: type | tuple[type, ...]) -> str:
     if isinstance(expected_type, tuple):
         return " | ".join(t.__name__ for t in expected_type)
     return expected_type.__name__
@@ -313,9 +313,9 @@ def validate_parameter_details(parameters: list, filename: str, path: str) -> li
                 if required:
                     errors.append(f"{filename}: {path}[{index}] missing required key '{key}'")
                 continue
-            if not _check_type(parameter[key], expected_type):
+            if not _check_type(parameter[key], expected_type):  # type: ignore[arg-type]
                 errors.append(
-                    f"{filename}: {path}[{index}].{key} expected {_type_label(expected_type)}, got {type(parameter[key]).__name__}"
+                    f"{filename}: {path}[{index}].{key} expected {_type_label(expected_type)}, got {type(parameter[key]).__name__}"  # type: ignore[arg-type]
                 )
 
         allowed_values = parameter.get("allowed_values", [])

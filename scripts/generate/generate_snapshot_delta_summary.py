@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from scripts.common.display_path import display_path
+from scripts.common.json_utils import write_json
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = REPO_ROOT / "public" / "artifacts" / "delta-summary.json"
@@ -328,9 +329,7 @@ def _update_provenance_delta_flag() -> None:
     published = data.setdefault("published", {})
     published["delta_summary_updated_by_refresh"] = True
     published.setdefault("provenance_path", "public/artifacts/refresh-provenance.json")
-    provenance_path.write_text(
-        json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
+    write_json(provenance_path, data)
     print(f"Updated {display_path(provenance_path)} published flags.")
 
 
