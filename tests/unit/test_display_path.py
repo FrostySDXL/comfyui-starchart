@@ -140,23 +140,20 @@ class DisplayPathTests(unittest.TestCase):
 
     def test_display_path_preserves_url_wrapped_as_path_object(self):
         module = _load_module()
-        # On POSIX, ``Path("g://host/path")`` preserves the ``://``
-        # separator and the URL guard fires.  On Windows, ``Path()``
-        # normalises ``://`` to ``:\\``, treating a single-letter
-        # scheme as a drive letter, so a ``Path``-wrapped URL is
-        # indistinguishable from a filesystem path.  The test
-        # asserts the URL-preserving behaviour only on platforms
-        # where the guard can actually fire.
-        if os.name == "nt":
-            self.assertEqual(
-                module.display_path(Path("g://host/path"), repo_root=FAKE_REPO),
-                "path",
-            )
-        else:
-            self.assertEqual(
-                module.display_path(Path("g://host/path"), repo_root=FAKE_REPO),
-                "g://host/path",
-            )
+        # ``Path("g://host/path")`` cannot preserve the ``://`` marker on
+        # any platform: WindowsPath treats ``g:`` as a drive and rewrites
+        # ``://`` to ``:\\``, while PurePosixPath collapses ``//`` to ``/``
+        # (POSIX reserves ``//`` as an implementation-defined leading
+        # double-slash).  Either way the URL guard in ``display_path``
+        # cannot fire once the input is already a ``Path`` object, so
+        # the URL is indistinguishable from an out-of-repo absolute
+        # filesystem path and reduces to its basename.  The string-input
+        # case is covered separately by
+        # ``test_display_path_preserves_url_with_drive_like_prefix``.
+        self.assertEqual(
+            module.display_path(Path("g://host/path"), repo_root=FAKE_REPO),
+            "path",
+        )
 
     def test_relative_path_returns_basename(self):
         module = _load_module()
