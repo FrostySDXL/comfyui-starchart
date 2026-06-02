@@ -12,6 +12,10 @@ surface ownership.
 Use Python `3.11+` and Node.js `24.x` for repo/site work.
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate  # Linux / macOS
+# or:
+.venv\Scripts\activate  # Windows
 python -m pip install -r requirements.lock
 python -m pip install -e .
 npm ci
@@ -19,10 +23,11 @@ python -m unittest discover -s tests -v
 npm run build
 ```
 
-Windows rule:
+Windows bootstrap rule:
 
-- if `python --version` is not `3.11.x`, use `py -3.11` for repo Python commands
-- prefer `py -3.11 scripts/verify/run_all.py` as the default maintainer gate on Windows
+- create the venv once with `py -3.11 -m venv .venv`
+- after activation, `python` resolves to the venv interpreter and version is always `3.11.x`
+- prefer `python scripts/verify/run_all.py` as the default maintainer gate on Windows
 
 Default maintainer gate:
 
@@ -496,7 +501,7 @@ inventory rows.
 |---|---|---|---|---|---|
 | `scripts/verify/stale_content.py` | Scan for stale markers and aging content | docs plus extracted JSON | Advisory | Finds `TODO`/`TBD`-style drift and old `Last Updated` markers | Cleanup sweeps, doc review passes, or before promoting pages |
 | `scripts/verify/extraction_idempotency.py` | Re-run extractors against pinned inputs and compare outputs | extractor determinism for `references/raw/*.json` | Advisory | Only direct determinism check for extraction reproducibility | Extractor changes or refresh-pipeline review |
-| `scripts/verify/no_leaky_paths.py` | AST-scan script print() calls to confirm filesystem-path values go through `display_path()` or `display_command()` | 15 default scan targets in `scripts/extract/`, `scripts/generate/`, `scripts/verify/`, `scripts/check_upstream_versions.py`, `scripts/new_doc.py` | Advisory | Only repo-local verifier that structurally checks for path redaction at print() call sites; complements the unit-tested `display_path` contract | After wrapping new print() sites with `display_path()`/`display_command()`, when adding a new script that emits filesystem paths, or when a call site regresses to a raw path print |
+| `scripts/verify/no_leaky_paths.py` | AST-scan script print() calls to confirm filesystem-path values go through `display_path()` or `display_command()` | 17 default scan targets in `scripts/extract/`, `scripts/generate/`, `scripts/verify/`, `scripts/common/`, `scripts/check_upstream_versions.py`, `scripts/new_doc.py` | Advisory | Only repo-local verifier that structurally checks for path redaction at print() call sites; detects str() wrapping, string concatenation, qualified Path() calls, imported logging levels, and logger-instance calls in addition to direct print() with path variables. Complements the unit-tested `display_path` contract. | After wrapping new print() sites with `display_path()`/`display_command()`, when adding a new script that emits filesystem paths, or when a call site regresses to a raw path print |
 | `scripts/verify/upstream_pins.py` | Confirm pinned tags and commits still resolve upstream | upstream pin validity for canonical JSON metadata | Advisory | External trust check with cached GitHub API resolution | Scheduled pin health review or after suspicious upstream changes |
 | `scripts/verify/example_surface_integrity.py` | Validate example family structure and routed example references | `examples/` plus routed start-here docs | Advisory | Checks example directory completeness and routed example paths together | Example-surface edits or start-here routing updates |
 | `scripts/verify/evidence_metadata_freshness.py` | Enforce opening evidence metadata discipline on retained pages | selected published docs pages | Advisory | Only verifier that checks allowed baseline-status wording patterns directly | Docs policy changes or refreshes affecting evidence blocks |
@@ -530,12 +535,13 @@ inventory rows.
 
 ## Common Pitfalls
 
+- all repo Python commands must be run from an activated venv; running them outside the venv will use a different Python version and may fail mypy or unit tests
 - `docs-index.json` is the only active support index; do not recreate `tooling-index.json`
 - `references/docs-index-metadata.json` must only point at retained published pages
 - do not hand-edit `public/artifacts/docs-index.json`
 - keep JSON paths on forward slashes only
 - `refresh-provenance.json` is published operator evidence, not a manifest-discovered canonical artifact
-- `npm run build` may print the benign Starlight `Entry docs → 404 was not found.` warning
+- `npm run build` may print the benign Starlight `Entry docs -> 404 was not found.` warning
 - do not let `AGENTS.md` and `CONTRIBUTING.md` drift into duplicate command inventories or conflicting CI descriptions
 
 ## Rollback Expectations

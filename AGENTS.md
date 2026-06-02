@@ -17,7 +17,7 @@ deep maintainer playbooks.
 ## Hard Rules
 
 - Use Python `3.11+`
-- On Windows, if `python --version` is not `3.11.x`, use `py -3.11` for repo Python commands
+- On Windows, bootstrap the venv with `py -3.11 -m venv .venv` once; all subsequent commands run from the activated venv
 - Use Node.js `24.x` for site/framework work
 - Do not claim official behavior without a source citation from `references/snapshots/` or `docs.comfy.org`
 - Do not add emojis or emoticons
@@ -29,17 +29,19 @@ deep maintainer playbooks.
 ## Windows Quickstart
 
 ```bash
-py -3.11 -m pip install -r requirements.lock
-py -3.11 -m pip install -e .
+py -3.11 -m venv .venv
+.venv\Scripts\activate
+python -m pip install -r requirements.lock
+python -m pip install -e .
 npm ci
-py -3.11 -m unittest discover -s tests -v
+python -m unittest discover -s tests -v
 npm run build
 ```
 
 Default maintainer gate:
 
 ```bash
-py -3.11 scripts/verify/run_all.py
+python scripts/verify/run_all.py
 ```
 
 ## Repo Map
@@ -62,28 +64,28 @@ Use this quick router before exploring the repo:
 
 | Task | Read first | Verify |
 |---|---|---|
-| Edit published docs prose | target page + `src/content/docs/reference/source-evidence-policy.md` + `src/content/docs/reference/writing-style-guide.md` | `py -3.11 scripts/verify/cross_references.py` + `npm run build` |
-| Update docs-index routing metadata | `references/docs-index-metadata.json` + `src/content/docs/reference/machine-readable-artifacts.md` | `py -3.11 scripts/generate/generate_docs_index.py` + `py -3.11 scripts/verify/docs_index_freshness.py` + `py -3.11 scripts/verify/validate_schema.py` |
-| Update extracted references | matching file in `references/raw/` + extractor in `scripts/extract/` | `py -3.11 scripts/verify/validate_schema.py` + relevant narrow checks |
-| Change maintainer Python tooling | `pyproject.toml` + affected `scripts/` modules | `py -3.11 -m pip install -e .` + `py -3.11 -m mypy` + `py -3.11 -m unittest discover -s tests -v` + `py -3.11 scripts/verify/run_all.py` |
-| Add or change a verifier | existing verifier + matching unit test | `py -3.11 -m unittest discover -s tests -v` and place it in blocking/advisory CI intentionally |
-| Change CI workflow | relevant `.github/workflows/*.yml` + `CONTRIBUTING.md` workflow guidance | `py -3.11 -m unittest discover -s tests -v -p "test_run_all.py"` + `py -3.11 scripts/verify/run_all.py` |
-| Refresh upstream baselines | `scripts/refresh_snapshots.py` + `CONTRIBUTING.md` refresh section | follow the printed post-refresh command sequence, then `py -3.11 scripts/verify/run_all.py` |
+| Edit published docs prose | target page + `src/content/docs/reference/source-evidence-policy.md` + `src/content/docs/reference/writing-style-guide.md` | `python scripts/verify/cross_references.py` + `npm run build` |
+| Update docs-index routing metadata | `references/docs-index-metadata.json` + `src/content/docs/reference/machine-readable-artifacts.md` | `python scripts/generate/generate_docs_index.py` + `python scripts/verify/docs_index_freshness.py` + `python scripts/verify/validate_schema.py` |
+| Update extracted references | matching file in `references/raw/` + extractor in `scripts/extract/` | `python scripts/verify/validate_schema.py` + relevant narrow checks |
+| Change maintainer Python tooling | `pyproject.toml` + affected `scripts/` modules | `python -m pip install -e .` + `python -m mypy` + `python -m unittest discover -s tests -v` + `python scripts/verify/run_all.py` |
+| Add or change a verifier | existing verifier + matching unit test | `python -m unittest discover -s tests -v` and place it in blocking/advisory CI intentionally |
+| Change CI workflow | relevant `.github/workflows/*.yml` + `CONTRIBUTING.md` workflow guidance | `python -m unittest discover -s tests -v -p "test_run_all.py"` + `python scripts/verify/run_all.py` |
+| Refresh upstream baselines | `scripts/refresh_snapshots.py` + `CONTRIBUTING.md` refresh section | follow the printed post-refresh command sequence, then `python scripts/verify/run_all.py` |
 
 ## Key Commands
 
 ```bash
-py -3.11 scripts/verify/run_all.py
-py -3.11 -m unittest discover -s tests -v
-py -3.11 scripts/verify/python_style.py
-py -3.11 scripts/verify/cross_references.py
-py -3.11 scripts/verify/docs_index_freshness.py
-py -3.11 scripts/verify/validate_schema.py
-py -3.11 scripts/verify/verify_artifact_integrity.py
-py -3.11 scripts/verify/sidebar_navigation_coverage.py
-py -3.11 scripts/verify/rendered_links.py
-py -3.11 scripts/verify/evidence_metadata_freshness.py
-py -3.11 -m mypy
+python scripts/verify/run_all.py
+python -m unittest discover -s tests -v
+python scripts/verify/python_style.py
+python scripts/verify/cross_references.py
+python scripts/verify/docs_index_freshness.py
+python scripts/verify/validate_schema.py
+python scripts/verify/verify_artifact_integrity.py
+python scripts/verify/sidebar_navigation_coverage.py
+python scripts/verify/rendered_links.py
+python scripts/verify/evidence_metadata_freshness.py
+python -m mypy
 npm run check
 npm run build
 ```

@@ -16,6 +16,8 @@ pyyaml==6.0.3
     # via -r requirements.in
 ruff==0.15.13
     # via -r requirements.in
+types-pyyaml==6.0.12.20260518
+    # via -r requirements.in
 typing-extensions==4.15.0
     # via mypy
 websocket-client==1.9.0
