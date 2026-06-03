@@ -336,6 +336,7 @@ python scripts/verify/validate_schema.py
 python scripts/extract/parse_server.py <path> --version <v> --commit <sha>
 python scripts/extract/parse_hooks.py <paths...> --version <v> --commit <sha>
 python scripts/extract/parse_node_api_schema.py <server> <io> <types> --version <v> --commit <sha>
+python scripts/extract/parse_websocket_events.py <server> <main> <execution> <protocol> <progress> <app.ts> --version <v> --commit <sha>
 ```
 
 3. Verify:
@@ -462,9 +463,9 @@ python -m mypy
 
 This inventory covers the current direct verifier surfaces and the workflows that
 run or replay them. Helper modules such as `schema_common.py`,
-`schema_server.py`, `schema_hooks.py`, `schema_node_api.py`, and
-`published_schema_validation.py` support these checks but are not standalone
-inventory rows.
+`schema_server.py`, `schema_hooks.py`, `schema_node_api.py`,
+`schema_websocket_events.py`, and `published_schema_validation.py` support
+these checks but are not standalone inventory rows.
 
 ### Blocking wrapper and blocking checks
 

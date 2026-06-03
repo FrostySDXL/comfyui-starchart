@@ -545,8 +545,8 @@ class RefreshSnapshotsBoundaryTests(unittest.TestCase):
         )
         self.assertEqual(result, ("frontend-sha", "comfyui-frontend-v1.44.13"))
 
-    def test_run_extractors_preserves_server_hooks_schema_sequence(self):
-        """refresh_pipeline.run_extractors should keep the server, hooks, then schema extractor order."""
+    def test_run_extractors_preserves_server_hooks_schema_websocket_sequence(self):
+        """refresh_pipeline.run_extractors should keep server, hooks, schema, then websocket order."""
         module = _load_module()
         events = []
 
@@ -573,6 +573,11 @@ class RefreshSnapshotsBoundaryTests(unittest.TestCase):
                 "_run_node_api_schema_extractor",
                 side_effect=_record("schema", "schema summary"),
             ),
+            mock.patch.object(
+                module.refresh_pipeline,
+                "_run_websocket_events_extractor",
+                side_effect=_record("websocket", "websocket summary"),
+            ),
         ):
             results = module.refresh_pipeline.run_extractors(
                 core_version="v0.20.1",
@@ -588,13 +593,14 @@ class RefreshSnapshotsBoundaryTests(unittest.TestCase):
                 run_cmd=module._run_cmd,
             )
 
-        self.assertEqual(events, ["server", "hooks", "schema"])
+        self.assertEqual(events, ["server", "hooks", "schema", "websocket"])
         self.assertEqual(
             results,
             {
                 "server_endpoints": "server summary",
                 "js_hooks": "hooks summary",
                 "node_api_schema": "schema summary",
+                "websocket_events": "websocket summary",
             },
         )
 

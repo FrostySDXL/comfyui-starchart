@@ -302,6 +302,9 @@ class ValidateSchemaTests(unittest.TestCase):
                 "deferred": ["parameter typing"],
             },
             "endpoints": [],
+            "prompt_submission_contract": {},
+            "prompt_validation_errors": {},
+            "queue_history_contract": {},
         }
         errors = module.validate_top_level(
             data, module.SCHEMAS["server_endpoints.json"], "server_endpoints.json"

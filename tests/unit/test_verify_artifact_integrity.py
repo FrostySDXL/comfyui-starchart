@@ -15,6 +15,7 @@ ARTIFACT_FILES = [
     "server_endpoints.json",
     "js_hooks.json",
     "node_api_schema.json",
+    "websocket_events.json",
 ]
 
 
@@ -39,6 +40,11 @@ class VerifyArtifactIntegrityUnitTests(unittest.TestCase):
             "server_endpoints.json": {"metadata": {"version": "v0.20.1"}, "endpoints": []},
             "js_hooks.json": {"metadata": {"version": "v1.44.13"}, "hooks": []},
             "node_api_schema.json": {"metadata": {"version": "v0.20.1"}, "object_info_fields": []},
+            "websocket_events.json": {
+                "metadata": {"version": "v0.20.1+v1.44.13"},
+                "events": [],
+                "binary_events": [],
+            },
         }
 
         manifest = {"version_key": "test-key", "artifacts": {}}

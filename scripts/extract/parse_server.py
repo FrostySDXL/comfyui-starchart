@@ -145,7 +145,10 @@ def _extract_string_keys_from_json_data(function_node: ast.AST) -> set[str]:
                 isinstance(left, ast.Constant)
                 and isinstance(left.value, str)
                 and any(isinstance(op, ast.In) for op in node.ops)
-                and any(isinstance(comp, ast.Name) and comp.id == "json_data" for comp in node.comparators)
+                and any(
+                    isinstance(comp, ast.Name) and comp.id == "json_data"
+                    for comp in node.comparators
+                )
             ):
                 keys.add(left.value)
         elif isinstance(node, ast.Subscript):
@@ -251,11 +254,20 @@ def _extract_prompt_submission_contract(
     ]
     success_names, error_names = _json_response_payload_fields(post_prompt)
     success_response_fields = [
-        _field(name, "response_json", True, "unknown", f"Success response field `{name}`.", traceability)
+        _field(
+            name,
+            "response_json",
+            True,
+            "unknown",
+            f"Success response field `{name}`.",
+            traceability,
+        )
         for name in sorted(success_names)
     ]
     error_response_fields = [
-        _field(name, "response_json", True, "unknown", f"Error response field `{name}`.", traceability)
+        _field(
+            name, "response_json", True, "unknown", f"Error response field `{name}`.", traceability
+        )
         for name in sorted(error_names)
     ]
     return {
@@ -285,7 +297,11 @@ def _error_entry_from_dict(node: ast.Dict, source_file: str) -> dict | None:
             continue
         if key.value == "type" and isinstance(value, ast.Constant) and isinstance(value.value, str):
             type_value = value.value
-        elif key.value == "message" and isinstance(value, ast.Constant) and isinstance(value.value, str):
+        elif (
+            key.value == "message"
+            and isinstance(value, ast.Constant)
+            and isinstance(value.value, str)
+        ):
             message_value = value.value
         elif key.value == "extra_info" and isinstance(value, ast.Dict):
             extra_info_fields = _literal_dict_keys(value)
@@ -393,12 +409,18 @@ def _extract_queue_history_contract(
             }
         )
 
-    if "PromptQueue" in {node.name for node in ast.walk(_parse_python(execution_text) or ast.Module(body=[])) if isinstance(node, ast.ClassDef)}:
+    if "PromptQueue" in {
+        node.name
+        for node in ast.walk(_parse_python(execution_text) or ast.Module(body=[]))
+        if isinstance(node, ast.ClassDef)
+    }:
         sections.append(
             {
                 "name": "status",
                 "summary": "PromptQueue.ExecutionStatus defines status_str, completed, and messages for stored history status.",
-                "traceability": _traceability(execution_source, "ExecutionStatus", "ast-structural"),
+                "traceability": _traceability(
+                    execution_source, "ExecutionStatus", "ast-structural"
+                ),
             }
         )
 
@@ -513,7 +535,9 @@ def main() -> int:
     source_path = Path(args.server_path)
     source_text = source_path.read_text(encoding="utf-8")
     endpoints = extract_endpoints(source_text)
-    execution_path = Path(args.execution_path) if args.execution_path else source_path.with_name("execution.py")
+    execution_path = (
+        Path(args.execution_path) if args.execution_path else source_path.with_name("execution.py")
+    )
     execution_text = ""
     metadata_sources = [normalize_repo_relative_path(source_path, REPO_ROOT)]
     execution_source = ""

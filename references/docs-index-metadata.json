@@ -144,7 +144,8 @@
       "monitor-execution"
     ],
     "related_artifacts": [
-      "server_endpoints.json"
+      "server_endpoints.json",
+      "websocket_events.json"
     ],
     "related_routes": [
       "GET /ws"
@@ -401,7 +402,8 @@
       "js_hooks.json",
       "manifest.json",
       "node_api_schema.json",
-      "server_endpoints.json"
+      "server_endpoints.json",
+      "websocket_events.json"
     ],
     "related_routes": [],
     "related_events": [],
@@ -443,7 +445,8 @@
       "js_hooks.json",
       "manifest.json",
       "node_api_schema.json",
-      "server_endpoints.json"
+      "server_endpoints.json",
+      "websocket_events.json"
     ],
     "related_routes": [],
     "related_events": [],

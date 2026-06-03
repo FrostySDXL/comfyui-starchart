@@ -18,6 +18,12 @@ SCHEMAS = {
         "coverage": (dict, True),
         "hooks": (list, True),
     },
+    "websocket_events.json": {
+        "metadata": (dict, True),
+        "coverage": (dict, True),
+        "events": (list, True),
+        "binary_events": (list, True),
+    },
     "node_api_schema.json": {
         "metadata": (dict, True),
         "object_info_fields": (list, True),
@@ -43,6 +49,12 @@ METADATA_FIELDS = {
         ("commit", str, True),
     ],
     "js_hooks.json": [
+        ("sources", list, True),
+        ("extracted_date", str, True),
+        ("version", str, True),
+        ("commit", str, True),
+    ],
+    "websocket_events.json": [
         ("sources", list, True),
         ("extracted_date", str, True),
         ("version", str, True),
@@ -146,6 +158,7 @@ COVERAGE_SCHEMA = {
     "guaranteed_fields": (list, True),
     "best_effort_fields": (list, True),
     "deferred": (list, True),
+    "ast_scan_notes": (list, False),
 }
 
 NODE_API_COVERAGE_SCHEMA = {
@@ -251,7 +264,13 @@ def validate_metadata(data: dict, filename: str) -> list[str]:
             )
 
     if (
-        filename in {"server_endpoints.json", "js_hooks.json", "node_api_schema.json"}
+        filename
+        in {
+            "server_endpoints.json",
+            "js_hooks.json",
+            "node_api_schema.json",
+            "websocket_events.json",
+        }
         and "source" in metadata
     ):
         errors.append(f"{filename}: metadata.source is not allowed; use metadata.sources list")
@@ -293,7 +312,12 @@ def validate_metadata(data: dict, filename: str) -> list[str]:
 
 
 def validate_coverage(data: dict, filename: str) -> list[str]:
-    if filename not in {"server_endpoints.json", "js_hooks.json", "node_api_schema.json"}:
+    if filename not in {
+        "server_endpoints.json",
+        "js_hooks.json",
+        "node_api_schema.json",
+        "websocket_events.json",
+    }:
         return []
 
     errors: list[str] = []
@@ -315,7 +339,12 @@ def validate_coverage(data: dict, filename: str) -> list[str]:
                         f"{filename}: coverage.{list_key}[{index}] expected str, got {type(item).__name__}"
                     )
 
-    dotted_path_artifacts = {"server_endpoints.json", "js_hooks.json", "node_api_schema.json"}
+    dotted_path_artifacts = {
+        "server_endpoints.json",
+        "js_hooks.json",
+        "node_api_schema.json",
+        "websocket_events.json",
+    }
     if filename in dotted_path_artifacts:
         for list_key in ("guaranteed_fields", "best_effort_fields"):
             for entry in coverage.get(list_key, []):
@@ -336,10 +365,14 @@ def _validate_contract_field_list(fields: list, filename: str, path: str) -> lis
         if not isinstance(field, dict):
             errors.append(f"{filename}: {item_path} expected dict, got {type(field).__name__}")
             continue
-        errors.extend(_validate_schema_shape(field, SERVER_CONTRACT_FIELD_SCHEMA, filename, item_path))
+        errors.extend(
+            _validate_schema_shape(field, SERVER_CONTRACT_FIELD_SCHEMA, filename, item_path)
+        )
         traceability = field.get("traceability")
         if isinstance(traceability, dict):
-            errors.extend(validate_traceability(traceability, filename, f"{item_path}.traceability"))
+            errors.extend(
+                validate_traceability(traceability, filename, f"{item_path}.traceability")
+            )
     return errors
 
 
@@ -380,7 +413,9 @@ def validate_server_runtime_contracts(data: dict, filename: str) -> list[str]:
             for index, entry in enumerate(error_types):
                 item_path = f"prompt_validation_errors.error_types[{index}]"
                 if not isinstance(entry, dict):
-                    errors.append(f"{filename}: {item_path} expected dict, got {type(entry).__name__}")
+                    errors.append(
+                        f"{filename}: {item_path} expected dict, got {type(entry).__name__}"
+                    )
                     continue
                 errors.extend(
                     _validate_schema_shape(
@@ -392,7 +427,9 @@ def validate_server_runtime_contracts(data: dict, filename: str) -> list[str]:
                 )
                 traceability = entry.get("traceability")
                 if isinstance(traceability, dict):
-                    errors.extend(validate_traceability(traceability, filename, f"{item_path}.traceability"))
+                    errors.extend(
+                        validate_traceability(traceability, filename, f"{item_path}.traceability")
+                    )
                 extra_info_fields = entry.get("extra_info_fields")
                 if isinstance(extra_info_fields, list):
                     for field_index, field_name in enumerate(extra_info_fields):
@@ -416,7 +453,9 @@ def validate_server_runtime_contracts(data: dict, filename: str) -> list[str]:
             for index, section in enumerate(sections):
                 item_path = f"queue_history_contract.sections[{index}]"
                 if not isinstance(section, dict):
-                    errors.append(f"{filename}: {item_path} expected dict, got {type(section).__name__}")
+                    errors.append(
+                        f"{filename}: {item_path} expected dict, got {type(section).__name__}"
+                    )
                     continue
                 errors.extend(
                     _validate_schema_shape(
@@ -428,7 +467,9 @@ def validate_server_runtime_contracts(data: dict, filename: str) -> list[str]:
                 )
                 traceability = section.get("traceability")
                 if isinstance(traceability, dict):
-                    errors.extend(validate_traceability(traceability, filename, f"{item_path}.traceability"))
+                    errors.extend(
+                        validate_traceability(traceability, filename, f"{item_path}.traceability")
+                    )
 
     return errors
 

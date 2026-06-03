@@ -142,6 +142,60 @@ def _run_node_api_schema_extractor(
     return None
 
 
+def _run_websocket_events_extractor(
+    core_dir: Path,
+    core_version: str,
+    core_commit: str,
+    frontend_dir: Path,
+    frontend_version: str,
+    frontend_commit: str,
+    *,
+    python_executable: str,
+    scripts_extract_dir: Path,
+    repo_root: Path,
+    run_cmd,
+) -> str | None:
+    """Run `parse_websocket_events.py` for paired core and frontend snapshots."""
+    source_paths = [
+        core_dir / "server.py",
+        core_dir / "main.py",
+        core_dir / "execution.py",
+        core_dir / "protocol.py",
+        core_dir / "comfy_execution" / "progress.py",
+        frontend_dir / "src" / "scripts" / "app.ts",
+    ]
+    if not all(path.exists() for path in source_paths):
+        print("\n--- Skipping parse_websocket_events.py ---")
+        print("  Required core/frontend websocket source files are not all available.")
+        return None
+
+    print("\n--- Running parse_websocket_events.py ---")
+    try:
+        result = run_cmd(
+            [
+                python_executable,
+                str(scripts_extract_dir / "parse_websocket_events.py"),
+                *(str(path) for path in source_paths),
+                "--version",
+                f"{core_version}+{frontend_version}",
+                "--commit",
+                core_commit,
+            ],
+            "parse_websocket_events.py extraction",
+            cwd=str(repo_root),
+        )
+    except RuntimeError as exc:
+        print(f"  {exc}")
+        print("  parse_websocket_events.py failed")
+        raise RuntimeError("parse_websocket_events.py extraction failed") from exc
+
+    for line in result.stdout.strip().splitlines():
+        if "Extracted" in line and "WebSocket events" in line:
+            print(f"  {line}")
+            return line
+    return None
+
+
 def run_extractors(
     *,
     core_version: str | None,
@@ -204,6 +258,29 @@ def run_extractors(
         )
         if schema_summary:
             results["node_api_schema"] = schema_summary
+
+    if core_version and core_commit and frontend_version and frontend_commit:
+        core_dir = snapshot_base / f"comfyui-core-{core_version}"
+        frontend_dir = snapshot_base / f"comfyui-frontend-{frontend_version}"
+        websocket_summary = _run_websocket_events_extractor(
+            core_dir,
+            core_version,
+            core_commit,
+            frontend_dir,
+            frontend_version,
+            frontend_commit,
+            python_executable=python_executable,
+            scripts_extract_dir=scripts_extract_dir,
+            repo_root=repo_root,
+            run_cmd=run_cmd,
+        )
+        if websocket_summary:
+            results["websocket_events"] = websocket_summary
+    else:
+        print("\n--- Skipping parse_websocket_events.py ---")
+        print(
+            "  Both core and frontend snapshot versions/commits are required for websocket extraction."
+        )
 
     return results
 

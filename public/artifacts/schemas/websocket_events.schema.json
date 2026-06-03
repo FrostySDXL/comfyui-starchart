@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://starchart.local/artifacts/schemas/websocket_events.schema.json",
+  "title": "ComfyUI WebSocket Events Artifact",
+  "type": "object",
+  "required": ["metadata", "coverage", "events", "binary_events"],
+  "additionalProperties": true,
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["sources", "extracted_date", "version", "commit"],
+      "additionalProperties": true,
+      "properties": {
+        "sources": {"type": "array", "items": {"type": "string"}},
+        "extracted_date": {"type": "string"},
+        "version": {"type": "string"},
+        "commit": {"type": "string"}
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "required": ["description", "guaranteed_fields", "best_effort_fields", "deferred"],
+      "additionalProperties": true,
+      "properties": {
+        "description": {"type": "string"},
+        "guaranteed_fields": {"type": "array", "items": {"type": "string"}},
+        "best_effort_fields": {"type": "array", "items": {"type": "string"}},
+        "deferred": {"type": "array", "items": {"type": "string"}},
+        "ast_scan_notes": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "direction", "server_sources", "frontend_listeners", "traceability"],
+        "additionalProperties": true,
+        "properties": {
+          "name": {"type": "string"},
+          "direction": {
+            "type": "string",
+            "enum": ["server_to_client", "client_to_server", "bidirectional", "unknown"]
+          },
+          "server_sources": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/sourceTrace"}
+          },
+          "frontend_listeners": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/sourceTrace"}
+          },
+          "payload_fields": {"type": "array", "items": {"type": "string"}},
+          "payload_notes": {"type": "array", "items": {"type": "string"}},
+          "ast_scan_notes": {"type": "array", "items": {"type": "string"}},
+          "traceability": {"type": "object", "additionalProperties": true}
+        }
+      }
+    },
+    "binary_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "server_sources", "frontend_listeners", "traceability"],
+        "additionalProperties": true,
+        "properties": {
+          "name": {"type": "string"},
+          "enum_value": {"type": "integer"},
+          "server_sources": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/sourceTrace"}
+          },
+          "frontend_listeners": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/sourceTrace"}
+          },
+          "payload_notes": {"type": "array", "items": {"type": "string"}},
+          "traceability": {"type": "object", "additionalProperties": true}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sourceTrace": {
+      "type": "object",
+      "required": ["source_file", "source_function", "line", "method"],
+      "additionalProperties": true,
+      "properties": {
+        "source_file": {"type": "string"},
+        "source_function": {"type": ["string", "null"]},
+        "line": {"type": ["integer", "null"]},
+        "method": {"type": "string"}
+      }
+    }
+  }
+}

@@ -28,7 +28,7 @@ here for the durable contract.
 
 ## What Artifacts Exist
 
-The repository publishes three canonical artifacts extracted from pinned upstream
+The repository publishes four canonical artifacts extracted from pinned upstream
 snapshots. All paths below are site-relative to the built documentation.
 
 | Artifact | Source | Stable URL |
@@ -36,6 +36,7 @@ snapshots. All paths below are site-relative to the built documentation.
 | `server_endpoints.json` | Pinned `server.py` and `execution.py` | `artifacts/current/server_endpoints.json` |
 | `js_hooks.json` | Pinned frontend TypeScript | `artifacts/current/js_hooks.json` |
 | `node_api_schema.json` | Pinned `server.py`, `_io.py`, `basic_types.py` | `artifacts/current/node_api_schema.json` |
+| `websocket_events.json` | Pinned `server.py`, `main.py`, `execution.py`, `protocol.py`, `comfy_execution/progress.py`, frontend `app.ts` | `artifacts/current/websocket_events.json` |
 
 Each artifact also has a versioned copy under `artifacts/versions/<key>/`, where
 the key includes the pinned core version, frontend version, and extraction date.
@@ -48,7 +49,7 @@ The repo also publishes non-canonical support artifacts:
 | `delta-summary.json` | Deterministic comparison summary between two artifact baselines | `artifacts/delta-summary.json` |
 | `refresh-provenance.json` | Durable evidence about the most recent refresh run, including requested versions, resolved commits, backup path, and runtime-enrichment intent | `artifacts/refresh-provenance.json` |
 
-The repo also publishes bounded JSON Schema files for the three canonical
+The repo also publishes bounded JSON Schema files for the four canonical
 artifacts:
 
 | Schema file | Covers | Stable URL |
@@ -56,6 +57,7 @@ artifacts:
 | `server_endpoints.schema.json` | `server_endpoints.json` guaranteed structure | `artifacts/schemas/server_endpoints.schema.json` |
 | `js_hooks.schema.json` | `js_hooks.json` guaranteed structure | `artifacts/schemas/js_hooks.schema.json` |
 | `node_api_schema.schema.json` | `node_api_schema.json` guaranteed structure | `artifacts/schemas/node_api_schema.schema.json` |
+| `websocket_events.schema.json` | `websocket_events.json` guaranteed structure | `artifacts/schemas/websocket_events.schema.json` |
 
 ## Contract Tiers
 
@@ -102,7 +104,7 @@ to these minimum rules:
   should send `Content-Type: application/json`
 - treat `docs-index.json`, `delta-summary.json`, and
   `refresh-provenance.json` as support artifacts with narrower guarantees than
-  the three canonical extracted artifacts
+  the four canonical extracted artifacts
 - treat runtime-only captures such as `object_info_runtime.json` as optional,
   instance-specific inputs rather than part of the canonical published contract
 
@@ -248,6 +250,35 @@ conditioning-related, and runtime-enriched copies can summarize node output
 types from live `object_info`; it cannot prove that every text-bearing node,
 custom node, or composed conditioning path has recoverable literal prompt text.
 
+### websocket_events.json
+
+Contains WebSocket JSON lifecycle events and binary preview event contracts
+extracted from the pinned core and frontend source. Useful for:
+
+- building execution-monitoring dashboards or progress trackers
+- validating that a ComfyUI instance emits the expected event set
+- enumerating binary preview event types and their protocol enum values
+- understanding the bidirectional `feature_flags` negotiation flow
+
+Guaranteed fields follow the artifact's `coverage.guaranteed_fields` block.
+Payload field lists, dynamic dispatch notes, and traceability markers remain
+best-effort static analysis rather than full semantic contracts.
+
+The artifact covers both JSON events (such as `status`, `progress`,
+`progress_state`, `executing`, `executed`, `execution_start`,
+`execution_error`, `execution_interrupted`, `execution_cached`,
+`execution_success`, and `feature_flags`) and binary events (such as
+`PREVIEW_IMAGE`, `UNENCODED_PREVIEW_IMAGE`, `TEXT`, and
+`PREVIEW_IMAGE_WITH_METADATA`).
+
+Source-backed from pinned snapshots:
+`references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py`,
+`references/snapshots/2026-06-03/comfyui-core-v0.23.0/main.py`,
+`references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`,
+`references/snapshots/2026-06-03/comfyui-core-v0.23.0/protocol.py`,
+`references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_execution/progress.py`,
+and `references/snapshots/2026-06-03/comfyui-frontend-v1.46.6/src/scripts/app.ts`.
+
 ### delta-summary.json
 
 `delta-summary.json` is a deterministic structural comparison artifact. Its
@@ -337,7 +368,7 @@ Do not treat it as:
 - a guarantee that every prose nuance is machine-readable
 - a replacement for reading the pages themselves
 - a new canonical artifact contract alongside `server_endpoints.json`,
-  `js_hooks.json`, and `node_api_schema.json`
+  `js_hooks.json`, `node_api_schema.json`, and `websocket_events.json`
 
 The maintained generation path is:
 
@@ -348,7 +379,7 @@ python scripts/generate/generate_docs_index.py
 `docs-index.json` is intentionally excluded from `manifest.json`. It is a
 published support artifact for routing and discovery, not part of the canonical
 schema-discovery contract. It remains outside the canonical-artifact
-byte-identity guarantee enforced for the three extracted JSON artifacts.
+byte-identity guarantee enforced for the four extracted JSON artifacts.
 
 ## Repo Sources vs Published Copies
 
@@ -367,7 +398,7 @@ built site.
 | `public/artifacts/delta-summary.json` | Deterministic baseline-to-baseline comparison output |
 | `public/artifacts/refresh-provenance.json` | Durable published record of the latest refresh run; intentionally outside manifest discovery |
 
-For the three canonical published artifacts, `references/raw/` remains the
+For the four canonical published artifacts, `references/raw/` remains the
 canonical repo-local source. `public/artifacts/current/` must stay byte-identical
 to those canonical files, and the manifest checksum must match the published
 current-copy bytes.
@@ -393,7 +424,7 @@ artifact, read its `metadata` object or consult `manifest.json`.
 Maintainership note: `python scripts/verify/verify_artifact_integrity.py` is a
 blocking verifier. It proves the canonical `references/raw/` files, published
 `public/artifacts/current/` copies, and manifest `sha256` values remain aligned
-for the three canonical artifacts.
+for the four canonical artifacts.
 
 `python scripts/verify/validate_schema.py` is the matching blocking verifier for
 the schema contract. It validates canonical artifacts against the checked-in
@@ -491,7 +522,7 @@ python scripts/generate/generate_docs_index.py
 
 The checked-in companion schema remains `artifacts/schemas/docs-index.schema.json`.
 Like the artifact itself, it stays outside manifest schema discovery and the
-canonical byte-identity guarantee enforced for the three extracted JSON artifacts.
+canonical byte-identity guarantee enforced for the four extracted JSON artifacts.
 
 ## Versioning
 

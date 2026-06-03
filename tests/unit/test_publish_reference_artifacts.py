@@ -58,6 +58,19 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
                 },
                 "object_info": {},
             },
+            "websocket_events.json": {
+                "metadata": {
+                    "version": "v0.19.3+v1.42.11",
+                    "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+                    "extracted_date": "2026-04-23",
+                    "sources": [
+                        "references/snapshots/2026-04-19/comfyui-core-v0.19.3/main.py",
+                        "references/snapshots/2026-04-19/comfyui-frontend-v1.42.11/src/scripts/app.ts",
+                    ],
+                },
+                "events": [],
+                "binary_events": [],
+            },
         }
 
     def test_derive_version_key(self):
@@ -66,12 +79,22 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
         key = module._derive_version_key(artifacts)
         self.assertEqual(key, "core-v0.19.3_frontend-v1.42.11_2026-04-19")
 
+    def test_websocket_events_participates_in_oldest_date_not_version_string(self):
+        module = self._import_module()
+        artifacts = self._sample_artifacts()
+        artifacts["websocket_events.json"]["metadata"]["extracted_date"] = "2026-04-18"
+
+        key = module._derive_version_key(artifacts)
+
+        self.assertEqual(key, "core-v0.19.3_frontend-v1.42.11_2026-04-18")
+
     def test_derive_version_key_missing_date_uses_unknown(self):
         module = self._import_module()
         artifacts = {
             "server_endpoints.json": {"metadata": {"version": "v0.19.3"}},
             "js_hooks.json": {"metadata": {"version": "v1.42.11"}},
             "node_api_schema.json": {"metadata": {"version": "v0.19.3"}},
+            "websocket_events.json": {"metadata": {"version": "v0.19.3+v1.42.11"}},
         }
         key = module._derive_version_key(artifacts)
         self.assertTrue(key.startswith("core-v0.19.3_frontend-v1.42.11_"))
@@ -84,6 +107,7 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
             "server_endpoints.json": {"metadata": {"extracted_date": old_date}},
             "js_hooks.json": {"metadata": {"extracted_date": old_date}},
             "node_api_schema.json": {"metadata": {"extracted_date": old_date}},
+            "websocket_events.json": {"metadata": {"extracted_date": old_date}},
         }
         # Should not raise; function logs warnings via print
         module._check_staleness(artifacts)
@@ -94,6 +118,7 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
             "server_endpoints.json": {"metadata": {}},
             "js_hooks.json": {"metadata": {}},
             "node_api_schema.json": {"metadata": {}},
+            "websocket_events.json": {"metadata": {}},
         }
         module._check_staleness(artifacts)
 
@@ -116,7 +141,7 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
         self.assertIn("schemas", manifest)
         self.assertIn("artifacts", manifest)
 
-        for name in ["server_endpoints.json", "js_hooks.json", "node_api_schema.json"]:
+        for name in module.ARTIFACT_FILES:
             self.assertIn(name, manifest["schemas"])
             schema_entry = manifest["schemas"][name]
             self.assertIn("schema_url", schema_entry)
@@ -255,6 +280,16 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
                     },
                     "object_info": {},
                 },
+                "websocket_events.json": {
+                    "metadata": {
+                        "version": "v0.19.3+v1.42.11",
+                        "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+                        "extracted_date": "2026-04-23",
+                        "sources": ["snapshots/main.py", "snapshots/app.ts"],
+                    },
+                    "events": [],
+                    "binary_events": [],
+                },
             }
             for name, data in artifacts.items():
                 (tmp_root / "references" / "raw" / name).write_text(
@@ -390,6 +425,16 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
                         "sources": ["snapshots/server.py"],
                     },
                     "object_info": {},
+                },
+                "websocket_events.json": {
+                    "metadata": {
+                        "version": "v0.19.3+v1.42.11",
+                        "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+                        "extracted_date": "2026-04-23",
+                        "sources": ["snapshots/main.py", "snapshots/app.ts"],
+                    },
+                    "events": [],
+                    "binary_events": [],
                 },
             }
             for name, data in artifacts.items():

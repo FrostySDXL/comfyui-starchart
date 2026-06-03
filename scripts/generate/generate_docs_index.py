@@ -47,6 +47,7 @@ KNOWN_ARTIFACT_FILENAMES = {
     "manifest.json",
     "node_api_schema.json",
     "server_endpoints.json",
+    "websocket_events.json",
 }
 KNOWN_STABILITY_TIERS = {
     "pinned-baseline",

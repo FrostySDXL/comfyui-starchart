@@ -36,7 +36,7 @@ for the durable contract, support-artifact boundaries, and retention policy.
 
 Use `artifacts/manifest.json` first.
 
-- It is the canonical discovery surface for the three published extracted
+- It is the canonical discovery surface for the four published extracted
   artifacts.
 - It gives you stable current URLs, versioned URLs, source metadata, and SHA-256
   checksums.

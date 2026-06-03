@@ -200,7 +200,9 @@ def socket():
         errors.extend(validate_schema.validate_metadata(data, "server_endpoints.json"))
         errors.extend(validate_schema.validate_coverage(data, "server_endpoints.json"))
         errors.extend(validate_schema.validate_endpoints(data, "server_endpoints.json"))
-        errors.extend(validate_schema.validate_server_runtime_contracts(data, "server_endpoints.json"))
+        errors.extend(
+            validate_schema.validate_server_runtime_contracts(data, "server_endpoints.json")
+        )
         self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
 
         for ep in data["endpoints"]:

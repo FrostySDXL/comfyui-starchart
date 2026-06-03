@@ -39,6 +39,10 @@ REPO_MAP = {
         "owner": "Comfy-Org",
         "repo": "ComfyUI_Frontend",
     },
+    "websocket_events.json": {
+        "owner": "Comfy-Org",
+        "repo": "ComfyUI",
+    },
 }
 
 

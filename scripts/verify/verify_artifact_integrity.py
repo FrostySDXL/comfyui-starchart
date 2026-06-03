@@ -24,6 +24,7 @@ ARTIFACT_FILES = [
     "server_endpoints.json",
     "js_hooks.json",
     "node_api_schema.json",
+    "websocket_events.json",
 ]
 
 

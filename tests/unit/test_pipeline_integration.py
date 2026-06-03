@@ -144,6 +144,27 @@ class PipelineIntegrationTests(unittest.TestCase):
             )
             self.assertEqual(exit_code, 0, msg=stderr)
 
+            # Write a minimal websocket_events.json so the publisher finds all four artifacts
+            websocket_payload = {
+                "metadata": {
+                    "sources": ["fixture/server.py", "fixture/app.ts"],
+                    "extracted_date": "2026-06-03",
+                    "version": "v-fixture",
+                    "commit": "abc123",
+                },
+                "coverage": {
+                    "description": "fixture",
+                    "guaranteed_fields": [],
+                    "best_effort_fields": [],
+                    "deferred": [],
+                },
+                "events": [],
+                "binary_events": [],
+            }
+            (raw_dir / "websocket_events.json").write_text(
+                json.dumps(websocket_payload, indent=2) + "\n", encoding="utf-8"
+            )
+
             server_data = json.loads(
                 (raw_dir / "server_endpoints.json").read_text(encoding="utf-8")
             )
@@ -176,6 +197,7 @@ class PipelineIntegrationTests(unittest.TestCase):
             self.assertTrue((current_dir / "server_endpoints.json").exists())
             self.assertTrue((current_dir / "js_hooks.json").exists())
             self.assertTrue((current_dir / "node_api_schema.json").exists())
+            self.assertTrue((current_dir / "websocket_events.json").exists())
 
             integrity_errors = verify_artifact_integrity.verify_integrity(
                 manifest_path, raw_dir, current_dir

@@ -66,6 +66,18 @@ def get_extractor_args(json_path: Path) -> tuple[str, list[str]] | None:
         args.extend(["--version", version, "--commit", commit])
         return script, args
 
+    elif json_path.name == "websocket_events.json":
+        script = "parse_websocket_events.py"
+        sources = metadata.get("sources", [])
+        version = metadata.get("version", "")
+        commit = metadata.get("commit", "")
+        if not sources or not version or not commit:
+            return None
+        normalized_sources = [normalize_repo_path(s) for s in sources]
+        args = normalized_sources.copy()
+        args.extend(["--version", version, "--commit", commit])
+        return script, args
+
     return None
 
 

@@ -9,6 +9,7 @@ PUBLISHED_ARTIFACT_SCHEMAS = {
     "server_endpoints.json": "server_endpoints.schema.json",
     "js_hooks.json": "js_hooks.schema.json",
     "node_api_schema.json": "node_api_schema.schema.json",
+    "websocket_events.json": "websocket_events.schema.json",
     "docs-index.json": "docs-index.schema.json",
     "delta-summary.json": "delta-summary.schema.json",
     "refresh-provenance.json": "refresh-provenance.schema.json",

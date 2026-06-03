@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Publish canonical extracted JSON artifacts into a stable, web-served public subtree.
 
-Reads exactly three canonical artifacts from references/raw/:
+Reads exactly four canonical artifacts from references/raw/:
 - server_endpoints.json
 - js_hooks.json
 - node_api_schema.json
+- websocket_events.json
 
 Excludes runtime-only artifacts such as object_info_runtime.json.
 
@@ -38,6 +39,7 @@ ARTIFACT_FILES = [
     "server_endpoints.json",
     "js_hooks.json",
     "node_api_schema.json",
+    "websocket_events.json",
 ]
 
 
@@ -56,6 +58,8 @@ def _derive_version_key(artifacts: dict[str, dict]) -> str:
 
     Uses the core version (from server_endpoints or node_api_schema) and the
     frontend version (from js_hooks), plus the oldest extracted date present.
+    websocket_events.json shares the same core/frontend version families, so it
+    participates in freshness dating without changing the version string shape.
     """
     core_meta = artifacts.get("server_endpoints.json", {}).get("metadata", {})
     frontend_meta = artifacts.get("js_hooks.json", {}).get("metadata", {})

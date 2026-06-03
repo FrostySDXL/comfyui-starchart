@@ -24,6 +24,7 @@ from scripts.verify.schema_node_api import (
     validate_typed_input_shapes,
 )
 from scripts.verify.schema_server import validate_endpoints
+from scripts.verify.schema_websocket_events import validate_websocket_events
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
@@ -61,12 +62,18 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
     if json_file.name in SCHEMAS:
         validation_errors.extend(validate_metadata(data, json_file.name))
 
-    if json_file.name in {"server_endpoints.json", "js_hooks.json", "node_api_schema.json"}:
+    if json_file.name in {
+        "server_endpoints.json",
+        "js_hooks.json",
+        "node_api_schema.json",
+        "websocket_events.json",
+    }:
         validation_errors.extend(validate_coverage(data, json_file.name))
     if json_file.name in {
         "server_endpoints.json",
         "js_hooks.json",
         "node_api_schema.json",
+        "websocket_events.json",
         "docs-index.json",
         "delta-summary.json",
         "refresh-provenance.json",
@@ -84,6 +91,8 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
         validation_errors.extend(validate_prompt_conditioning_surface(data, json_file.name))
     elif json_file.name == "object_info_runtime.json":
         validation_errors.extend(validate_object_info_runtime(data, json_file.name))
+    elif json_file.name == "websocket_events.json":
+        validation_errors.extend(validate_websocket_events(data, json_file.name))
 
     all_errors.extend(validation_errors)
     if not validation_errors:

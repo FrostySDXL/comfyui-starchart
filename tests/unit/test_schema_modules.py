@@ -9,6 +9,7 @@ from scripts.verify import (
     schema_hooks,
     schema_node_api,
     schema_server,
+    schema_websocket_events,
 )
 
 
@@ -65,6 +66,47 @@ class SchemaModuleImportTests(unittest.TestCase):
             ]
         }
         self.assertEqual(schema_hooks.validate_hooks(data, "js_hooks.json"), [])
+
+    def test_schema_websocket_events_accepts_minimal_entries(self):
+        data = {
+            "events": [
+                {
+                    "name": "progress",
+                    "direction": "server_to_client",
+                    "server_sources": [
+                        {
+                            "source_file": "references/snapshots/core/main.py",
+                            "source_function": "hijack_progress",
+                            "line": 405,
+                            "method": "send_sync",
+                        }
+                    ],
+                    "frontend_listeners": [],
+                    "payload_fields": ["value", "max", "prompt_id", "node"],
+                    "payload_notes": [],
+                    "ast_scan_notes": [],
+                    "traceability": {"strategy": "ast_send_call_and_frontend_listener_merge"},
+                }
+            ],
+            "binary_events": [
+                {
+                    "name": "PREVIEW_IMAGE_WITH_METADATA",
+                    "enum_value": 4,
+                    "server_sources": [],
+                    "frontend_listeners": [],
+                    "payload_notes": [],
+                    "traceability": {
+                        "source_file": "references/snapshots/core/protocol.py",
+                        "source_function": "BinaryEventTypes",
+                        "strategy": "protocol_enum_literal",
+                    },
+                }
+            ],
+        }
+
+        self.assertEqual(
+            schema_websocket_events.validate_websocket_events(data, "websocket_events.json"), []
+        )
 
     def test_schema_node_api_validate_object_info_runtime_accepts_dict(self):
         data = {"object_info": {"KSampler": {"input": {}}}}

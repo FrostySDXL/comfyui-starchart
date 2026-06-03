@@ -72,6 +72,53 @@ class ExtractionIdempotencyTests(unittest.TestCase):
             ],
         )
 
+    def test_get_extractor_args_uses_websocket_source_order(self):
+        module = _load_module()
+        payload = {
+            "metadata": {
+                "sources": [
+                    "references/snapshots/core/server.py",
+                    "references/snapshots/core/main.py",
+                    "references/snapshots/core/execution.py",
+                    "references/snapshots/core/protocol.py",
+                    "references/snapshots/core/comfy_execution/progress.py",
+                    "references/snapshots/frontend/src/scripts/app.ts",
+                ],
+                "version": "v0.23.0+v1.46.6",
+                "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
+                "extracted_date": "2026-06-03",
+            },
+            "coverage": {
+                "description": "contract",
+                "guaranteed_fields": [],
+                "best_effort_fields": [],
+                "deferred": [],
+            },
+            "events": [],
+            "binary_events": [],
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            json_path = Path(tmpdir) / "websocket_events.json"
+            json_path.write_text(json.dumps(payload), encoding="utf-8")
+            script_name, args = module.get_extractor_args(json_path)
+
+        self.assertEqual(script_name, "parse_websocket_events.py")
+        self.assertEqual(
+            args,
+            [
+                "references/snapshots/core/server.py",
+                "references/snapshots/core/main.py",
+                "references/snapshots/core/execution.py",
+                "references/snapshots/core/protocol.py",
+                "references/snapshots/core/comfy_execution/progress.py",
+                "references/snapshots/frontend/src/scripts/app.ts",
+                "--version",
+                "v0.23.0+v1.46.6",
+                "--commit",
+                "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
+            ],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
