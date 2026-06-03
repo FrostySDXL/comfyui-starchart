@@ -196,7 +196,7 @@ This is the strongest pinned-source-derived schema contract in the published
 artifact set. It still does not make runtime-only custom-node state canonical by
 default.
 
-Plan K extends this surface with richer typed detail where pinned source proves
+This surface is extended with richer typed detail where pinned source proves
 it, including:
 
 - `io_types[].input_parameter_details` / `output_parameter_details`
