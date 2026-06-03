@@ -1,12 +1,12 @@
 {
-  "backup_location": "references/_refresh_backups/raw_20260602T022958Z",
+  "backup_location": "references/_refresh_backups/raw_20260603T183637Z",
   "next_steps": {
-    "delta_summary_command": "python scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260602T022958Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
+    "delta_summary_command": "python scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260603T183637Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
     "publish_reference_artifacts_command": "python scripts/generate/publish_reference_artifacts.py",
     "recommended_follow_up_commands": [
       "python scripts/generate/publish_reference_artifacts.py",
       "python scripts/verify/verify_artifact_integrity.py",
-      "python scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260602T022958Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
+      "python scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260603T183637Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
       "python scripts/verify/run_all.py"
     ],
     "run_all_command": "python scripts/verify/run_all.py",
@@ -18,7 +18,7 @@
     "manifest_included": true,
     "provenance_path": "public/artifacts/refresh-provenance.json"
   },
-  "refresh_date": "2026-06-01",
+  "refresh_date": "2026-06-03",
   "requested_versions": {
     "core": "v0.23.0",
     "frontend": "v1.46.6"

@@ -430,6 +430,7 @@ npm test
 python scripts/verify/python_style.py
 python scripts/verify/cross_references.py
 python scripts/verify/docs_index_freshness.py
+python scripts/verify/snapshot_surface_coverage.py
 python scripts/verify/validate_schema.py
 python scripts/verify/verify_artifact_integrity.py
 python scripts/verify/markdown_top_level_spacing.py
@@ -475,6 +476,7 @@ inventory rows.
 | `scripts/verify/python_style.py` | Enforce Ruff lint and format checks | `scripts/`, `tests/` | Blocking | Bundles lint plus format drift into one Python gate | Any Python edit before broader verification |
 | `scripts/verify/cross_references.py` | Validate repo-local `references/` mentions and JSON source paths | published docs plus `references/raw/*.json` metadata | Blocking | Checks repo-path truth without depending on site build output | Any docs edit that touches cited repo paths or extracted metadata |
 | `scripts/verify/docs_index_freshness.py` | Detect stale checked-in `docs-index.json` | docs-index source pages, metadata, generated output | Blocking | In-memory regenerate-and-compare against committed artifact | After docs-index source or metadata changes |
+| `scripts/verify/snapshot_surface_coverage.py` | Prevent incomplete snapshot source surfaces before extractors rely on them | current pinned core/frontend snapshots | Blocking once wired into `run_all.py`; lifecycle stays blocking while limited to required-file and import checks | Catches missing required source files such as `protocol.py` and `comfy_execution/progress.py` before artifacts lose source evidence | After snapshot refreshes or extractor source-surface changes |
 | `scripts/verify/validate_schema.py` | Validate canonical and selected published/support JSON artifacts against schemas | `references/raw/*.json`, `public/artifacts/docs-index.json`, selected support artifacts | Blocking | Only schema gate spanning canonical raw artifacts plus checked-in published/support JSON | Any extractor, schema, or published JSON contract change |
 | `scripts/verify/verify_artifact_integrity.py` | Confirm canonical raw artifacts match published current copies and manifest hashes | canonical artifact publication chain | Blocking | Hash-level canonical vs published integrity check | After republishing canonical artifacts or manifest-affecting changes |
 | `scripts/verify/markdown_top_level_spacing.py` | Catch leading-space markdown that renders incorrectly | hand-authored docs markdown | Blocking | Prevents raw-markdown leakage caused by indentation drift | After docs prose or formatting edits |

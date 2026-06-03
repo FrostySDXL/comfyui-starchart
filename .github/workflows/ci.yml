@@ -54,6 +54,9 @@ jobs:
       - name: Verify docs index freshness
         run: python scripts/verify/docs_index_freshness.py
 
+      - name: Verify snapshot surface coverage
+        run: python scripts/verify/snapshot_surface_coverage.py
+
       - name: Validate JSON schemas
         run: python scripts/verify/validate_schema.py
 

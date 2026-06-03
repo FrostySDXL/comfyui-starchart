@@ -1,6 +1,7 @@
 import shutil
 import subprocess
 import tempfile
+from collections.abc import Callable
 from pathlib import Path
 
 from scripts.common.display_path import display_command, display_path
@@ -29,7 +30,12 @@ def _resolve_commit(clone_dir: str) -> str:
 
 
 def _copy_source_files(
-    clone_dir: str, dest_dir: Path, files: list[str], repo_label: str
+    clone_dir: str,
+    dest_dir: Path,
+    files: list[str],
+    repo_label: str,
+    *,
+    required_files: list[str] | None = None,
 ) -> list[str]:
     """Copy source files from clone into snapshot directory."""
     copied = []
@@ -45,6 +51,15 @@ def _copy_source_files(
             print(
                 f"  WARNING: {rel_path} not found in {repo_label} clone at {display_path(clone_dir)}"
             )
+    required = {path.replace("\\", "/") for path in required_files or []}
+    missing_required = sorted(
+        rel_path
+        for rel_path in required
+        if not (Path(clone_dir) / rel_path).exists() or rel_path not in copied
+    )
+    if missing_required:
+        missing_text = ", ".join(missing_required)
+        raise RuntimeError(f"Missing required {repo_label} snapshot files: {missing_text}")
     return copied
 
 
@@ -60,6 +75,8 @@ def _refresh_repo_snapshot(
     copy_label: str,
     temp_prefix: str,
     files: list[str],
+    required_files: list[str] | None = None,
+    resolve_files: Callable[[Path], tuple[list[str], list[str]]] | None = None,
 ) -> tuple[str, str]:
     """Clone a repo at a tag and copy the selected source files into snapshots."""
     tag = version
@@ -77,8 +94,22 @@ def _refresh_repo_snapshot(
         commit = _resolve_commit(tmpdir)
         print(f"  Resolved commit: {commit}")
 
+        resolved_files = files
+        missing_required: list[str] = []
+        if resolve_files is not None:
+            resolved_files, missing_required = resolve_files(Path(tmpdir))
+        if missing_required:
+            missing_text = ", ".join(missing_required)
+            raise RuntimeError(f"Missing required {copy_label} snapshot files: {missing_text}")
+
         dest_dir.mkdir(parents=True, exist_ok=True)
-        _copy_source_files(tmpdir, dest_dir, files, copy_label)
+        _copy_source_files(
+            tmpdir,
+            dest_dir,
+            resolved_files,
+            copy_label,
+            required_files=required_files,
+        )
 
     return commit, dest_name
 

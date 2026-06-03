@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from scripts.common import refresh_git_ops
+from scripts.common import refresh_git_ops, snapshot_surface
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "refresh_snapshots.py"
@@ -133,30 +133,84 @@ class RefreshSnapshotsConstantsTests(unittest.TestCase):
         self.assertTrue(module.SCRIPTS_EXTRACT_DIR.exists())
         self.assertTrue(module.SCRIPTS_GENERATE_DIR.exists())
 
-    def test_core_files_list(self):
-        """CORE_FILES should contain the expected source files."""
+    def test_core_snapshot_surface_contract(self):
+        """Core snapshot contract should require source files needed by extractors."""
         module = _load_module()
-        expected_core_files = [
+        required = set(snapshot_surface.CORE_REQUIRED_FILES)
+        for rel_path in [
             "server.py",
             "execution.py",
+            "protocol.py",
+            "comfy_execution/progress.py",
             "pyproject.toml",
             "requirements.txt",
             "app/frontend_management.py",
             "comfy_api/latest/_io.py",
             "comfy_api/latest/_input/basic_types.py",
-        ]
-        self.assertEqual(module.CORE_FILES, expected_core_files)
+        ]:
+            self.assertIn(rel_path, required)
+        self.assertEqual(module.CORE_FILES, snapshot_surface.CORE_REQUIRED_FILES)
+        self.assertIn("*.py", snapshot_surface.CORE_INCLUDE_GLOBS)
+        self.assertIn("comfy_execution/**/*.py", snapshot_surface.CORE_INCLUDE_GLOBS)
+        self.assertIn("comfy_api/latest/**/*.py", snapshot_surface.CORE_INCLUDE_GLOBS)
 
-    def test_frontend_files_list(self):
-        """FRONTEND_FILES should contain the expected source files."""
+    def test_frontend_snapshot_surface_contract(self):
+        """Frontend snapshot contract should require extractor source files."""
         module = _load_module()
-        expected_frontend_files = [
+        required = set(snapshot_surface.FRONTEND_REQUIRED_FILES)
+        for rel_path in [
             "package.json",
             "src/scripts/app.ts",
             "src/types/comfy.ts",
             "src/services/litegraphService.ts",
-        ]
-        self.assertEqual(module.FRONTEND_FILES, expected_frontend_files)
+        ]:
+            self.assertIn(rel_path, required)
+        self.assertEqual(module.FRONTEND_FILES, snapshot_surface.FRONTEND_REQUIRED_FILES)
+        self.assertIn("src/scripts/**/*.ts", snapshot_surface.FRONTEND_INCLUDE_GLOBS)
+        self.assertIn("src/api/**/*.tsx", snapshot_surface.FRONTEND_INCLUDE_GLOBS)
+
+    def test_resolve_snapshot_files_returns_sorted_deduplicated_paths(self):
+        """Resolver should include required files and controlled glob matches."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for rel_path in [
+                "server.py",
+                "protocol.py",
+                "comfy_execution/progress.py",
+                "app/frontend_management.py",
+                "notes/readme.md",
+            ]:
+                path = root / rel_path
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("x", encoding="utf-8")
+
+            resolved, missing = snapshot_surface.resolve_snapshot_files(
+                root,
+                ["server.py", "protocol.py", "comfy_execution/progress.py"],
+                ["*.py", "app/**/*.py", "comfy_execution/**/*.py"],
+            )
+
+        self.assertEqual(missing, [])
+        self.assertEqual(resolved, sorted(set(resolved)))
+        self.assertIn("protocol.py", resolved)
+        self.assertIn("comfy_execution/progress.py", resolved)
+        self.assertIn("app/frontend_management.py", resolved)
+        self.assertNotIn("notes/readme.md", resolved)
+
+    def test_resolve_snapshot_files_reports_missing_required_paths(self):
+        """Resolver should report required files missing from the clone root."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "server.py").write_text("x", encoding="utf-8")
+
+            resolved, missing = snapshot_surface.resolve_snapshot_files(
+                root,
+                ["server.py", "protocol.py"],
+                ["*.py"],
+            )
+
+        self.assertEqual(resolved, ["server.py"])
+        self.assertEqual(missing, ["protocol.py"])
 
     def test_repo_urls_are_set(self):
         """CORE_REPO_URL and FRONTEND_REPO_URL should be set."""
@@ -377,8 +431,8 @@ class RefreshSnapshotsOrchestrationTests(unittest.TestCase):
 class RefreshSnapshotsBoundaryTests(unittest.TestCase):
     """Test clarified clone/copy and extractor helper boundaries."""
 
-    def test_refresh_git_ops_copy_source_files_copies_only_existing(self):
-        """_copy_source_files should copy only files that exist, skip missing files."""
+    def test_refresh_git_ops_copy_source_files_copies_optional_existing_files(self):
+        """_copy_source_files should copy existing optional files and skip missing ones."""
         with tempfile.TemporaryDirectory() as tmp:
             src_dir = Path(tmp) / "src"
             src_dir.mkdir()
@@ -392,12 +446,31 @@ class RefreshSnapshotsBoundaryTests(unittest.TestCase):
                 dest_dir,
                 ["keep.py", "missing.py", "skip.txt"],
                 "test-repo",
+                required_files=["keep.py"],
             )
 
             self.assertEqual(copied, ["keep.py", "skip.txt"])
             self.assertTrue((dest_dir / "keep.py").exists())
             self.assertTrue((dest_dir / "skip.txt").exists())
             self.assertFalse((dest_dir / "missing.py").exists())
+
+    def test_refresh_git_ops_copy_source_files_raises_for_missing_required_file(self):
+        """_copy_source_files should fail loudly when a required file is absent."""
+        with tempfile.TemporaryDirectory() as tmp:
+            src_dir = Path(tmp) / "src"
+            src_dir.mkdir()
+            dest_dir = Path(tmp) / "dest"
+
+            with self.assertRaises(RuntimeError) as exc:
+                refresh_git_ops._copy_source_files(
+                    str(src_dir),
+                    dest_dir,
+                    ["missing.py"],
+                    "test-repo",
+                    required_files=["missing.py"],
+                )
+
+        self.assertIn("missing.py", str(exc.exception))
 
     def test_refresh_git_ops_run_cmd_raises_on_failure(self):
         """Shared git helper should raise instead of silently returning failures."""
@@ -442,6 +515,8 @@ class RefreshSnapshotsBoundaryTests(unittest.TestCase):
             copy_label="core",
             temp_prefix="comfyui-core-",
             files=module.CORE_FILES,
+            required_files=module.snapshot_surface.CORE_REQUIRED_FILES,
+            include_globs=module.snapshot_surface.CORE_INCLUDE_GLOBS,
         )
         self.assertEqual(result, ("core-sha", "comfyui-core-v0.20.1"))
 
@@ -465,6 +540,8 @@ class RefreshSnapshotsBoundaryTests(unittest.TestCase):
             copy_label="frontend",
             temp_prefix="comfyui-frontend-",
             files=module.FRONTEND_FILES,
+            required_files=module.snapshot_surface.FRONTEND_REQUIRED_FILES,
+            include_globs=module.snapshot_surface.FRONTEND_INCLUDE_GLOBS,
         )
         self.assertEqual(result, ("frontend-sha", "comfyui-frontend-v1.44.13"))
 

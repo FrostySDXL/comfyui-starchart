@@ -8,13 +8,14 @@ cross-platform CI blocking path (ubuntu-latest and windows-latest):
     3. python_style.py
     4. cross_references.py
     5. docs_index_freshness.py
-    6. validate_schema.py
-    7. verify_artifact_integrity.py
-    8. markdown_top_level_spacing.py
-    9. sidebar_navigation_coverage.py
-    10. astro check
-    11. astro build
-    12. rendered_links.py
+    6. snapshot_surface_coverage.py
+    7. validate_schema.py
+    8. verify_artifact_integrity.py
+    9. markdown_top_level_spacing.py
+    10. sidebar_navigation_coverage.py
+    11. astro check
+    12. astro build
+    13. rendered_links.py
 
 Advisory/non-blocking checks remain separate and are not included here.
 
@@ -85,6 +86,13 @@ def main() -> int:
         (
             [sys.executable, str(SCRIPTS_VERIFY_DIR / "docs_index_freshness.py")],
             "Docs index freshness verification",
+        )
+    )
+
+    steps.append(
+        (
+            [sys.executable, str(SCRIPTS_VERIFY_DIR / "snapshot_surface_coverage.py")],
+            "Snapshot surface coverage verification",
         )
     )
 

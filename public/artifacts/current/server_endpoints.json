@@ -1,9 +1,9 @@
 {
   "metadata": {
     "sources": [
-      "references/snapshots/2026-06-01/comfyui-core-v0.23.0/server.py"
+      "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py"
     ],
-    "extracted_date": "2026-06-01",
+    "extracted_date": "2026-06-03",
     "version": "v0.23.0",
     "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6"
   },

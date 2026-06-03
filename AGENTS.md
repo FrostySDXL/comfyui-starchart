@@ -93,6 +93,7 @@ unless promoted intentionally.
   - `python_style.py`
   - `cross_references.py`
   - `docs_index_freshness.py`
+  - `snapshot_surface_coverage.py`
   - `validate_schema.py`
   - `verify_artifact_integrity.py`
   - `markdown_top_level_spacing.py`

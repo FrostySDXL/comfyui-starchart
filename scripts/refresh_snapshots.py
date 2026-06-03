@@ -19,7 +19,12 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from scripts.common import refresh_git_ops, refresh_pipeline, refresh_support
+from scripts.common import (
+    refresh_git_ops,
+    refresh_pipeline,
+    refresh_support,
+    snapshot_surface,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -30,23 +35,10 @@ SCRIPTS_EXTRACT_DIR = REPO_ROOT / "scripts" / "extract"
 SCRIPTS_GENERATE_DIR = REPO_ROOT / "scripts" / "generate"
 PROVENANCE_OUTPUT_PATH = REPO_ROOT / "public" / "artifacts" / "refresh-provenance.json"
 
-# Source files to copy from each repo
-CORE_FILES = [
-    "server.py",
-    "execution.py",
-    "pyproject.toml",
-    "requirements.txt",
-    "app/frontend_management.py",
-    "comfy_api/latest/_io.py",
-    "comfy_api/latest/_input/basic_types.py",
-]
-
-FRONTEND_FILES = [
-    "package.json",
-    "src/scripts/app.ts",
-    "src/types/comfy.ts",
-    "src/services/litegraphService.ts",
-]
+CORE_FILES = snapshot_surface.CORE_REQUIRED_FILES
+FRONTEND_FILES = snapshot_surface.FRONTEND_REQUIRED_FILES
+CORE_INCLUDE_GLOBS = snapshot_surface.CORE_INCLUDE_GLOBS
+FRONTEND_INCLUDE_GLOBS = snapshot_surface.FRONTEND_INCLUDE_GLOBS
 
 CORE_REPO_URL = "https://github.com/Comfy-Org/ComfyUI.git"
 FRONTEND_REPO_URL = "https://github.com/Comfy-Org/ComfyUI_Frontend.git"
@@ -135,7 +127,22 @@ def _copy_source_files(
     clone_dir: str, dest_dir: Path, files: list[str], repo_label: str
 ) -> list[str]:
     """Compatibility wrapper around the shared snapshot copy helper."""
-    return refresh_git_ops._copy_source_files(clone_dir, dest_dir, files, repo_label)
+    return refresh_git_ops._copy_source_files(
+        clone_dir,
+        dest_dir,
+        files,
+        repo_label,
+        required_files=files,
+    )
+
+
+def _resolve_snapshot_files(
+    clone_dir: Path,
+    required_files: list[str],
+    include_globs: list[str],
+) -> tuple[list[str], list[str]]:
+    """Resolve the configured snapshot source surface for a cloned repo."""
+    return snapshot_surface.resolve_snapshot_files(clone_dir, required_files, include_globs)
 
 
 def _refresh_repo_snapshot(
@@ -149,6 +156,8 @@ def _refresh_repo_snapshot(
     copy_label: str,
     temp_prefix: str,
     files: list[str],
+    required_files: list[str] | None = None,
+    include_globs: list[str] | None = None,
 ) -> tuple[str, str]:
     """Compatibility wrapper around the shared snapshot refresh helper."""
     return refresh_git_ops._refresh_repo_snapshot(
@@ -162,6 +171,14 @@ def _refresh_repo_snapshot(
         copy_label=copy_label,
         temp_prefix=temp_prefix,
         files=files,
+        required_files=required_files or files,
+        resolve_files=(
+            lambda clone_dir: _resolve_snapshot_files(
+                clone_dir,
+                required_files or files,
+                include_globs or [],
+            )
+        ),
     )
 
 
@@ -180,6 +197,8 @@ def refresh_core(version: str, snapshot_date: str) -> tuple[str, str]:
         copy_label="core",
         temp_prefix="comfyui-core-",
         files=CORE_FILES,
+        required_files=snapshot_surface.CORE_REQUIRED_FILES,
+        include_globs=snapshot_surface.CORE_INCLUDE_GLOBS,
     )
 
 
@@ -198,6 +217,8 @@ def refresh_frontend(version: str, snapshot_date: str) -> tuple[str, str]:
         copy_label="frontend",
         temp_prefix="comfyui-frontend-",
         files=FRONTEND_FILES,
+        required_files=snapshot_surface.FRONTEND_REQUIRED_FILES,
+        include_globs=snapshot_surface.FRONTEND_INCLUDE_GLOBS,
     )
 
 

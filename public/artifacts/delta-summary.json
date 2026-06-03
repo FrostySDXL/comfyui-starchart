@@ -1,6 +1,6 @@
 {
   "comparison": {
-    "old": "references/_refresh_backups/raw_20260602T022958Z",
+    "old": "references/_refresh_backups/raw_20260603T183637Z",
     "new": "references/raw"
   },
   "notes": [
@@ -13,9 +13,7 @@
       "new_count": 25,
       "added": [],
       "removed": [],
-      "changed": [
-        "GET /system_stats"
-      ]
+      "changed": []
     },
     "js_hooks": {
       "old_count": 19,
@@ -26,23 +24,16 @@
     },
     "node_api_schema": {
       "object_info_fields": {
-        "old_count": 20,
-        "new_count": 20,
+        "old_count": 21,
+        "new_count": 21,
         "added": [],
         "removed": [],
         "changed": []
       },
       "io_types": {
-        "old_count": 70,
+        "old_count": 76,
         "new_count": 76,
-        "added": [
-          "FILE_3D_KSPLAT:File3DKSPLAT",
-          "FILE_3D_PLY:File3DPLY",
-          "FILE_3D_SPLAT:File3DSPLAT",
-          "FILE_3D_SPZ:File3DSPZ",
-          "LOAD3D_MODEL_INFO:Load3DModelInfo",
-          "SPLAT:Splat"
-        ],
+        "added": [],
         "removed": [],
         "changed": []
       },
@@ -59,9 +50,7 @@
           "new_count": 1,
           "added": [],
           "removed": [],
-          "changed": [
-            "STRING:String"
-          ]
+          "changed": []
         },
         "conditioning_io_types": {
           "old_count": 1,
