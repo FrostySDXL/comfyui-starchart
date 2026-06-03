@@ -85,8 +85,8 @@ jobs:
       - name: Set up repo
         uses: ./.github/actions/setup-repo
         with:
-          setup-node: "false"
-          install-node-deps: "false"
+          setup-node: "true"
+          install-node-deps: "true"
 
       - name: Advisory mypy check
         run: python -m mypy
