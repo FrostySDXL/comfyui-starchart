@@ -44,6 +44,66 @@ class ValidateSchemaUnitTests(unittest.TestCase):
             ],
         }
 
+    def _server_runtime_contracts(self):
+        traceability = {
+            "source_type": "pinned_snapshot",
+            "strategy": "ast-structural",
+            "source_file": "references/snapshots/server.py",
+            "source_function": "post_prompt",
+        }
+        return {
+            "prompt_submission_contract": {
+                "request_fields": [
+                    {
+                        "name": "prompt",
+                        "location": "json_body",
+                        "required": True,
+                        "type_hint": "dict",
+                        "traceability": traceability,
+                    }
+                ],
+                "success_response_fields": [
+                    {
+                        "name": "prompt_id",
+                        "location": "json_response",
+                        "type_hint": "str",
+                        "traceability": traceability,
+                    }
+                ],
+                "error_response_fields": [
+                    {
+                        "name": "error",
+                        "location": "json_response",
+                        "type_hint": "dict",
+                        "traceability": traceability,
+                    }
+                ],
+            },
+            "prompt_validation_errors": {
+                "error_types": [
+                    {
+                        "type": "no_prompt",
+                        "source_function": "post_prompt",
+                        "traceability": traceability,
+                        "extraction_method": "ast-structural",
+                        "extra_info_fields": ["prompt_id"],
+                    }
+                ]
+            },
+            "queue_history_contract": {
+                "sections": [
+                    {
+                        "name": "queue_pending",
+                        "summary": "Pending queue entries returned by GET /queue.",
+                        "traceability": {
+                            **traceability,
+                            "source_function": "get_queue",
+                        },
+                    }
+                ]
+            },
+        }
+
     def _valid_server_endpoints_data(self):
         return {
             "metadata": {
@@ -104,6 +164,7 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                     },
                 },
             ],
+            **self._server_runtime_contracts(),
         }
 
     def _valid_js_hooks_data(self):
@@ -202,6 +263,24 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors.extend(module.validate_metadata(data, "server_endpoints.json"))
         errors.extend(module.validate_coverage(data, "server_endpoints.json"))
         errors.extend(module.validate_endpoints(data, "server_endpoints.json"))
+        errors.extend(module.validate_server_runtime_contracts(data, "server_endpoints.json"))
+        self.assertEqual(errors, [])
+
+    def test_server_coverage_dotted_runtime_paths_require_existing_parent(self):
+        module = self._import_module()
+        data = self._valid_server_endpoints_data()
+        del data["prompt_submission_contract"]
+        data["coverage"]["best_effort_fields"].append("prompt_submission_contract.request_fields")
+        errors = module.validate_coverage(data, "server_endpoints.json")
+        self.assertTrue(
+            any("unresolved coverage.best_effort_fields path" in error for error in errors)
+        )
+
+    def test_server_coverage_dotted_runtime_paths_accept_existing_parent(self):
+        module = self._import_module()
+        data = self._valid_server_endpoints_data()
+        data["coverage"]["best_effort_fields"].append("prompt_submission_contract.request_fields")
+        errors = module.validate_coverage(data, "server_endpoints.json")
         self.assertEqual(errors, [])
 
     def test_valid_server_endpoints_pass_published_schema(self):
@@ -647,6 +726,20 @@ class ValidateSchemaScriptTests(unittest.TestCase):
                     },
                 }
             ],
+            "prompt_submission_contract": {
+                "request_fields": [],
+                "success_response_fields": [],
+                "error_response_fields": [],
+                "coverage": "deferred",
+            },
+            "prompt_validation_errors": {
+                "error_types": [],
+                "coverage": "deferred",
+            },
+            "queue_history_contract": {
+                "sections": [],
+                "coverage": "deferred",
+            },
         }
         with tempfile.TemporaryDirectory() as tmpdir:
             json_file = Path(tmpdir) / "server_endpoints.json"
@@ -689,6 +782,20 @@ class ValidateSchemaScriptTests(unittest.TestCase):
                     },
                 }
             ],
+            "prompt_submission_contract": {
+                "request_fields": [],
+                "success_response_fields": [],
+                "error_response_fields": [],
+                "coverage": "deferred",
+            },
+            "prompt_validation_errors": {
+                "error_types": [],
+                "coverage": "deferred",
+            },
+            "queue_history_contract": {
+                "sections": [],
+                "coverage": "deferred",
+            },
         }
         with tempfile.TemporaryDirectory() as tmpdir:
             json_file = Path(tmpdir) / "server_endpoints.json"

@@ -16,12 +16,13 @@
     "server_endpoints.json": {
       "current_url": "artifacts/current/server_endpoints.json",
       "versioned_url": "artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-03/server_endpoints.json",
-      "sha256": "e25e81ed66b5f22a8c477825015d3d27bd93d10a500b5023d4070215be80ef97",
+      "sha256": "20e0db951cba7313c18e3819bcc3d0e2f0a5746467776b273df10762af708ce1",
       "version": "v0.23.0",
       "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
       "extracted_date": "2026-06-03",
       "sources": [
-        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py"
+        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py"
       ]
     },
     "js_hooks.json": {

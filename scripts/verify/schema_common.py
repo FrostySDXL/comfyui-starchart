@@ -9,6 +9,9 @@ SCHEMAS = {
         "metadata": (dict, True),
         "coverage": (dict, True),
         "endpoints": (list, True),
+        "prompt_submission_contract": (dict, True),
+        "prompt_validation_errors": (dict, True),
+        "queue_history_contract": (dict, True),
     },
     "js_hooks.json": {
         "metadata": (dict, True),
@@ -89,6 +92,53 @@ FIELD_SCHEMA = {
     "name": (str, True),
     "type_hint": (str, False),
     "description": (str, False),
+}
+
+SERVER_CONTRACT_FIELD_SCHEMA = {
+    "name": (str, True),
+    "location": (str, False),
+    "required": (bool, False),
+    "type_hint": (str, False),
+    "description": (str, False),
+    "traceability": (dict, True),
+}
+
+PROMPT_SUBMISSION_CONTRACT_SCHEMA = {
+    "request_fields": (list, True),
+    "success_response_fields": (list, True),
+    "error_response_fields": (list, True),
+    "coverage": (str, False),
+    "deferred_reason": (str, False),
+}
+
+PROMPT_VALIDATION_ERRORS_SCHEMA = {
+    "error_types": (list, True),
+    "coverage": (str, False),
+    "deferred": (list, False),
+    "deferred_reason": (str, False),
+}
+
+PROMPT_VALIDATION_ERROR_ENTRY_SCHEMA = {
+    "type": (str, True),
+    "summary": (str, False),
+    "source_function": (str, True),
+    "extra_info_fields": (list, False),
+    "traceability": (dict, True),
+    "extraction_method": (str, True),
+}
+
+QUEUE_HISTORY_CONTRACT_SCHEMA = {
+    "sections": (list, True),
+    "coverage": (str, False),
+    "deferred_reason": (str, False),
+}
+
+QUEUE_HISTORY_SECTION_SCHEMA = {
+    "name": (str, True),
+    "summary": (str, True),
+    "traceability": (dict, True),
+    "coverage": (str, False),
+    "deferred_reason": (str, False),
 }
 
 COVERAGE_SCHEMA = {
@@ -265,19 +315,121 @@ def validate_coverage(data: dict, filename: str) -> list[str]:
                         f"{filename}: coverage.{list_key}[{index}] expected str, got {type(item).__name__}"
                     )
 
-    # Validate dot-notation paths in guaranteed_fields and best_effort_fields
-    # resolve to actual top-level keys (only applicable to node_api_schema.json
-    # where prompt_conditioning_surface subsections use dotted paths).
-    if filename == "node_api_schema.json":
+    dotted_path_artifacts = {"server_endpoints.json", "js_hooks.json", "node_api_schema.json"}
+    if filename in dotted_path_artifacts:
         for list_key in ("guaranteed_fields", "best_effort_fields"):
             for entry in coverage.get(list_key, []):
                 if isinstance(entry, str) and "." in entry:
-                    parent_key = entry.split(".", 1)[0]
+                    parent_key = entry.split(".", 1)[0].removesuffix("[]")
                     if parent_key not in data:
                         errors.append(
-                            f"{filename}: coverage.{list_key} path '{entry}' "
+                            f"{filename}: unresolved coverage.{list_key} path '{entry}' "
                             f"references unknown top-level key '{parent_key}'"
                         )
+    return errors
+
+
+def _validate_contract_field_list(fields: list, filename: str, path: str) -> list[str]:
+    errors: list[str] = []
+    for index, field in enumerate(fields):
+        item_path = f"{path}[{index}]"
+        if not isinstance(field, dict):
+            errors.append(f"{filename}: {item_path} expected dict, got {type(field).__name__}")
+            continue
+        errors.extend(_validate_schema_shape(field, SERVER_CONTRACT_FIELD_SCHEMA, filename, item_path))
+        traceability = field.get("traceability")
+        if isinstance(traceability, dict):
+            errors.extend(validate_traceability(traceability, filename, f"{item_path}.traceability"))
+    return errors
+
+
+def validate_server_runtime_contracts(data: dict, filename: str) -> list[str]:
+    errors: list[str] = []
+
+    submission = data.get("prompt_submission_contract")
+    if isinstance(submission, dict):
+        errors.extend(
+            _validate_schema_shape(
+                submission,
+                PROMPT_SUBMISSION_CONTRACT_SCHEMA,
+                filename,
+                "prompt_submission_contract",
+            )
+        )
+        for list_key in ("request_fields", "success_response_fields", "error_response_fields"):
+            value = submission.get(list_key)
+            if isinstance(value, list):
+                errors.extend(
+                    _validate_contract_field_list(
+                        value, filename, f"prompt_submission_contract.{list_key}"
+                    )
+                )
+
+    validation = data.get("prompt_validation_errors")
+    if isinstance(validation, dict):
+        errors.extend(
+            _validate_schema_shape(
+                validation,
+                PROMPT_VALIDATION_ERRORS_SCHEMA,
+                filename,
+                "prompt_validation_errors",
+            )
+        )
+        error_types = validation.get("error_types")
+        if isinstance(error_types, list):
+            for index, entry in enumerate(error_types):
+                item_path = f"prompt_validation_errors.error_types[{index}]"
+                if not isinstance(entry, dict):
+                    errors.append(f"{filename}: {item_path} expected dict, got {type(entry).__name__}")
+                    continue
+                errors.extend(
+                    _validate_schema_shape(
+                        entry,
+                        PROMPT_VALIDATION_ERROR_ENTRY_SCHEMA,
+                        filename,
+                        item_path,
+                    )
+                )
+                traceability = entry.get("traceability")
+                if isinstance(traceability, dict):
+                    errors.extend(validate_traceability(traceability, filename, f"{item_path}.traceability"))
+                extra_info_fields = entry.get("extra_info_fields")
+                if isinstance(extra_info_fields, list):
+                    for field_index, field_name in enumerate(extra_info_fields):
+                        if not isinstance(field_name, str):
+                            errors.append(
+                                f"{filename}: {item_path}.extra_info_fields[{field_index}] expected str, got {type(field_name).__name__}"
+                            )
+
+    queue_history = data.get("queue_history_contract")
+    if isinstance(queue_history, dict):
+        errors.extend(
+            _validate_schema_shape(
+                queue_history,
+                QUEUE_HISTORY_CONTRACT_SCHEMA,
+                filename,
+                "queue_history_contract",
+            )
+        )
+        sections = queue_history.get("sections")
+        if isinstance(sections, list):
+            for index, section in enumerate(sections):
+                item_path = f"queue_history_contract.sections[{index}]"
+                if not isinstance(section, dict):
+                    errors.append(f"{filename}: {item_path} expected dict, got {type(section).__name__}")
+                    continue
+                errors.extend(
+                    _validate_schema_shape(
+                        section,
+                        QUEUE_HISTORY_SECTION_SCHEMA,
+                        filename,
+                        item_path,
+                    )
+                )
+                traceability = section.get("traceability")
+                if isinstance(traceability, dict):
+                    errors.extend(validate_traceability(traceability, filename, f"{item_path}.traceability"))
+
     return errors
 
 

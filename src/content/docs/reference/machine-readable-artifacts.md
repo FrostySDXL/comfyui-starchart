@@ -3,7 +3,7 @@ title: "Machine-Readable Artifacts"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-03
 **Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Scope
@@ -33,7 +33,7 @@ snapshots. All paths below are site-relative to the built documentation.
 
 | Artifact | Source | Stable URL |
 |----------|--------|------------|
-| `server_endpoints.json` | Pinned `server.py` | `artifacts/current/server_endpoints.json` |
+| `server_endpoints.json` | Pinned `server.py` and `execution.py` | `artifacts/current/server_endpoints.json` |
 | `js_hooks.json` | Pinned frontend TypeScript | `artifacts/current/js_hooks.json` |
 | `node_api_schema.json` | Pinned `server.py`, `_io.py`, `basic_types.py` | `artifacts/current/node_api_schema.json` |
 
@@ -136,16 +136,24 @@ versioned artifacts directly instead of relying on delta output alone.
 
 ### server_endpoints.json
 
-Contains HTTP routes, methods, return kinds, and limited inferred response
-details from the pinned ComfyUI server source. Useful for:
+Contains HTTP routes, methods, return kinds, limited inferred response details,
+and bounded prompt/queue/history runtime contracts from the pinned ComfyUI server
+source. Useful for:
 
 - building route inventories, request scaffolding, or bounded client helpers
 - checking that route and response-kind coverage matches the pinned baseline
+- inspecting the source-backed `POST /prompt` request/response field inventory
+- enumerating prompt validation error `type` strings extracted from server-side
+  error dictionaries
+- locating the bounded queue/history sections exposed by the pinned server and
+  prompt queue implementation
 - verifying that a ComfyUI instance exposes the expected surface
 
 Guaranteed fields follow the artifact's `coverage.guaranteed_fields` block.
-Return summaries, parameter details, response field details, and traceability
-markers remain best-effort static analysis rather than full semantic contracts.
+Return summaries, parameter details, response field details,
+`prompt_submission_contract`, `prompt_validation_errors`,
+`queue_history_contract`, and traceability markers remain best-effort static
+analysis rather than full semantic contracts.
 
 When present, `parameters[]` entries may include:
 
@@ -155,11 +163,29 @@ When present, `parameters[]` entries may include:
 - `traceability` showing whether the detail came from a route token, request
   access pattern, or another bounded static rule
 
-For mutation endpoints, treat `parameters[].required` as a bounded
-source-access requiredness hint, not a full API-level requiredness contract. The
-current extractor can reliably see route tokens, direct subscripting,
-`.get(...)` calls, defaults, and small literal checks, but it does not prove
-every branch-conditioned request rule. `POST /prompt` is the clearest example:
+The runtime contract sections are extracted from the pinned
+`references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py` and
+`references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py` snapshots.
+They add source-backed structure without turning the artifact into an OpenAPI
+document:
+
+- `prompt_submission_contract` lists direct JSON request fields observed in
+  `post_prompt` plus success/error response keys returned through
+  `web.json_response`.
+- `prompt_validation_errors` lists source-backed prompt validation error `type`
+  strings and their source functions. Runtime custom-node `VALIDATE_INPUTS`
+  behavior remains deferred.
+- `queue_history_contract` names bounded queue/history areas such as
+  `queue_running`, `queue_pending`, `history`, `status`, `task_done`, and
+  `flags`. Exact runtime queue tuple contents and node-produced history outputs
+  remain deferred.
+
+For mutation endpoints, treat `parameters[].required` and
+`prompt_submission_contract.request_fields[].required` as bounded source-access
+requiredness hints, not full API-level requiredness contracts. The current
+extractor can reliably see route tokens, direct subscripting, `.get(...)` calls,
+defaults, and small literal checks, but it does not prove every
+branch-conditioned request rule. `POST /prompt` is the clearest example:
 the pinned handler only hard-fails when `prompt` is missing, while fields such
 as `number`, `front`, `extra_data`, `client_id`, and
 `partial_execution_targets` are conditionally consumed. Use the artifact for
@@ -214,7 +240,7 @@ Source-backed from pinned snapshots: the current `_io.py` snapshot defines
 `STRING` as an I/O type with a `WidgetInput` carrying parameters such as
 `multiline`, `placeholder`, `default`, and `dynamic_prompts`; it also defines
 `CONDITIONING` as an I/O type whose `Type` is `CondList`. See
-`references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py`.
+`references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py`.
 
 Treat `prompt_conditioning_surface` as routing metadata, not prompt recovery
 proof. It can tell tooling which pinned I/O datatypes look text-like or

@@ -15,7 +15,18 @@ from scripts.verify import (
 class SchemaModuleImportTests(unittest.TestCase):
     def test_schema_common_import_and_top_level_validation(self):
         errors = schema_common.validate_top_level(
-            {"metadata": {}, "coverage": {}, "endpoints": []},
+            {
+                "metadata": {},
+                "coverage": {},
+                "endpoints": [],
+                "prompt_submission_contract": {
+                    "request_fields": [],
+                    "success_response_fields": [],
+                    "error_response_fields": [],
+                },
+                "prompt_validation_errors": {"error_types": []},
+                "queue_history_contract": {"sections": []},
+            },
             schema_common.SCHEMAS["server_endpoints.json"],
             "server_endpoints.json",
         )

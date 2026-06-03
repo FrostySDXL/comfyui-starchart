@@ -14,6 +14,7 @@ from scripts.verify.schema_common import (
     validate_coverage,
     validate_metadata,
     validate_prompt_conditioning_surface,
+    validate_server_runtime_contracts,
     validate_top_level,
 )
 from scripts.verify.schema_hooks import validate_hooks
@@ -74,6 +75,7 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
 
     if json_file.name == "server_endpoints.json":
         validation_errors.extend(validate_endpoints(data, json_file.name))
+        validation_errors.extend(validate_server_runtime_contracts(data, json_file.name))
     elif json_file.name == "js_hooks.json":
         validation_errors.extend(validate_hooks(data, json_file.name))
     elif json_file.name == "node_api_schema.json":

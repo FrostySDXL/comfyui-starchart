@@ -7,7 +7,10 @@
   "required": [
     "metadata",
     "coverage",
-    "endpoints"
+    "endpoints",
+    "prompt_submission_contract",
+    "prompt_validation_errors",
+    "queue_history_contract"
   ],
   "properties": {
     "metadata": {
@@ -108,6 +111,161 @@
         },
         "additionalProperties": true
       }
+    },
+    "prompt_submission_contract": {
+      "type": "object",
+      "required": [
+        "request_fields",
+        "success_response_fields",
+        "error_response_fields"
+      ],
+      "properties": {
+        "request_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contractField"
+          }
+        },
+        "success_response_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contractField"
+          }
+        },
+        "error_response_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contractField"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "prompt_validation_errors": {
+      "type": "object",
+      "required": [
+        "error_types"
+      ],
+      "properties": {
+        "error_types": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "source_function",
+              "traceability",
+              "extraction_method"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source_function": {
+                "type": "string"
+              },
+              "traceability": {
+                "$ref": "#/$defs/traceability"
+              },
+              "extraction_method": {
+                "type": "string"
+              },
+              "extra_info_fields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "queue_history_contract": {
+      "type": "object",
+      "required": [
+        "sections"
+      ],
+      "properties": {
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "summary",
+              "traceability"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "summary": {
+                "type": "string"
+              },
+              "traceability": {
+                "$ref": "#/$defs/traceability"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "contractField": {
+      "type": "object",
+      "required": [
+        "name",
+        "traceability"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "type_hint": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "traceability": {
+          "$ref": "#/$defs/traceability"
+        }
+      },
+      "additionalProperties": true
+    },
+    "traceability": {
+      "type": "object",
+      "required": [
+        "source_type",
+        "strategy"
+      ],
+      "properties": {
+        "source_type": {
+          "type": "string"
+        },
+        "strategy": {
+          "type": "string"
+        },
+        "source_file": {
+          "type": "string"
+        },
+        "source_function": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
     }
   },
   "additionalProperties": true

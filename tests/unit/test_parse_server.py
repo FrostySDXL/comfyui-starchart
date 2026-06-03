@@ -30,6 +30,41 @@ def _extract_single_sample(sample: str) -> list[dict]:
     return parse_server.extract_endpoints(sample)
 
 
+EXPECTED_PROMPT_ERROR_TYPES = {
+    "no_prompt",
+    "missing_node_type",
+    "prompt_no_outputs",
+    "prompt_outputs_failed_validation",
+    "exception_during_validation",
+    "dependency_cycle",
+    "required_input_missing",
+    "bad_linked_input",
+    "return_type_mismatch",
+    "exception_during_inner_validation",
+    "invalid_input_type",
+    "value_smaller_than_min",
+    "value_bigger_than_max",
+    "value_not_in_list",
+    "custom_validation_failed",
+}
+
+
+def _assert_traceability_is_repo_style(test_case: unittest.TestCase, value):
+    if isinstance(value, dict):
+        if "traceability" in value:
+            traceability = value["traceability"]
+            test_case.assertIsInstance(traceability, dict)
+            source_file = traceability.get("source_file")
+            if source_file is not None:
+                test_case.assertNotIn("\\", source_file)
+            test_case.assertIn("source_function", traceability)
+        for child in value.values():
+            _assert_traceability_is_repo_style(test_case, child)
+    elif isinstance(value, list):
+        for child in value:
+            _assert_traceability_is_repo_style(test_case, child)
+
+
 class ParseServerTests(unittest.TestCase):
     def test_server_helpers_get_helper_body_returns_only_target_body(self):
         source = """
@@ -132,6 +167,7 @@ def socket():
 '''
         parse_server = _load_parse_server()
         endpoints = parse_server.extract_endpoints(sample)
+        runtime_contracts = parse_server.extract_server_runtime_contracts(sample, "")
         data = {
             "metadata": {
                 "sources": ["tmp/server.py"],
@@ -141,6 +177,7 @@ def socket():
             },
             "coverage": parse_server.ENDPOINT_COVERAGE,
             "endpoints": endpoints,
+            **runtime_contracts,
         }
 
         self.assertEqual(len(data["endpoints"]), 3)
@@ -163,6 +200,7 @@ def socket():
         errors.extend(validate_schema.validate_metadata(data, "server_endpoints.json"))
         errors.extend(validate_schema.validate_coverage(data, "server_endpoints.json"))
         errors.extend(validate_schema.validate_endpoints(data, "server_endpoints.json"))
+        errors.extend(validate_schema.validate_server_runtime_contracts(data, "server_endpoints.json"))
         self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
 
         for ep in data["endpoints"]:
@@ -171,6 +209,94 @@ def socket():
             self.assertIn("description", ep)
             self.assertIn("parameters", ep)
             self.assertIn("returns", ep)
+
+    def test_extracts_server_runtime_contract_sections_from_snapshots(self):
+        parse_server = _load_parse_server()
+        server_path = (
+            REPO_ROOT
+            / "references"
+            / "snapshots"
+            / "2026-06-03"
+            / "comfyui-core-v0.23.0"
+            / "server.py"
+        )
+        execution_path = server_path.with_name("execution.py")
+        server_text = server_path.read_text(encoding="utf-8")
+        execution_text = execution_path.read_text(encoding="utf-8")
+
+        data = parse_server.extract_server_runtime_contracts(
+            server_text,
+            execution_text,
+            server_source=server_path.relative_to(REPO_ROOT).as_posix(),
+            execution_source=execution_path.relative_to(REPO_ROOT).as_posix(),
+        )
+
+        self.assertIn("prompt_submission_contract", data)
+        submission = data["prompt_submission_contract"]
+        request_fields = {field["name"]: field for field in submission["request_fields"]}
+        for field_name in {
+            "number",
+            "front",
+            "prompt",
+            "prompt_id",
+            "partial_execution_targets",
+            "extra_data",
+            "client_id",
+        }:
+            self.assertIn(field_name, request_fields)
+        self.assertTrue(request_fields["prompt"]["required"])
+
+        success_fields = {field["name"] for field in submission["success_response_fields"]}
+        self.assertGreaterEqual(success_fields, {"prompt_id", "number", "node_errors"})
+        error_fields = {field["name"] for field in submission["error_response_fields"]}
+        self.assertGreaterEqual(error_fields, {"error", "node_errors"})
+
+        validation = data["prompt_validation_errors"]
+        error_types = {entry["type"]: entry for entry in validation["error_types"]}
+        self.assertGreaterEqual(len(error_types), 15)
+        for error_type in EXPECTED_PROMPT_ERROR_TYPES:
+            self.assertIn(error_type, error_types)
+            self.assertEqual(error_types[error_type]["extraction_method"], "ast-structural")
+
+        queue_history = data["queue_history_contract"]
+        section_names = {section["name"] for section in queue_history["sections"]}
+        self.assertGreaterEqual(
+            section_names,
+            {"queue_running", "queue_pending", "history", "status", "task_done", "flags"},
+        )
+
+        _assert_traceability_is_repo_style(self, data)
+
+    def test_runtime_contract_sections_defer_when_sources_are_empty(self):
+        parse_server = _load_parse_server()
+
+        data = parse_server.extract_server_runtime_contracts("", "")
+
+        submission = data["prompt_submission_contract"]
+        self.assertEqual(submission["request_fields"], [])
+        self.assertEqual(submission["success_response_fields"], [])
+        self.assertEqual(submission["error_response_fields"], [])
+        self.assertEqual(submission["coverage"], "deferred")
+
+        validation = data["prompt_validation_errors"]
+        self.assertEqual(validation["error_types"], [])
+        self.assertEqual(validation["coverage"], "deferred")
+
+        queue_history = data["queue_history_contract"]
+        self.assertEqual(queue_history["sections"], [])
+        self.assertEqual(queue_history["coverage"], "deferred")
+
+    def test_runtime_contract_sections_defer_when_patterns_are_absent(self):
+        parse_server = _load_parse_server()
+
+        data = parse_server.extract_server_runtime_contracts(
+            "def unrelated_server_function():\n    return None\n",
+            "def unrelated_execution_function():\n    return None\n",
+        )
+
+        self.assertEqual(data["prompt_submission_contract"]["request_fields"], [])
+        self.assertEqual(data["prompt_validation_errors"]["error_types"], [])
+        self.assertEqual(data["queue_history_contract"]["sections"], [])
 
     def test_metadata_sources_are_repo_relative_when_input_is_in_repo(self):
         sample = """
