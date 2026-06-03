@@ -2,27 +2,15 @@
 """Poll a ComfyUI endpoint until it returns ready JSON."""
 
 import argparse
-import json
 import sys
 import time
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+
+from scripts.common import http_utils
 
 
 def fetch_json(url: str, timeout: int) -> dict:
     """Fetch JSON from a URL and require a dict response."""
-    req = Request(url, headers={"Accept": "application/json"})
-    try:
-        with urlopen(req, timeout=timeout) as response:
-            payload = json.loads(response.read())
-    except HTTPError as exc:
-        raise RuntimeError(f"HTTP error {exc.code} from {url}: {exc.reason}") from exc
-    except URLError as exc:
-        raise RuntimeError(f"URL error reaching {url}: {exc.reason}") from exc
-    except TimeoutError as exc:
-        raise RuntimeError(f"Timeout reaching {url} after {timeout}s") from exc
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Invalid JSON from {url}: {exc}") from exc
+    payload = http_utils.get_json(url, timeout=timeout)
 
     if not isinstance(payload, dict):
         raise RuntimeError(f"Expected dict response from {url}, got {type(payload).__name__}")

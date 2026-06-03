@@ -85,15 +85,15 @@ jobs:
       - name: Set up repo
         uses: ./.github/actions/setup-repo
         with:
-          setup-node: "true"
-          install-node-deps: "true"
+          setup-node: "false"
+          install-node-deps: "false"
 
       - name: Advisory mypy check
         run: python -m mypy
         continue-on-error: true
 
-      - name: Run pipeline smoke wrapper
-        run: python scripts/verify/pipeline_smoke.py
+      - name: Run blocking path without tests
+        run: python scripts/verify/run_all.py --skip-tests
 
       - name: Validate shell example syntax
         run: python scripts/verify/shell_examples_syntax.py
@@ -145,6 +145,7 @@ jobs:
         continue-on-error: true
 
   refresh-snapshots:
+    name: Refresh snapshots dry run
     if: github.event_name == 'workflow_dispatch' && (inputs.core_version != '' || inputs.frontend_version != '')
     runs-on: ubuntu-latest
     steps:

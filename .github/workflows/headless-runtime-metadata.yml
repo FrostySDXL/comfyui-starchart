@@ -23,16 +23,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+      - name: Set up repo
+        uses: ./.github/actions/setup-repo
         with:
-          python-version: "3.11"
-
-      - name: Install repo dependencies
-        run: python -m pip install -r requirements.lock
-
-      - name: Install package (editable)
-        run: python -m pip install -e .
+          setup-node: "false"
+          install-node-deps: "false"
 
       - name: Resolve pinned ComfyUI metadata
         shell: bash

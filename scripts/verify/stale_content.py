@@ -13,7 +13,6 @@ import argparse
 import datetime
 import json
 import re
-import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -36,6 +35,14 @@ STALE_MARKERS = [
 ]
 
 LAST_UPDATED_RE = re.compile(r"\*\*Last Updated:\*\*\s*(\d{4}-\d{2}-\d{2})")
+
+
+def _display_path(path: Path) -> str:
+    """Return a repo-relative path, with a cwd fallback for patched test roots."""
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path.relative_to(Path.cwd()))
 
 
 def find_stale_in_json() -> list[tuple[str, int, str]]:
@@ -61,7 +68,7 @@ def _find_stale_in_json_value(json_file: Path, value, stale: list, path: str = "
             if marker in value:
                 stale.append(
                     (
-                        str(json_file.relative_to(Path.cwd())),
+                        _display_path(json_file),
                         0,
                         f'{path}: {marker} in "{value[:80]}"',
                     )
@@ -98,12 +105,12 @@ def find_stale_in_markdown() -> list[tuple[str, int, str]]:
                         continue
                     if marker == "TODO" and re.search(r'["`\']TODO["`\']', line):
                         continue
-                    stale.append((str(md_file.relative_to(Path.cwd())), line_num, stripped[:100]))
+                    stale.append((_display_path(md_file), line_num, stripped[:100]))
                     break
         if in_fenced_block:
             stale.append(
                 (
-                    str(md_file.relative_to(Path.cwd())),
+                    _display_path(md_file),
                     0,
                     "Unclosed fenced code block may hide stale markers",
                 )
@@ -128,7 +135,7 @@ def find_stale_dates(max_age_days: int) -> list[tuple[str, int, str]]:
                     if date < cutoff:
                         stale.append(
                             (
-                                str(md_file.relative_to(Path.cwd())),
+                                _display_path(md_file),
                                 0,
                                 f"Last Updated {m.group(1)} exceeds {max_age_days}-day threshold (cutoff {cutoff})",
                             )
@@ -184,7 +191,7 @@ def find_stale_version_refs(current_version: str) -> list[tuple[str, int, str]]:
                     if current_version not in line:
                         stale.append(
                             (
-                                str(md_file.relative_to(Path.cwd())),
+                                _display_path(md_file),
                                 line_num,
                                 f"References older ComfyUI version {vm.group(0)} (current pin: {current_version}): {line.strip()[:100]}",
                             )
@@ -260,4 +267,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

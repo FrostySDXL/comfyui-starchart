@@ -5,7 +5,7 @@ import subprocess
 import sys
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "verify" / "wait_for_runtime.py"
@@ -19,18 +19,10 @@ def _load_module():
 
 
 class WaitForRuntimeUnitTests(unittest.TestCase):
-    def _make_response(self, payload: bytes):
-        fake = MagicMock()
-        fake.read.return_value = payload
-        fake.__enter__ = MagicMock(return_value=fake)
-        fake.__exit__ = MagicMock(return_value=False)
-        return fake
-
     def test_fetch_json_success(self):
         module = _load_module()
-        fake = self._make_response(b'{"ready": true}')
 
-        with patch.object(module, "urlopen", return_value=fake):
+        with patch.object(module.http_utils, "get_json", return_value={"ready": True}):
             result = module.fetch_json("http://127.0.0.1:8188/object_info", timeout=5)
 
         self.assertEqual(result, {"ready": True})

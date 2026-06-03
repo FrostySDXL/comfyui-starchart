@@ -3,13 +3,6 @@ from __future__ import annotations
 from typing import Any, cast
 
 from scripts.common.path_normalization import has_backslashes
-from scripts.verify import published_schema_validation as _published_schema_validation
-
-PUBLISHED_ARTIFACT_SCHEMAS = _published_schema_validation.PUBLISHED_ARTIFACT_SCHEMAS
-load_published_artifact_schema = _published_schema_validation.load_published_artifact_schema
-validate_against_published_artifact_schema = (
-    _published_schema_validation.validate_against_published_artifact_schema
-)
 
 SCHEMAS = {
     "server_endpoints.json": {

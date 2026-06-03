@@ -338,13 +338,7 @@ python scripts/extract/parse_hooks.py <paths...> --version <v> --commit <sha>
 python scripts/extract/parse_node_api_schema.py <server> <io> <types> --version <v> --commit <sha>
 ```
 
-3. Regenerate retained markdown if needed:
-
-```bash
-python scripts/generate/md_from_json.py
-```
-
-4. Verify:
+3. Verify:
 
 ```bash
 python scripts/verify/validate_schema.py
@@ -448,7 +442,7 @@ python scripts/verify/rendered_links.py
 ### Supplemental
 
 ```bash
-python scripts/verify/pipeline_smoke.py
+python scripts/verify/run_all.py --skip-tests
 python scripts/verify/shell_examples_syntax.py
 ```
 
@@ -494,7 +488,7 @@ inventory rows.
 | Verifier / workflow | Purpose | Scope | Blocking/advisory/manual | Unique signal | When to run directly |
 |---|---|---|---|---|---|
 | `python -m mypy` | Advisory typing pass for Python tooling | typed Python surfaces | Supplemental / advisory | Static type signal without blocking the default maintainer gate | Python refactors, interface changes, or before promoting stricter typing |
-| `scripts/verify/pipeline_smoke.py` | Smoke the blocking wrapper without rerunning tests | blocking pipeline minus Python/Node tests | Supplemental | Fastest way to exercise the Starlight-era blocking path end-to-end | Iterating on blocking verifiers or site build behavior |
+| `python scripts/verify/run_all.py --skip-tests` | Smoke the blocking wrapper without rerunning Python or Node tests | blocking pipeline minus Python/Node tests | Supplemental | Fastest way to exercise the Starlight-era blocking path end-to-end without a wrapper script | Iterating on blocking verifiers or site build behavior |
 | `scripts/verify/shell_examples_syntax.py` | Parse-check repo shell examples with `bash -n` | `examples/**/*.sh` | Supplemental | Only direct syntax check for shell example scripts | After adding or editing shell examples |
 
 ### Advisory verifiers and replay workflows

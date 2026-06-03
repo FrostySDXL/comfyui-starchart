@@ -4,30 +4,25 @@
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
 
+from scripts.verify.published_schema_validation import (
+    validate_against_published_artifact_schema as _validate_against_published_artifact_schema,
+)
 from scripts.verify.schema_common import (
     SCHEMAS,
     validate_coverage,
     validate_metadata,
     validate_prompt_conditioning_surface,
-    validate_returns,
     validate_top_level,
 )
-from scripts.verify.schema_common import (
-    validate_against_published_artifact_schema as _validate_against_published_artifact_schema,
-)
-from scripts.verify.schema_hooks import HOOK_ARGUMENT_SCHEMA, HOOK_SCHEMA, validate_hooks
+from scripts.verify.schema_hooks import validate_hooks
 from scripts.verify.schema_node_api import (
-    IO_TYPE_SCHEMA,
-    TYPED_INPUT_FIELD_SCHEMA,
-    TYPED_INPUT_SHAPE_SCHEMA,
     validate_io_types,
     validate_object_info_runtime,
     validate_typed_input_shapes,
 )
-from scripts.verify.schema_server import ENDPOINT_SCHEMA, validate_endpoints
+from scripts.verify.schema_server import validate_endpoints
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
@@ -36,27 +31,6 @@ DOCS_INDEX_PATH = REPO_ROOT / "public" / "artifacts" / "docs-index.json"
 SUPPORT_ARTIFACT_PATHS = [
     REPO_ROOT / "public" / "artifacts" / "delta-summary.json",
     REPO_ROOT / "public" / "artifacts" / "refresh-provenance.json",
-]
-
-__all__ = [
-    "ENDPOINT_SCHEMA",
-    "HOOK_ARGUMENT_SCHEMA",
-    "HOOK_SCHEMA",
-    "IO_TYPE_SCHEMA",
-    "SCHEMAS",
-    "TYPED_INPUT_FIELD_SCHEMA",
-    "TYPED_INPUT_SHAPE_SCHEMA",
-    "validate_against_published_artifact_schema",
-    "validate_coverage",
-    "validate_endpoints",
-    "validate_hooks",
-    "validate_io_types",
-    "validate_metadata",
-    "validate_object_info_runtime",
-    "validate_returns",
-    "validate_top_level",
-    "validate_typed_input_shapes",
-    "main",
 ]
 
 
@@ -139,4 +113,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())
