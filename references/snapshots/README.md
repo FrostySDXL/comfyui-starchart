@@ -18,8 +18,6 @@ Current layout at the time of this update:
   proof
 - `2026-05-18/` - historical baseline retained for comparison and refresh-path
   proof
-- `2026-04-30/` - earlier historical baseline retained for comparison and
-  refresh-path proof
 - `2026-04-19/` - earlier historical baseline retained for provenance and
   comparison
 
