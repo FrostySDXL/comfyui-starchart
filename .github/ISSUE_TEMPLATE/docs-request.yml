@@ -43,7 +43,7 @@ body:
     attributes:
       label: Evidence or source expectations
       description: If this request makes claims about ComfyUI behavior, list the official docs page, pinned snapshot path, or other source you expect the page to use.
-      placeholder: docs.comfy.org page, references/snapshots/2026-04-30/... , or "orientation-only request"
+      placeholder: docs.comfy.org page, references/snapshots/2026-05-18/... , or "orientation-only request"
     validations:
       required: true
   - type: textarea
