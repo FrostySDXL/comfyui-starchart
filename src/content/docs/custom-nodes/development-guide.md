@@ -13,8 +13,8 @@ title: "Custom Node Development Guide"
 - https://docs.comfy.org/custom-nodes/backend/server_overview
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
 - https://docs.comfy.org/custom-nodes/walkthrough
-- `references/snapshots/2026-06-01/comfyui-core-v0.23.0/comfy_api/latest/_io.py`
-- `references/snapshots/2026-06-01/comfyui-frontend-v1.46.6/src/types/comfy.ts`
+- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py`
+- `references/snapshots/2026-06-03/comfyui-frontend-v1.46.6/src/types/comfy.ts`
 
 ## Scope
 

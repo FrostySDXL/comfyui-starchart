@@ -7,6 +7,59 @@ verification, workflow, and repo structure rather than every commit.
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-06-04 - extractor, schema, publisher, and policy hardening
+
+### Snapshot coverage
+
+- Refreshes and the blocking verification path now fail when required pinned
+  source files are missing, so extractors do not silently lose evidence.
+
+### Artifact surface
+
+- Add a fourth canonical artifact: `websocket_events.json`. The new
+  extractor `scripts/extract/parse_websocket_events.py` detects WebSocket
+  event types from pinned core and frontend sources, with a published JSON
+  schema, internal validation, raw/current/versioned publication, manifest
+  entry, docs-index metadata, idempotency coverage, upstream pin mapping,
+  and unit tests.
+- Add bounded server runtime contracts to `server_endpoints.json`:
+  prompt-submission request and response shape, prompt validation error
+  types, and queue and history structure. Tooling can rely on these
+  source-backed contract sections without treating the artifact as a full
+  OpenAPI surface.
+- Capture declared `ComfyExtension` fields in `js_hooks.json` so consumers
+  can distinguish lifecycle hooks from declarative extension surfaces.
+- Expose source-backed V3 node schema details in `node_api_schema.json`:
+  dataclass fields, hidden values, price badge metadata, and boolean node
+  flags. Validators, the published JSON schema, generated artifacts, tests,
+  and artifact reference docs are updated to keep the new contract
+  verified and documented.
+
+### Extraction and pipeline
+
+- Fix a stale `test_edge_cases.py` `server_endpoints` fixture that was
+  missing three required top-level contract keys.
+- Resolve ruff format drift across test files.
+
+### Publisher and tooling
+
+- Derive artifact version keys from the frozen snapshot source date instead
+  of the extraction date, so repeated publishes do not create duplicate
+  version directories.
+- Remove an accidental `2026-06-04` duplicate version directory and
+  republish artifacts against the `2026-06-03` snapshot key.
+- Refresh `mypy` and the full blocking gate; add mypy-clean `SchemaSpec`
+  typing for the shared schema validators.
+- Add a Ruff exclusion for `references/snapshots/`; pinned upstream content
+  is not subject to repo lint policy.
+
+### Docs and policy
+
+- `CONTRIBUTING.md` gains the new-surface admission case for
+  `websocket_events.json`, a verifier lifecycle paragraph for
+  `scripts/verify/snapshot_surface_coverage.py`, and the
+  `websocket_events.json` `coverage.deferred` category enumeration.
+
 ## 2026-06-02 - extraction contract fixes and provenance hardening
 
 ### Artifact surface

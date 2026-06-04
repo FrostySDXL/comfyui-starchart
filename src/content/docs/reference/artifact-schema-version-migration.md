@@ -3,7 +3,7 @@ title: "Artifact Schema Version Migration"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-18
+**Last Updated:** 2026-06-04
 **Related:** `public/artifacts/manifest.json`, `public/artifacts/schemas/`, `references/raw/`
 
 ## Scope

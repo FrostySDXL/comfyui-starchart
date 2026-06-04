@@ -12,7 +12,7 @@ title: "JavaScript Hooks and Registration"
 - https://docs.comfy.org/custom-nodes/js/javascript_hooks
 - https://docs.comfy.org/custom-nodes/js/javascript_overview
 - https://docs.comfy.org/custom-nodes/js/javascript_objects_and_hijacking
-- `references/snapshots/2026-06-01/comfyui-frontend-v1.46.6/src/scripts/app.ts` (v1.46.6, commit 9e32b7db5173bc2879d4c19c1d058d733b3074b8)
+- `references/snapshots/2026-06-03/comfyui-frontend-v1.46.6/src/scripts/app.ts` (v1.46.6, commit 9e32b7db5173bc2879d4c19c1d058d733b3074b8)
 
 ## Scope
 

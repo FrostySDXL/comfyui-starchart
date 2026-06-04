@@ -13,13 +13,22 @@ extractors. These files are source inputs, not generated outputs.
 
 Current layout at the time of this update:
 
-- `2026-06-01/` - current active pinned baseline used by `references/raw/`
+- `2026-06-03/` - current active pinned baseline used by `references/raw/`
+  and the published versioned artifacts under
+  `public/artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-03/`
+- `2026-06-01/` - prior active baseline superseded by `2026-06-03/`; retained
+  for refresh-path proof
 - `2026-05-21/` - historical baseline retained for comparison and refresh-path
   proof
 - `2026-05-18/` - historical baseline retained for comparison and refresh-path
   proof
 - `2026-04-19/` - earlier historical baseline retained for provenance and
   comparison
+- `2026-04-30/` - known partial capture from an abandoned v0.20.1 / v1.44.13
+  refresh; the snapshot directory itself is empty, but the corresponding
+  versioned artifact set under
+  `public/artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30/` is
+  retained for published-history completeness
 
 ## Maintainer rules
 

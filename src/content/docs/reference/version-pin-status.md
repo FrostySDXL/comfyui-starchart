@@ -3,7 +3,7 @@ title: "Version Pin Status"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-04
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.
@@ -25,16 +25,17 @@ Pinned source set:
 - official frontend tag `v1.46.6`
 - frontend commit `9e32b7db5173bc2879d4c19c1d058d733b3074b8`
 
-The active pinned files now live under `references/snapshots/2026-06-01/` and
+The active pinned files now live under `references/snapshots/2026-06-03/` and
 the extracted JSON in `references/raw/` points at those snapshot files.
 
 Prose docs may lag this canonical artifact baseline. When they do, they should
 declare that explicitly with a `**Baseline verification status:**` block rather
 than implying current-baseline review that did not happen.
 
-Earlier pinned baselines under `references/snapshots/2026-05-21/`,
-`references/snapshots/2026-05-18/`, and `references/snapshots/2026-04-19/`
-remain preserved for historical comparison and refresh-path proof.
+Earlier pinned baselines under `references/snapshots/2026-06-01/`,
+`references/snapshots/2026-05-21/`, `references/snapshots/2026-05-18/`,
+and `references/snapshots/2026-04-19/` remain preserved for historical
+comparison and refresh-path proof.
 
 Published artifact history is intentionally bounded: keep the current baseline,
 the last 2 prior baselines, and any older baseline still referenced by active
@@ -67,7 +68,7 @@ with current copies and versioned copies keyed to the pinned baseline. See
 and consumption details.
 
 The current published versioned artifact directory is
-`public/artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-01/`.
+`public/artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-03/`.
 
 ## Automation
 
@@ -93,11 +94,26 @@ consumption details, see [Machine-Readable Artifacts](machine-readable-artifacts
 
 ## Known Baseline Deltas (v0.22.0 -> v0.23.0)
 
-- **`GET /system_stats` field flattening:** The extracted `server_endpoints.json`
-  artifact removed per-device GPU fields that were incorrectly listed as flat
-  top-level entries; the `devices` array remains present in the actual
-  API response. The 3D file type additions (SPLAT, FILE_3D_PLY, etc.) are
-  recorded in `delta-summary.json`.
+The full machine-readable delta between the v0.22.0 and v0.23.0
+extractions is published in `public/artifacts/delta-summary.json`. The
+high-level item list:
+
+- **`GET /system_stats` field flattening:** The extracted
+  `server_endpoints.json` artifact removed per-device GPU fields that
+  were incorrectly listed as flat top-level entries; the `devices` array
+  remains present in the actual API response.
+- **New 3D IO types in `node_api_schema.json`:** SPLAT, FILE_3D_SPLAT,
+  FILE_3D_PLY, FILE_3D_KSPLAT, FILE_3D_SPZ, LOAD3D_MODEL_INFO.
+- **`prompt_conditioning_surface` section:** New section in
+  `node_api_schema.json` with source-backed STRING and CONDITIONING
+  summaries plus optional runtime node output enrichment.
+- **`POST /interrupt` body:** `server_endpoints.json` now documents an
+  optional JSON body for targeted interruption.
+- **`output_parameters` and `output_parameter_details`:** New fields
+  on IO type entries in `node_api_schema.json`.
+
+For item-level proof and field-level diff coverage, read
+`public/artifacts/delta-summary.json` directly.
 
 ## Read Next
 

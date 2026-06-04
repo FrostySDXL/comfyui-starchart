@@ -27,9 +27,9 @@ production profiler and it does not persist history.
 - `src/content/docs/start-here/extension-developer.md` - retained extension entry path for route and server-side work
 - `src/content/docs/hooks/server-hooks.md` - repo summary of prompt and execution surfaces
 - `src/content/docs/architecture/overview.md` - retained system map for hybrid extension placement
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/server.py` - pinned route registration and `/api` mirroring behavior
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/execution.py` - pinned execution path showing `reset_progress_state(...)` and `add_progress_handler(WebUIProgressHandler(self.server))`
-- `references/snapshots/2026-04-19/comfyui-core-v0.19.3/comfy_execution/progress.py` - pinned `ProgressHandler` contract, registry behavior, and callback signatures
+- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py` - pinned route registration and `/api` mirroring behavior
+- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py` - pinned execution path showing `reset_progress_state(...)` and `add_progress_handler(WebUIProgressHandler(self.server))`
+- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_execution/progress.py` - pinned `ProgressHandler` contract, registry behavior, and callback signatures
 - `examples/custom-nodes/example-4-progress-ui/` - repo example for frontend event listeners and `WEB_DIRECTORY`
 - `examples/custom-nodes/example-5-full-extension-package/` - repo example for package layout and frontend export pattern
 

@@ -1,6 +1,6 @@
 # Native ComfyUI API Call Examples
 
-**Primary Source:** https://github.com/Comfy-Org/ComfyUI/blob/master/server.py
+**Primary Source:** `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py` (v0.23.0, commit `a88e02b18576283b1ff25a4b564548c5dc42cbf6`)
 
 These examples target native ComfyUI routes, not wrapper APIs.
 
@@ -54,5 +54,5 @@ execution-related messages tied to the same `client_id` used in `POST /prompt`.
 ## Notes
 
 - `/api/...` prefixed copies also exist in current upstream server setup
-- exact message/event shapes are version-sensitive until this repo is pinned to
-  a specific upstream commit
+- exact message/event shapes are pinned to the repo's currently extracted
+  upstream commit and may drift in future refreshes

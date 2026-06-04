@@ -49,6 +49,7 @@ Use one of these canonical artifact keys:
 - `server_endpoints.json`
 - `js_hooks.json`
 - `node_api_schema.json`
+- `websocket_events.json`
 
 For the contract and support-artifact boundaries this example assumes, read
 [`src/content/docs/reference/machine-readable-artifacts.md`](../../../src/content/docs/reference/machine-readable-artifacts.md).

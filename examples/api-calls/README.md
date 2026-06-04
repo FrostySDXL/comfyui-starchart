@@ -1,7 +1,7 @@
 # Examples: API Calls
 
 **Status:** Source-backed examples
-**Primary Sources:** https://github.com/Comfy-Org/ComfyUI/blob/master/server.py, https://docs.comfy.org/
+**Primary Sources:** `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py` (v0.23.0, commit `a88e02b18576283b1ff25a4b564548c5dc42cbf6`), https://docs.comfy.org/
 
 ## What This Directory Contains
 
