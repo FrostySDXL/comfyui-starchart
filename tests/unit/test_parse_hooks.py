@@ -182,6 +182,32 @@ export interface ComfyExtension {
             self.assertIsInstance(field["is_hook"], bool)
             self.assertIn("traceability", field)
 
+    def test_extension_field_description_is_omitted_when_comment_is_missing(self):
+        parse_hooks = _load_parse_hooks()
+        sample = """
+export interface ComfyExtension {
+  name: string
+}
+"""
+
+        fields = parse_hooks.extract_extension_fields({"tmp/comfy.ts": sample}, hook_names=set())
+        name_field = next(field for field in fields if field["name"] == "name")
+
+        self.assertNotIn("description", name_field)
+
+    def test_inline_jsdoc_extension_field_description_is_preserved(self):
+        parse_hooks = _load_parse_hooks()
+        sample = """
+export interface ComfyExtension {
+  /** The extension name. */ name: string
+}
+"""
+
+        fields = parse_hooks.extract_extension_fields({"tmp/comfy.ts": sample}, hook_names=set())
+        name_field = next(field for field in fields if field["name"] == "name")
+
+        self.assertEqual(name_field["description"], "The extension name.")
+
     def test_main_output_includes_extension_fields_list(self):
         sample = """
 export interface ComfyExtension {
@@ -216,15 +242,37 @@ export interface ComfyExtension {
         coverage = parse_hooks.build_hook_coverage([])
 
         self.assertEqual(parse_hooks.extract_extension_fields({}, hook_names=set()), [])
-        self.assertIn("ComfyExtension interface not found", coverage["deferred"])
+        self.assertTrue(
+            any("no frontend source files" in note for note in coverage["deferred"]),
+            msg=coverage["deferred"],
+        )
 
     def test_source_without_comfy_extension_returns_empty_fields(self):
         parse_hooks = _load_parse_hooks()
-        fields = parse_hooks.extract_extension_fields(
-            {"tmp/other.ts": "export interface Other { name: string }"}, hook_names=set()
-        )
+        source_map = {"tmp/other.ts": "export interface Other { name: string }"}
+        fields = parse_hooks.extract_extension_fields(source_map, hook_names=set())
+        coverage = parse_hooks.build_hook_coverage(fields, source_map)
 
         self.assertEqual(fields, [])
+        self.assertTrue(
+            any("did not declare the interface" in note for note in coverage["deferred"]),
+            msg=coverage["deferred"],
+        )
+
+    def test_unparseable_extension_member_is_skipped_without_dropping_following_field(self):
+        parse_hooks = _load_parse_hooks()
+        sample = """
+export interface ComfyExtension {
+  readonly foo: string
+  name: string
+}
+"""
+
+        fields = parse_hooks.extract_extension_fields({"tmp/comfy.ts": sample}, hook_names=set())
+        field_names = {field["name"] for field in fields}
+
+        self.assertNotIn("foo", field_names)
+        self.assertIn("name", field_names)
 
     def test_malformed_comfy_extension_source_raises_clear_error(self):
         parse_hooks = _load_parse_hooks()

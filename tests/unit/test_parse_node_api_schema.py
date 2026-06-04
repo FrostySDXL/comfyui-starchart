@@ -324,6 +324,64 @@ class ParseNodeApiSchemaTests(unittest.TestCase):
             self.assertEqual(set(entry), {"name", "schema_fields_ref"})
             self.assertIn(entry["schema_fields_ref"], schema_field_names)
 
+    def test_partial_hidden_auto_injection_adds_deferred_coverage_note(self):
+        module = _load_parse_node_api_schema()
+        deferred = []
+        contract = module.extract_v3_schema_contract(
+            """
+from dataclasses import dataclass
+
+@dataclass
+class Schema:
+    is_api_node: bool = False
+
+    def finalize(self):
+        if self.is_api_node:
+            self.hidden.append(Hidden.auth_token)
+""",
+            "sample/_io.py",
+            coverage_deferred=deferred,
+        )
+
+        self.assertEqual(
+            contract["hidden_values"]["hidden_auto_injection"],
+            [{"condition": "is_api_node", "injected": ["auth_token"]}],
+        )
+        self.assertTrue(
+            any("Schema.finalize" in note and "hidden_auto_injection" in note for note in deferred),
+            msg=deferred,
+        )
+
+    def test_output_only_hidden_auto_injection_is_extracted_with_partial_note(self):
+        module = _load_parse_node_api_schema()
+        deferred = []
+        contract = module.extract_v3_schema_contract(
+            """
+from dataclasses import dataclass
+
+@dataclass
+class Schema:
+    is_api_node: bool = False
+    is_output_node: bool = False
+
+    def finalize(self):
+        if self.is_output_node:
+            self.hidden.append(Hidden.prompt)
+            self.hidden.append(Hidden.extra_pnginfo)
+""",
+            "sample/_io.py",
+            coverage_deferred=deferred,
+        )
+
+        self.assertEqual(
+            contract["hidden_values"]["hidden_auto_injection"],
+            [{"condition": "is_output_node", "injected": ["prompt", "extra_pnginfo"]}],
+        )
+        self.assertTrue(
+            any("is_api_node" in note and "hidden_auto_injection" in note for note in deferred),
+            msg=deferred,
+        )
+
     def test_extract_v3_schema_contract_empty_when_no_v3_dataclasses_exist(self):
         module = _load_parse_node_api_schema()
         contract = module.extract_v3_schema_contract("class NotSchema: pass", "sample/_io.py")
@@ -381,6 +439,7 @@ class ParseNodeApiSchemaTests(unittest.TestCase):
                             "io_types",
                             "basic_input_shapes",
                             "typed_input_shapes",
+                            "v3_schema_contract",
                         ],
                         "runtime_sections": [],
                     },

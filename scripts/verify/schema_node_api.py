@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from scripts.verify.schema_common import (
+    SchemaSpec,
     _check_type,
     _type_label,
     _validate_schema_shape,
@@ -8,7 +9,7 @@ from scripts.verify.schema_common import (
     validate_traceability,
 )
 
-IO_TYPE_SCHEMA = {
+IO_TYPE_SCHEMA: SchemaSpec = {
     "io_type": (str, True),
     "class_name": (str, True),
     "input_class": ((str, type(None)), True),
@@ -294,10 +295,15 @@ def validate_v3_schema_contract(data: dict, filename: str) -> list[str]:
             if not isinstance(entry, dict):
                 errors.append(f"{filename}: {item_path} expected dict, got {type(entry).__name__}")
                 continue
-            if set(entry) != {"name", "schema_fields_ref"}:
+            missing = {"name", "schema_fields_ref"} - set(entry)
+            for key in sorted(missing):
+                errors.append(f"{filename}: {item_path} missing required key '{key}'")
+            unexpected = set(entry) - {"name", "schema_fields_ref"}
+            if unexpected:
                 errors.append(
                     f"{filename}: {item_path} must contain exactly ['name', 'schema_fields_ref']"
                 )
+            if missing or unexpected:
                 continue
             for key in ("name", "schema_fields_ref"):
                 if not isinstance(entry[key], str):

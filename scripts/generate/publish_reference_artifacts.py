@@ -43,6 +43,25 @@ ARTIFACT_FILES = [
 ]
 
 
+def _snapshot_dates_from_sources(artifacts: dict[str, dict]) -> list[str]:
+    """Return snapshot dates discovered in artifact metadata source paths."""
+    dates = []
+    for name in ARTIFACT_FILES:
+        meta = artifacts.get(name, {}).get("metadata", {})
+        for source in meta.get("sources") or []:
+            parts = Path(str(source).replace("\\", "/")).parts
+            for index, part in enumerate(parts[:-1]):
+                if part == "snapshots":
+                    candidate = parts[index + 1]
+                    try:
+                        datetime.strptime(candidate, "%Y-%m-%d")
+                    except ValueError:
+                        continue
+                    dates.append(candidate)
+                    break
+    return dates
+
+
 def _compute_sha256(path: Path) -> str:
     """Return a cross-platform SHA-256 hex digest for textual JSON artifacts.
 
@@ -57,9 +76,9 @@ def _derive_version_key(artifacts: dict[str, dict]) -> str:
     """Build a deterministic, human-readable version key from artifact metadata.
 
     Uses the core version (from server_endpoints or node_api_schema) and the
-    frontend version (from js_hooks), plus the oldest extracted date present.
-    websocket_events.json shares the same core/frontend version families, so it
-    participates in freshness dating without changing the version string shape.
+    frontend version (from js_hooks), plus the frozen snapshot source date when
+    source paths expose one. Falls back to the oldest extracted date only for
+    legacy or synthetic artifacts without snapshot paths.
     """
     core_meta = artifacts.get("server_endpoints.json", {}).get("metadata", {})
     frontend_meta = artifacts.get("js_hooks.json", {}).get("metadata", {})
@@ -67,12 +86,13 @@ def _derive_version_key(artifacts: dict[str, dict]) -> str:
     core_version = core_meta.get("version", "unknown")
     frontend_version = frontend_meta.get("version", "unknown")
 
-    dates = []
-    for name in ARTIFACT_FILES:
-        meta = artifacts.get(name, {}).get("metadata", {})
-        d = meta.get("extracted_date")
-        if d:
-            dates.append(d)
+    dates = _snapshot_dates_from_sources(artifacts)
+    if not dates:
+        for name in ARTIFACT_FILES:
+            meta = artifacts.get(name, {}).get("metadata", {})
+            d = meta.get("extracted_date")
+            if d:
+                dates.append(d)
 
     oldest_date = min(dates) if dates else "unknown"
     return f"core-{core_version}_frontend-{frontend_version}_{oldest_date}"

@@ -8,7 +8,8 @@
       "understand-architecture"
     ],
     "related_artifacts": [
-      "server_endpoints.json"
+      "server_endpoints.json",
+      "websocket_events.json"
     ],
     "related_routes": [
       "GET /history/{prompt_id}",

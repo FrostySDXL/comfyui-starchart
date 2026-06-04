@@ -180,6 +180,8 @@ def _run_websocket_events_extractor(
                 f"{core_version}+{frontend_version}",
                 "--commit",
                 core_commit,
+                "--frontend-commit",
+                frontend_commit,
             ],
             "parse_websocket_events.py extraction",
             cwd=str(repo_root),

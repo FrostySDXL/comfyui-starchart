@@ -243,7 +243,7 @@ def _scan_python_events(
                 payload_fields = _payload_fields(node, node.args[1] if len(node.args) > 1 else None)
                 _add_server_source(events, event_name, source_file, node, method, payload_fields)
                 continue
-            if method in {"send_sync", "send_json"} and isinstance(first_arg, ast.Name):
+            if method in {"send", "send_sync", "send_json"} and isinstance(first_arg, ast.Name):
                 for resolved_name, caller_nodes in add_message_calls.items():
                     for caller in caller_nodes:
                         payload_fields = _payload_fields(
@@ -386,13 +386,21 @@ def _binary_entry(
 
 
 def build_artifact(
-    sources: dict[str, str], *, version: str = "unknown", commit: str = "unknown"
+    sources: dict[str, str],
+    *,
+    version: str = "unknown",
+    commit: str = "unknown",
+    frontend_commit: str | None = None,
 ) -> dict[str, Any]:
     normalized_sources = {normalize_repo_path(path): text for path, text in sources.items()}
     coverage = json.loads(json.dumps(WEBSOCKET_EVENT_COVERAGE))
     events, binary_sources = _scan_python_events(normalized_sources, coverage)
     frontend_listeners = _scan_frontend_listeners(normalized_sources, coverage)
     binary_values, protocol_file = _extract_protocol_binary_events(normalized_sources, coverage)
+    if not any(path.endswith("comfy_execution/progress.py") for path in normalized_sources):
+        coverage["deferred"].append(
+            "comfy_execution/progress.py missing; progress_state extraction deferred."
+        )
 
     all_event_names = set(events) | set(frontend_listeners)
     event_entries = [
@@ -400,6 +408,19 @@ def build_artifact(
         for name in sorted(all_event_names)
         if not name.startswith("b_")
     ]
+    if not event_entries and not binary_values:
+        coverage["deferred"].append(
+            "no recognizable websocket events or binary event enums were found in supplied sources."
+        )
+    unknown_direction_events = [
+        event["name"] for event in event_entries if event.get("direction") == "unknown"
+    ]
+    if unknown_direction_events:
+        coverage["deferred"].append(
+            "unknown direction for listener-only events without client_ prefix: "
+            + ", ".join(sorted(unknown_direction_events))
+            + "."
+        )
     binary_entries = [
         _binary_entry(
             name,
@@ -411,13 +432,17 @@ def build_artifact(
         for name, enum_value in sorted(binary_values.items(), key=lambda item: item[1])
     ]
 
+    metadata = {
+        "sources": list(normalized_sources),
+        "extracted_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "version": version,
+        "commit": commit,
+    }
+    if frontend_commit is not None:
+        metadata["commits"] = {"core": commit, "frontend": frontend_commit}
+
     return {
-        "metadata": {
-            "sources": list(normalized_sources),
-            "extracted_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-            "version": version,
-            "commit": commit,
-        },
+        "metadata": metadata,
         "coverage": coverage,
         "events": event_entries,
         "binary_events": binary_entries,
@@ -438,6 +463,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("source_paths", nargs="+", help="Source files to scan")
     parser.add_argument("--version", default="unknown", help="Snapshot version label")
     parser.add_argument("--commit", default="unknown", help="Snapshot commit label")
+    parser.add_argument(
+        "--frontend-commit",
+        default=None,
+        help="Optional frontend snapshot commit for combined core/frontend artifacts",
+    )
     parser.add_argument("--output", default=str(OUTPUT_PATH), help="Output JSON path")
     return parser.parse_args(argv)
 
@@ -445,7 +475,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     data = build_artifact(
-        _read_sources(args.source_paths), version=args.version, commit=args.commit
+        _read_sources(args.source_paths),
+        version=args.version,
+        commit=args.commit,
+        frontend_commit=args.frontend_commit,
     )
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)

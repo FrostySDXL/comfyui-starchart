@@ -225,6 +225,82 @@ class ParseWebsocketEventsTests(unittest.TestCase):
         self.assertTrue(progress["frontend_listeners"])
         self.assertTrue(any("main.py" in note for note in progress.get("payload_notes", [])))
 
+    def test_missing_progress_source_adds_degraded_coverage_note(self):
+        parser = _load_parse_websocket_events()
+        data = parser.build_artifact(
+            _sample_sources(include_progress=False), version="v0", commit="abc"
+        )
+
+        deferred = data["coverage"]["deferred"]
+        self.assertTrue(
+            any("progress.py missing" in note and "progress_state" in note for note in deferred),
+            msg=deferred,
+        )
+
+    def test_add_message_dynamic_dispatch_resolves_send_variable_event(self):
+        parser = _load_parse_websocket_events()
+        sources = _sample_sources()
+        sources["references/snapshots/sample/comfyui-core/execution.py"] = """
+class PromptExecutor:
+    def add_message(self, event, data, broadcast=True):
+        self.server.send(event, data, broadcast=broadcast)
+
+    def messages(self, prompt_id):
+        payload = {"prompt_id": prompt_id, "nodes": []}
+        self.add_message("execution_cached", payload)
+"""
+
+        data = parser.build_artifact(sources, version="v0", commit="abc")
+        event_by_name = {event["name"]: event for event in data["events"]}
+
+        self.assertIn("execution_cached", event_by_name)
+        self.assertEqual(event_by_name["execution_cached"]["direction"], "server_to_client")
+        self.assertEqual(
+            event_by_name["execution_cached"]["payload_fields"], ["nodes", "prompt_id"]
+        )
+        self.assertTrue(
+            any(
+                source["method"] == "add_message->send"
+                for source in event_by_name["execution_cached"]["server_sources"]
+            )
+        )
+
+    def test_unknown_direction_events_add_deferred_coverage_note(self):
+        parser = _load_parse_websocket_events()
+        sources = {
+            "references/snapshots/sample/comfyui-frontend/src/scripts/app.ts": """
+class ComfyApp {
+  private addApiUpdateHandlers() {
+    api.addEventListener('progress', ({ detail }) => {})
+  }
+}
+"""
+        }
+
+        data = parser.build_artifact(sources, version="v0", commit="abc")
+        progress = next(event for event in data["events"] if event["name"] == "progress")
+
+        self.assertEqual(progress["direction"], "unknown")
+        self.assertTrue(
+            any("unknown direction" in note for note in data["coverage"]["deferred"]),
+            msg=data["coverage"]["deferred"],
+        )
+
+    def test_build_artifact_preserves_component_commit_provenance(self):
+        parser = _load_parse_websocket_events()
+        data = parser.build_artifact(
+            _sample_sources(),
+            version="v0+v1",
+            commit="core123",
+            frontend_commit="front456",
+        )
+
+        self.assertEqual(data["metadata"]["commit"], "core123")
+        self.assertEqual(
+            data["metadata"]["commits"],
+            {"core": "core123", "frontend": "front456"},
+        )
+
     def test_no_recognizable_events_still_emits_valid_empty_sections(self):
         parser = _load_parse_websocket_events()
         data = parser.build_artifact(
@@ -234,6 +310,12 @@ class ParseWebsocketEventsTests(unittest.TestCase):
         self.assertEqual(set(data), {"metadata", "coverage", "events", "binary_events"})
         self.assertEqual(data["events"], [])
         self.assertEqual(data["binary_events"], [])
+        self.assertTrue(
+            any(
+                "no recognizable websocket events" in note for note in data["coverage"]["deferred"]
+            ),
+            msg=data["coverage"]["deferred"],
+        )
 
     def test_cli_writes_repo_relative_metadata_sources(self):
         with tempfile.TemporaryDirectory(dir=REPO_ROOT) as tmp:

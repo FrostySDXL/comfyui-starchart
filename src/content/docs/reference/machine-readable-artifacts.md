@@ -286,6 +286,18 @@ Guaranteed fields follow the artifact's `coverage.guaranteed_fields` block.
 Payload field lists, dynamic dispatch notes, and traceability markers remain
 best-effort static analysis rather than full semantic contracts.
 
+The artifact's `coverage.deferred` list is the first place to check for degraded
+or intentionally bounded extraction. Current deferred categories include:
+
+- runtime-computed payload shapes that have no explicit static keys
+- computed event names or dynamic dispatch paths that cannot be resolved safely
+- missing source files, including `main.py`, `protocol.py`, or
+  `comfy_execution/progress.py`
+- listener-only events whose direction remains unknown because no matching
+  server-side send path is visible
+- empty-source or unrelated-source inputs where no recognizable WebSocket events
+  or binary event enums were found
+
 The artifact covers both JSON events (such as `status`, `progress`,
 `progress_state`, `executing`, `executed`, `execution_start`,
 `execution_error`, `execution_interrupted`, `execution_cached`,

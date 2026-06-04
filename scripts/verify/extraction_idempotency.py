@@ -71,11 +71,14 @@ def get_extractor_args(json_path: Path) -> tuple[str, list[str]] | None:
         sources = metadata.get("sources", [])
         version = metadata.get("version", "")
         commit = metadata.get("commit", "")
+        frontend_commit = metadata.get("commits", {}).get("frontend", "")
         if not sources or not version or not commit:
             return None
         normalized_sources = [normalize_repo_path(s) for s in sources]
         args = normalized_sources.copy()
         args.extend(["--version", version, "--commit", commit])
+        if frontend_commit:
+            args.extend(["--frontend-commit", frontend_commit])
         return script, args
 
     return None

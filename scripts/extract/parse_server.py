@@ -328,6 +328,7 @@ def _extract_prompt_validation_errors(
     server_source: str = "",
 ) -> dict:
     entries: dict[str, dict] = {}
+    unknown_types: set[str] = set()
     for source_text, source_file in (
         (server_text, server_source),
         (execution_text, execution_source),
@@ -338,7 +339,9 @@ def _extract_prompt_validation_errors(
         for node in ast.walk(tree):
             if isinstance(node, ast.Dict):
                 entry = _error_entry_from_dict(node, source_file)
-                if entry is not None and entry["type"] in PROMPT_ERROR_SUMMARIES:
+                if entry is not None:
+                    if entry["type"] not in PROMPT_ERROR_SUMMARIES:
+                        unknown_types.add(entry["type"])
                     entries.setdefault(entry["type"], entry)
 
     if not entries:
@@ -346,12 +349,19 @@ def _extract_prompt_validation_errors(
             "No prompt validation error dictionaries were found in supplied sources.",
             error_types=[],
         )
+    deferred = [
+        "Runtime node-specific validation messages from custom nodes are not statically knowable."
+    ]
+    if unknown_types:
+        deferred.append(
+            "unknown prompt validation error types were preserved without curated summaries: "
+            + ", ".join(sorted(unknown_types))
+            + "."
+        )
     return {
         "error_types": [entries[key] for key in sorted(entries)],
         "coverage": "source-backed",
-        "deferred": [
-            "Runtime node-specific validation messages from custom nodes are not statically knowable."
-        ],
+        "deferred": deferred,
     }
 
 
@@ -421,15 +431,17 @@ def _extract_queue_history_contract(
                 "traceability": _traceability(
                     execution_source, "ExecutionStatus", "ast-structural"
                 ),
+                "coverage": "source-backed",
             }
         )
 
-    if "get_system_stats" in server_functions or "post_free" in server_functions:
+    if "system_stats" in server_functions or "post_free" in server_functions:
         sections.append(
             {
                 "name": "flags",
                 "summary": "Status-related metadata includes system_stats top-level keys such as system and devices; queue flags can request model unload or memory free actions.",
-                "traceability": _traceability(server_source, "get_system_stats", "ast-structural"),
+                "traceability": _traceability(server_source, "system_stats", "ast-structural"),
+                "coverage": "source-backed",
             }
         )
 

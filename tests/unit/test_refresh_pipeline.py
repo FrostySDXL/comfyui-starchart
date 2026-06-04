@@ -65,7 +65,17 @@ class RefreshPipelineWebsocketExtractorTests(unittest.TestCase):
                 str(app_path),
             ],
         )
-        self.assertEqual(command[8:], ["--version", "v0.23.0+v1.46.6", "--commit", "core-sha"])
+        self.assertEqual(
+            command[8:],
+            [
+                "--version",
+                "v0.23.0+v1.46.6",
+                "--commit",
+                "core-sha",
+                "--frontend-commit",
+                "frontend-sha",
+            ],
+        )
 
     def test_run_extractors_skips_websocket_when_pair_is_unavailable(self):
         module = _load_module()
@@ -86,6 +96,26 @@ class RefreshPipelineWebsocketExtractorTests(unittest.TestCase):
                 )
 
         self.assertEqual(results, {"server_endpoints": "server summary"})
+
+    def test_run_extractors_runs_hooks_for_frontend_only_refresh(self):
+        module = _load_module()
+        with tempfile_like_tree() as root:
+            with mock.patch.object(module, "_run_hooks_extractor", return_value="hooks summary"):
+                results = module.run_extractors(
+                    core_version=None,
+                    core_commit=None,
+                    frontend_version="v1.46.6",
+                    frontend_commit="frontend-sha",
+                    snapshot_date="2026-06-03",
+                    runtime_object_info_path=None,
+                    snapshots_dir=root / "snapshots",
+                    python_executable="python",
+                    scripts_extract_dir=root / "scripts" / "extract",
+                    repo_root=root,
+                    run_cmd=mock.Mock(),
+                )
+
+        self.assertEqual(results, {"js_hooks": "hooks summary"})
 
 
 class tempfile_like_tree:

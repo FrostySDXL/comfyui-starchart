@@ -266,6 +266,18 @@ def socket():
             section_names,
             {"queue_running", "queue_pending", "history", "status", "task_done", "flags"},
         )
+        flags_section = next(
+            section for section in queue_history["sections"] if section["name"] == "flags"
+        )
+        status_section = next(
+            section for section in queue_history["sections"] if section["name"] == "status"
+        )
+        self.assertEqual(flags_section["coverage"], "source-backed")
+        self.assertEqual(status_section["coverage"], "source-backed")
+        self.assertEqual(
+            flags_section["traceability"]["source_function"],
+            "system_stats",
+        )
 
         _assert_traceability_is_repo_style(self, data)
 
@@ -299,6 +311,32 @@ def socket():
         self.assertEqual(data["prompt_submission_contract"]["request_fields"], [])
         self.assertEqual(data["prompt_validation_errors"]["error_types"], [])
         self.assertEqual(data["queue_history_contract"]["sections"], [])
+
+    def test_unknown_prompt_validation_error_types_are_preserved_with_deferred_note(self):
+        parse_server = _load_parse_server()
+        execution_text = """
+def validate_prompt():
+    return {
+        "type": "upstream_new_error",
+        "message": "A newer upstream validation error.",
+        "extra_info": {"node_id": "7"},
+    }
+"""
+
+        data = parse_server.extract_server_runtime_contracts("", execution_text)
+        validation = data["prompt_validation_errors"]
+        error_types = {entry["type"]: entry for entry in validation["error_types"]}
+
+        self.assertIn("upstream_new_error", error_types)
+        self.assertEqual(
+            error_types["upstream_new_error"]["summary"],
+            "A newer upstream validation error.",
+        )
+        self.assertEqual(error_types["upstream_new_error"]["extra_info_fields"], ["node_id"])
+        self.assertTrue(
+            any("unknown prompt validation error" in note for note in validation["deferred"]),
+            msg=validation["deferred"],
+        )
 
     def test_metadata_sources_are_repo_relative_when_input_is_in_repo(self):
         sample = """

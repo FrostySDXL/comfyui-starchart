@@ -1,8 +1,13 @@
 from __future__ import annotations
 
-from scripts.verify.schema_common import _check_type, _type_label, validate_traceability
+from scripts.verify.schema_common import (
+    SchemaSpec,
+    _check_type,
+    _type_label,
+    validate_traceability,
+)
 
-HOOK_SCHEMA = {
+HOOK_SCHEMA: SchemaSpec = {
     "name": (str, True),
     "type": (str, True),
     "description": (str, True),
@@ -15,7 +20,7 @@ HOOK_SCHEMA = {
     "traceability": (dict, False),
 }
 
-HOOK_ARGUMENT_SCHEMA = {
+HOOK_ARGUMENT_SCHEMA: SchemaSpec = {
     "name": (str, True),
     "type_hint": ((str, type(None)), False),
 }

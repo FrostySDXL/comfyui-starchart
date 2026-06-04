@@ -83,6 +83,10 @@ class PipelineIntegrationTests(unittest.TestCase):
             "parse_node_api_schema",
             REPO_ROOT / "scripts" / "extract" / "parse_node_api_schema.py",
         )
+        parse_websocket_events = load_module(
+            "parse_websocket_events",
+            REPO_ROOT / "scripts" / "extract" / "parse_websocket_events.py",
+        )
         md_from_json = load_module(
             "md_from_json", REPO_ROOT / "scripts" / "generate" / "md_from_json.py"
         )
@@ -144,36 +148,84 @@ class PipelineIntegrationTests(unittest.TestCase):
             )
             self.assertEqual(exit_code, 0, msg=stderr)
 
-            # Write a minimal websocket_events.json so the publisher finds all four artifacts
-            websocket_payload = {
-                "metadata": {
-                    "sources": ["fixture/server.py", "fixture/app.ts"],
-                    "extracted_date": "2026-06-03",
-                    "version": "v-fixture",
-                    "commit": "abc123",
-                },
-                "coverage": {
-                    "description": "fixture",
-                    "guaranteed_fields": [],
-                    "best_effort_fields": [],
-                    "deferred": [],
-                },
-                "events": [],
-                "binary_events": [],
+            websocket_fixture_dir = root / "fixtures" / "websocket"
+            progress_dir = websocket_fixture_dir / "comfy_execution"
+            progress_dir.mkdir(parents=True, exist_ok=True)
+            websocket_sources = {
+                websocket_fixture_dir / "server.py": """
+class PromptServer:
+    def queue_updated(self):
+        self.send_sync("status", {"exec_info": {}})
+""",
+                websocket_fixture_dir / "main.py": """
+def hijack_progress(server_instance, prompt_id):
+    server_instance.send_sync("progress", {"value": 1, "max": 10, "prompt_id": prompt_id})
+""",
+                websocket_fixture_dir / "execution.py": """
+class PromptExecutor:
+    def add_message(self, event, data):
+        self.server.send(event, data)
+
+    def messages(self, prompt_id):
+        self.add_message("execution_success", {"prompt_id": prompt_id})
+""",
+                websocket_fixture_dir / "protocol.py": """
+class BinaryEventTypes:
+    PREVIEW_IMAGE = 1
+""",
+                progress_dir / "progress.py": """
+class WebUIProgressHandler:
+    def _send_progress_state(self, prompt_id):
+        self.server.send_sync("progress_state", {"prompt_id": prompt_id})
+""",
+                websocket_fixture_dir / "app.ts": """
+class ComfyApp {
+  private addApiUpdateHandlers() {
+    api.addEventListener('status', ({ detail }) => {})
+  }
+}
+""",
             }
-            (raw_dir / "websocket_events.json").write_text(
-                json.dumps(websocket_payload, indent=2) + "\n", encoding="utf-8"
+            for path, text in websocket_sources.items():
+                path.write_text(text, encoding="utf-8")
+
+            exit_code, _stdout, stderr = call_main(
+                parse_websocket_events,
+                *(str(path) for path in websocket_sources),
+                "--version",
+                "v-fixture+v-frontend-fixture",
+                "--commit",
+                "abc123",
+                "--frontend-commit",
+                "def456",
+                "--output",
+                str(raw_dir / "websocket_events.json"),
             )
+            self.assertEqual(exit_code, 0, msg=stderr)
 
             server_data = json.loads(
                 (raw_dir / "server_endpoints.json").read_text(encoding="utf-8")
             )
             hooks_data = json.loads((raw_dir / "js_hooks.json").read_text(encoding="utf-8"))
             schema_data = json.loads((raw_dir / "node_api_schema.json").read_text(encoding="utf-8"))
+            websocket_data = json.loads(
+                (raw_dir / "websocket_events.json").read_text(encoding="utf-8")
+            )
 
             self.assertEqual(_validate_server_endpoints(validate_schema, server_data), [])
             self.assertEqual(_validate_js_hooks(validate_schema, hooks_data), [])
             self.assertEqual(_validate_node_api_schema(validate_schema, schema_data), [])
+            self.assertEqual(
+                validate_schema.validate_websocket_events(websocket_data, "websocket_events.json"),
+                [],
+            )
+            self.assertIn(
+                "execution_success", {event["name"] for event in websocket_data["events"]}
+            )
+            self.assertEqual(
+                websocket_data["metadata"]["commits"],
+                {"core": "abc123", "frontend": "def456"},
+            )
 
             exit_code, _stdout, stderr = call_main(
                 md_from_json,

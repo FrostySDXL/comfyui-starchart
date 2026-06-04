@@ -8,9 +8,13 @@
       "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_execution/progress.py",
       "references/snapshots/2026-06-03/comfyui-frontend-v1.46.6/src/scripts/app.ts"
     ],
-    "extracted_date": "2026-06-03",
+    "extracted_date": "2026-06-04",
     "version": "v0.23.0+v1.46.6",
-    "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6"
+    "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
+    "commits": {
+      "core": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
+      "frontend": "9e32b7db5173bc2879d4c19c1d058d733b3074b8"
+    }
   },
   "coverage": {
     "description": "Source-observed ComfyUI WebSocket and binary event contracts.",

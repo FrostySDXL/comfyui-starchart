@@ -3,7 +3,8 @@ title: "Start Here: Artifact Consumer"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-04
+**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Scope
 
@@ -37,7 +38,8 @@ for the durable contract, support-artifact boundaries, and retention policy.
 Use `artifacts/manifest.json` first.
 
 - It is the canonical discovery surface for the four published extracted
-  artifacts.
+  artifacts: `server_endpoints.json`, `js_hooks.json`, `node_api_schema.json`,
+  and `websocket_events.json`.
 - It gives you stable current URLs, versioned URLs, source metadata, and SHA-256
   checksums.
 - Strict tooling should trust guaranteed fields and published schema files, not

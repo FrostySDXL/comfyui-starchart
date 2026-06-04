@@ -648,7 +648,10 @@ def _hidden_append_name(node: ast.AST) -> str | None:
     return None
 
 
-def _extract_hidden_auto_injection(schema_node: ast.ClassDef | None) -> list[dict[str, Any]]:
+def _extract_hidden_auto_injection(
+    schema_node: ast.ClassDef | None,
+    coverage_deferred: list[str] | None = None,
+) -> list[dict[str, Any]]:
     if schema_node is None:
         return []
     finalize_node = next(
@@ -680,10 +683,29 @@ def _extract_hidden_auto_injection(schema_node: ast.ClassDef | None) -> list[dic
                 hidden_values.append(hidden_name)
         if hidden_values:
             injections.append({"condition": test.attr, "injected": hidden_values})
+    expected_conditions = {"is_api_node", "is_output_node"}
+    found_conditions = {
+        entry["condition"] for entry in injections if isinstance(entry.get("condition"), str)
+    }
+    if (
+        coverage_deferred is not None
+        and found_conditions
+        and found_conditions != expected_conditions
+    ):
+        missing = sorted(expected_conditions - found_conditions)
+        coverage_deferred.append(
+            "Schema.finalize hidden_auto_injection extraction is partial; missing conditions: "
+            + ", ".join(missing)
+            + "."
+        )
     return injections
 
 
-def extract_v3_schema_contract(io_text: str, source_path: str) -> dict[str, Any]:
+def extract_v3_schema_contract(
+    io_text: str,
+    source_path: str,
+    coverage_deferred: list[str] | None = None,
+) -> dict[str, Any]:
     empty_contract = {
         "contract_version": "3.0",
         "schema_fields": [],
@@ -727,7 +749,7 @@ def extract_v3_schema_contract(io_text: str, source_path: str) -> dict[str, Any]
         ),
         "hidden_values": {
             "hidden_enum": _extract_hidden_enum(_find_class(module_ast, "Hidden"), source_path),
-            "hidden_auto_injection": _extract_hidden_auto_injection(schema_node),
+            "hidden_auto_injection": _extract_hidden_auto_injection(schema_node, coverage_deferred),
         },
         "price_badge_contract": price_badge_contract,
         "node_flags": node_flags,
@@ -797,7 +819,10 @@ def main() -> int:
     mode = "hybrid" if runtime_snapshot else "source-only"
 
     io_types = extract_io_types(io_text, str(io_path))
-    v3_schema_contract = extract_v3_schema_contract(io_text, str(io_path))
+    v3_schema_deferred: list[str] = []
+    v3_schema_contract = extract_v3_schema_contract(
+        io_text, str(io_path), coverage_deferred=v3_schema_deferred
+    )
     runtime_object_info = runtime_snapshot.get("object_info", {}) if runtime_snapshot else None
 
     payload: dict[str, Any] = {
@@ -860,13 +885,15 @@ def main() -> int:
                 "per-node INPUT_TYPES schemas",
                 "Schema.get_v1_info() runtime bridge behavior",
             ]
+            + v3_schema_deferred
             if runtime_snapshot
             else [
                 "runtime /object_info response",
                 "custom node definitions",
                 "per-node INPUT_TYPES schemas",
                 "Schema.get_v1_info() runtime bridge behavior",
-            ],
+            ]
+            + v3_schema_deferred,
         },
     }
 

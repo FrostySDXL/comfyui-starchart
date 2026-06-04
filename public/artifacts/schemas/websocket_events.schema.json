@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://starchart.local/artifacts/schemas/websocket_events.schema.json",
+  "$id": "artifacts/schemas/websocket_events.schema.json",
   "title": "ComfyUI WebSocket Events Artifact",
   "type": "object",
   "required": ["metadata", "coverage", "events", "binary_events"],
@@ -14,7 +14,16 @@
         "sources": {"type": "array", "items": {"type": "string"}},
         "extracted_date": {"type": "string"},
         "version": {"type": "string"},
-        "commit": {"type": "string"}
+        "commit": {"type": "string"},
+        "commits": {
+          "type": "object",
+          "required": ["core", "frontend"],
+          "additionalProperties": false,
+          "properties": {
+            "core": {"type": "string"},
+            "frontend": {"type": "string"}
+          }
+        }
       }
     },
     "coverage": {

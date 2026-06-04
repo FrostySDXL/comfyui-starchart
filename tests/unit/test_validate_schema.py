@@ -353,6 +353,53 @@ class ValidateSchemaUnitTests(unittest.TestCase):
             },
         }
 
+    def _valid_websocket_events_data(self):
+        return {
+            "metadata": {
+                "sources": [
+                    "references/snapshots/core/server.py",
+                    "references/snapshots/frontend/src/scripts/app.ts",
+                ],
+                "extracted_date": "2026-06-04",
+                "version": "v0.23.0+v1.46.6",
+                "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
+                "commits": {
+                    "core": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
+                    "frontend": "0123456789abcdef0123456789abcdef01234567",
+                },
+            },
+            "coverage": {
+                "description": "Source-observed ComfyUI WebSocket and binary event contracts.",
+                "guaranteed_fields": ["events.name", "binary_events.name"],
+                "best_effort_fields": ["events.payload_fields"],
+                "deferred": ["Runtime-computed payloads are summarized when visible."],
+                "ast_scan_notes": [],
+            },
+            "events": [
+                {
+                    "name": "status",
+                    "direction": "server_to_client",
+                    "server_sources": [
+                        {
+                            "source_file": "references/snapshots/core/server.py",
+                            "source_function": "send_sync",
+                            "line": 10,
+                            "method": "send_sync",
+                        }
+                    ],
+                    "frontend_listeners": [],
+                    "payload_fields": ["exec_info"],
+                    "payload_notes": [],
+                    "ast_scan_notes": [],
+                    "traceability": {
+                        "strategy": "ast_send_call_and_frontend_listener_merge",
+                        "notes": [],
+                    },
+                }
+            ],
+            "binary_events": [],
+        }
+
     def test_valid_server_endpoints_pass(self):
         module = self._import_module()
         data = self._valid_server_endpoints_data()
@@ -542,6 +589,15 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors = module.validate_v3_schema_contract(data, "node_api_schema.json")
         self.assertTrue(any("must contain exactly" in e for e in errors))
 
+    def test_v3_schema_contract_rejects_missing_node_flag_schema_fields_ref(self):
+        module = self._import_module()
+        data = self._valid_node_api_schema_data()
+        del data["v3_schema_contract"]["node_flags"][0]["schema_fields_ref"]
+
+        errors = module.validate_v3_schema_contract(data, "node_api_schema.json")
+
+        self.assertTrue(any("missing required key 'schema_fields_ref'" in e for e in errors))
+
     def test_endpoint_parameter_rejects_invalid_allowed_values(self):
         module = self._import_module()
         data = self._valid_server_endpoints_data()
@@ -556,6 +612,40 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors.extend(module.validate_metadata(data, "js_hooks.json"))
         errors.extend(module.validate_coverage(data, "js_hooks.json"))
         errors.extend(module.validate_hooks(data, "js_hooks.json"))
+        self.assertEqual(errors, [])
+
+    def test_extension_fields_reject_missing_required_field_metadata(self):
+        module = self._import_module()
+        data = self._valid_js_hooks_data()
+        data["extension_fields"][0].pop("defined_in")
+
+        errors = module.validate_extension_fields(data, "js_hooks.json")
+
+        self.assertTrue(
+            any("extension_fields[0] missing required key 'defined_in'" in e for e in errors)
+        )
+
+    def test_extension_fields_reject_invalid_traceability_shape(self):
+        module = self._import_module()
+        data = self._valid_js_hooks_data()
+        data["extension_fields"][0]["traceability"] = {"source_type": "source-backed"}
+
+        errors = module.validate_extension_fields(data, "js_hooks.json")
+
+        self.assertTrue(
+            any(
+                "extension_fields[0].traceability missing required key 'strategy'" in e
+                for e in errors
+            )
+        )
+
+    def test_metadata_sources_accept_forward_slash_repo_paths(self):
+        module = self._import_module()
+        data = self._valid_server_endpoints_data()
+        data["metadata"]["sources"] = ["references/snapshots/server.py"]
+
+        errors = module.validate_metadata(data, "server_endpoints.json")
+
         self.assertEqual(errors, [])
 
     def test_valid_js_hooks_pass_published_schema(self):
@@ -573,6 +663,34 @@ class ValidateSchemaUnitTests(unittest.TestCase):
             "node_api_schema.json",
         )
         self.assertEqual(errors, [])
+
+    def test_valid_websocket_events_pass_internal_and_published_schema(self):
+        module = self._import_module()
+        data = self._valid_websocket_events_data()
+        errors = module.validate_top_level(
+            data, module.SCHEMAS["websocket_events.json"], "websocket_events.json"
+        )
+        errors.extend(module.validate_metadata(data, "websocket_events.json"))
+        errors.extend(module.validate_coverage(data, "websocket_events.json"))
+        errors.extend(module.validate_websocket_events(data, "websocket_events.json"))
+        errors.extend(
+            module.validate_against_published_artifact_schema(data, "websocket_events.json")
+        )
+
+        self.assertEqual(errors, [])
+
+    def test_websocket_events_rejects_non_string_deferred_item(self):
+        module = self._import_module()
+        data = self._valid_websocket_events_data()
+        data["coverage"]["deferred"] = [123]
+
+        errors = module.validate_coverage(data, "websocket_events.json")
+        errors.extend(
+            module.validate_against_published_artifact_schema(data, "websocket_events.json")
+        )
+
+        self.assertTrue(any("coverage.deferred[0] expected str" in e for e in errors))
+        self.assertTrue(any("published schema violation" in e for e in errors))
 
     def test_docs_index_schema_accepts_nested_tooling_metadata(self):
         module = self._import_module()

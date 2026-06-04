@@ -146,6 +146,25 @@ Stop rule:
 - do not add a new support artifact when an existing artifact can absorb the data
 - do not add a verifier without an intended blocking/advisory lifecycle
 
+Admission case: `websocket_events.json`
+
+- Need: real-time clients, extension authors, and maintainers need source-backed
+  event names, direction, and payload hints for execution monitoring that HTTP
+  route artifacts cannot describe.
+- Owner: maintainers of the canonical extraction and publication pipeline under
+  `scripts/extract/`, `references/raw/`, and `public/artifacts/`.
+- Verification: unit coverage for `scripts/extract/parse_websocket_events.py`,
+  `scripts/verify/validate_schema.py`, artifact integrity checks, and the
+  default `scripts/verify/run_all.py` gate when touching the artifact contract.
+- Bounded contract and removal criteria: include only pinned-source-observed
+  events, binary event constants, listener direction, and payload hints when
+  source-backed. Remove or deprecate fields when upstream removes the source
+  surface or the extractor can no longer prove the contract from retained
+  snapshots.
+- Why not extend an existing surface: websocket events are not HTTP routes, JS
+  extension hooks, or node API schema fields; merging them into those artifacts
+  would blur ownership and make real-time execution contracts harder to query.
+
 ## Verifier Lifecycle Policy
 
 Every verifier must have an explicit lifecycle decision.
@@ -485,6 +504,18 @@ these checks but are not standalone inventory rows.
 | `npm run check` | Run Astro type/content checks | site build configuration and content graph | Blocking | Framework-aware diagnostics beyond markdown-only checks | After content, config, or site-code changes |
 | `npm run build` | Build the published Starlight site | full rendered docs site | Blocking | Produces the rendered output that downstream link verification depends on | After docs or site changes; always before rendered-links |
 | `scripts/verify/rendered_links.py` | Verify internal links in built HTML resolve | `dist/` output | Blocking | Catches link rewrite and route-resolution bugs that source checks miss | After a successful build |
+
+Lifecycle detail for `scripts/verify/snapshot_surface_coverage.py`: purpose is
+to prevent snapshot refreshes from dropping source files that current extractors
+depend on; owner is the maintainer of snapshot refresh and extractor pipelines;
+target surface is the current pinned core/frontend snapshots and required import
+paths; false-positive tolerance is low because missing required files can
+silently degrade generated artifacts; placement is blocking while checks remain
+limited to required files and import reachability; promotion is already satisfied
+by stable required-file coverage in `run_all.py`; demote to advisory if the
+check expands into heuristic source-quality scoring; remove only when extractor
+source requirements are represented by a stricter manifest or replacement
+verifier with equivalent coverage.
 
 ### Supplemental verifiers
 

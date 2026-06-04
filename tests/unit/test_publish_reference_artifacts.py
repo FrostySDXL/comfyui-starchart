@@ -79,9 +79,20 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
         key = module._derive_version_key(artifacts)
         self.assertEqual(key, "core-v0.19.3_frontend-v1.42.11_2026-04-19")
 
-    def test_websocket_events_participates_in_oldest_date_not_version_string(self):
+    def test_extracted_date_does_not_change_snapshot_version_key(self):
         module = self._import_module()
         artifacts = self._sample_artifacts()
+        artifacts["websocket_events.json"]["metadata"]["extracted_date"] = "2026-04-18"
+
+        key = module._derive_version_key(artifacts)
+
+        self.assertEqual(key, "core-v0.19.3_frontend-v1.42.11_2026-04-19")
+
+    def test_derive_version_key_falls_back_to_extracted_date_without_snapshot_sources(self):
+        module = self._import_module()
+        artifacts = self._sample_artifacts()
+        for artifact in artifacts.values():
+            artifact["metadata"]["sources"] = []
         artifacts["websocket_events.json"]["metadata"]["extracted_date"] = "2026-04-18"
 
         key = module._derive_version_key(artifacts)

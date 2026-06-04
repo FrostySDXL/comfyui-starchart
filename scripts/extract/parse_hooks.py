@@ -130,7 +130,9 @@ def clean_comment(block: str) -> str:
     return " ".join(lines)
 
 
-def build_hook_coverage(extension_fields: list[dict]) -> dict:
+def build_hook_coverage(
+    extension_fields: list[dict], source_map: dict[str, str] | None = None
+) -> dict:
     coverage = {
         "description": HOOK_COVERAGE["description"],
         "guaranteed_fields": list(HOOK_COVERAGE["guaranteed_fields"]),
@@ -138,7 +140,20 @@ def build_hook_coverage(extension_fields: list[dict]) -> dict:
         "deferred": list(HOOK_COVERAGE["deferred"]),
     }
     if not extension_fields:
-        coverage["deferred"].append(MISSING_COMFY_EXTENSION_NOTE)
+        if not source_map:
+            coverage["deferred"].append(
+                f"{MISSING_COMFY_EXTENSION_NOTE}: no frontend source files were supplied."
+            )
+        elif any(
+            _extract_interface_body(source_text) is not None for source_text in source_map.values()
+        ):
+            coverage["deferred"].append(
+                f"{MISSING_COMFY_EXTENSION_NOTE}: interface was present but no parseable extension fields were found."
+            )
+        else:
+            coverage["deferred"].append(
+                f"{MISSING_COMFY_EXTENSION_NOTE}: supplied frontend sources did not declare the interface."
+            )
     return coverage
 
 
@@ -263,14 +278,26 @@ def _extract_extension_fields(comfy_types_text: str, source_path: str) -> list[d
             continue
 
         if stripped.startswith("/**"):
-            pending_comment = [stripped]
+            comment_part = stripped
+            trailing_declaration = ""
+            if "*/" in stripped:
+                before, after = stripped.split("*/", 1)
+                comment_part = before + "*/"
+                trailing_declaration = after.strip()
+            pending_comment = [comment_part]
             index += 1
-            while index < len(lines):
-                pending_comment.append(lines[index])
-                if lines[index].strip().endswith("*/"):
+            while not trailing_declaration and index < len(lines):
+                comment_line = lines[index]
+                if "*/" in comment_line:
+                    before, after = comment_line.split("*/", 1)
+                    pending_comment.append(before + "*/")
+                    trailing_declaration = after.strip()
                     index += 1
                     break
+                pending_comment.append(comment_line)
                 index += 1
+            if trailing_declaration:
+                lines.insert(index, trailing_declaration)
             continue
 
         if stripped.startswith("//"):
@@ -310,7 +337,6 @@ def _extract_extension_fields(comfy_types_text: str, source_path: str) -> list[d
             description = clean_comment("\n".join(pending_comment)) if pending_comment else ""
             field_data.update(
                 {
-                    "description": description,
                     "defined_in": source_path,
                     "traceability": {
                         "source_type": "source-backed",
@@ -318,6 +344,8 @@ def _extract_extension_fields(comfy_types_text: str, source_path: str) -> list[d
                     },
                 }
             )
+            if description:
+                field_data["description"] = description
             fields.append(field_data)
         pending_comment = []
         index += 1
@@ -447,7 +475,7 @@ def main() -> int:
             "version": args.version or "unversioned",
             "commit": args.commit,
         },
-        "coverage": build_hook_coverage(extension_fields),
+        "coverage": build_hook_coverage(extension_fields, source_map),
         "extension_fields": extension_fields,
         "hooks": hooks,
     }

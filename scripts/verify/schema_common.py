@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import Any, TypeAlias, cast
 
 from scripts.common.path_normalization import has_backslashes
+
+SchemaExpectedType: TypeAlias = type | tuple[type, ...]
+SchemaSpec: TypeAlias = dict[str, tuple[SchemaExpectedType, bool]]
 
 SCHEMAS = {
     "server_endpoints.json": {
@@ -81,6 +84,8 @@ TRACEABILITY_SCHEMA = {
     "source_type": (str, True),
     "strategy": (str, True),
     "detail": (str, False),
+    "source_file": (str, False),
+    "source_function": (str, False),
 }
 
 PARAMETER_SCHEMA = {
@@ -320,6 +325,26 @@ def validate_metadata(data: dict, filename: str) -> list[str]:
                 errors.append(
                     f"{filename}: metadata.provenance.{key} expected list, got {type(provenance[key]).__name__}"
                 )
+
+    commits = metadata.get("commits")
+    if commits is not None:
+        if not isinstance(commits, dict):
+            errors.append(
+                f"{filename}: metadata.commits expected dict, got {type(commits).__name__}"
+            )
+        else:
+            for key in ("core", "frontend"):
+                value = commits.get(key)
+                if value is None:
+                    errors.append(f"{filename}: metadata.commits missing required field '{key}'")
+                elif not isinstance(value, str):
+                    errors.append(
+                        f"{filename}: metadata.commits.{key} expected str, got {type(value).__name__}"
+                    )
+                elif value and not all(c in "0123456789abcdef" for c in value.lower()):
+                    errors.append(
+                        f"{filename}: metadata.commits.{key} '{value}' should be a hex SHA hash"
+                    )
 
     return errors
 

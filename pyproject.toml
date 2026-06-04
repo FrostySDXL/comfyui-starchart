@@ -16,6 +16,7 @@ include = ["scripts*"]
 target-version = "py311"
 line-length = 100
 include = ["scripts/**/*.py", "tests/**/*.py"]
+extend-exclude = ["references/snapshots"]
 
 [tool.ruff.lint]
 select = [

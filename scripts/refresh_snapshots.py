@@ -123,19 +123,6 @@ def _resolve_commit(clone_dir: str) -> str:
     return refresh_git_ops._resolve_commit(clone_dir)
 
 
-def _copy_source_files(
-    clone_dir: str, dest_dir: Path, files: list[str], repo_label: str
-) -> list[str]:
-    """Compatibility wrapper around the shared snapshot copy helper."""
-    return refresh_git_ops._copy_source_files(
-        clone_dir,
-        dest_dir,
-        files,
-        repo_label,
-        required_files=files,
-    )
-
-
 def _resolve_snapshot_files(
     clone_dir: Path,
     required_files: list[str],

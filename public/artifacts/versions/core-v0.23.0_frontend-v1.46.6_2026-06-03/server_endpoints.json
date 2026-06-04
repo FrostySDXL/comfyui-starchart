@@ -4,7 +4,7 @@
       "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
       "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py"
     ],
-    "extracted_date": "2026-06-03",
+    "extracted_date": "2026-06-04",
     "version": "v0.23.0",
     "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6"
   },
@@ -1609,7 +1609,8 @@
           "strategy": "ast-structural",
           "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
           "source_function": "ExecutionStatus"
-        }
+        },
+        "coverage": "source-backed"
       },
       {
         "name": "flags",
@@ -1618,8 +1619,9 @@
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
           "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
-          "source_function": "get_system_stats"
-        }
+          "source_function": "system_stats"
+        },
+        "coverage": "source-backed"
       }
     ]
   }
