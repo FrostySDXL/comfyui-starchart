@@ -17,6 +17,7 @@ SCHEMAS = {
         "metadata": (dict, True),
         "coverage": (dict, True),
         "hooks": (list, True),
+        "extension_fields": (list, True),
     },
     "websocket_events.json": {
         "metadata": (dict, True),
@@ -151,6 +152,17 @@ QUEUE_HISTORY_SECTION_SCHEMA = {
     "traceability": (dict, True),
     "coverage": (str, False),
     "deferred_reason": (str, False),
+}
+
+EXTENSION_FIELD_SCHEMA = {
+    "name": (str, True),
+    "type_hint": (str, True),
+    "required": (bool, True),
+    "description": (str, False),
+    "defined_in": (str, True),
+    "traceability": (dict, True),
+    "is_hook": (bool, True),
+    "is_index_signature": (bool, False),
 }
 
 COVERAGE_SCHEMA = {
@@ -471,6 +483,24 @@ def validate_server_runtime_contracts(data: dict, filename: str) -> list[str]:
                         validate_traceability(traceability, filename, f"{item_path}.traceability")
                     )
 
+    return errors
+
+
+def validate_extension_fields(data: dict, filename: str) -> list[str]:
+    errors: list[str] = []
+    fields = data.get("extension_fields", [])
+    if not isinstance(fields, list):
+        return errors
+
+    for index, field in enumerate(fields):
+        item_path = f"extension_fields[{index}]"
+        if not isinstance(field, dict):
+            errors.append(f"{filename}: {item_path} expected dict, got {type(field).__name__}")
+            continue
+        errors.extend(_validate_schema_shape(field, EXTENSION_FIELD_SCHEMA, filename, item_path))
+        traceability = field.get("traceability")
+        if isinstance(traceability, dict):
+            errors.extend(validate_traceability(traceability, filename, f"{item_path}.traceability"))
     return errors
 
 

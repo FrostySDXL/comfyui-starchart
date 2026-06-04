@@ -31,7 +31,7 @@
     "js_hooks.json": {
       "current_url": "artifacts/current/js_hooks.json",
       "versioned_url": "artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-03/js_hooks.json",
-      "sha256": "3523cc608a4409c7518e75b1983e618e4737ffbf3e39e2ae309e37128bd36636",
+      "sha256": "3f18f4fae7294659fd5e1cae52d3e1289e5f558617e64b08aa37df1fbdaf8d52",
       "version": "v1.46.6",
       "commit": "9e32b7db5173bc2879d4c19c1d058d733b3074b8",
       "extracted_date": "2026-06-03",

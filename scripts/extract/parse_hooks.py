@@ -15,11 +15,16 @@ HOOK_NAME_RE = re.compile(r"^\s*([A-Za-z0-9_]+)\?\(")
 KNOWN_HOOKS = ["beforeRegisterNodeDef", "nodeCreated", "init", "setup"]
 
 HOOK_COVERAGE = {
-    "description": "Static extraction of documented and observed ComfyUI frontend extension hooks.",
+    "description": "Static extraction of documented and observed ComfyUI frontend extension hooks and declared extension fields.",
     "guaranteed_fields": [
         "hooks[].name",
         "hooks[].type",
         "hooks[].invoked_in",
+        "extension_fields[].name",
+        "extension_fields[].type_hint",
+        "extension_fields[].required",
+        "extension_fields[].defined_in",
+        "extension_fields[].is_hook",
     ],
     "best_effort_fields": [
         "hooks[].description",
@@ -28,12 +33,17 @@ HOOK_COVERAGE = {
         "hooks[].arguments",
         "hooks[].return_type",
         "hooks[].invocation_style",
+        "extension_fields[].description",
+        "extension_fields[].traceability",
+        "extension_fields[].is_index_signature",
     ],
     "deferred": [
         "unresolved hook definitions",
         "hooks referenced without nearby typed declarations",
     ],
 }
+
+MISSING_COMFY_EXTENSION_NOTE = "ComfyExtension interface not found"
 
 
 def _split_signature_arguments(signature_text: str) -> list[str]:
@@ -120,6 +130,18 @@ def clean_comment(block: str) -> str:
     return " ".join(lines)
 
 
+def build_hook_coverage(extension_fields: list[dict]) -> dict:
+    coverage = {
+        "description": HOOK_COVERAGE["description"],
+        "guaranteed_fields": list(HOOK_COVERAGE["guaranteed_fields"]),
+        "best_effort_fields": list(HOOK_COVERAGE["best_effort_fields"]),
+        "deferred": list(HOOK_COVERAGE["deferred"]),
+    }
+    if not extension_fields:
+        coverage["deferred"].append(MISSING_COMFY_EXTENSION_NOTE)
+    return coverage
+
+
 def classify_hook(name: str) -> str:
     if name in {"init", "setup"}:
         return "app_lifecycle"
@@ -171,6 +193,145 @@ def extract_typed_hooks(source_text: str) -> list[dict]:
         index += 1
 
     return hooks
+
+
+def _extract_interface_body(source_text: str) -> str | None:
+    match = re.search(r"\bexport\s+interface\s+ComfyExtension\b", source_text)
+    if not match:
+        return None
+
+    open_index = source_text.find("{", match.end())
+    if open_index == -1:
+        raise ValueError("ComfyExtension interface block is missing an opening brace")
+
+    depth = 0
+    for index in range(open_index, len(source_text)):
+        char = source_text[index]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return source_text[open_index + 1 : index]
+
+    raise ValueError("ComfyExtension interface block is missing a closing brace")
+
+
+def _normalize_type_hint(type_hint: str) -> str:
+    return " ".join(type_hint.strip().split())
+
+
+def _parse_method_field(declaration: str) -> tuple[str, bool, str] | None:
+    match = re.match(r"^([A-Za-z0-9_]+)(\?)?\((.*)\)\s*:\s*(.+)$", declaration)
+    if not match:
+        return None
+    name, optional, arguments, return_type = match.groups()
+    return name, optional != "?", f"({_normalize_type_hint(arguments)}) => {_normalize_type_hint(return_type)}"
+
+
+def _parse_property_field(declaration: str) -> tuple[str, bool, str, bool] | None:
+    index_match = re.match(r"^\[([^\]]+)\]\s*:\s*(.+)$", declaration)
+    if index_match:
+        index_name, type_hint = index_match.groups()
+        return f"[{_normalize_type_hint(index_name)}]", False, _normalize_type_hint(type_hint), True
+
+    property_match = re.match(r"^([A-Za-z0-9_]+)(\?)?\s*:\s*(.+)$", declaration)
+    if not property_match:
+        return None
+    name, optional, type_hint = property_match.groups()
+    return name, optional != "?", _normalize_type_hint(type_hint), False
+
+
+def _extract_extension_fields(comfy_types_text: str, source_path: str) -> list[dict]:
+    interface_body = _extract_interface_body(comfy_types_text)
+    if interface_body is None:
+        return []
+
+    fields: list[dict] = []
+    lines = interface_body.splitlines()
+    pending_comment: list[str] = []
+    index = 0
+
+    while index < len(lines):
+        stripped = lines[index].strip()
+        if not stripped:
+            index += 1
+            continue
+
+        if stripped.startswith("/**"):
+            pending_comment = [stripped]
+            index += 1
+            while index < len(lines):
+                pending_comment.append(lines[index])
+                if lines[index].strip().endswith("*/"):
+                    index += 1
+                    break
+                index += 1
+            continue
+
+        if stripped.startswith("//"):
+            index += 1
+            continue
+
+        declaration_lines = [stripped.rstrip(";")]
+        paren_depth = stripped.count("(") - stripped.count(")")
+        while paren_depth > 0 and index + 1 < len(lines):
+            index += 1
+            next_line = lines[index].strip().rstrip(";")
+            declaration_lines.append(next_line)
+            paren_depth += next_line.count("(") - next_line.count(")")
+
+        declaration = " ".join(part for part in declaration_lines if part)
+        method = _parse_method_field(declaration)
+        property_field = _parse_property_field(declaration) if method is None else None
+        field_data = None
+        if method:
+            name, required, type_hint = method
+            field_data = {
+                "name": name,
+                "type_hint": type_hint,
+                "required": required,
+            }
+        elif property_field:
+            name, required, type_hint, is_index_signature = property_field
+            field_data = {
+                "name": name,
+                "type_hint": type_hint,
+                "required": required,
+            }
+            if is_index_signature:
+                field_data["is_index_signature"] = True
+
+        if field_data:
+            description = clean_comment("\n".join(pending_comment)) if pending_comment else ""
+            field_data.update(
+                {
+                    "description": description,
+                    "defined_in": source_path,
+                    "traceability": {
+                        "source_type": "source-backed",
+                        "strategy": "comfy_extension_interface",
+                    },
+                }
+            )
+            fields.append(field_data)
+        pending_comment = []
+        index += 1
+
+    return fields
+
+
+def extract_extension_fields(source_map: dict[str, str], hook_names: set[str]) -> list[dict]:
+    fields: list[dict] = []
+    for source_path, source_text in source_map.items():
+        source_fields = _extract_extension_fields(source_text, source_path)
+        if source_fields:
+            fields.extend(source_fields)
+
+    for field in fields:
+        field["is_hook"] = field["name"] in hook_names
+
+    return fields
 
 
 def extract_hooks(source_map: dict[str, str]) -> list[dict]:
@@ -271,6 +432,9 @@ def main() -> int:
         for source_path in source_paths
     }
     hooks = extract_hooks(source_map)
+    extension_fields = extract_extension_fields(
+        source_map, hook_names={hook["name"] for hook in hooks}
+    )
 
     payload = {
         "metadata": {
@@ -279,14 +443,18 @@ def main() -> int:
             "version": args.version or "unversioned",
             "commit": args.commit,
         },
-        "coverage": HOOK_COVERAGE,
+        "coverage": build_hook_coverage(extension_fields),
+        "extension_fields": extension_fields,
         "hooks": hooks,
     }
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    print(f"Extracted {len(hooks)} hooks to {display_path(output_path)}")
+    print(
+        f"Extracted {len(hooks)} hooks and {len(extension_fields)} extension fields "
+        f"to {display_path(output_path)}"
+    )
     return 0
 
 

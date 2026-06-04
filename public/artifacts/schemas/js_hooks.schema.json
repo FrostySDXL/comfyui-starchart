@@ -7,6 +7,7 @@
   "required": [
     "metadata",
     "coverage",
+    "extension_fields",
     "hooks"
   ],
   "properties": {
@@ -91,6 +92,60 @@
             "items": {
               "type": "string"
             }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "extension_fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "type_hint",
+          "required",
+          "defined_in",
+          "traceability",
+          "is_hook"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type_hint": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          },
+          "defined_in": {
+            "type": "string"
+          },
+          "traceability": {
+            "type": "object",
+            "required": [
+              "source_type",
+              "strategy"
+            ],
+            "properties": {
+              "source_type": {
+                "type": "string"
+              },
+              "strategy": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          },
+          "is_hook": {
+            "type": "boolean"
+          },
+          "is_index_signature": {
+            "type": "boolean"
           }
         },
         "additionalProperties": true

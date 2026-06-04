@@ -196,18 +196,30 @@ precise mutation-request semantics.
 
 ### js_hooks.json
 
-Contains JavaScript and frontend extension hooks, their signatures, and where
-they are defined and invoked in the pinned frontend source. Useful for:
+Contains JavaScript and frontend extension hooks, their signatures, declared
+frontend extension fields from `ComfyExtension`, and where those surfaces are
+defined and invoked in the pinned frontend source. Useful for:
 
 - building a hook explorer or IDE autocomplete data
 - validating that a custom extension registers against hooks that exist in the
   pinned version
+- answering which properties a ComfyUI frontend extension can export
+- distinguishing lifecycle hooks from declarative UI contribution points such as
+  commands, keybindings, menu commands, settings, badges, bottom-panel tabs, and
+  action-bar buttons
 - tracking frontend integration point changes across versions
 
 This artifact is more structured than the endpoint artifact, but descriptive and
 provenance-style fields such as `description`, `defined_in`, `signature`,
-`arguments`, and `invocation_style` should still be
-treated according to the artifact's `coverage` block.
+`arguments`, `invocation_style`, and `extension_fields[].traceability` should
+still be treated according to the artifact's `coverage` block.
+
+The `extension_fields` section preserves raw TypeScript annotations from
+`src/types/comfy.ts` as `type_hint` values. It does not expand imported type
+definitions such as `ComfyCommand`, `SettingParams`, or `BottomPanelExtension`.
+Use `extension_fields[].is_hook` to separate fields that are also lifecycle hook
+methods from non-hook declarative contribution points. Invocation evidence and
+call style remain in the `hooks` section.
 
 ### node_api_schema.json
 
@@ -635,8 +647,9 @@ for ep in endpoints["endpoints"]:
 ### Building a hook explorer from js_hooks.json
 
 Use `js_hooks.json` to populate an autocomplete list or documentation panel for
-frontend extension authors. Each hook entry includes `name`, `type`, `description`,
-and source locations.
+frontend extension authors. Each hook entry includes `name`, `type`,
+`description`, and source locations. The `extension_fields` section answers which
+fields an extension can export beyond lifecycle hooks.
 
 ```python
 hooks = json.load(urllib.request.urlopen(
@@ -645,6 +658,10 @@ hooks = json.load(urllib.request.urlopen(
 
 for hook in hooks["hooks"]:
     print(f"{hook['name']} ({hook['type']}): {hook['description']}")
+
+for field in hooks["extension_fields"]:
+    kind = "hook" if field["is_hook"] else "declarative field"
+    print(f"{field['name']}: {field['type_hint']} [{kind}]")
 ```
 
 ### Validating node-surface assumptions from node_api_schema.json
@@ -729,8 +746,8 @@ presence depends on whether someone ran the live runtime capture path at all.
   repo now guarantees full request validation or runtime response behavior.
 - `server_endpoints.json` is suitable for route/method scaffolding and response
   kind checks, not as a complete OpenAPI replacement.
-- `js_hooks.json` includes useful descriptive metadata, but some hook
-  descriptions and provenance details remain best-effort.
+- `js_hooks.json` includes useful descriptive metadata, but some hook and
+  extension-field descriptions and provenance details remain best-effort.
 - The `node_api_schema.json` artifact covers built-in types and common patterns.
   Custom node packs may introduce types that do not appear in the pinned snapshot.
 - For authoritative human reference, use [docs.comfy.org](https://docs.comfy.org/).

@@ -54,6 +54,7 @@ app.registerExtension({
                 "commit": "abc123",
             },
             "coverage": parse_hooks.HOOK_COVERAGE,
+            "extension_fields": [],
             "hooks": parse_hooks.extract_hooks({"tmp/app.js": sample}),
         }
 
@@ -79,6 +80,161 @@ app.registerExtension({
         errors.extend(validate_schema.validate_coverage(data, "js_hooks.json"))
         errors.extend(validate_schema.validate_hooks(data, "js_hooks.json"))
         self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
+
+    def test_extracts_extension_fields_from_comfy_extension(self):
+        sample = """
+export interface ComfyExtension {
+  /**
+   * The name of the extension
+   */
+  name: string
+  /**
+   * The commands defined by the extension
+   */
+  commands?: ComfyCommand[]
+  /**
+   * The keybindings defined by the extension
+   */
+  keybindings?: Keybinding[]
+  /**
+   * Menu commands to add to the menu bar
+   */
+  menuCommands?: MenuCommandGroup[]
+  /**
+   * Settings to add to the settings menu
+   */
+  settings?: SettingParams[]
+  /**
+   * Bottom panel tabs to add to the bottom panel
+   */
+  bottomPanelTabs?: BottomPanelExtension[]
+  /**
+   * Badges to add to the about page
+   */
+  aboutPageBadges?: AboutPageBadge[]
+  /**
+   * Badges to add to the top bar
+   */
+  topbarBadges?: TopbarBadge[]
+  /**
+   * Buttons to add to the action bar
+   */
+  actionBarButtons?: ActionBarButton[]
+  /**
+   * Allows the extension to add custom widgets
+   */
+  getCustomWidgets?(app: ComfyApp): Promise<Widgets> | Widgets
+  /**
+   * Allows the extension to add additional handling to the node before it is registered with LGraph
+   */
+  beforeRegisterNodeDef?(nodeType: typeof LGraphNode, nodeData: ComfyNodeDef, app: ComfyApp): Promise<void> | void
+  /**
+   * Allows the extension to modify a node that has been reloaded onto the graph.
+   */
+  loadedGraphNode?(node: LGraphNode, app: ComfyApp): void
+  /**
+   * Allows the extension to run code after the constructor of the node
+   */
+  nodeCreated?(node: LGraphNode, app: ComfyApp): void
+  [key: string]: unknown
+}
+"""
+
+        parse_hooks = _load_parse_hooks()
+        hooks = parse_hooks.extract_hooks({"tmp/comfy.ts": sample})
+        fields = parse_hooks.extract_extension_fields(
+            {"tmp/comfy.ts": sample}, hook_names={entry["name"] for entry in hooks}
+        )
+        by_name = {entry["name"]: entry for entry in fields}
+
+        for name in {
+            "name",
+            "commands",
+            "keybindings",
+            "menuCommands",
+            "settings",
+            "bottomPanelTabs",
+            "aboutPageBadges",
+            "topbarBadges",
+            "actionBarButtons",
+            "getCustomWidgets",
+            "beforeRegisterNodeDef",
+            "nodeCreated",
+            "loadedGraphNode",
+            "[key: string]",
+        }:
+            self.assertIn(name, by_name)
+
+        self.assertEqual(by_name["name"]["type_hint"], "string")
+        self.assertTrue(by_name["name"]["required"])
+        self.assertEqual(by_name["commands"]["type_hint"], "ComfyCommand[]")
+        self.assertFalse(by_name["commands"]["required"])
+        self.assertEqual(
+            by_name["beforeRegisterNodeDef"]["type_hint"],
+            "(nodeType: typeof LGraphNode, nodeData: ComfyNodeDef, app: ComfyApp) => Promise<void> | void",
+        )
+        self.assertIn("additional handling", by_name["beforeRegisterNodeDef"]["description"])
+        self.assertEqual(by_name["beforeRegisterNodeDef"]["defined_in"], "tmp/comfy.ts")
+        self.assertTrue(by_name["beforeRegisterNodeDef"]["is_hook"])
+        self.assertFalse(by_name["commands"]["is_hook"])
+        self.assertTrue(by_name["[key: string]"]["is_index_signature"])
+        for field in fields:
+            self.assertIsInstance(field["is_hook"], bool)
+            self.assertIn("traceability", field)
+
+    def test_main_output_includes_extension_fields_list(self):
+        sample = """
+export interface ComfyExtension {
+  /** The name of the extension */
+  name: string
+  /** Allows any initialisation. */
+  init?(app: ComfyApp): Promise<void> | void
+}
+"""
+
+        with tempfile.TemporaryDirectory(dir=REPO_ROOT) as tmp:
+            tmp_path = Path(tmp)
+            comfy_path = tmp_path / "comfy.ts"
+            out_path = tmp_path / "js_hooks.json"
+            comfy_path.write_text(sample, encoding="utf-8")
+
+            exit_code, _stdout, stderr = _run_parse_hooks_main(
+                str(comfy_path), "--output", str(out_path)
+            )
+
+            self.assertEqual(exit_code, 0, msg=stderr)
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            self.assertIn("extension_fields", data)
+            self.assertIsInstance(data["extension_fields"], list)
+            init_field = next(
+                field for field in data["extension_fields"] if field["name"] == "init"
+            )
+            self.assertTrue(init_field["is_hook"])
+
+    def test_missing_comfy_extension_source_returns_empty_fields_with_deferred_note(self):
+        parse_hooks = _load_parse_hooks()
+        coverage = parse_hooks.build_hook_coverage([])
+
+        self.assertEqual(parse_hooks.extract_extension_fields({}, hook_names=set()), [])
+        self.assertIn("ComfyExtension interface not found", coverage["deferred"])
+
+    def test_source_without_comfy_extension_returns_empty_fields(self):
+        parse_hooks = _load_parse_hooks()
+        fields = parse_hooks.extract_extension_fields(
+            {"tmp/other.ts": "export interface Other { name: string }"}, hook_names=set()
+        )
+
+        self.assertEqual(fields, [])
+
+    def test_malformed_comfy_extension_source_raises_clear_error(self):
+        parse_hooks = _load_parse_hooks()
+        sample = """
+export interface ComfyExtension {
+  name: string
+"""
+
+        with self.assertRaisesRegex(ValueError, "ComfyExtension interface block"):
+            parse_hooks.extract_extension_fields({"tmp/comfy.ts": sample}, hook_names=set())
 
     def test_invocation_only_hooks_dedupe_invoked_in(self):
         app_sample = """
