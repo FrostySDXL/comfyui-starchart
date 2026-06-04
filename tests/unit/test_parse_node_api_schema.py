@@ -26,6 +26,9 @@ def node_info(node_class):
 """
 
 _IO_SAMPLE_FULL = """\
+from dataclasses import dataclass, field
+from enum import Enum
+
 @comfytype(io_type="BOOLEAN")
 class Boolean(ComfyTypeIO):
     Type = bool
@@ -64,6 +67,61 @@ class Histogram(ComfyTypeIO):
 
     def __init__(self, unique_id: str, prompt: object):
         pass
+
+class Hidden(str, Enum):
+    unique_id = "UNIQUE_ID"
+    '''Unique node identifier.'''
+    prompt = "PROMPT"
+    extra_pnginfo = "EXTRA_PNGINFO"
+    auth_token_comfy_org = "AUTH_TOKEN_COMFY_ORG"
+    api_key_comfy_org = "API_KEY_COMFY_ORG"
+
+@dataclass
+class NodeInfoV1:
+    input: dict=None
+    display_name: str=None
+    category: str=None
+    api_node: bool=None
+
+@dataclass
+class PriceBadgeDepends:
+    widgets: list[str] = field(default_factory=list)
+    inputs: list[str] = field(default_factory=list)
+
+@dataclass
+class PriceBadge:
+    expr: str
+    depends_on: PriceBadgeDepends = field(default_factory=PriceBadgeDepends)
+    engine: str = field(default="jsonata")
+
+@dataclass
+class Schema:
+    node_id: str
+    '''ID of node.'''
+    display_name: str = None
+    category: str = "sd"
+    inputs: list[Input] = field(default_factory=list)
+    outputs: list[Output] = field(default_factory=list)
+    hidden: list[Hidden] = field(default_factory=list)
+    is_output_node: bool=False
+    is_api_node: bool=False
+    price_badge: PriceBadge | None = None
+    maybe_flag: bool | None = None
+
+    def finalize(self):
+        if self.is_api_node:
+            if Hidden.auth_token_comfy_org not in self.hidden:
+                self.hidden.append(Hidden.auth_token_comfy_org)
+            if Hidden.api_key_comfy_org not in self.hidden:
+                self.hidden.append(Hidden.api_key_comfy_org)
+        if self.is_output_node:
+            if Hidden.prompt not in self.hidden:
+                self.hidden.append(Hidden.prompt)
+            if Hidden.extra_pnginfo not in self.hidden:
+                self.hidden.append(Hidden.extra_pnginfo)
+
+    def get_v1_info(self, cls) -> NodeInfoV1:
+        return NodeInfoV1()
 """
 
 _BASIC_TYPES_SAMPLE_FULL = '''\
@@ -202,6 +260,78 @@ class ParseNodeApiSchemaTests(unittest.TestCase):
         shapes = module.extract_basic_input_shapes(_BASIC_TYPES_SAMPLE_FULL)
         self.assertEqual(shapes["ImageInput"], "An image in format [B, H, W, C]")
 
+    def test_extract_v3_schema_contract_captures_dataclass_fields(self):
+        module = _load_parse_node_api_schema()
+        contract = module.extract_v3_schema_contract(_IO_SAMPLE_FULL, "sample/_io.py")
+
+        self.assertEqual(contract["contract_version"], "3.0")
+        schema_fields = {field["name"]: field for field in contract["schema_fields"]}
+        for name in [
+            "node_id",
+            "display_name",
+            "category",
+            "inputs",
+            "outputs",
+            "is_output_node",
+            "is_api_node",
+        ]:
+            self.assertIn(name, schema_fields)
+            self.assertEqual(schema_fields[name]["defined_in"], "sample/_io.py")
+            self.assertIn("traceability", schema_fields[name])
+
+        self.assertEqual(schema_fields["node_id"]["type_hint"], "str")
+        self.assertTrue(schema_fields["node_id"]["required"])
+        self.assertEqual(schema_fields["node_id"]["description"], "ID of node.")
+        self.assertEqual(schema_fields["inputs"]["default_factory"], "list")
+
+        node_info_fields = {field["name"] for field in contract["node_info_fields"]}
+        self.assertIn("display_name", node_info_fields)
+        self.assertIn("api_node", node_info_fields)
+
+        badge_fields = {
+            item["class_name"]: {field["name"] for field in item["fields"]}
+            for item in contract["price_badge_contract"]
+        }
+        self.assertIn("expr", badge_fields["PriceBadge"])
+        self.assertIn("widgets", badge_fields["PriceBadgeDepends"])
+
+    def test_extract_v3_schema_contract_captures_hidden_values_and_node_flags(self):
+        module = _load_parse_node_api_schema()
+        contract = module.extract_v3_schema_contract(_IO_SAMPLE_FULL, "sample/_io.py")
+
+        hidden_names = {entry["name"] for entry in contract["hidden_values"]["hidden_enum"]}
+        self.assertIn("auth_token_comfy_org", hidden_names)
+
+        injections = {
+            entry["condition"]: entry["injected"]
+            for entry in contract["hidden_values"]["hidden_auto_injection"]
+        }
+        self.assertEqual(
+            injections["is_api_node"],
+            ["auth_token_comfy_org", "api_key_comfy_org"],
+        )
+        self.assertEqual(injections["is_output_node"], ["prompt", "extra_pnginfo"])
+
+        schema_field_names = {field["name"] for field in contract["schema_fields"]}
+        self.assertEqual(
+            contract["node_flags"],
+            [
+                {"name": "is_output_node", "schema_fields_ref": "is_output_node"},
+                {"name": "is_api_node", "schema_fields_ref": "is_api_node"},
+            ],
+        )
+        for entry in contract["node_flags"]:
+            self.assertEqual(set(entry), {"name", "schema_fields_ref"})
+            self.assertIn(entry["schema_fields_ref"], schema_field_names)
+
+    def test_extract_v3_schema_contract_empty_when_no_v3_dataclasses_exist(self):
+        module = _load_parse_node_api_schema()
+        contract = module.extract_v3_schema_contract("class NotSchema: pass", "sample/_io.py")
+
+        self.assertEqual(contract["contract_version"], "3.0")
+        self.assertEqual(contract["schema_fields"], [])
+        self.assertEqual(contract["node_info_fields"], [])
+
     def test_extract_typed_input_shapes_audio(self):
         module = _load_parse_node_api_schema()
         with tempfile.TemporaryDirectory() as tmp:
@@ -261,10 +391,14 @@ class ParseNodeApiSchemaTests(unittest.TestCase):
                 "typed_input_shapes": module.extract_typed_input_shapes(
                     _BASIC_TYPES_SAMPLE_FULL, str(basic_types_path)
                 ),
+                "v3_schema_contract": module.extract_v3_schema_contract(
+                    _IO_SAMPLE_FULL, str(io_path)
+                ),
                 "coverage": {
                     "description": "test",
                     "sources_covered": ["tmp/server.py"],
                     "runtime_enriched": False,
+                    "best_effort_fields": ["v3_schema_contract.schema_fields"],
                     "deferred": [],
                 },
             }
@@ -275,6 +409,7 @@ class ParseNodeApiSchemaTests(unittest.TestCase):
             self.assertIn("io_types", data)
             self.assertIn("basic_input_shapes", data)
             self.assertIn("typed_input_shapes", data)
+            self.assertIn("v3_schema_contract", data)
             for entry in data["io_types"]:
                 for key in (
                     "io_type",
@@ -297,6 +432,7 @@ class ParseNodeApiSchemaTests(unittest.TestCase):
             errors.extend(validate_schema.validate_metadata(data, "node_api_schema.json"))
             errors.extend(validate_schema.validate_io_types(data, "node_api_schema.json"))
             errors.extend(validate_schema.validate_typed_input_shapes(data, "node_api_schema.json"))
+            errors.extend(validate_schema.validate_v3_schema_contract(data, "node_api_schema.json"))
             self.assertEqual(errors, [], msg=f"Schema errors: {errors}")
 
     def test_metadata_sources_and_defined_in_are_repo_relative_when_inputs_are_in_repo(self):

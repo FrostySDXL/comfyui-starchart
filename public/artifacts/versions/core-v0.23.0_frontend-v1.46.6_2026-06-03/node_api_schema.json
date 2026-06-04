@@ -15,7 +15,8 @@
         "io_types",
         "basic_input_shapes",
         "typed_input_shapes",
-        "prompt_conditioning_surface"
+        "prompt_conditioning_surface",
+        "v3_schema_contract"
       ],
       "runtime_sections": []
     }
@@ -2790,6 +2791,754 @@
       }
     }
   },
+  "v3_schema_contract": {
+    "contract_version": "3.0",
+    "schema_fields": [
+      {
+        "name": "node_id",
+        "required": true,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "str",
+        "description": "ID of node - should be globally unique. If this is a custom node, add a prefix or postfix to avoid name clashes."
+      },
+      {
+        "name": "display_name",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "str",
+        "description": "Display name of node.",
+        "default": null
+      },
+      {
+        "name": "category",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "str",
+        "description": "The category of the node, as per the \"Add Node\" menu.",
+        "default": "sd"
+      },
+      {
+        "name": "inputs",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "list[Input]",
+        "default_factory": "list"
+      },
+      {
+        "name": "outputs",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "list[Output]",
+        "default_factory": "list"
+      },
+      {
+        "name": "hidden",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "list[Hidden]",
+        "default_factory": "list"
+      },
+      {
+        "name": "description",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "str",
+        "description": "Node description, shown as a tooltip when hovering over the node.",
+        "default": ""
+      },
+      {
+        "name": "search_aliases",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "list[str]",
+        "description": "Alternative names for search. Useful for synonyms, abbreviations, or old names after renaming.",
+        "default_factory": "list"
+      },
+      {
+        "name": "is_input_list",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "bool",
+        "description": "A flag indicating if this node implements the additional code necessary to deal with OUTPUT_IS_LIST nodes. All inputs of ``type`` will become ``list[type]``, regardless of how many items are passed in. This also affects ``check_lazy_status``. From the docs: A node can also override the default input behaviour and receive the whole list in a single call. This is done by setting a class attribute `INPUT_IS_LIST` to ``True``. Comfy Docs: https://docs.comfy.org/custom-nodes/backend/lists#list-processing",
+        "default": false
+      },
+      {
+        "name": "is_output_node",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "bool",
+        "description": "Flags this node as an output node, causing any inputs it requires to be executed. If a node is not connected to any output nodes, that node will not be executed. Usage:: From the docs: By default, a node is not considered an output. Set ``OUTPUT_NODE = True`` to specify that it is. Comfy Docs: https://docs.comfy.org/custom-nodes/backend/server_overview#output-node",
+        "default": false
+      },
+      {
+        "name": "is_deprecated",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "bool",
+        "description": "Flags a node as deprecated, indicating to users that they should find alternatives to this node.",
+        "default": false
+      },
+      {
+        "name": "is_experimental",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "bool",
+        "description": "Flags a node as experimental, informing users that it may change or not work as expected.",
+        "default": false
+      },
+      {
+        "name": "is_dev_only",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "bool",
+        "description": "Flags a node as dev-only, hiding it from search/menus unless dev mode is enabled.",
+        "default": false
+      },
+      {
+        "name": "is_api_node",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "bool",
+        "description": "Flags a node as an API node. See: https://docs.comfy.org/tutorials/api-nodes/overview.",
+        "default": false
+      },
+      {
+        "name": "price_badge",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "PriceBadge | None",
+        "description": "Optional client-evaluated pricing badge declaration for this node.",
+        "default": null
+      },
+      {
+        "name": "not_idempotent",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "bool",
+        "description": "Flags a node as not idempotent; when True, the node will run and not reuse the cached outputs when identical inputs are provided on a different node in the graph.",
+        "default": false
+      },
+      {
+        "name": "enable_expand",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "bool",
+        "description": "Flags a node as expandable, allowing NodeOutput to include 'expand' property.",
+        "default": false
+      },
+      {
+        "name": "accept_all_inputs",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "bool",
+        "description": "When True, all inputs from the prompt will be passed to the node as kwargs, even if not defined in the schema.",
+        "default": false
+      },
+      {
+        "name": "essentials_category",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "str | None",
+        "description": "Optional category for the Essentials tab. Path-based like category field (e.g., 'Basic', 'Image Tools/Editing').",
+        "default": null
+      },
+      {
+        "name": "has_intermediate_output",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "Schema"
+        },
+        "type_hint": "bool",
+        "description": "Flags this node as having intermediate output that should persist across page refreshes. Nodes with this flag behave like output nodes (their UI results are cached and resent to the frontend) but do NOT automatically get added to the execution list. This means they will only execute if they are on the dependency path of a real output node. Use this for nodes with interactive/operable UI regions that produce intermediate outputs (e.g., Image Crop, Painter) rather than final outputs (e.g., Save Image).",
+        "default": false
+      }
+    ],
+    "node_info_fields": [
+      {
+        "name": "input",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "dict",
+        "default": null
+      },
+      {
+        "name": "input_order",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "dict[str, list[str]]",
+        "default": null
+      },
+      {
+        "name": "is_input_list",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "bool",
+        "default": null
+      },
+      {
+        "name": "output",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "list[str]",
+        "default": null
+      },
+      {
+        "name": "output_is_list",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "list[bool]",
+        "default": null
+      },
+      {
+        "name": "output_name",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "list[str]",
+        "default": null
+      },
+      {
+        "name": "output_tooltips",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "list[str]",
+        "default": null
+      },
+      {
+        "name": "output_matchtypes",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "list[str]",
+        "default": null
+      },
+      {
+        "name": "name",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "str",
+        "default": null
+      },
+      {
+        "name": "display_name",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "str",
+        "default": null
+      },
+      {
+        "name": "description",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "str",
+        "default": null
+      },
+      {
+        "name": "python_module",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "Any",
+        "default": null
+      },
+      {
+        "name": "category",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "str",
+        "default": null
+      },
+      {
+        "name": "output_node",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "bool",
+        "default": null
+      },
+      {
+        "name": "deprecated",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "bool",
+        "default": null
+      },
+      {
+        "name": "experimental",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "bool",
+        "default": null
+      },
+      {
+        "name": "dev_only",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "bool",
+        "default": null
+      },
+      {
+        "name": "api_node",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "bool",
+        "default": null
+      },
+      {
+        "name": "price_badge",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "dict | None",
+        "default": null
+      },
+      {
+        "name": "search_aliases",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "list[str]",
+        "default": null
+      },
+      {
+        "name": "essentials_category",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "str",
+        "default": null
+      },
+      {
+        "name": "has_intermediate_output",
+        "required": false,
+        "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_field",
+          "detail": "NodeInfoV1"
+        },
+        "type_hint": "bool",
+        "default": null
+      }
+    ],
+    "hidden_values": {
+      "hidden_enum": [
+        {
+          "name": "unique_id",
+          "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "enum_member",
+            "detail": "Hidden"
+          },
+          "value": "UNIQUE_ID",
+          "description": "UNIQUE_ID is the unique identifier of the node, and matches the id property of the node on the client side. It is commonly used in client-server communications (see messages)."
+        },
+        {
+          "name": "prompt",
+          "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "enum_member",
+            "detail": "Hidden"
+          },
+          "value": "PROMPT",
+          "description": "PROMPT is the complete prompt sent by the client to the server. See the prompt object for a full description."
+        },
+        {
+          "name": "extra_pnginfo",
+          "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "enum_member",
+            "detail": "Hidden"
+          },
+          "value": "EXTRA_PNGINFO",
+          "description": "EXTRA_PNGINFO is a dictionary that will be copied into the metadata of any .png files saved. Custom nodes can store additional information in this dictionary for saving (or as a way to communicate with a downstream node)."
+        },
+        {
+          "name": "dynprompt",
+          "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "enum_member",
+            "detail": "Hidden"
+          },
+          "value": "DYNPROMPT",
+          "description": "DYNPROMPT is an instance of comfy_execution.graph.DynamicPrompt. It differs from PROMPT in that it may mutate during the course of execution in response to Node Expansion."
+        },
+        {
+          "name": "auth_token_comfy_org",
+          "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "enum_member",
+            "detail": "Hidden"
+          },
+          "value": "AUTH_TOKEN_COMFY_ORG",
+          "description": "AUTH_TOKEN_COMFY_ORG is a token acquired from signing into a ComfyOrg account on frontend."
+        },
+        {
+          "name": "api_key_comfy_org",
+          "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "enum_member",
+            "detail": "Hidden"
+          },
+          "value": "API_KEY_COMFY_ORG",
+          "description": "API_KEY_COMFY_ORG is an API Key generated by ComfyOrg that allows skipping signing into a ComfyOrg account on frontend."
+        }
+      ],
+      "hidden_auto_injection": [
+        {
+          "condition": "is_api_node",
+          "injected": [
+            "auth_token_comfy_org",
+            "api_key_comfy_org"
+          ]
+        },
+        {
+          "condition": "is_output_node",
+          "injected": [
+            "prompt",
+            "extra_pnginfo"
+          ]
+        }
+      ]
+    },
+    "price_badge_contract": [
+      {
+        "class_name": "PriceBadge",
+        "fields": [
+          {
+            "name": "expr",
+            "required": true,
+            "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+            "traceability": {
+              "source_type": "source-backed",
+              "strategy": "dataclass_field",
+              "detail": "PriceBadge"
+            },
+            "type_hint": "str"
+          },
+          {
+            "name": "depends_on",
+            "required": false,
+            "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+            "traceability": {
+              "source_type": "source-backed",
+              "strategy": "dataclass_field",
+              "detail": "PriceBadge"
+            },
+            "type_hint": "PriceBadgeDepends",
+            "default_factory": "PriceBadgeDepends"
+          },
+          {
+            "name": "engine",
+            "required": false,
+            "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+            "traceability": {
+              "source_type": "source-backed",
+              "strategy": "dataclass_field",
+              "detail": "PriceBadge"
+            },
+            "type_hint": "str",
+            "default": "jsonata"
+          }
+        ],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_contract",
+          "detail": "PriceBadge"
+        }
+      },
+      {
+        "class_name": "PriceBadgeDepends",
+        "fields": [
+          {
+            "name": "widgets",
+            "required": false,
+            "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+            "traceability": {
+              "source_type": "source-backed",
+              "strategy": "dataclass_field",
+              "detail": "PriceBadgeDepends"
+            },
+            "type_hint": "list[str]",
+            "default_factory": "list"
+          },
+          {
+            "name": "inputs",
+            "required": false,
+            "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+            "traceability": {
+              "source_type": "source-backed",
+              "strategy": "dataclass_field",
+              "detail": "PriceBadgeDepends"
+            },
+            "type_hint": "list[str]",
+            "default_factory": "list"
+          },
+          {
+            "name": "input_groups",
+            "required": false,
+            "defined_in": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py",
+            "traceability": {
+              "source_type": "source-backed",
+              "strategy": "dataclass_field",
+              "detail": "PriceBadgeDepends"
+            },
+            "type_hint": "list[str]",
+            "default_factory": "list"
+          }
+        ],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "dataclass_contract",
+          "detail": "PriceBadgeDepends"
+        }
+      }
+    ],
+    "node_flags": [
+      {
+        "name": "is_input_list",
+        "schema_fields_ref": "is_input_list"
+      },
+      {
+        "name": "is_output_node",
+        "schema_fields_ref": "is_output_node"
+      },
+      {
+        "name": "is_deprecated",
+        "schema_fields_ref": "is_deprecated"
+      },
+      {
+        "name": "is_experimental",
+        "schema_fields_ref": "is_experimental"
+      },
+      {
+        "name": "is_dev_only",
+        "schema_fields_ref": "is_dev_only"
+      },
+      {
+        "name": "is_api_node",
+        "schema_fields_ref": "is_api_node"
+      },
+      {
+        "name": "not_idempotent",
+        "schema_fields_ref": "not_idempotent"
+      },
+      {
+        "name": "enable_expand",
+        "schema_fields_ref": "enable_expand"
+      },
+      {
+        "name": "accept_all_inputs",
+        "schema_fields_ref": "accept_all_inputs"
+      },
+      {
+        "name": "has_intermediate_output",
+        "schema_fields_ref": "has_intermediate_output"
+      }
+    ]
+  },
   "coverage": {
     "description": "Extracted from pinned source files only. Runtime-only data such as per-node INPUT_TYPES schemas and custom node types are deferred beyond pinned-snapshot extraction.",
     "sources_covered": [
@@ -2803,18 +3552,25 @@
       "object_info_fields",
       "io_types",
       "basic_input_shapes",
+      "v3_schema_contract",
       "coverage"
     ],
     "best_effort_fields": [
       "typed_input_shapes",
       "prompt_conditioning_surface.text_input_io_types",
       "prompt_conditioning_surface.conditioning_io_types",
-      "prompt_conditioning_surface.runtime_node_output_summary"
+      "prompt_conditioning_surface.runtime_node_output_summary",
+      "v3_schema_contract.schema_fields",
+      "v3_schema_contract.node_info_fields",
+      "v3_schema_contract.hidden_values",
+      "v3_schema_contract.price_badge_contract",
+      "v3_schema_contract.node_flags"
     ],
     "deferred": [
       "runtime /object_info response",
       "custom node definitions",
-      "per-node INPUT_TYPES schemas"
+      "per-node INPUT_TYPES schemas",
+      "Schema.get_v1_info() runtime bridge behavior"
     ]
   }
 }

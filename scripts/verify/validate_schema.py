@@ -23,6 +23,7 @@ from scripts.verify.schema_node_api import (
     validate_io_types,
     validate_object_info_runtime,
     validate_typed_input_shapes,
+    validate_v3_schema_contract,
 )
 from scripts.verify.schema_server import validate_endpoints
 from scripts.verify.schema_websocket_events import validate_websocket_events
@@ -91,6 +92,7 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
         validation_errors.extend(validate_io_types(data, json_file.name))
         validation_errors.extend(validate_typed_input_shapes(data, json_file.name))
         validation_errors.extend(validate_prompt_conditioning_surface(data, json_file.name))
+        validation_errors.extend(validate_v3_schema_contract(data, json_file.name))
     elif json_file.name == "object_info_runtime.json":
         validation_errors.extend(validate_object_info_runtime(data, json_file.name))
     elif json_file.name == "websocket_events.json":

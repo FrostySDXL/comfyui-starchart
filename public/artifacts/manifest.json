@@ -44,7 +44,7 @@
     "node_api_schema.json": {
       "current_url": "artifacts/current/node_api_schema.json",
       "versioned_url": "artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-03/node_api_schema.json",
-      "sha256": "586d8b24de5b26ec3a365ad183f0ca2e36a8b8c73d09f8c9429bd43ddfeac198",
+      "sha256": "cf20552bd55d5e374d84c0ebf91544832ddd892344d7a661b3c5e26ff7b6ca73",
       "version": "v0.23.0",
       "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
       "extracted_date": "2026-06-03",

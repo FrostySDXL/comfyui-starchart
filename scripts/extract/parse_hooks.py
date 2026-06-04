@@ -226,7 +226,11 @@ def _parse_method_field(declaration: str) -> tuple[str, bool, str] | None:
     if not match:
         return None
     name, optional, arguments, return_type = match.groups()
-    return name, optional != "?", f"({_normalize_type_hint(arguments)}) => {_normalize_type_hint(return_type)}"
+    return (
+        name,
+        optional != "?",
+        f"({_normalize_type_hint(arguments)}) => {_normalize_type_hint(return_type)}",
+    )
 
 
 def _parse_property_field(declaration: str) -> tuple[str, bool, str, bool] | None:

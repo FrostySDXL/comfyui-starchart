@@ -198,6 +198,20 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                     },
                 }
             ],
+            "extension_fields": [
+                {
+                    "name": "setup",
+                    "type_hint": "(app: ComfyApp) => Promise<void> | void",
+                    "required": False,
+                    "description": "Setup extension callback.",
+                    "defined_in": "references/snapshots/comfy.ts",
+                    "traceability": {
+                        "source_type": "source-backed",
+                        "strategy": "typed_interface_field",
+                    },
+                    "is_hook": True,
+                }
+            ],
         }
 
     def _valid_node_api_schema_data(self):
@@ -246,10 +260,95 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                     },
                 }
             },
+            "v3_schema_contract": {
+                "contract_version": "3.0",
+                "schema_fields": [
+                    {
+                        "name": "is_api_node",
+                        "type_hint": "bool",
+                        "required": False,
+                        "default": False,
+                        "description": "Flag for API nodes.",
+                        "defined_in": "references/snapshots/_io.py",
+                        "traceability": {
+                            "source_type": "source-backed",
+                            "strategy": "dataclass_field",
+                        },
+                    }
+                ],
+                "node_info_fields": [
+                    {
+                        "name": "input",
+                        "type_hint": "dict[str, Any]",
+                        "required": True,
+                        "defined_in": "references/snapshots/_io.py",
+                        "traceability": {
+                            "source_type": "source-backed",
+                            "strategy": "dataclass_field",
+                        },
+                    }
+                ],
+                "hidden_values": {
+                    "hidden_enum": [
+                        {
+                            "name": "prompt",
+                            "value": "PROMPT",
+                            "description": "Prompt hidden input.",
+                            "defined_in": "references/snapshots/_io.py",
+                            "traceability": {
+                                "source_type": "source-backed",
+                                "strategy": "enum_member",
+                            },
+                        }
+                    ],
+                    "hidden_auto_injection": [
+                        {
+                            "condition": "is_api_node",
+                            "injected": ["auth_token_comfy_org"],
+                        }
+                    ],
+                },
+                "price_badge_contract": [
+                    {
+                        "class_name": "PriceBadge",
+                        "fields": [
+                            {
+                                "name": "amount",
+                                "type_hint": "float | None",
+                                "required": False,
+                                "default": None,
+                                "defined_in": "references/snapshots/_io.py",
+                                "traceability": {
+                                    "source_type": "source-backed",
+                                    "strategy": "dataclass_field",
+                                },
+                            }
+                        ],
+                        "traceability": {
+                            "source_type": "source-backed",
+                            "strategy": "dataclass",
+                        },
+                    }
+                ],
+                "node_flags": [
+                    {
+                        "name": "is_api_node",
+                        "schema_fields_ref": "is_api_node",
+                    }
+                ],
+            },
             "coverage": {
                 "description": "Static and optional runtime coverage for object_info and IO typing.",
                 "sources_covered": ["object_info_fields", "io_types", "basic_input_shapes"],
                 "runtime_enriched": False,
+                "guaranteed_fields": ["v3_schema_contract"],
+                "best_effort_fields": [
+                    "v3_schema_contract.schema_fields",
+                    "v3_schema_contract.node_info_fields",
+                    "v3_schema_contract.hidden_values",
+                    "v3_schema_contract.price_badge_contract",
+                    "v3_schema_contract.node_flags",
+                ],
                 "deferred": ["runtime-only object_info details"],
             },
         }
@@ -426,7 +525,22 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors.extend(module.validate_coverage(data, "node_api_schema.json"))
         errors.extend(module.validate_io_types(data, "node_api_schema.json"))
         errors.extend(module.validate_typed_input_shapes(data, "node_api_schema.json"))
+        errors.extend(module.validate_v3_schema_contract(data, "node_api_schema.json"))
         self.assertEqual(errors, [])
+
+    def test_v3_schema_contract_rejects_unknown_node_flag_ref(self):
+        module = self._import_module()
+        data = self._valid_node_api_schema_data()
+        data["v3_schema_contract"]["node_flags"][0]["schema_fields_ref"] = "missing"
+        errors = module.validate_v3_schema_contract(data, "node_api_schema.json")
+        self.assertTrue(any("does not resolve" in e for e in errors))
+
+    def test_v3_schema_contract_rejects_extra_node_flag_key(self):
+        module = self._import_module()
+        data = self._valid_node_api_schema_data()
+        data["v3_schema_contract"]["node_flags"][0]["extra"] = "not allowed"
+        errors = module.validate_v3_schema_contract(data, "node_api_schema.json")
+        self.assertTrue(any("must contain exactly" in e for e in errors))
 
     def test_endpoint_parameter_rejects_invalid_allowed_values(self):
         module = self._import_module()

@@ -3,7 +3,7 @@ title: "Machine-Readable Artifacts"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-06-03
+**Last Updated:** 2026-06-04
 **Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Scope
@@ -77,8 +77,8 @@ helpers, not strict contracts.
 
 | Tier | Fields |
 |---|---|
-| Guaranteed | `metadata`, `object_info_fields`, `io_types`, `basic_input_shapes`, `coverage` |
-| Best-effort | `typed_input_shapes`, `prompt_conditioning_surface.text_input_io_types`, `prompt_conditioning_surface.conditioning_io_types`, `prompt_conditioning_surface.runtime_node_output_summary` |
+| Guaranteed | `metadata`, `object_info_fields`, `io_types`, `basic_input_shapes`, `v3_schema_contract`, `coverage` |
+| Best-effort | `typed_input_shapes`, `prompt_conditioning_surface.text_input_io_types`, `prompt_conditioning_surface.conditioning_io_types`, `prompt_conditioning_surface.runtime_node_output_summary`, `v3_schema_contract.schema_fields`, `v3_schema_contract.node_info_fields`, `v3_schema_contract.hidden_values`, `v3_schema_contract.price_badge_contract`, `v3_schema_contract.node_flags` |
 | Deferred | runtime `/object_info` response, custom node definitions, per-node `INPUT_TYPES` schemas |
 
 The published JSON Schema files intentionally encode only the guaranteed
@@ -246,6 +246,10 @@ it, including:
   `STRING` widget input parameters and `CONDITIONING` type metadata from `_io.py`
   while keeping per-node output summaries runtime-bounded when optional
   `runtime_object_info` is present
+- `v3_schema_contract`, a required top-level contract inventory for the pinned
+  Comfy API V3 dataclass surface, including `Schema` fields, `NodeInfoV1`
+  fields, `Hidden` enum values, automatic hidden-value injection conditions,
+  price-badge dataclasses, and exact-`bool` `Schema` node flags
 
 These additions remain source-backed only. They do not imply full runtime node
 coverage.
@@ -255,6 +259,12 @@ Source-backed from pinned snapshots: the current `_io.py` snapshot defines
 `multiline`, `placeholder`, `default`, and `dynamic_prompts`; it also defines
 `CONDITIONING` as an I/O type whose `Type` is `CondList`. See
 `references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py`.
+
+The same `_io.py` snapshot also defines the V3 `Schema`, `NodeInfoV1`,
+`PriceBadge`, `PriceBadgeDepends`, and `Hidden` surfaces summarized under
+`v3_schema_contract`. Treat this section as source-backed contract metadata for
+tooling that needs to reason about V3 node-schema fields; it does not replace
+runtime `/object_info` inspection for installed custom-node state.
 
 Treat `prompt_conditioning_surface` as routing metadata, not prompt recovery
 proof. It can tell tooling which pinned I/O datatypes look text-like or
@@ -338,8 +348,7 @@ truth values only change after the follow-up publication and comparison steps
 are run separately.
 
 Use this file as refresh evidence and as a maintainer handoff aid. Do not treat
-it as a canonical artifact contract alongside the three primary published JSON
-artifacts.
+it as a canonical artifact contract alongside the extracted JSON artifact set.
 
 The backup path recorded here is temporary local rollback state, not durable
 history. Durable history lives in `references/snapshots/`,

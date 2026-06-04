@@ -30,6 +30,7 @@ SCHEMAS = {
         "object_info_fields": (list, True),
         "io_types": (list, True),
         "prompt_conditioning_surface": (dict, False),
+        "v3_schema_contract": (dict, True),
         "basic_input_shapes": (dict, True),
         "typed_input_shapes": (dict, False),
         "coverage": (dict, True),
@@ -500,7 +501,9 @@ def validate_extension_fields(data: dict, filename: str) -> list[str]:
         errors.extend(_validate_schema_shape(field, EXTENSION_FIELD_SCHEMA, filename, item_path))
         traceability = field.get("traceability")
         if isinstance(traceability, dict):
-            errors.extend(validate_traceability(traceability, filename, f"{item_path}.traceability"))
+            errors.extend(
+                validate_traceability(traceability, filename, f"{item_path}.traceability")
+            )
     return errors
 
 

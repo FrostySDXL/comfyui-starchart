@@ -476,6 +476,264 @@ def extract_typed_input_shapes(basic_types_text: str, basic_types_path: str) -> 
     return result
 
 
+def _find_class(module_ast: ast.AST, class_name: str) -> ast.ClassDef | None:
+    for node in ast.walk(module_ast):
+        if isinstance(node, ast.ClassDef) and node.name == class_name:
+            return node
+    return None
+
+
+def _unparse(node: ast.AST | None) -> str | None:
+    if node is None:
+        return None
+    try:
+        return ast.unparse(node)
+    except Exception:  # pragma: no cover
+        return None
+
+
+def _literal_default(node: ast.AST | None) -> Any:
+    if node is None:
+        return None
+    try:
+        return ast.literal_eval(node)
+    except (SyntaxError, ValueError):
+        return None
+
+
+def _field_default_factory(call: ast.Call) -> str | None:
+    if not isinstance(call.func, ast.Name) or call.func.id != "field":
+        return None
+    for keyword in call.keywords:
+        if keyword.arg != "default_factory":
+            continue
+        if isinstance(keyword.value, ast.Name):
+            return keyword.value.id
+        if isinstance(keyword.value, ast.Attribute):
+            return keyword.value.attr
+        return _unparse(keyword.value)
+    return None
+
+
+def _field_default_value(call: ast.Call) -> Any:
+    if not isinstance(call.func, ast.Name) or call.func.id != "field":
+        return None
+    for keyword in call.keywords:
+        if keyword.arg == "default":
+            return _literal_default(keyword.value)
+    return None
+
+
+def _traceability(strategy: str, class_name: str) -> dict[str, str]:
+    return {
+        "source_type": "source-backed",
+        "strategy": strategy,
+        "detail": class_name,
+    }
+
+
+def _following_docstring(body: list[ast.stmt], index: int) -> str | None:
+    if index + 1 >= len(body):
+        return None
+    next_node = body[index + 1]
+    if (
+        isinstance(next_node, ast.Expr)
+        and isinstance(next_node.value, ast.Constant)
+        and isinstance(next_node.value.value, str)
+    ):
+        return " ".join(next_node.value.value.split())
+    return None
+
+
+def _extract_dataclass_fields_from_ast(
+    class_node: ast.ClassDef | None,
+    source_path: str,
+) -> list[dict[str, Any]]:
+    if class_node is None:
+        return []
+
+    fields: list[dict[str, Any]] = []
+    defined_in = normalize_repo_relative_path(source_path, REPO_ROOT)
+    for index, statement in enumerate(class_node.body):
+        if not isinstance(statement, ast.AnnAssign) or not isinstance(statement.target, ast.Name):
+            continue
+
+        field: dict[str, Any] = {
+            "name": statement.target.id,
+            "required": statement.value is None,
+            "defined_in": defined_in,
+            "traceability": _traceability("dataclass_field", class_node.name),
+        }
+        type_hint = _unparse(statement.annotation)
+        if type_hint:
+            field["type_hint"] = type_hint
+
+        description = _following_docstring(class_node.body, index)
+        if description:
+            field["description"] = description
+
+        if isinstance(statement.value, ast.Call):
+            default_factory = _field_default_factory(statement.value)
+            if default_factory:
+                field["default_factory"] = default_factory
+            default_value = _field_default_value(statement.value)
+            if default_value is not None:
+                field["default"] = default_value
+        elif statement.value is not None:
+            default = _literal_default(statement.value)
+            if default is not None or isinstance(statement.value, ast.Constant):
+                field["default"] = default
+            else:
+                default_text = _unparse(statement.value)
+                if default_text:
+                    field["default_expression"] = default_text
+
+        fields.append(field)
+    return fields
+
+
+def _extract_hidden_enum(class_node: ast.ClassDef | None, source_path: str) -> list[dict[str, Any]]:
+    if class_node is None:
+        return []
+    defined_in = normalize_repo_relative_path(source_path, REPO_ROOT)
+    entries: list[dict[str, Any]] = []
+    for index, statement in enumerate(class_node.body):
+        target: ast.expr | None = None
+        value: ast.expr | None = None
+        if isinstance(statement, ast.Assign) and len(statement.targets) == 1:
+            target = statement.targets[0]
+            value = statement.value
+        elif isinstance(statement, ast.AnnAssign):
+            target = statement.target
+            value = statement.value
+        if not isinstance(target, ast.Name):
+            continue
+        entry: dict[str, Any] = {
+            "name": target.id,
+            "defined_in": defined_in,
+            "traceability": _traceability("enum_member", class_node.name),
+        }
+        literal_value = _literal_default(value)
+        if literal_value is not None:
+            entry["value"] = literal_value
+        description = _following_docstring(class_node.body, index)
+        if description:
+            entry["description"] = description
+        entries.append(entry)
+    return entries
+
+
+def _hidden_append_name(node: ast.AST) -> str | None:
+    if not isinstance(node, ast.Call):
+        return None
+    if not isinstance(node.func, ast.Attribute) or node.func.attr != "append":
+        return None
+    target = node.func.value
+    if not (
+        isinstance(target, ast.Attribute)
+        and target.attr == "hidden"
+        and isinstance(target.value, ast.Name)
+        and target.value.id == "self"
+    ):
+        return None
+    if not node.args:
+        return None
+    arg = node.args[0]
+    if (
+        isinstance(arg, ast.Attribute)
+        and isinstance(arg.value, ast.Name)
+        and arg.value.id == "Hidden"
+    ):
+        return arg.attr
+    return None
+
+
+def _extract_hidden_auto_injection(schema_node: ast.ClassDef | None) -> list[dict[str, Any]]:
+    if schema_node is None:
+        return []
+    finalize_node = next(
+        (
+            node
+            for node in schema_node.body
+            if isinstance(node, ast.FunctionDef) and node.name == "finalize"
+        ),
+        None,
+    )
+    if finalize_node is None:
+        return []
+
+    injections: list[dict[str, Any]] = []
+    for statement in finalize_node.body:
+        if not isinstance(statement, ast.If):
+            continue
+        test = statement.test
+        if not (
+            isinstance(test, ast.Attribute)
+            and isinstance(test.value, ast.Name)
+            and test.value.id == "self"
+        ):
+            continue
+        hidden_values: list[str] = []
+        for child in ast.walk(statement):
+            hidden_name = _hidden_append_name(child)
+            if hidden_name and hidden_name not in hidden_values:
+                hidden_values.append(hidden_name)
+        if hidden_values:
+            injections.append({"condition": test.attr, "injected": hidden_values})
+    return injections
+
+
+def extract_v3_schema_contract(io_text: str, source_path: str) -> dict[str, Any]:
+    empty_contract = {
+        "contract_version": "3.0",
+        "schema_fields": [],
+        "node_info_fields": [],
+        "hidden_values": {"hidden_enum": [], "hidden_auto_injection": []},
+        "price_badge_contract": [],
+        "node_flags": [],
+    }
+    try:
+        module_ast = ast.parse(io_text)
+    except SyntaxError:
+        return empty_contract
+
+    schema_node = _find_class(module_ast, "Schema")
+    schema_fields = _extract_dataclass_fields_from_ast(schema_node, source_path)
+    node_flags = [
+        {"name": field["name"], "schema_fields_ref": field["name"]}
+        for field in schema_fields
+        if field.get("type_hint") == "bool"
+    ]
+
+    price_badge_contract = []
+    for class_name in ("PriceBadge", "PriceBadgeDepends"):
+        fields = _extract_dataclass_fields_from_ast(
+            _find_class(module_ast, class_name), source_path
+        )
+        if fields:
+            price_badge_contract.append(
+                {
+                    "class_name": class_name,
+                    "fields": fields,
+                    "traceability": _traceability("dataclass_contract", class_name),
+                }
+            )
+
+    return {
+        "contract_version": "3.0",
+        "schema_fields": schema_fields,
+        "node_info_fields": _extract_dataclass_fields_from_ast(
+            _find_class(module_ast, "NodeInfoV1"), source_path
+        ),
+        "hidden_values": {
+            "hidden_enum": _extract_hidden_enum(_find_class(module_ast, "Hidden"), source_path),
+            "hidden_auto_injection": _extract_hidden_auto_injection(schema_node),
+        },
+        "price_badge_contract": price_badge_contract,
+        "node_flags": node_flags,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Extract ComfyUI node API and object_info schema details to JSON"
@@ -530,6 +788,7 @@ def main() -> int:
         "basic_input_shapes",
         "typed_input_shapes",
         "prompt_conditioning_surface",
+        "v3_schema_contract",
     ]
     runtime_sections = []
     if runtime_snapshot:
@@ -538,6 +797,7 @@ def main() -> int:
     mode = "hybrid" if runtime_snapshot else "source-only"
 
     io_types = extract_io_types(io_text, str(io_path))
+    v3_schema_contract = extract_v3_schema_contract(io_text, str(io_path))
     runtime_object_info = runtime_snapshot.get("object_info", {}) if runtime_snapshot else None
 
     payload: dict[str, Any] = {
@@ -562,6 +822,7 @@ def main() -> int:
         ),
         "basic_input_shapes": extract_basic_input_shapes(basic_types_text),
         "typed_input_shapes": extract_typed_input_shapes(basic_types_text, str(basic_types_path)),
+        "v3_schema_contract": v3_schema_contract,
         "coverage": {
             "description": (
                 "Extracted from pinned source files with runtime /object_info enrichment."
@@ -580,6 +841,7 @@ def main() -> int:
                 "object_info_fields",
                 "io_types",
                 "basic_input_shapes",
+                "v3_schema_contract",
                 "coverage",
             ],
             "best_effort_fields": [
@@ -587,16 +849,23 @@ def main() -> int:
                 "prompt_conditioning_surface.text_input_io_types",
                 "prompt_conditioning_surface.conditioning_io_types",
                 "prompt_conditioning_surface.runtime_node_output_summary",
+                "v3_schema_contract.schema_fields",
+                "v3_schema_contract.node_info_fields",
+                "v3_schema_contract.hidden_values",
+                "v3_schema_contract.price_badge_contract",
+                "v3_schema_contract.node_flags",
             ],
             "deferred": [
                 "custom node definitions",
                 "per-node INPUT_TYPES schemas",
+                "Schema.get_v1_info() runtime bridge behavior",
             ]
             if runtime_snapshot
             else [
                 "runtime /object_info response",
                 "custom node definitions",
                 "per-node INPUT_TYPES schemas",
+                "Schema.get_v1_info() runtime bridge behavior",
             ],
         },
     }
