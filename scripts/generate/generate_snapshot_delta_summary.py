@@ -14,6 +14,7 @@ CANONICAL_ARTIFACTS = [
     "server_endpoints.json",
     "js_hooks.json",
     "node_api_schema.json",
+    "websocket_events.json",
 ]
 
 
@@ -21,12 +22,22 @@ def _load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+REQUIRED_ARTIFACTS = [
+    "server_endpoints.json",
+    "js_hooks.json",
+    "node_api_schema.json",
+]
+
+
 def _artifact_map(base_dir: Path) -> dict[str, dict]:
     artifacts = {}
     for name in CANONICAL_ARTIFACTS:
         path = base_dir / name
         if not path.exists():
-            raise FileNotFoundError(f"Missing required artifact: {path}")
+            if name in REQUIRED_ARTIFACTS:
+                raise FileNotFoundError(f"Missing required artifact: {path}")
+            print(f"Warning: optional artifact not found, skipping: {path}")
+            continue
         artifacts[name] = _load_json(path)
     return artifacts
 
@@ -216,6 +227,102 @@ def _node_sections(data: dict) -> dict[str, dict]:
     }
 
 
+def _websocket_event_map(data: dict) -> dict[str, dict]:
+    return {event.get("name", ""): event for event in data.get("events", [])}
+
+
+def _binary_event_map(data: dict) -> dict[str, dict]:
+    return {binary.get("name", ""): binary for binary in data.get("binary_events", [])}
+
+
+def _normalize_websocket_event_for_comparison(event: dict) -> dict:
+    """Normalize a websocket event for provenance-agnostic comparison.
+
+    Strips snapshot-path prefixes from source_file values in server_sources
+    and frontend_listeners, and normalizes traceability structure.
+    """
+    normalized_server_sources = []
+    for src in event.get("server_sources", []):
+        if isinstance(src, dict):
+            normalized_server_sources.append(
+                {
+                    "source_file": _normalize_snapshot_source_path(src.get("source_file")),
+                    "source_function": src.get("source_function"),
+                }
+            )
+        else:
+            normalized_server_sources.append(src)
+
+    normalized_frontend_listeners = []
+    for listener in event.get("frontend_listeners", []):
+        if isinstance(listener, dict):
+            normalized_frontend_listeners.append(
+                {
+                    "source_file": _normalize_snapshot_source_path(listener.get("source_file")),
+                    "source_function": listener.get("source_function"),
+                    "method": listener.get("method"),
+                }
+            )
+        else:
+            normalized_frontend_listeners.append(listener)
+
+    return {
+        "name": event.get("name"),
+        "direction": event.get("direction"),
+        "server_sources": normalized_server_sources,
+        "frontend_listeners": normalized_frontend_listeners,
+        "payload_fields": event.get("payload_fields", []),
+        "payload_notes": event.get("payload_notes", []),
+        "traceability": _normalize_traceability_for_comparison(event.get("traceability")),
+    }
+
+
+def _normalize_binary_event_for_comparison(binary: dict) -> dict:
+    """Normalize a binary event for provenance-agnostic comparison."""
+    normalized_server_sources = []
+    for src in binary.get("server_sources", []):
+        if isinstance(src, dict):
+            normalized_server_sources.append(
+                {
+                    "source_file": _normalize_snapshot_source_path(src.get("source_file")),
+                    "source_function": src.get("source_function"),
+                }
+            )
+        else:
+            normalized_server_sources.append(src)
+
+    normalized_frontend_listeners = []
+    for listener in binary.get("frontend_listeners", []):
+        if isinstance(listener, dict):
+            normalized_frontend_listeners.append(
+                {
+                    "source_file": _normalize_snapshot_source_path(listener.get("source_file")),
+                    "source_function": listener.get("source_function"),
+                    "method": listener.get("method"),
+                }
+            )
+        else:
+            normalized_frontend_listeners.append(listener)
+
+    traceability = binary.get("traceability")
+    normalized_traceability = traceability
+    if isinstance(traceability, dict):
+        normalized_traceability = {
+            "source_file": _normalize_snapshot_source_path(traceability.get("source_file")),
+            "source_function": traceability.get("source_function"),
+            "strategy": traceability.get("strategy"),
+        }
+
+    return {
+        "name": binary.get("name"),
+        "enum_value": binary.get("enum_value"),
+        "server_sources": normalized_server_sources,
+        "frontend_listeners": normalized_frontend_listeners,
+        "payload_notes": binary.get("payload_notes", []),
+        "traceability": normalized_traceability,
+    }
+
+
 def build_delta_summary(
     old_artifacts: dict[str, dict], new_artifacts: dict[str, dict], old_label: str, new_label: str
 ) -> dict:
@@ -270,6 +377,18 @@ def build_delta_summary(
                     old_node["basic_input_shapes"],
                     new_node["basic_input_shapes"],
                     normalizer=_normalize_typed_input_shape_for_comparison,
+                ),
+            },
+            "websocket_events": {
+                "events": _compare_mapping(
+                    _websocket_event_map(old_artifacts.get("websocket_events.json", {})),
+                    _websocket_event_map(new_artifacts.get("websocket_events.json", {})),
+                    normalizer=_normalize_websocket_event_for_comparison,
+                ),
+                "binary_events": _compare_mapping(
+                    _binary_event_map(old_artifacts.get("websocket_events.json", {})),
+                    _binary_event_map(new_artifacts.get("websocket_events.json", {})),
+                    normalizer=_normalize_binary_event_for_comparison,
                 ),
             },
         },

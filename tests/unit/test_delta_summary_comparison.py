@@ -14,6 +14,7 @@ def _artifacts_with_hooks(*hooks: dict) -> dict[str, dict]:
             "io_types": [],
             "typed_input_shapes": {},
         },
+        "websocket_events.json": {"events": [], "binary_events": []},
     }
 
 
@@ -26,6 +27,7 @@ def _artifacts_with_node_schema(*, io_types=None, typed_input_shapes=None) -> di
             "io_types": list(io_types or []),
             "typed_input_shapes": dict(typed_input_shapes or {}),
         },
+        "websocket_events.json": {"events": [], "binary_events": []},
     }
 
 

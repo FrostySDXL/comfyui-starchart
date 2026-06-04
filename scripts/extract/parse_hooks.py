@@ -25,6 +25,7 @@ HOOK_COVERAGE = {
         "extension_fields[].required",
         "extension_fields[].defined_in",
         "extension_fields[].is_hook",
+        "extension_fields[].traceability",
     ],
     "best_effort_fields": [
         "hooks[].description",
@@ -34,7 +35,6 @@ HOOK_COVERAGE = {
         "hooks[].return_type",
         "hooks[].invocation_style",
         "extension_fields[].description",
-        "extension_fields[].traceability",
         "extension_fields[].is_index_signature",
     ],
     "deferred": [

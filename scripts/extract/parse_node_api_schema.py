@@ -687,11 +687,7 @@ def _extract_hidden_auto_injection(
     found_conditions = {
         entry["condition"] for entry in injections if isinstance(entry.get("condition"), str)
     }
-    if (
-        coverage_deferred is not None
-        and found_conditions
-        and found_conditions != expected_conditions
-    ):
+    if coverage_deferred is not None and found_conditions != expected_conditions:
         missing = sorted(expected_conditions - found_conditions)
         coverage_deferred.append(
             "Schema.finalize hidden_auto_injection extraction is partial; missing conditions: "

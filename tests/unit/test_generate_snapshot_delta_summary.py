@@ -20,6 +20,8 @@ class GenerateSnapshotDeltaSummaryTests(unittest.TestCase):
         io_types: list,
         object_info_fields: list,
         typed_input_shapes: dict,
+        websocket_events: list | None = None,
+        binary_events: list | None = None,
     ) -> None:
         (root / "server_endpoints.json").write_text(
             json.dumps({"metadata": {}, "coverage": {}, "endpoints": server_endpoints}),
@@ -38,6 +40,17 @@ class GenerateSnapshotDeltaSummaryTests(unittest.TestCase):
                     "io_types": io_types,
                     "basic_input_shapes": {},
                     "typed_input_shapes": typed_input_shapes,
+                }
+            ),
+            encoding="utf-8",
+        )
+        (root / "websocket_events.json").write_text(
+            json.dumps(
+                {
+                    "metadata": {},
+                    "coverage": {},
+                    "events": websocket_events or [],
+                    "binary_events": binary_events or [],
                 }
             ),
             encoding="utf-8",
