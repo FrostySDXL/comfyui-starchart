@@ -6,6 +6,7 @@ CORE_REQUIRED_FILES = [
     "server.py",
     "execution.py",
     "protocol.py",
+    # Progress websocket events are emitted outside server.py/protocol.py.
     "comfy_execution/progress.py",
     "pyproject.toml",
     "requirements.txt",

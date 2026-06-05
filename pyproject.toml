@@ -16,7 +16,6 @@ include = ["scripts*"]
 target-version = "py311"
 line-length = 100
 include = ["scripts/**/*.py", "tests/**/*.py"]
-extend-exclude = ["references/snapshots"]
 
 [tool.ruff.lint]
 select = [
@@ -29,6 +28,6 @@ ignore = ["E501"]
 
 [tool.mypy]
 python_version = "3.11"
-files = ["scripts/common", "scripts/verify/schema_common.py", "scripts/verify/schema_hooks.py", "scripts/verify/schema_node_api.py", "scripts/verify/schema_server.py"]
+files = ["scripts/common", "scripts/verify/schema_common.py", "scripts/verify/schema_hooks.py", "scripts/verify/schema_node_api.py", "scripts/verify/schema_server.py", "scripts/verify/schema_websocket_events.py"]
 ignore_missing_imports = true
 warn_unused_configs = true

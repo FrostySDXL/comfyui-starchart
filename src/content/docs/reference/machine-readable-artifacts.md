@@ -104,7 +104,7 @@ to these minimum rules:
   should send `Content-Type: application/json`
 - treat `docs-index.json`, `delta-summary.json`, and
   `refresh-provenance.json` as support artifacts with narrower guarantees than
-  the four canonical extracted artifacts
+  the canonical extracted artifacts
 - treat runtime-only captures such as `object_info_runtime.json` as optional,
   instance-specific inputs rather than part of the canonical published contract
 
@@ -431,7 +431,7 @@ built site.
 | `public/artifacts/delta-summary.json` | Deterministic baseline-to-baseline comparison output |
 | `public/artifacts/refresh-provenance.json` | Durable published record of the latest refresh run; intentionally outside manifest discovery |
 
-For the four canonical published artifacts, `references/raw/` remains the
+For the canonical published artifacts, `references/raw/` remains the
 canonical repo-local source. `public/artifacts/current/` must stay byte-identical
 to those canonical files, and the manifest checksum must match the published
 current-copy bytes.
@@ -452,12 +452,14 @@ artifact, read its `metadata` object or consult `manifest.json`.
     slash, so they resolve correctly on GitHub Pages project sites)
   - `sha256` for the bytes served from `current_url`
   - `version`, `commit`, `extracted_date`
+  - optional `commits` component provenance when an artifact combines core and
+    frontend extraction sources, such as `websocket_events.json`
   - `sources` -- the pinned snapshot file(s) the artifact was extracted from
 
 Maintainership note: `python scripts/verify/verify_artifact_integrity.py` is a
 blocking verifier. It proves the canonical `references/raw/` files, published
 `public/artifacts/current/` copies, and manifest `sha256` values remain aligned
-for the four canonical artifacts.
+for those artifacts.
 
 `python scripts/verify/validate_schema.py` is the matching blocking verifier for
 the schema contract. It validates canonical artifacts against the checked-in

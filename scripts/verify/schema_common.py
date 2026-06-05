@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any, TypeAlias, cast
 
 from scripts.common.path_normalization import has_backslashes
@@ -64,6 +65,7 @@ METADATA_FIELDS = {
         ("extracted_date", str, True),
         ("version", str, True),
         ("commit", str, True),
+        ("commits", dict, False),
     ],
     "node_api_schema.json": [
         ("sources", list, True),
@@ -213,6 +215,10 @@ PROMPT_CONDITIONING_SURFACE_SCHEMA = {
     "conditioning_io_types": (list, False),
     "runtime_node_output_summary": (list, False),
 }
+
+COVERAGE_PATH_RE = re.compile(
+    r"^[A-Za-z_][A-Za-z0-9_]*(?:\[\])?(?:\.[A-Za-z_][A-Za-z0-9_]*(?:\[\])?)*$"
+)
 
 
 def _check_type(value: object, expected_type: type | tuple[type, ...]) -> bool:
@@ -386,13 +392,26 @@ def validate_coverage(data: dict, filename: str) -> list[str]:
     if filename in dotted_path_artifacts:
         for list_key in ("guaranteed_fields", "best_effort_fields"):
             for entry in coverage.get(list_key, []):
-                if isinstance(entry, str) and "." in entry:
-                    parent_key = entry.split(".", 1)[0].removesuffix("[]")
-                    if parent_key not in data:
-                        errors.append(
-                            f"{filename}: unresolved coverage.{list_key} path '{entry}' "
-                            f"references unknown top-level key '{parent_key}'"
-                        )
+                if not isinstance(entry, str):
+                    continue
+                if not COVERAGE_PATH_RE.match(entry):
+                    errors.append(f"{filename}: invalid coverage.{list_key} path '{entry}'")
+                    continue
+                if "." not in entry:
+                    continue
+                parent_key = entry.split(".", 1)[0].removesuffix("[]")
+                if parent_key not in data:
+                    errors.append(
+                        f"{filename}: unresolved coverage.{list_key} path '{entry}' "
+                        f"references unknown top-level key '{parent_key}'"
+                    )
+                    continue
+                parent_value = data[parent_key]
+                if not isinstance(parent_value, (dict, list)):
+                    errors.append(
+                        f"{filename}: coverage.{list_key} path '{entry}' "
+                        f"parent top-level key '{parent_key}' is {type(parent_value).__name__}"
+                    )
     return errors
 
 

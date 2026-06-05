@@ -429,6 +429,24 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors = module.validate_coverage(data, "server_endpoints.json")
         self.assertEqual(errors, [])
 
+    def test_coverage_dotted_paths_reject_non_container_parent(self):
+        module = self._import_module()
+        data = self._valid_websocket_events_data()
+        data["events"] = "not-a-list"
+
+        errors = module.validate_coverage(data, "websocket_events.json")
+
+        self.assertTrue(any("parent top-level key 'events' is str" in e for e in errors))
+
+    def test_coverage_paths_must_match_supported_pattern(self):
+        module = self._import_module()
+        data = self._valid_websocket_events_data()
+        data["coverage"]["best_effort_fields"].append("events..payload_fields")
+
+        errors = module.validate_coverage(data, "websocket_events.json")
+
+        self.assertTrue(any("invalid coverage.best_effort_fields path" in e for e in errors))
+
     def test_valid_server_endpoints_pass_published_schema(self):
         module = self._import_module()
         errors = module.validate_against_published_artifact_schema(
@@ -691,6 +709,25 @@ class ValidateSchemaUnitTests(unittest.TestCase):
 
         self.assertTrue(any("coverage.deferred[0] expected str" in e for e in errors))
         self.assertTrue(any("published schema violation" in e for e in errors))
+
+    def test_websocket_metadata_commits_optional_shape_is_validated(self):
+        module = self._import_module()
+        data = self._valid_websocket_events_data()
+        data["metadata"]["commits"] = {"core": "abc123"}
+
+        errors = module.validate_metadata(data, "websocket_events.json")
+
+        self.assertTrue(
+            any("metadata.commits missing required field 'frontend'" in e for e in errors)
+        )
+
+    def test_websocket_traceability_schema_constant_is_named_for_websocket_scope(self):
+        source_text = (REPO_ROOT / "scripts" / "verify" / "schema_websocket_events.py").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("WEBSOCKET_TRACEABILITY_SCHEMA", source_text)
+        self.assertNotIn("EVENT_TRACEABILITY_SCHEMA", source_text)
 
     def test_docs_index_schema_accepts_nested_tooling_metadata(self):
         module = self._import_module()

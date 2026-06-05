@@ -131,7 +131,9 @@ def clean_comment(block: str) -> str:
 
 
 def build_hook_coverage(
-    extension_fields: list[dict], source_map: dict[str, str] | None = None
+    extension_fields: list[dict],
+    source_map: dict[str, str] | None = None,
+    deferred: list[str] | None = None,
 ) -> dict:
     coverage = {
         "description": HOOK_COVERAGE["description"],
@@ -139,6 +141,8 @@ def build_hook_coverage(
         "best_effort_fields": list(HOOK_COVERAGE["best_effort_fields"]),
         "deferred": list(HOOK_COVERAGE["deferred"]),
     }
+    if deferred:
+        coverage["deferred"].extend(deferred)
     if not extension_fields:
         if not source_map:
             coverage["deferred"].append(
@@ -261,7 +265,52 @@ def _parse_property_field(declaration: str) -> tuple[str, bool, str, bool] | Non
     return name, optional != "?", _normalize_type_hint(type_hint), False
 
 
-def _extract_extension_fields(comfy_types_text: str, source_path: str) -> list[dict]:
+def _declaration_depths(text: str) -> tuple[int, int, int]:
+    paren_depth = 0
+    brace_depth = 0
+    bracket_depth = 0
+    quote: str | None = None
+    escape = False
+    for char in text:
+        if quote:
+            if escape:
+                escape = False
+            elif char == "\\":
+                escape = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in {'"', "'", "`"}:
+            quote = char
+        elif char == "(":
+            paren_depth += 1
+        elif char == ")" and paren_depth > 0:
+            paren_depth -= 1
+        elif char == "{":
+            brace_depth += 1
+        elif char == "}" and brace_depth > 0:
+            brace_depth -= 1
+        elif char == "[":
+            bracket_depth += 1
+        elif char == "]" and bracket_depth > 0:
+            bracket_depth -= 1
+    return paren_depth, brace_depth, bracket_depth
+
+
+def _declaration_is_complete(declaration_lines: list[str]) -> bool:
+    declaration = " ".join(declaration_lines)
+    paren_depth, brace_depth, bracket_depth = _declaration_depths(declaration)
+    if paren_depth > 0 or brace_depth > 0 or bracket_depth > 0:
+        return False
+    stripped = declaration.rstrip()
+    if stripped.endswith(";"):
+        return True
+    return not stripped.endswith((":", "|", "&"))
+
+
+def _extract_extension_fields(
+    comfy_types_text: str, source_path: str, deferred: list[str] | None = None
+) -> list[dict]:
     interface_body = _extract_interface_body(comfy_types_text)
     if interface_body is None:
         return []
@@ -280,18 +329,21 @@ def _extract_extension_fields(comfy_types_text: str, source_path: str) -> list[d
         if stripped.startswith("/**"):
             comment_part = stripped
             trailing_declaration = ""
+            comment_closed = False
             if "*/" in stripped:
                 before, after = stripped.split("*/", 1)
                 comment_part = before + "*/"
                 trailing_declaration = after.strip()
-            pending_comment = [comment_part]
+                comment_closed = True
+            pending_comment.append(comment_part)
             index += 1
-            while not trailing_declaration and index < len(lines):
+            while not comment_closed and not trailing_declaration and index < len(lines):
                 comment_line = lines[index]
                 if "*/" in comment_line:
                     before, after = comment_line.split("*/", 1)
                     pending_comment.append(before + "*/")
                     trailing_declaration = after.strip()
+                    comment_closed = True
                     index += 1
                     break
                 pending_comment.append(comment_line)
@@ -304,15 +356,13 @@ def _extract_extension_fields(comfy_types_text: str, source_path: str) -> list[d
             index += 1
             continue
 
-        declaration_lines = [stripped.rstrip(";")]
-        paren_depth = stripped.count("(") - stripped.count(")")
-        while paren_depth > 0 and index + 1 < len(lines):
+        declaration_lines = [stripped]
+        while not _declaration_is_complete(declaration_lines) and index + 1 < len(lines):
             index += 1
-            next_line = lines[index].strip().rstrip(";")
+            next_line = lines[index].strip()
             declaration_lines.append(next_line)
-            paren_depth += next_line.count("(") - next_line.count(")")
 
-        declaration = " ".join(part for part in declaration_lines if part)
+        declaration = " ".join(part for part in declaration_lines if part).rstrip(";")
         method = _parse_method_field(declaration)
         property_field = _parse_property_field(declaration) if method is None else None
         field_data = None
@@ -347,16 +397,20 @@ def _extract_extension_fields(comfy_types_text: str, source_path: str) -> list[d
             if description:
                 field_data["description"] = description
             fields.append(field_data)
+        elif declaration and deferred is not None:
+            deferred.append(f"unparseable ComfyExtension member in {source_path}: {declaration}")
         pending_comment = []
         index += 1
 
     return fields
 
 
-def extract_extension_fields(source_map: dict[str, str], hook_names: set[str]) -> list[dict]:
+def extract_extension_fields(
+    source_map: dict[str, str], hook_names: set[str], deferred: list[str] | None = None
+) -> list[dict]:
     fields: list[dict] = []
     for source_path, source_text in source_map.items():
-        source_fields = _extract_extension_fields(source_text, source_path)
+        source_fields = _extract_extension_fields(source_text, source_path, deferred)
         if source_fields:
             fields.extend(source_fields)
 
@@ -464,8 +518,9 @@ def main() -> int:
         for source_path in source_paths
     }
     hooks = extract_hooks(source_map)
+    deferred: list[str] = []
     extension_fields = extract_extension_fields(
-        source_map, hook_names={hook["name"] for hook in hooks}
+        source_map, hook_names={hook["name"] for hook in hooks}, deferred=deferred
     )
 
     payload = {
@@ -475,7 +530,7 @@ def main() -> int:
             "version": args.version or "unversioned",
             "commit": args.commit,
         },
-        "coverage": build_hook_coverage(extension_fields, source_map),
+        "coverage": build_hook_coverage(extension_fields, source_map, deferred),
         "extension_fields": extension_fields,
         "hooks": hooks,
     }

@@ -88,6 +88,30 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
 
         self.assertEqual(key, "core-v0.19.3_frontend-v1.42.11_2026-04-19")
 
+    def test_snapshot_dates_from_sources_uses_only_valid_snapshot_date_segments(self):
+        module = self._import_module()
+        artifacts = self._sample_artifacts()
+        artifacts["server_endpoints.json"]["metadata"]["sources"] = [
+            "references/snapshots/not-a-date/comfyui-core-v0.19.3/server.py",
+            "references/snapshots/2026-04-20/comfyui-core-v0.19.3/server.py",
+        ]
+
+        dates = module._snapshot_dates_from_sources(artifacts)
+
+        self.assertIn("2026-04-20", dates)
+        self.assertNotIn("not-a-date", dates)
+
+    def test_snapshot_dates_from_sources_normalizes_windows_path_separators(self):
+        module = self._import_module()
+        artifacts = self._sample_artifacts()
+        artifacts["server_endpoints.json"]["metadata"]["sources"] = [
+            "references\\snapshots\\2026-04-21\\comfyui-core-v0.19.3\\server.py"
+        ]
+
+        dates = module._snapshot_dates_from_sources(artifacts)
+
+        self.assertIn("2026-04-21", dates)
+
     def test_derive_version_key_falls_back_to_extracted_date_without_snapshot_sources(self):
         module = self._import_module()
         artifacts = self._sample_artifacts()
@@ -185,6 +209,28 @@ class PublishReferenceArtifactsUnitTests(unittest.TestCase):
         manifest = module.build_manifest(artifacts, "test-key", artifact_hashes)
         self.assertEqual(manifest["artifacts"]["server_endpoints.json"]["version"], "v0.19.3")
         self.assertEqual(manifest["artifacts"]["js_hooks.json"]["version"], "v1.42.11")
+
+    def test_build_manifest_propagates_websocket_component_commits(self):
+        module = self._import_module()
+        artifacts = self._sample_artifacts()
+        artifacts["websocket_events.json"]["metadata"]["commits"] = {
+            "core": "3086026401180c9216bcb6ace442a4e3587d2c66",
+            "frontend": "3dc4061d484d61cb89366de25bf5e2f8a65da4d0",
+        }
+        artifact_hashes = {
+            name: hashlib.sha256(name.encode("utf-8")).hexdigest() for name in module.ARTIFACT_FILES
+        }
+
+        manifest = module.build_manifest(artifacts, "test-key", artifact_hashes)
+
+        self.assertEqual(
+            manifest["artifacts"]["websocket_events.json"]["commits"],
+            {
+                "core": "3086026401180c9216bcb6ace442a4e3587d2c66",
+                "frontend": "3dc4061d484d61cb89366de25bf5e2f8a65da4d0",
+            },
+        )
+        self.assertNotIn("commits", manifest["artifacts"]["server_endpoints.json"])
 
     def test_build_manifest_source_vs_sources(self):
         module = self._import_module()
@@ -464,6 +510,7 @@ class PublishReferenceArtifactsScriptTests(unittest.TestCase):
             )
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("Published schema file not found", result.stdout)
+            self.assertIn("websocket_events.schema.json", result.stdout)
 
 
 if __name__ == "__main__":

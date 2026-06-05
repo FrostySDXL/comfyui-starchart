@@ -7,7 +7,7 @@ import ast
 import json
 import re
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -259,7 +259,7 @@ def _scan_python_events(
                             "Resolved through add_message dynamic dispatch.",
                         )
                         events[resolved_name]["dynamic_notes"].add(
-                            "Resolved add_message(event, data) dynamic dispatch from literal caller arguments."
+                            "Resolved add_message(event, data) dynamic dispatch from literal caller arguments; shared add_message dynamic-dispatch resolver."
                         )
     return events, binary_sources
 
@@ -326,7 +326,7 @@ def _direction(event_name: str, has_server: bool, has_frontend: bool) -> str:
     if has_server:
         return "server_to_client"
     if has_frontend:
-        return "client_to_server" if event_name.startswith("client_") else "unknown"
+        return "client_to_server"
     return "unknown"
 
 
@@ -336,9 +336,14 @@ def _event_entry(
     server_sources = event_data.get("server_sources", [])
     payload_notes = sorted(event_data.get("payload_notes", set()))
     if not server_sources and name == "progress":
-        payload_notes.append("main.py missing or unresolved; progress server evidence degraded.")
+        payload_notes.append(
+            "supplied sources did not include main.py; progress server evidence degraded."
+        )
     if not server_sources and frontend_listeners:
         payload_notes.append("No server source evidence found in supplied source set.")
+        payload_notes.append(
+            "listener-only event direction inferred as client_to_server from frontend listener evidence."
+        )
     return {
         "name": name,
         "direction": _direction(name, bool(server_sources), bool(frontend_listeners)),
@@ -388,8 +393,8 @@ def _binary_entry(
 def build_artifact(
     sources: dict[str, str],
     *,
-    version: str = "unknown",
-    commit: str = "unknown",
+    version: str | None = "unknown",
+    commit: str | None = "unknown",
     frontend_commit: str | None = None,
 ) -> dict[str, Any]:
     normalized_sources = {normalize_repo_path(path): text for path, text in sources.items()}
@@ -434,11 +439,11 @@ def build_artifact(
 
     metadata = {
         "sources": list(normalized_sources),
-        "extracted_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-        "version": version,
-        "commit": commit,
+        "extracted_date": datetime.now().strftime("%Y-%m-%d"),
+        "version": version or "unknown",
+        "commit": commit or "unknown",
     }
-    if frontend_commit is not None:
+    if commit is not None and frontend_commit is not None:
         metadata["commits"] = {"core": commit, "frontend": frontend_commit}
 
     return {

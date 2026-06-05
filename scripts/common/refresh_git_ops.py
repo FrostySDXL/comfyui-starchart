@@ -37,7 +37,7 @@ def _copy_source_files(
     *,
     required_files: list[str] | None = None,
 ) -> list[str]:
-    """Copy source files from clone into snapshot directory."""
+    """Copy source files from clone and verify required copy coverage."""
     copied = []
     for rel_path in files:
         src = Path(clone_dir) / rel_path

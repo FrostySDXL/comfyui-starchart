@@ -19,7 +19,7 @@
     "server_endpoints.json": {
       "current_url": "artifacts/current/server_endpoints.json",
       "versioned_url": "artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-03/server_endpoints.json",
-      "sha256": "262aedf66af353a7f40b2a5234b7ee29bb4e3f10db136fe875f489abe9e19507",
+      "sha256": "4cc10ad89bfeae48bdd45a07e5a672b452ff757a9127f4cdc3f450a752a21568",
       "version": "v0.23.0",
       "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
       "extracted_date": "2026-06-04",
@@ -31,7 +31,7 @@
     "js_hooks.json": {
       "current_url": "artifacts/current/js_hooks.json",
       "versioned_url": "artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-03/js_hooks.json",
-      "sha256": "6cc67f64b0da5b3ccb4cd1fbf731ffa5b8e37480981e46b0b8e7fad4148013bf",
+      "sha256": "97b29257626d3a22f0d549e059c23572125f0f4be9f36f7e3630caa9e5f95468",
       "version": "v1.46.6",
       "commit": "9e32b7db5173bc2879d4c19c1d058d733b3074b8",
       "extracted_date": "2026-06-04",
@@ -57,7 +57,7 @@
     "websocket_events.json": {
       "current_url": "artifacts/current/websocket_events.json",
       "versioned_url": "artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-03/websocket_events.json",
-      "sha256": "b619f936815ca0e4de46302a0c38ccef23504a446bf928ce5b816ff3796d126e",
+      "sha256": "cfa10c399a5f32b8d244c900313ae0d9e58c0b41ed2b44701f87aa44f6ed3f27",
       "version": "v0.23.0+v1.46.6",
       "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
       "extracted_date": "2026-06-04",
@@ -68,7 +68,11 @@
         "references/snapshots/2026-06-03/comfyui-core-v0.23.0/protocol.py",
         "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_execution/progress.py",
         "references/snapshots/2026-06-03/comfyui-frontend-v1.46.6/src/scripts/app.ts"
-      ]
+      ],
+      "commits": {
+        "core": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
+        "frontend": "9e32b7db5173bc2879d4c19c1d058d733b3074b8"
+      }
     }
   }
 }

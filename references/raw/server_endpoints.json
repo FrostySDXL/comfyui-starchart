@@ -1240,7 +1240,7 @@
         "location": "response_json",
         "required": true,
         "type_hint": "unknown",
-        "description": "Success response field `node_errors`.",
+        "description": "Response field `node_errors` observed in the successful POST /prompt JSON payload.",
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
@@ -1253,7 +1253,7 @@
         "location": "response_json",
         "required": true,
         "type_hint": "unknown",
-        "description": "Success response field `number`.",
+        "description": "Response field `number` observed in the successful POST /prompt JSON payload.",
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
@@ -1266,7 +1266,7 @@
         "location": "response_json",
         "required": true,
         "type_hint": "unknown",
-        "description": "Success response field `prompt_id`.",
+        "description": "Response field `prompt_id` observed in the successful POST /prompt JSON payload.",
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
@@ -1281,7 +1281,7 @@
         "location": "response_json",
         "required": true,
         "type_hint": "unknown",
-        "description": "Error response field `error`.",
+        "description": "Response field `error` observed in an error POST /prompt JSON payload.",
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
@@ -1294,7 +1294,7 @@
         "location": "response_json",
         "required": true,
         "type_hint": "unknown",
-        "description": "Error response field `node_errors`.",
+        "description": "Response field `node_errors` observed in an error POST /prompt JSON payload.",
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
@@ -1548,7 +1548,8 @@
     ],
     "coverage": "source-backed",
     "deferred": [
-      "Runtime node-specific validation messages from custom nodes are not statically knowable."
+      "Runtime node-specific validation messages from custom nodes are not statically knowable.",
+      "Prompt validation error extraction is scoped to validation functions; unrelated literal dictionaries with type keys are ignored."
     ]
   },
   "queue_history_contract": {

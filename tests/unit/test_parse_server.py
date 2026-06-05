@@ -338,6 +338,22 @@ def validate_prompt():
             msg=validation["deferred"],
         )
 
+    def test_unrelated_type_dictionaries_do_not_become_prompt_validation_errors(self):
+        parse_server = _load_parse_server()
+        execution_text = """
+def summarize_runtime_metadata():
+    return {"type": "runtime_metadata", "message": "not a validation error"}
+"""
+
+        data = parse_server.extract_server_runtime_contracts("", execution_text)
+        validation = data["prompt_validation_errors"]
+
+        self.assertEqual(validation["error_types"], [])
+        self.assertTrue(
+            any("scoped" in note for note in validation.get("deferred", [])),
+            msg=validation.get("deferred", []),
+        )
+
     def test_metadata_sources_are_repo_relative_when_input_is_in_repo(self):
         sample = """
 @routes.get("/history")

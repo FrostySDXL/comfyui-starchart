@@ -4,6 +4,7 @@ title: "Start Here: Custom Node Author"
 
 **Evidence:** Operational guidance
 **Last Updated:** 2026-06-01
+**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
 
 ## Who This Path Is For
 

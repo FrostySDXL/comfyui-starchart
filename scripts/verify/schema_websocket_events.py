@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 from scripts.common.path_normalization import has_backslashes
 from scripts.verify.schema_common import _check_type, _type_label
 
@@ -10,7 +12,7 @@ EVENT_SOURCE_SCHEMA = {
     "method": (str, True),
 }
 
-EVENT_TRACEABILITY_SCHEMA = {
+WEBSOCKET_TRACEABILITY_SCHEMA = {
     "strategy": (str, True),
     "notes": (list, False),
     "source_file": ((str, type(None)), False),
@@ -41,7 +43,7 @@ VALID_DIRECTIONS = {"server_to_client", "client_to_server", "bidirectional", "un
 
 
 def _validate_shape(
-    value: dict, schema: dict[str, tuple[object, bool]], filename: str, path: str
+    value: dict, schema: Mapping[str, tuple[object, bool]], filename: str, path: str
 ) -> list[str]:
     errors: list[str] = []
     for key, (expected_type, required) in schema.items():
@@ -85,7 +87,7 @@ def _validate_string_list(value: object, filename: str, path: str) -> list[str]:
 def _validate_traceability(value: object, filename: str, path: str) -> list[str]:
     if not isinstance(value, dict):
         return []
-    errors = _validate_shape(value, EVENT_TRACEABILITY_SCHEMA, filename, path)
+    errors = _validate_shape(value, WEBSOCKET_TRACEABILITY_SCHEMA, filename, path)
     errors.extend(_validate_string_list(value.get("notes"), filename, f"{path}.notes"))
     source_file = value.get("source_file")
     if isinstance(source_file, str) and has_backslashes(source_file):

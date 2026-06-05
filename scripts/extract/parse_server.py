@@ -101,7 +101,7 @@ def _function_nodes(tree: ast.AST | None) -> dict[str, ast.AST]:
     }
 
 
-def _traceability(source_file: str, source_function: str, strategy: str) -> dict:
+def _traceability(source_file: str | None, source_function: str, strategy: str) -> dict:
     return {
         "source_type": "pinned_snapshot",
         "strategy": strategy,
@@ -217,7 +217,7 @@ def _json_response_payload_fields(function_node: ast.AST) -> tuple[set[str], set
 def _extract_prompt_submission_contract(
     server_text: str,
     *,
-    server_source: str = "",
+    server_source: str | None = None,
 ) -> dict:
     functions = _function_nodes(_parse_python(server_text))
     post_prompt = functions.get("post_prompt")
@@ -230,6 +230,7 @@ def _extract_prompt_submission_contract(
         )
 
     observed_fields = _extract_string_keys_from_json_data(post_prompt)
+    # Preserve ComfyUI's handler-order contract for predictable artifact diffs.
     request_order = [
         "number",
         "front",
@@ -259,14 +260,19 @@ def _extract_prompt_submission_contract(
             "response_json",
             True,
             "unknown",
-            f"Success response field `{name}`.",
+            f"Response field `{name}` observed in the successful POST /prompt JSON payload.",
             traceability,
         )
         for name in sorted(success_names)
     ]
     error_response_fields = [
         _field(
-            name, "response_json", True, "unknown", f"Error response field `{name}`.", traceability
+            name,
+            "response_json",
+            True,
+            "unknown",
+            f"Response field `{name}` observed in an error POST /prompt JSON payload.",
+            traceability,
         )
         for name in sorted(error_names)
     ]
@@ -320,12 +326,16 @@ def _error_entry_from_dict(node: ast.Dict, source_file: str) -> dict | None:
     return entry
 
 
+def _is_prompt_validation_context(function_name: str) -> bool:
+    return function_name == "post_prompt" or "validate" in function_name.lower()
+
+
 def _extract_prompt_validation_errors(
     execution_text: str,
     server_text: str,
     *,
-    execution_source: str = "",
-    server_source: str = "",
+    execution_source: str | None = None,
+    server_source: str | None = None,
 ) -> dict:
     entries: dict[str, dict] = {}
     unknown_types: set[str] = set()
@@ -340,17 +350,26 @@ def _extract_prompt_validation_errors(
             if isinstance(node, ast.Dict):
                 entry = _error_entry_from_dict(node, source_file)
                 if entry is not None:
+                    if not _is_prompt_validation_context(entry["source_function"]):
+                        continue
                     if entry["type"] not in PROMPT_ERROR_SUMMARIES:
                         unknown_types.add(entry["type"])
                     entries.setdefault(entry["type"], entry)
 
+    scoped_note = (
+        "Prompt validation error extraction is scoped to validation functions; "
+        "unrelated literal dictionaries with type keys are ignored."
+    )
     if not entries:
-        return _deferred_section(
-            "No prompt validation error dictionaries were found in supplied sources.",
+        section = _deferred_section(
+            "No prompt validation error dictionaries were found in scoped validation contexts.",
             error_types=[],
         )
+        section["deferred"] = [scoped_note]
+        return section
     deferred = [
-        "Runtime node-specific validation messages from custom nodes are not statically knowable."
+        "Runtime node-specific validation messages from custom nodes are not statically knowable.",
+        scoped_note,
     ]
     if unknown_types:
         deferred.append(
@@ -369,8 +388,8 @@ def _extract_queue_history_contract(
     server_text: str,
     execution_text: str,
     *,
-    server_source: str = "",
-    execution_source: str = "",
+    server_source: str | None = None,
+    execution_source: str | None = None,
 ) -> dict:
     server_functions = _function_nodes(_parse_python(server_text))
     execution_functions = _function_nodes(_parse_python(execution_text))
@@ -457,8 +476,8 @@ def extract_server_runtime_contracts(
     server_text: str,
     execution_text: str,
     *,
-    server_source: str = "",
-    execution_source: str = "",
+    server_source: str | None = None,
+    execution_source: str | None = None,
 ) -> dict:
     return {
         "prompt_submission_contract": _extract_prompt_submission_contract(

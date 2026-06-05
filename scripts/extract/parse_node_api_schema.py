@@ -502,6 +502,7 @@ def _literal_default(node: ast.AST | None) -> Any:
 
 
 def _field_default_factory(call: ast.Call) -> str | None:
+    """Return a serializable name for dataclasses.field(default_factory=...)."""
     if not isinstance(call.func, ast.Name) or call.func.id != "field":
         return None
     for keyword in call.keywords:

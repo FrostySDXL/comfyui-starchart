@@ -320,6 +320,10 @@ class ParseNodeApiSchemaTests(unittest.TestCase):
                 {"name": "is_api_node", "schema_fields_ref": "is_api_node"},
             ],
         )
+        self.assertNotIn(
+            "maybe_flag",
+            {entry["name"] for entry in contract["node_flags"]},
+        )
         for entry in contract["node_flags"]:
             self.assertEqual(set(entry), {"name", "schema_fields_ref"})
             self.assertIn(entry["schema_fields_ref"], schema_field_names)

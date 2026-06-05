@@ -223,7 +223,13 @@ class ParseWebsocketEventsTests(unittest.TestCase):
 
         self.assertEqual(progress["server_sources"], [])
         self.assertTrue(progress["frontend_listeners"])
-        self.assertTrue(any("main.py" in note for note in progress.get("payload_notes", [])))
+        self.assertTrue(
+            any(
+                "supplied sources did not include main.py" in note
+                for note in progress.get("payload_notes", [])
+            ),
+            msg=progress.get("payload_notes", []),
+        )
 
     def test_missing_progress_source_adds_degraded_coverage_note(self):
         parser = _load_parse_websocket_events()
@@ -264,6 +270,8 @@ class PromptExecutor:
                 for source in event_by_name["execution_cached"]["server_sources"]
             )
         )
+        trace_notes = " ".join(event_by_name["execution_cached"]["traceability"].get("notes", []))
+        self.assertIn("shared add_message dynamic-dispatch resolver", trace_notes)
 
     def test_unknown_direction_events_add_deferred_coverage_note(self):
         parser = _load_parse_websocket_events()
@@ -280,10 +288,13 @@ class ComfyApp {
         data = parser.build_artifact(sources, version="v0", commit="abc")
         progress = next(event for event in data["events"] if event["name"] == "progress")
 
-        self.assertEqual(progress["direction"], "unknown")
+        self.assertEqual(progress["direction"], "client_to_server")
         self.assertTrue(
-            any("unknown direction" in note for note in data["coverage"]["deferred"]),
-            msg=data["coverage"]["deferred"],
+            any(
+                "listener-only event direction inferred" in note
+                for note in progress["payload_notes"]
+            ),
+            msg=progress["payload_notes"],
         )
 
     def test_build_artifact_preserves_component_commit_provenance(self):
@@ -300,6 +311,42 @@ class ComfyApp {
             data["metadata"]["commits"],
             {"core": "core123", "frontend": "front456"},
         )
+
+    def test_component_commits_are_omitted_when_core_or_frontend_commit_is_absent(self):
+        parser = _load_parse_websocket_events()
+        data = parser.build_artifact(
+            _sample_sources(),
+            version=None,
+            commit=None,
+            frontend_commit="front456",
+        )
+
+        self.assertEqual(data["metadata"]["version"], "unknown")
+        self.assertEqual(data["metadata"]["commit"], "unknown")
+        self.assertNotIn("commits", data["metadata"])
+
+    def test_extracted_date_uses_local_extractor_clock(self):
+        parser = _load_parse_websocket_events()
+        observed_timezones = []
+
+        class FixedDateTime:
+            @classmethod
+            def now(cls, tz=None):
+                observed_timezones.append(tz)
+                return cls()
+
+            def strftime(self, _format):
+                return "2026-06-04"
+
+        original_datetime = parser.datetime
+        try:
+            parser.datetime = FixedDateTime
+            data = parser.build_artifact(_sample_sources(), version="v0+v1", commit="core123")
+        finally:
+            parser.datetime = original_datetime
+
+        self.assertEqual(observed_timezones, [None])
+        self.assertEqual(data["metadata"]["extracted_date"], "2026-06-04")
 
     def test_no_recognizable_events_still_emits_valid_empty_sections(self):
         parser = _load_parse_websocket_events()

@@ -208,6 +208,22 @@ export interface ComfyExtension {
 
         self.assertEqual(name_field["description"], "The extension name.")
 
+    def test_consecutive_jsdoc_blocks_are_preserved_for_next_extension_field(self):
+        parse_hooks = _load_parse_hooks()
+        sample = """
+export interface ComfyExtension {
+  /** Primary description. */
+  /** Additional note. */
+  name: string
+}
+"""
+
+        fields = parse_hooks.extract_extension_fields({"tmp/comfy.ts": sample}, hook_names=set())
+        name_field = next(field for field in fields if field["name"] == "name")
+
+        self.assertIn("Primary description.", name_field["description"])
+        self.assertIn("Additional note.", name_field["description"])
+
     def test_main_output_includes_extension_fields_list(self):
         sample = """
 export interface ComfyExtension {
@@ -273,6 +289,71 @@ export interface ComfyExtension {
 
         self.assertNotIn("foo", field_names)
         self.assertIn("name", field_names)
+
+    def test_unparseable_extension_member_adds_deferred_note(self):
+        parse_hooks = _load_parse_hooks()
+        sample = """
+export interface ComfyExtension {
+  readonly foo: string
+  name: string
+}
+"""
+        deferred = []
+
+        fields = parse_hooks.extract_extension_fields(
+            {"tmp/comfy.ts": sample}, hook_names=set(), deferred=deferred
+        )
+        coverage = parse_hooks.build_hook_coverage(fields, {"tmp/comfy.ts": sample}, deferred)
+
+        self.assertTrue(
+            any("unparseable ComfyExtension member" in note for note in coverage["deferred"]),
+            msg=coverage["deferred"],
+        )
+
+    def test_extension_field_multiline_object_type_tracks_brace_depth(self):
+        parse_hooks = _load_parse_hooks()
+        sample = """
+export interface ComfyExtension {
+  /** Options preserved as a single property. */
+  options?: {
+    alpha: string;
+    beta: Array<{ name: string }>;
+  };
+  setup?(): void;
+}
+"""
+
+        fields = parse_hooks.extract_extension_fields({"tmp/comfy.ts": sample}, hook_names=set())
+
+        options = next(field for field in fields if field["name"] == "options")
+        self.assertEqual(
+            options["type_hint"],
+            "{ alpha: string; beta: Array<{ name: string }>; }",
+        )
+        self.assertIn("setup", {field["name"] for field in fields})
+
+    def test_extension_field_multiline_method_without_semicolon_stops_at_signature_end(self):
+        parse_hooks = _load_parse_hooks()
+        sample = """
+export interface ComfyExtension {
+  /** Add definitions */
+  addCustomNodeDefs?(
+    defs: Record<string, ComfyNodeDef>,
+    app: ComfyApp
+  ): Promise<void> | void
+  /** Add widgets */
+  getCustomWidgets?(app: ComfyApp): Promise<Widgets> | Widgets
+}
+"""
+
+        fields = parse_hooks.extract_extension_fields({"tmp/comfy.ts": sample}, hook_names=set())
+        names = {field["name"]: field for field in fields}
+
+        self.assertEqual(
+            names["addCustomNodeDefs"]["type_hint"],
+            "(defs: Record<string, ComfyNodeDef>, app: ComfyApp) => Promise<void> | void",
+        )
+        self.assertIn("getCustomWidgets", names)
 
     def test_malformed_comfy_extension_source_raises_clear_error(self):
         parse_hooks = _load_parse_hooks()

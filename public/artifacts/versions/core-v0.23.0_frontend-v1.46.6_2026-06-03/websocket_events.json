@@ -157,7 +157,7 @@
       "traceability": {
         "strategy": "ast_send_call_and_frontend_listener_merge",
         "notes": [
-          "Resolved add_message(event, data) dynamic dispatch from literal caller arguments."
+          "Resolved add_message(event, data) dynamic dispatch from literal caller arguments; shared add_message dynamic-dispatch resolver."
         ]
       }
     },
@@ -200,7 +200,7 @@
       "traceability": {
         "strategy": "ast_send_call_and_frontend_listener_merge",
         "notes": [
-          "Resolved add_message(event, data) dynamic dispatch from literal caller arguments."
+          "Resolved add_message(event, data) dynamic dispatch from literal caller arguments; shared add_message dynamic-dispatch resolver."
         ]
       }
     },
@@ -230,7 +230,7 @@
       "traceability": {
         "strategy": "ast_send_call_and_frontend_listener_merge",
         "notes": [
-          "Resolved add_message(event, data) dynamic dispatch from literal caller arguments."
+          "Resolved add_message(event, data) dynamic dispatch from literal caller arguments; shared add_message dynamic-dispatch resolver."
         ]
       }
     },
@@ -269,7 +269,7 @@
       "traceability": {
         "strategy": "ast_send_call_and_frontend_listener_merge",
         "notes": [
-          "Resolved add_message(event, data) dynamic dispatch from literal caller arguments."
+          "Resolved add_message(event, data) dynamic dispatch from literal caller arguments; shared add_message dynamic-dispatch resolver."
         ]
       }
     },
@@ -301,7 +301,7 @@
       "traceability": {
         "strategy": "ast_send_call_and_frontend_listener_merge",
         "notes": [
-          "Resolved add_message(event, data) dynamic dispatch from literal caller arguments."
+          "Resolved add_message(event, data) dynamic dispatch from literal caller arguments; shared add_message dynamic-dispatch resolver."
         ]
       }
     },

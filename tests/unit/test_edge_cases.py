@@ -302,6 +302,7 @@ class ValidateSchemaTests(unittest.TestCase):
                 "deferred": ["parameter typing"],
             },
             "endpoints": [],
+            # Empty runtime-contract sections are valid for this minimal schema fixture.
             "prompt_submission_contract": {},
             "prompt_validation_errors": {},
             "queue_history_contract": {},

@@ -155,7 +155,7 @@ def build_manifest(
         current_path = CURRENT_DIR / name
         versioned_path = VERSIONS_DIR / version_key / name
 
-        manifest["artifacts"][name] = {
+        entry = {
             "current_url": _site_rel(current_path),
             "versioned_url": _site_rel(versioned_path),
             "sha256": artifact_hashes[name],
@@ -164,6 +164,9 @@ def build_manifest(
             "extracted_date": meta.get("extracted_date", "unknown"),
             "sources": meta.get("sources") or [],
         }
+        if name == "websocket_events.json" and isinstance(meta.get("commits"), dict):
+            entry["commits"] = meta["commits"]
+        manifest["artifacts"][name] = entry
 
     return manifest
 
