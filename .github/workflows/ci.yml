@@ -63,6 +63,9 @@ jobs:
       - name: Verify artifact integrity
         run: python scripts/verify/verify_artifact_integrity.py
 
+      - name: Verify delta summary integrity
+        run: python scripts/verify/delta_summary_integrity.py
+
       - name: Verify markdown top-level spacing
         run: python scripts/verify/markdown_top_level_spacing.py
 

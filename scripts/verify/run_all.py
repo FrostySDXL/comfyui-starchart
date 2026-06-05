@@ -11,11 +11,12 @@ cross-platform CI blocking path (ubuntu-latest and windows-latest):
     6. snapshot_surface_coverage.py
     7. validate_schema.py
     8. verify_artifact_integrity.py
-    9. markdown_top_level_spacing.py
-    10. sidebar_navigation_coverage.py
-    11. astro check
-    12. astro build
-    13. rendered_links.py
+    9. delta_summary_integrity.py
+    10. markdown_top_level_spacing.py
+    11. sidebar_navigation_coverage.py
+    12. astro check
+    13. astro build
+    14. rendered_links.py
 
 Advisory/non-blocking checks remain separate and are not included here.
 
@@ -107,6 +108,13 @@ def main() -> int:
         (
             [sys.executable, str(SCRIPTS_VERIFY_DIR / "verify_artifact_integrity.py")],
             "Artifact integrity verification",
+        )
+    )
+
+    steps.append(
+        (
+            [sys.executable, str(SCRIPTS_VERIFY_DIR / "delta_summary_integrity.py")],
+            "Delta summary integrity verification",
         )
     )
 

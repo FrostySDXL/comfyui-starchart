@@ -59,6 +59,8 @@ durable published history.
   TypeScript files
 - `references/raw/node_api_schema.json` is extracted from the pinned core
   `server.py`, `comfy_api/latest/_io.py`, and `basic_types.py`
+- `references/raw/websocket_events.json` is extracted from pinned core
+  WebSocket/event sources plus pinned frontend listener sources
 - `references/raw/object_info_runtime.json` is an optional runtime-only capture
   artifact and is not part of the canonical public artifact set
 

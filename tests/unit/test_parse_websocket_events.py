@@ -24,6 +24,7 @@ class PromptServer:
     async def websocket_handler(self, request):
         await self.send("status", {"status": self.get_queue_info()}, sid=sid)
         await self.send("executing", {"node": None, "prompt_id": prompt_id}, sid=sid)
+        await self.send("feature_flags", feature_flags.get_server_features(), sid)
 
     def queue_updated(self):
         self.send_sync("status", {"exec_info": self.get_queue_info()})
@@ -169,6 +170,8 @@ class ParseWebsocketEventsTests(unittest.TestCase):
             self.assertTrue("payload_fields" in event or "payload_notes" in event)
 
         self.assertEqual(event_by_name["feature_flags"]["direction"], "bidirectional")
+        self.assertTrue(event_by_name["feature_flags"]["server_sources"])
+        self.assertTrue(event_by_name["feature_flags"]["frontend_listeners"])
         self.assertEqual(event_by_name["progress"]["direction"], "server_to_client")
         self.assertTrue(
             any(

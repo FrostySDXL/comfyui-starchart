@@ -87,6 +87,22 @@ class UpstreamPinsMetadataTests(unittest.TestCase):
         pin = pins[0]
         self.assertEqual(pin["source"], "node_api_schema.json")
 
+    def test_extract_pins_from_websocket_events_uses_component_repositories(self):
+        """websocket_events.json should validate core and frontend pins separately."""
+        module = _load_module()
+        json_path = REFERENCES_RAW_DIR / "websocket_events.json"
+        if not json_path.exists():
+            self.skipTest("websocket_events.json not found")
+
+        pins = module.extract_pins_from_json(json_path)
+
+        self.assertEqual(
+            [f"{pin['repo']}:{pin['version']}" for pin in pins],
+            ["ComfyUI:v0.23.0", "ComfyUI_Frontend:v1.46.6"],
+        )
+        self.assertEqual([pin["source"] for pin in pins], ["websocket_events.json"] * 2)
+        self.assertTrue(all(len(pin["commit"]) >= 40 for pin in pins))
+
     def test_repo_map_covers_all_json_files(self):
         """REPO_MAP should have entries for all JSON files in references/raw."""
         module = _load_module()

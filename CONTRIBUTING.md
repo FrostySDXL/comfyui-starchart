@@ -1,6 +1,6 @@
 # Contributing
 
-**Last Updated:** 2026-06-02
+**Last Updated:** 2026-06-04
 
 This file is the canonical maintainer workflow guide for ComfyUI StarChart.
 Use `AGENTS.md` for startup-critical orientation. Use this file for deeper
@@ -127,7 +127,7 @@ admission policy below.
 | Change maintainer Python tooling | `pyproject.toml` + affected `scripts/` modules | `python -m pip install -e .` + `python -m mypy` + `python -m unittest discover -s tests -v` + `python scripts/verify/run_all.py` |
 | Add or change a verifier | existing verifier + matching tests + policy sections below | `python -m unittest discover -s tests -v` |
 | Change CI workflow | target workflow + composite action + this file | `python -m unittest discover -s tests -v -p "test_run_all.py"` + `python scripts/verify/run_all.py` |
-| Refresh upstream baselines | `scripts/refresh_snapshots.py` + refresh sections below | republish + delta summary + `python scripts/verify/run_all.py` |
+| Refresh upstream baselines | `scripts/refresh_snapshots.py` + refresh sections below | republish + delta summary + `python scripts/verify/delta_summary_integrity.py` + `python scripts/verify/run_all.py` |
 
 ## New Surface Admission Policy
 
@@ -213,6 +213,21 @@ documented, and directly actionable.
 
 Do not hand-edit generated or extracted outputs. Edit their sources and rerun the
 owning script.
+
+### Schema closure exceptions
+
+Default schema policy is permissive for extracted source-backed objects: use
+`additionalProperties: true` unless there is a documented maintenance reason to
+close a narrow record shape. Intentional closed-record exceptions currently are:
+
+- `public/artifacts/schemas/websocket_events.schema.json` closes
+  `metadata.commits` so the two-component core/frontend commit record cannot
+  silently grow ambiguous repository keys.
+- `public/artifacts/schemas/node_api_schema.schema.json` closes each
+  `node_flags` item so flag metadata remains a stable finite record.
+
+Do not add another `additionalProperties: false` schema object without recording
+the closed-record reason here or in a more specific published schema policy.
 
 ## Published Artifact Version Retention
 
@@ -428,6 +443,7 @@ python scripts/refresh_snapshots.py --core-version <version> --frontend-version 
 python scripts/generate/publish_reference_artifacts.py
 python scripts/verify/verify_artifact_integrity.py
 python scripts/generate/generate_snapshot_delta_summary.py --old <backup-dir> --new references/raw --output public/artifacts/delta-summary.json
+python scripts/verify/delta_summary_integrity.py
 python scripts/verify/run_all.py
 ```
 
@@ -453,6 +469,7 @@ python scripts/verify/docs_index_freshness.py
 python scripts/verify/snapshot_surface_coverage.py
 python scripts/verify/validate_schema.py
 python scripts/verify/verify_artifact_integrity.py
+python scripts/verify/delta_summary_integrity.py
 python scripts/verify/markdown_top_level_spacing.py
 python scripts/verify/sidebar_navigation_coverage.py
 npm run check
@@ -499,6 +516,7 @@ these checks but are not standalone inventory rows.
 | `scripts/verify/snapshot_surface_coverage.py` | Prevent incomplete snapshot source surfaces before extractors rely on them | current pinned core/frontend snapshots | Blocking once wired into `run_all.py`; lifecycle stays blocking while limited to required-file and import checks | Catches missing required source files such as `protocol.py` and `comfy_execution/progress.py` before artifacts lose source evidence | After snapshot refreshes or extractor source-surface changes |
 | `scripts/verify/validate_schema.py` | Validate canonical and selected published/support JSON artifacts against schemas | `references/raw/*.json`, `public/artifacts/docs-index.json`, selected support artifacts | Blocking | Only schema gate spanning canonical raw artifacts plus checked-in published/support JSON | Any extractor, schema, or published JSON contract change |
 | `scripts/verify/verify_artifact_integrity.py` | Confirm canonical raw artifacts match published current copies and manifest hashes | canonical artifact publication chain | Blocking | Hash-level canonical vs published integrity check | After republishing canonical artifacts or manifest-affecting changes |
+| `scripts/verify/delta_summary_integrity.py` | Confirm `delta-summary.json` covers every canonical artifact section and no stale sections | `public/artifacts/delta-summary.json` against `CANONICAL_ARTIFACTS` | Blocking | Catches artifact-set drift when a canonical artifact is added, removed, or omitted from the delta summary | After regenerating delta summaries or changing canonical artifact membership |
 | `scripts/verify/markdown_top_level_spacing.py` | Catch leading-space markdown that renders incorrectly | hand-authored docs markdown | Blocking | Prevents raw-markdown leakage caused by indentation drift | After docs prose or formatting edits |
 | `scripts/verify/sidebar_navigation_coverage.py` | Ensure sidebar data matches the retained published docs tree | `src/site/sidebar-data.json` and `src/content/docs/` | Blocking | Detects missing nav entries, dead nav paths, and duplicates | After page additions, removals, or sidebar edits |
 | `npm run check` | Run Astro type/content checks | site build configuration and content graph | Blocking | Framework-aware diagnostics beyond markdown-only checks | After content, config, or site-code changes |
@@ -516,6 +534,18 @@ by stable required-file coverage in `run_all.py`; demote to advisory if the
 check expands into heuristic source-quality scoring; remove only when extractor
 source requirements are represented by a stricter manifest or replacement
 verifier with equivalent coverage.
+
+Lifecycle detail for `scripts/verify/delta_summary_integrity.py`: purpose is to
+prevent canonical artifact membership from drifting away from the published delta
+summary; owner is the maintainer of artifact generation and publication tooling;
+target surface is `public/artifacts/delta-summary.json` compared with
+`scripts.generate.generate_snapshot_delta_summary.CANONICAL_ARTIFACTS`;
+false-positive tolerance is low because missing sections make refresh evidence
+misleading; placement is blocking because the check is deterministic and cheap;
+promotion is already satisfied by unit coverage and `run_all.py` wiring; demote
+only if delta summaries stop being a required published support artifact; remove
+only with a replacement verifier that proves equivalent canonical-artifact delta
+coverage.
 
 ### Supplemental verifiers
 
@@ -560,6 +590,7 @@ verifier with equivalent coverage.
 - schema failure: fix the source JSON or schema, not generated outputs by hand
 - docs-index freshness failure: regenerate with `python scripts/generate/generate_docs_index.py`
 - artifact-integrity failure: republish canonical artifacts and recheck the manifest/current copies
+- delta-summary integrity failure: regenerate `public/artifacts/delta-summary.json` from the recorded refresh backup and rerun `python scripts/verify/delta_summary_integrity.py`
 - rendered-links failure: rebuild and fix the source markdown or route mismatch
 
 ## Common Pitfalls

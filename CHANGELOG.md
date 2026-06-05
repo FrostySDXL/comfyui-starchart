@@ -7,6 +7,29 @@ verification, workflow, and repo structure rather than every commit.
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-06-04 - baseline alignment and artifact drift prevention
+
+### Artifacts and extraction
+
+- Regenerate the affected canonical artifacts after parser and schema hardening
+  for server routes, JavaScript hooks, node API schema fields, and WebSocket
+  event contracts.
+- Add `websocket_events.json` to snapshot delta comparisons and regenerate the
+  published delta summary so refresh provenance reflects all canonical artifacts.
+- Split `websocket_events.json` upstream pin validation into separate core and
+  frontend repository pins.
+
+### Verification and docs
+
+- Add blocking `delta_summary_integrity.py` coverage in CI and `run_all.py` so
+  canonical artifact membership cannot drift away from `delta-summary.json`.
+- Align published docs, examples, and version-pin status with the 2026-06-03
+  pinned baseline.
+- Document the canonical parent snapshot inventory and the narrow closed-record
+  schema exceptions for commit provenance and node flag records.
+- Remove the dedicated Ruff exclusion for `references/snapshots/`; current
+  Python style include checks cover the configured repo Python surface without it.
+
 ## 2026-06-04 - extractor, schema, publisher, and policy hardening
 
 ### Snapshot coverage

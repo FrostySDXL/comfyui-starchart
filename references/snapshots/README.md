@@ -33,6 +33,9 @@ Current layout at the time of this update:
 ## Maintainer rules
 
 - do not hand-edit files under these dated directories
+- this parent README is the canonical inventory for retained snapshot baselines;
+  individual dated directories do not need their own README when this inventory
+  records their retention purpose clearly
 - use `scripts/refresh_snapshots.py` and the maintainer workflow in
   [`CONTRIBUTING.md`](../../CONTRIBUTING.md) when refreshing the pinned baseline
 - use

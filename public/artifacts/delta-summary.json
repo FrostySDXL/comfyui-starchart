@@ -67,6 +67,39 @@
         "removed": [],
         "changed": []
       }
+    },
+    "websocket_events": {
+      "events": {
+        "old_count": 0,
+        "new_count": 11,
+        "added": [
+          "executed",
+          "executing",
+          "execution_cached",
+          "execution_error",
+          "execution_interrupted",
+          "execution_start",
+          "execution_success",
+          "feature_flags",
+          "progress",
+          "progress_state",
+          "status"
+        ],
+        "removed": [],
+        "changed": []
+      },
+      "binary_events": {
+        "old_count": 0,
+        "new_count": 4,
+        "added": [
+          "PREVIEW_IMAGE",
+          "PREVIEW_IMAGE_WITH_METADATA",
+          "TEXT",
+          "UNENCODED_PREVIEW_IMAGE"
+        ],
+        "removed": [],
+        "changed": []
+      }
     }
   }
 }

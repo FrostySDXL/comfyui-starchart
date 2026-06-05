@@ -25,7 +25,8 @@ CACHE_DIR = REPO_ROOT / ".cache"
 CACHE_FILE = CACHE_DIR / "upstream_pins.json"
 CACHE_TTL_SECONDS = 24 * 60 * 60  # 24 hours
 
-# Map from JSON file to its upstream GitHub repo
+# Map from JSON file to its upstream GitHub repo. Artifacts with multiple
+# upstream components can override this default per extracted pin.
 REPO_MAP = {
     "server_endpoints.json": {
         "owner": "Comfy-Org",
@@ -134,6 +135,39 @@ def extract_pins_from_json(json_path: Path) -> list[dict]:
         return []
 
     metadata = data.get("metadata", {})
+    if json_path.name == "websocket_events.json" and isinstance(metadata, dict):
+        commits = metadata.get("commits")
+        version = metadata.get("version", "")
+        versions = version.split("+", 1) if isinstance(version, str) else []
+        if isinstance(commits, dict) and len(versions) == 2:
+            core_commit = commits.get("core", "")
+            frontend_commit = commits.get("frontend", "")
+            pins = []
+            if core_commit:
+                pins.append(
+                    {
+                        "version": versions[0],
+                        "commit": core_commit,
+                        "source": json_path.name,
+                        "owner": "Comfy-Org",
+                        "repo": "ComfyUI",
+                        "component": "core",
+                    }
+                )
+            if frontend_commit:
+                pins.append(
+                    {
+                        "version": versions[1],
+                        "commit": frontend_commit,
+                        "source": json_path.name,
+                        "owner": "Comfy-Org",
+                        "repo": "ComfyUI_Frontend",
+                        "component": "frontend",
+                    }
+                )
+            if pins:
+                return pins
+
     version = metadata.get("version", "")
     commit = metadata.get("commit", "")
 
@@ -165,13 +199,12 @@ def verify_pins(use_cache: bool = True) -> list[tuple[bool, str]]:
             print(f"  SKIP: no repo mapping for {json_file.name}")
             continue
 
-        owner = repo_info["owner"]
-        repo = repo_info["repo"]
-
         pins = extract_pins_from_json(json_file)
         for pin in pins:
             version = pin["version"]
             commit = pin["commit"]
+            owner = pin.get("owner", repo_info["owner"])
+            repo = pin.get("repo", repo_info["repo"])
 
             # Check commit
             if commit:

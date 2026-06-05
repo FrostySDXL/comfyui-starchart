@@ -59,6 +59,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("snapshot_surface_coverage.py" in str(c) for c in call_order))
         self.assertTrue(any("validate_schema.py" in str(c) for c in call_order))
         self.assertTrue(any("verify_artifact_integrity.py" in str(c) for c in call_order))
+        self.assertTrue(any("delta_summary_integrity.py" in str(c) for c in call_order))
         self.assertTrue(any("markdown_top_level_spacing.py" in str(c) for c in call_order))
         self.assertTrue(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
         self.assertTrue(any(c == [module.NPM_EXECUTABLE, "run", "check"] for c in call_order))
@@ -81,6 +82,9 @@ class RunAllUnitTests(unittest.TestCase):
         validate_idx = next(i for i, c in enumerate(call_order) if "validate_schema.py" in str(c))
         integrity_idx = next(
             i for i, c in enumerate(call_order) if "verify_artifact_integrity.py" in str(c)
+        )
+        delta_summary_idx = next(
+            i for i, c in enumerate(call_order) if "delta_summary_integrity.py" in str(c)
         )
         spacing_idx = next(
             i for i, c in enumerate(call_order) if "markdown_top_level_spacing.py" in str(c)
@@ -107,7 +111,8 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertLess(docs_index_idx, snapshot_surface_idx)
         self.assertLess(snapshot_surface_idx, validate_idx)
         self.assertLess(validate_idx, integrity_idx)
-        self.assertLess(integrity_idx, spacing_idx)
+        self.assertLess(integrity_idx, delta_summary_idx)
+        self.assertLess(delta_summary_idx, spacing_idx)
         self.assertLess(spacing_idx, sidebar_idx)
         self.assertLess(sidebar_idx, astro_check_idx)
         self.assertLess(astro_check_idx, astro_build_idx)
@@ -172,6 +177,7 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("cross_references.py" in str(c) for c in call_order))
         self.assertTrue(any("docs_index_freshness.py" in str(c) for c in call_order))
         self.assertTrue(any("snapshot_surface_coverage.py" in str(c) for c in call_order))
+        self.assertTrue(any("delta_summary_integrity.py" in str(c) for c in call_order))
         self.assertTrue(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
         self.assertTrue(any("rendered_links.py" in str(c) for c in call_order))
 

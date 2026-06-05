@@ -96,6 +96,7 @@ unless promoted intentionally.
   - `snapshot_surface_coverage.py`
   - `validate_schema.py`
   - `verify_artifact_integrity.py`
+  - `delta_summary_integrity.py`
   - `markdown_top_level_spacing.py`
   - `sidebar_navigation_coverage.py`
   - `npm run check`
