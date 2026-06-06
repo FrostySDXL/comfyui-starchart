@@ -145,6 +145,7 @@ Canonical extracted artifacts are published from pinned upstream snapshots:
 - `artifacts/current/server_endpoints.json`
 - `artifacts/current/js_hooks.json`
 - `artifacts/current/node_api_schema.json`
+- `artifacts/current/websocket_events.json`
 - `artifacts/manifest.json` for canonical artifact discovery and checksums
 
 Support artifacts are also published for bounded routing and change analysis:
