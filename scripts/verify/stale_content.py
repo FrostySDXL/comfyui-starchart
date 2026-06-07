@@ -18,6 +18,16 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 DOCS_DIR = REPO_ROOT / "src" / "content" / "docs"
+ADDITIONAL_DATE_FILES = [
+    REPO_ROOT / "README.md",
+    REPO_ROOT / "SECURITY.md",
+    REPO_ROOT / "CODE_OF_CONDUCT.md",
+    REPO_ROOT / "CHANGELOG.md",
+    DOCS_DIR / "reference" / "topic-scope.md",
+    DOCS_DIR / "reference" / "source-evidence-policy.md",
+    DOCS_DIR / "reference" / "machine-readable-artifacts.md",
+    DOCS_DIR / "reference" / "version-pin-status.md",
+]
 
 STALE_MARKERS = [
     "TODO",
@@ -125,7 +135,9 @@ def find_stale_dates(max_age_days: int) -> list[tuple[str, int, str]]:
     """
     stale = []
     cutoff = datetime.date.today() - datetime.timedelta(days=max_age_days)
-    for md_file in sorted(DOCS_DIR.rglob("*.md")):
+    docs_files = set(DOCS_DIR.rglob("*.md"))
+    date_files = sorted(docs_files.union(path for path in ADDITIONAL_DATE_FILES if path.exists()))
+    for md_file in date_files:
         text = md_file.read_text(encoding="utf-8")
         for line in text.splitlines():
             m = LAST_UPDATED_RE.search(line)

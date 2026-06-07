@@ -4,6 +4,9 @@ This changelog records repo-scoped milestones derived from actual git history.
 It is intentionally selective: it tracks meaningful changes to docs, artifacts,
 verification, workflow, and repo structure rather than every commit.
 
+Maintenance policy for this file lives in `CONTRIBUTING.md` under
+`CHANGELOG Maintenance Policy`.
+
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 

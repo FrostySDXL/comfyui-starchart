@@ -71,6 +71,7 @@ Use this quick router before exploring the repo:
 | Add or change a verifier | existing verifier + matching unit test | `python -m unittest discover -s tests -v` and place it in blocking/advisory CI intentionally |
 | Change CI workflow | relevant `.github/workflows/*.yml` + `CONTRIBUTING.md` workflow guidance | `python -m unittest discover -s tests -v -p "test_run_all.py"` + `python scripts/verify/run_all.py` |
 | Refresh upstream baselines | `scripts/refresh_snapshots.py` + `CONTRIBUTING.md` refresh section | follow the printed post-refresh command sequence, then `python scripts/verify/run_all.py` |
+| Need the full verifier inventory | `CONTRIBUTING.md` verifier inventory + `references/verifier-lifecycle.json` | run the relevant listed verifier directly |
 
 ## Key Commands
 
@@ -87,28 +88,20 @@ unless promoted intentionally.
 
 ## Current Blocking vs Advisory Shape
 
-- Blocking wrapper / CI path:
-  - unit tests
-  - node tests
-  - `python_style.py`
-  - `cross_references.py`
-  - `docs_index_freshness.py`
-  - `snapshot_surface_coverage.py`
-  - `validate_schema.py`
-  - `verify_artifact_integrity.py`
-  - `delta_summary_integrity.py`
-  - `markdown_top_level_spacing.py`
-  - `sidebar_navigation_coverage.py`
-  - `npm run check`
-  - `npm run build`
-  - `rendered_links.py`
-- Advisory examples:
-  - `stale_content.py`
-  - `extraction_idempotency.py`
-  - `upstream_pins.py`
-  - `example_surface_integrity.py`
-  - `evidence_metadata_freshness.py`
-  - `python -m mypy`
+`CONTRIBUTING.md` is canonical for the full verifier inventory, lifecycle
+records, and promotion rules. Keep `AGENTS.md` startup-oriented: use the key
+commands above, then read `CONTRIBUTING.md` before changing verifier placement or
+workflow wiring.
+
+Current advisory examples to remember during startup:
+
+- `stale_content.py`
+- `extraction_idempotency.py`
+- `upstream_pins.py`
+- `example_surface_integrity.py`
+- `evidence_metadata_freshness.py`
+- `governance_lifecycle.py`
+- `python -m mypy`
 
 ## Common Pitfalls
 

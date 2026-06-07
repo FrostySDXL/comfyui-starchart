@@ -1,5 +1,8 @@
 # Code of Conduct
 
+**Last Updated:** 2026-06-07
+**Review Cadence:** Re-review during governance or community-process changes, and at least every 180 days.
+
 ## Our Pledge
 
 We want this project to be a respectful, constructive place for contributors,

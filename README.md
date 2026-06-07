@@ -1,6 +1,6 @@
 # ComfyUI StarChart
 
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-07
 **ComfyUI Version Pin:** Core `v0.23.0` (`a88e02b18576283b1ff25a4b564548c5dc42cbf6`) with official frontend `v1.46.6` (`9e32b7db5173bc2879d4c19c1d058d733b3074b8`) for the current pinned snapshots and extracted reference data
 
 **Evidence:** Operational guidance
@@ -173,9 +173,12 @@ full verification matrix.
 
 ## Scope Boundaries
 
-- [docs.comfy.org](https://docs.comfy.org/) is the official human reference for ComfyUI
-- this repo is a pinned companion reference with bounded machine-readable guarantees
-- it does not try to replace official docs or become a general end-user workflow wiki
+- official docs replacement
+- community wiki
+- package registry
+- unbounded maintainer-handbook content inside the published docs tree
+
+See CONTRIBUTING.md Non-Goal Addendum for the full list of rejected feature classes and their rationale.
 
 ## Project Health Files
 

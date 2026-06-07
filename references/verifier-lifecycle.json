@@ -1,0 +1,461 @@
+{
+  "exemptions": {
+    "scripts/verify/__init__.py": "Package marker, not a standalone verifier.",
+    "scripts/verify/published_schema_validation.py": "Shared schema-validation helper imported by blocking verifiers.",
+    "scripts/verify/schema_common.py": "Shared schema helper module, not a standalone verifier.",
+    "scripts/verify/schema_hooks.py": "Shared schema helper module, not a standalone verifier.",
+    "scripts/verify/schema_node_api.py": "Shared schema helper module, not a standalone verifier.",
+    "scripts/verify/schema_server.py": "Shared schema helper module, not a standalone verifier.",
+    "scripts/verify/schema_websocket_events.py": "Shared schema helper module, not a standalone verifier."
+  },
+  "records": {
+    ".github/workflows/advisory-checks.yml": {
+      "demotion_criteria": "Demote only if advisory replay is replaced by an equivalent scheduled/manual escalation path.",
+      "false_positive_tolerance": {
+        "justification": "The workflow intentionally reruns advisory scripts as blocking; individual script false positives are managed at the script lifecycle level.",
+        "level": "medium"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of advisory replay workflows.",
+      "placement": "workflow",
+      "promotion_criteria": "Not promoted directly; individual advisory scripts may be promoted after satisfying policy thresholds.",
+      "purpose": "Replay advisory checks on schedule or manual dispatch as a durable escalation path.",
+      "removal_criteria": "Remove only if all advisory checks move to another maintained replay surface.",
+      "target_surface": "Advisory verification workflow."
+    },
+    ".github/workflows/ci.yml": {
+      "demotion_criteria": "Not applicable while GitHub Actions remains the hosted verification surface.",
+      "false_positive_tolerance": {
+        "justification": "CI orchestration should reflect local commands exactly; unexplained drift is actionable.",
+        "level": "low"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of workflow automation.",
+      "placement": "workflow",
+      "promotion_criteria": "Already the main CI entrypoint for push and pull request verification.",
+      "purpose": "Run blocking, supplemental, advisory, and optional refresh jobs in GitHub Actions.",
+      "removal_criteria": "Remove only if another CI entrypoint fully replaces push, pull request, and manual verification.",
+      "target_surface": "GitHub Actions CI."
+    },
+    ".github/workflows/deploy-pages.yml": {
+      "demotion_criteria": "Demote only if Pages deployment is retired.",
+      "false_positive_tolerance": {
+        "justification": "Deployment verification failures must be rare and actionable because they block publication.",
+        "level": "low"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of publication and Pages deployment.",
+      "placement": "workflow",
+      "promotion_criteria": "Already the deployment workflow for published artifacts and site output.",
+      "purpose": "Publish artifacts, rerun blocking verification, and deploy the built site.",
+      "removal_criteria": "Remove only with a replacement deploy workflow and documented publication path.",
+      "target_surface": "GitHub Pages deployment."
+    },
+    ".github/workflows/headless-runtime-metadata.yml": {
+      "demotion_criteria": "Keep manual unless runtime metadata becomes part of the canonical artifact contract.",
+      "false_positive_tolerance": {
+        "justification": "Runtime startup and external package state can vary, so manual review is expected.",
+        "level": "high"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of runtime metadata capture.",
+      "placement": "manual",
+      "promotion_criteria": "Promote only with deterministic pinned runtime setup and stable artifact contract ownership.",
+      "purpose": "Launch pinned ComfyUI headlessly and optionally capture runtime metadata.",
+      "removal_criteria": "Remove when runtime metadata capture is no longer maintained or is replaced.",
+      "target_surface": "Manual runtime metadata workflow."
+    },
+    ".github/workflows/runtime-smoke.yml": {
+      "demotion_criteria": "Keep manual while it depends on user-supplied live endpoints.",
+      "false_positive_tolerance": {
+        "justification": "Live runtime availability is outside repo control, so manual interpretation is required.",
+        "level": "high"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of runtime smoke guidance.",
+      "placement": "manual",
+      "promotion_criteria": "Promote only if a deterministic hosted runtime becomes part of maintained CI.",
+      "purpose": "Run runtime smoke checks against a user-supplied ComfyUI URL.",
+      "removal_criteria": "Remove when live runtime smoke validation is no longer supported.",
+      "target_surface": "Manual runtime workflow."
+    },
+    ".github/workflows/upstream-watch.yml": {
+      "demotion_criteria": "Demote only if upstream watch is replaced by another monitoring surface.",
+      "false_positive_tolerance": {
+        "justification": "Upstream availability and tag state are external signals, so maintainer triage is expected.",
+        "level": "medium"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of upstream refresh monitoring.",
+      "placement": "workflow",
+      "promotion_criteria": "Not promoted to blocking; it tracks refresh opportunities rather than repo correctness.",
+      "purpose": "Check upstream versions and open or update a tracking issue.",
+      "removal_criteria": "Remove only if upstream refresh opportunities are tracked elsewhere.",
+      "target_surface": "Upstream monitoring automation."
+    },
+    "npm run build": {
+      "demotion_criteria": "Demote only if rendered output is no longer published from this repo.",
+      "false_positive_tolerance": {
+        "justification": "Build failures directly block site publication; only documented benign warnings are tolerated.",
+        "level": "low"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of the Starlight site.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking because rendered output is required before link verification.",
+      "purpose": "Build the published Starlight site.",
+      "removal_criteria": "Remove only if the published site is replaced by a non-Astro build path.",
+      "target_surface": "Rendered docs site."
+    },
+    "npm run check": {
+      "demotion_criteria": "Demote only if Astro content/type checking is superseded by a stricter framework gate.",
+      "false_positive_tolerance": {
+        "justification": "Framework diagnostics should be deterministic for checked-in content and config.",
+        "level": "low"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of site configuration and content collections.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking as the framework-aware content and type gate.",
+      "purpose": "Run Astro type and content checks.",
+      "removal_criteria": "Remove only if the site framework changes or an equivalent check replaces it.",
+      "target_surface": "Site build configuration and content graph."
+    },
+    "npm test": {
+      "demotion_criteria": "Demote only if Node-side test coverage is removed with a documented no-build decision.",
+      "false_positive_tolerance": {
+        "justification": "Unit tests should be deterministic and failures should be actionable.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of Node-side site tests.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking as the Node-side test gate.",
+      "purpose": "Run Node-side tests.",
+      "removal_criteria": "Remove only when no Node-side tested surface remains.",
+      "target_surface": "Frontend and site test surface."
+    },
+    "python -m mypy": {
+      "demotion_criteria": "Keep advisory until the tolerated-error list is stable and does not grow.",
+      "false_positive_tolerance": {
+        "justification": "Typing signal currently covers partially typed tooling, so some findings require maintainer triage.",
+        "level": "medium"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of Python tooling interfaces.",
+      "placement": "supplemental",
+      "promotion_criteria": "Promote only after the Plan 02 routinely-passes and promotion thresholds are satisfied.",
+      "purpose": "Provide advisory static typing coverage for Python tooling.",
+      "removal_criteria": "Remove only if typing is abandoned or replaced by an equivalent static analysis gate.",
+      "target_surface": "Typed Python surfaces."
+    },
+    "python -m unittest discover -s tests -v": {
+      "demotion_criteria": "Demote only if unit tests are replaced by an equivalent blocking test command.",
+      "false_positive_tolerance": {
+        "justification": "Unit test failures should indicate deterministic logic regressions.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of Python tests and tooling.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking as the Python unit coverage gate.",
+      "purpose": "Run Python unit coverage for scripts and generators.",
+      "removal_criteria": "Remove only when a replacement Python test runner is documented and wired.",
+      "target_surface": "tests/ and exercised Python modules."
+    },
+    "python scripts/verify/run_all.py --skip-tests": {
+      "demotion_criteria": "Keep supplemental because it intentionally omits test suites.",
+      "false_positive_tolerance": {
+        "justification": "It replays deterministic blocking steps, but skipped tests mean it is a smoke gate only.",
+        "level": "low"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of the blocking verification wrapper.",
+      "placement": "supplemental",
+      "promotion_criteria": "Do not promote over the full wrapper; use only for focused iteration.",
+      "purpose": "Smoke the blocking wrapper without rerunning Python or Node tests.",
+      "removal_criteria": "Remove if a faster equivalent smoke command replaces it.",
+      "target_surface": "Blocking pipeline minus Python and Node tests."
+    },
+    "scripts/verify/cross_references.py": {
+      "demotion_criteria": "Demote only if repo-path validation becomes noisy or is replaced by a stricter docs verifier.",
+      "false_positive_tolerance": {
+        "justification": "Repo-local path checks are deterministic and should have no tolerated false positives.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of docs and reference metadata.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking because path truth is required for source-backed docs.",
+      "purpose": "Validate repo-local references mentions and JSON source paths.",
+      "removal_criteria": "Remove only with equivalent path validation coverage.",
+      "target_surface": "Published docs and references/raw metadata."
+    },
+    "scripts/verify/delta_summary_integrity.py": {
+      "demotion_criteria": "Demote only if delta summaries stop being a required published support artifact.",
+      "false_positive_tolerance": {
+        "justification": "Canonical artifact membership and regenerated equality checks are deterministic.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of artifact generation and publication tooling.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking by unit coverage and run_all.py wiring.",
+      "purpose": "Confirm delta-summary coverage, schema validity, and regenerated equality from comparison metadata.",
+      "removal_criteria": "Remove only with replacement verifier proving equivalent delta coverage.",
+      "target_surface": "public/artifacts/delta-summary.json."
+    },
+    "scripts/verify/docs_index_freshness.py": {
+      "demotion_criteria": "Demote only if docs-index stops being checked in or generated deterministically.",
+      "false_positive_tolerance": {
+        "justification": "Regenerate-and-compare freshness checks are deterministic.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of docs-index generator and metadata.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking because checked-in generated output must be fresh.",
+      "purpose": "Detect stale checked-in docs-index.json output.",
+      "removal_criteria": "Remove only if docs-index is no longer published or no longer checked in.",
+      "target_surface": "docs-index source pages, metadata, and generated output."
+    },
+    "scripts/verify/evidence_metadata_freshness.py": {
+      "demotion_criteria": "Keep advisory until retained-page metadata rules are stable across refresh and docs-edit flows.",
+      "false_positive_tolerance": {
+        "justification": "Baseline wording is policy-heavy and can need maintainer triage during transitions.",
+        "level": "medium"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of evidence metadata policy.",
+      "placement": "advisory",
+      "promotion_criteria": "Promote only after the Plan 02 routinely-passes and promotion thresholds are satisfied.",
+      "purpose": "Check opening evidence metadata discipline on retained pages.",
+      "removal_criteria": "Remove only if evidence metadata policy is retired or replaced.",
+      "target_surface": "Selected published docs pages."
+    },
+    "scripts/verify/example_surface_integrity.py": {
+      "demotion_criteria": "Keep advisory while example routing remains under active refinement.",
+      "false_positive_tolerance": {
+        "justification": "Example-family and routed-reference checks can surface policy transitions that need review.",
+        "level": "medium"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of examples and start-here routing.",
+      "placement": "advisory",
+      "promotion_criteria": "Promote only after example surface stability and Plan 02 thresholds are satisfied.",
+      "purpose": "Validate example family structure and routed example references.",
+      "removal_criteria": "Remove only if examples are removed or checked by a stricter replacement.",
+      "target_surface": "examples/ plus routed start-here docs."
+    },
+    "scripts/verify/extraction_idempotency.py": {
+      "demotion_criteria": "Keep advisory while extractor reproducibility may require maintainer interpretation.",
+      "false_positive_tolerance": {
+        "justification": "Byte-level extractor differences can be timestamp or ordering related and require review.",
+        "level": "medium"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of extractors and raw artifacts.",
+      "placement": "advisory",
+      "promotion_criteria": "Promote only after deterministic output is proven across the Plan 02 thresholds.",
+      "purpose": "Rerun extractors against pinned inputs and compare outputs.",
+      "removal_criteria": "Remove only if extractor determinism is covered by another verifier.",
+      "target_surface": "references/raw extractor reproducibility."
+    },
+    "scripts/verify/governance_lifecycle.py": {
+      "demotion_criteria": "Keep advisory until false positives and policy wording stabilize under normal maintenance.",
+      "false_positive_tolerance": {
+        "justification": "The verifier encodes new governance policy and may need tuning while future plans append lifecycle and admission records.",
+        "level": "medium"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of governance policy and verifier lifecycle records.",
+      "placement": "advisory",
+      "promotion_criteria": "Promote only after the Plan 02 routinely-passes and promotion thresholds are recorded.",
+      "purpose": "Validate verifier lifecycle records, new-surface policy references, schema-closure documentation, and advisory wiring signals.",
+      "removal_criteria": "Remove only if lifecycle and admission policy enforcement is replaced by a stricter maintained verifier.",
+      "target_surface": "Governance policy, verifier lifecycle manifest, and new-surface records."
+    },
+    "scripts/verify/markdown_top_level_spacing.py": {
+      "demotion_criteria": "Demote only if markdown formatting is covered by a stricter renderer-aware gate.",
+      "false_positive_tolerance": {
+        "justification": "Leading-space markdown checks are deterministic and formatting-only.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of docs markdown quality.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking to prevent raw-markdown rendering leakage.",
+      "purpose": "Catch leading-space markdown that renders incorrectly.",
+      "removal_criteria": "Remove only with equivalent markdown formatting protection.",
+      "target_surface": "Hand-authored docs markdown."
+    },
+    "scripts/verify/python_style.py": {
+      "demotion_criteria": "Demote only if Ruff lint and format checks move to another blocking gate.",
+      "false_positive_tolerance": {
+        "justification": "Lint and format output is deterministic for the configured toolchain.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of Python tooling style.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking as the Python style gate.",
+      "purpose": "Enforce Ruff lint and format checks.",
+      "removal_criteria": "Remove only with equivalent lint and format enforcement.",
+      "target_surface": "scripts/ and tests/."
+    },
+    "scripts/verify/rendered_links.py": {
+      "demotion_criteria": "Demote only if rendered route verification is replaced by an equivalent site-output check.",
+      "false_positive_tolerance": {
+        "justification": "Built HTML link resolution should be deterministic after a successful build.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of rendered site verification.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking after site build.",
+      "purpose": "Verify internal links in built HTML resolve.",
+      "removal_criteria": "Remove only if link checking is replaced or rendered output is no longer published.",
+      "target_surface": "dist/ output."
+    },
+    "scripts/verify/run_all.py": {
+      "demotion_criteria": "Demote only if another local wrapper becomes the documented maintainer gate.",
+      "false_positive_tolerance": {
+        "justification": "Wrapper failures should mirror deterministic child command failures.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of the local blocking verification path.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking as the default maintainer gate wrapper.",
+      "purpose": "Run the default maintainer gate in CI-aligned order.",
+      "removal_criteria": "Remove only with an equivalent documented local gate.",
+      "target_surface": "Whole-repo blocking path."
+    },
+    "scripts/verify/runtime_smoke.py": {
+      "demotion_criteria": "Keep manual while it requires a live ComfyUI runtime.",
+      "false_positive_tolerance": {
+        "justification": "Live runtime state is outside repo control and may need operator triage.",
+        "level": "high"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of runtime-facing examples and checks.",
+      "placement": "manual",
+      "promotion_criteria": "Promote only if a deterministic runtime fixture becomes maintained.",
+      "purpose": "Probe a live ComfyUI instance for basic API readiness and prompt submission.",
+      "removal_criteria": "Remove only if live runtime smoke validation is no longer maintained.",
+      "target_surface": "Live runtime endpoints."
+    },
+    "scripts/verify/shell_examples_syntax.py": {
+      "demotion_criteria": "Keep supplemental unless shell examples become part of the default blocking contract.",
+      "false_positive_tolerance": {
+        "justification": "bash -n parse checks are deterministic for supported shell examples.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of shell examples.",
+      "placement": "supplemental",
+      "promotion_criteria": "Promote only if shell examples are treated as a blocking maintained surface.",
+      "purpose": "Parse-check repo shell examples with bash -n.",
+      "removal_criteria": "Remove only if shell examples are removed or checked elsewhere.",
+      "target_surface": "examples/**/*.sh."
+    },
+    "scripts/verify/sidebar_navigation_coverage.py": {
+      "demotion_criteria": "Demote only if navigation coverage is replaced by a stricter site verifier.",
+      "false_positive_tolerance": {
+        "justification": "Sidebar path matching against retained docs is deterministic.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of docs navigation.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking for retained docs navigation coverage.",
+      "purpose": "Ensure sidebar data matches the retained published docs tree.",
+      "removal_criteria": "Remove only with equivalent navigation coverage.",
+      "target_surface": "src/site/sidebar-data.json and src/content/docs/."
+    },
+    "scripts/verify/snapshot_surface_coverage.py": {
+      "demotion_criteria": "Demote if the check expands into heuristic source-quality scoring.",
+      "false_positive_tolerance": {
+        "justification": "Required-file and import-reachability checks are deterministic and directly actionable.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of snapshot refresh and extractor pipelines.",
+      "placement": "blocking",
+      "promotion_criteria": "Already satisfied by stable required-file coverage in run_all.py.",
+      "purpose": "Prevent snapshot refreshes from dropping source files current extractors depend on.",
+      "removal_criteria": "Remove only when extractor source requirements move to a stricter manifest or replacement verifier.",
+      "target_surface": "Current pinned core/frontend snapshots and required import paths."
+    },
+    "scripts/verify/stale_content.py": {
+      "demotion_criteria": "Keep advisory while stale markers and date thresholds remain cleanup signals.",
+      "false_positive_tolerance": {
+        "justification": "Marker and age scans can intentionally flag text that needs maintainer interpretation.",
+        "level": "medium"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of docs freshness policy.",
+      "placement": "advisory",
+      "promotion_criteria": "Promote only after thresholds and false positives are stable under Plan 02 policy.",
+      "purpose": "Scan for stale markers and aging content.",
+      "removal_criteria": "Remove only if stale content policy is retired or covered elsewhere.",
+      "target_surface": "Docs plus extracted JSON."
+    },
+    "scripts/verify/upstream_pins.py": {
+      "demotion_criteria": "Keep advisory because upstream availability is outside repo control.",
+      "false_positive_tolerance": {
+        "justification": "External upstream resolution can fail independently of repo correctness.",
+        "level": "high"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of upstream pin health.",
+      "placement": "advisory",
+      "promotion_criteria": "Promote only with caching and false-positive evidence satisfying Plan 02 thresholds.",
+      "purpose": "Confirm pinned tags and commits still resolve upstream.",
+      "removal_criteria": "Remove only if upstream pin checks are replaced or no longer maintained.",
+      "target_surface": "Upstream pin validity for canonical JSON metadata."
+    },
+    "scripts/verify/validate_schema.py": {
+      "demotion_criteria": "Demote only if schema validation is replaced by a stricter contract verifier.",
+      "false_positive_tolerance": {
+        "justification": "Schema validation is deterministic over checked-in JSON and schemas.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of artifact schema contracts.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking as the JSON schema contract gate.",
+      "purpose": "Validate canonical and selected published/support JSON artifacts against schemas.",
+      "removal_criteria": "Remove only with equivalent schema validation coverage.",
+      "target_surface": "references/raw JSON, docs-index, and selected support artifacts."
+    },
+    "scripts/verify/verify_artifact_integrity.py": {
+      "demotion_criteria": "Demote only if canonical publication integrity is proven by a stricter replacement.",
+      "false_positive_tolerance": {
+        "justification": "Hash comparisons and byte identity checks are deterministic.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of canonical artifact publication.",
+      "placement": "blocking",
+      "promotion_criteria": "Already blocking as the canonical publication integrity gate.",
+      "purpose": "Confirm canonical raw artifacts match published current copies and manifest hashes.",
+      "removal_criteria": "Remove only if publication integrity is checked elsewhere.",
+      "target_surface": "Canonical artifact publication chain."
+    },
+    "scripts/verify/wait_for_runtime.py": {
+      "demotion_criteria": "Keep manual while it depends on live runtime readiness.",
+      "false_positive_tolerance": {
+        "justification": "Runtime readiness can vary with environment and operator setup.",
+        "level": "high"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of runtime capture workflows.",
+      "placement": "manual",
+      "promotion_criteria": "Promote only if runtime startup becomes deterministic in maintained CI.",
+      "purpose": "Poll a live endpoint until JSON readiness.",
+      "removal_criteria": "Remove only if runtime capture no longer needs readiness polling.",
+      "target_surface": "Live runtime startup and readiness."
+    }
+  }
+}

@@ -150,6 +150,66 @@ class StaleContentUnitTests(unittest.TestCase):
             ],
         )
 
+    def test_find_stale_dates_flags_root_files(self):
+        module = _load_module()
+        today = datetime.date.today()
+        old_date = today - datetime.timedelta(days=31)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            docs_dir = root / "src" / "content" / "docs"
+            docs_dir.mkdir(parents=True)
+            readme = root / "README.md"
+            readme.write_text(f"**Last Updated:** {old_date.isoformat()}\n", encoding="utf-8")
+
+            with (
+                patch.object(module, "DOCS_DIR", docs_dir),
+                patch.object(module, "ADDITIONAL_DATE_FILES", [readme]),
+                patch.object(module.Path, "cwd", return_value=root),
+            ):
+                stale = _normalize_stale(module.find_stale_dates(30))
+
+        self.assertEqual(
+            stale,
+            [
+                (
+                    "README.md",
+                    0,
+                    f"Last Updated {old_date.isoformat()} exceeds 30-day threshold (cutoff {today - datetime.timedelta(days=30)})",
+                )
+            ],
+        )
+
+    def test_find_stale_dates_flags_explicit_reference_policy_files(self):
+        module = _load_module()
+        today = datetime.date.today()
+        old_date = today - datetime.timedelta(days=31)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            docs_dir = root / "src" / "content" / "docs"
+            policy = docs_dir / "reference" / "topic-scope.md"
+            policy.parent.mkdir(parents=True)
+            policy.write_text(f"**Last Updated:** {old_date.isoformat()}\n", encoding="utf-8")
+
+            with (
+                patch.object(module, "DOCS_DIR", docs_dir),
+                patch.object(module, "ADDITIONAL_DATE_FILES", [policy]),
+                patch.object(module.Path, "cwd", return_value=root),
+            ):
+                stale = _normalize_stale(module.find_stale_dates(30))
+
+        self.assertEqual(
+            stale,
+            [
+                (
+                    _repo_rel("src", "content", "docs", "reference", "topic-scope.md"),
+                    0,
+                    f"Last Updated {old_date.isoformat()} exceeds 30-day threshold (cutoff {today - datetime.timedelta(days=30)})",
+                )
+            ],
+        )
+
     def test_find_stale_version_refs_flags_older_versions_only(self):
         module = _load_module()
 

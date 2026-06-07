@@ -1,5 +1,8 @@
 # Security Policy
 
+**Last Updated:** 2026-06-07
+**Review Cadence:** Re-review during security-policy, workflow, or dependency-risk changes, and at least every 180 days.
+
 ## Reporting a Vulnerability
 
 Please do not open public issues for suspected security vulnerabilities.

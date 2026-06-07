@@ -61,6 +61,19 @@ Non-goals:
 - package registry
 - unbounded maintainer-handbook content inside the published docs tree
 
+### Non-Goal Addendum
+
+`CONTRIBUTING.md` is canonical for maintainer scope decisions. The root
+`README.md` mirrors these four public non-goals exactly so public orientation and
+maintainer policy stay aligned.
+
+| Rejected feature class | Rationale |
+|---|---|
+| official docs replacement | This repo is a pinned companion reference; authoritative official guidance remains at `docs.comfy.org`. |
+| community wiki | The published docs surface is retained, curated, and source-backed rather than open-ended community aggregation. |
+| package registry | Artifact discovery and examples stay bounded; this repo does not index, rank, or distribute ComfyUI packages. |
+| unbounded maintainer-handbook content inside the published docs tree | Workflow-heavy maintainer procedures belong in repo-local guidance, especially `CONTRIBUTING.md` and `AGENTS.md`. |
+
 ## Repository Map
 
 | Path | Purpose | Hand-edit? |
@@ -165,20 +178,113 @@ Admission case: `websocket_events.json`
   extension hooks, or node API schema fields; merging them into those artifacts
   would blur ownership and make real-time execution contracts harder to query.
 
+Admission case: `manifest.json`
+
+- Need: tooling consumers need one discovery entrypoint for canonical artifact
+  URLs, versions, commits, schemas, and checksums instead of hardcoding paths.
+- Owner: maintainers of artifact publication under
+  `scripts/generate/publish_reference_artifacts.py` and canonical artifacts under
+  `references/raw/` and `public/artifacts/current/`.
+- Verification: `python scripts/verify/validate_schema.py`,
+  `python scripts/verify/published_schema_validation.py`, and
+  `python scripts/verify/verify_artifact_integrity.py` must prove the schema and
+  manifest checksums match the published files.
+- Bounded contract and removal criteria: the manifest is a discovery index, not a
+  package registry. If richer discovery metadata is needed, extend the manifest
+  under a new `artifact_schema_version` rather than redefining fields in place.
+  Removal requires dropping `manifest.json` from publication and schema
+  validation wiring in the same change.
+- Why not extend an existing surface: `docs-index.json`, `delta-summary.json`,
+  and `refresh-provenance.json` each describe routing, comparison, or operator
+  evidence; the manifest is the only artifact that enumerates the canonical set
+  with checksums for external tooling.
+
+Admission case: `docs-index.json`
+
+- Need: tooling and agent consumers need a bounded page-level routing aid without
+  scraping the built site or treating published prose as full-text search.
+- Owner: maintainers of `references/docs-index-metadata.json`,
+  `scripts/generate/generate_docs_index.py`, and the retained docs surface.
+- Verification: `python scripts/generate/generate_docs_index.py`,
+  `python scripts/verify/docs_index_freshness.py`, and
+  `python scripts/verify/validate_schema.py` must pass after source or metadata
+  changes.
+- Bounded contract and removal criteria: include only conservative page facts and
+  curated tooling metadata for retained published pages. Remove only if routing
+  metadata is retired or replaced by an equivalent documented support artifact.
+- Why not extend an existing surface: canonical extracted artifacts describe
+  ComfyUI source surfaces, not repo-local page routing; embedding page routing in
+  them would blur artifact ownership.
+
+Admission case: `delta-summary.json`
+
+- Need: maintainers and artifact consumers need deterministic baseline-to-baseline
+  comparison evidence after refreshes without manually diffing every canonical
+  artifact.
+- Owner: maintainers of `scripts/generate/generate_snapshot_delta_summary.py` and
+  refresh artifact review.
+- Verification: `python scripts/generate/generate_snapshot_delta_summary.py` with
+  the recorded old/new paths, `python scripts/verify/delta_summary_integrity.py`,
+  and `python scripts/verify/validate_schema.py` must pass.
+- Bounded contract and removal criteria: the summary reports structural
+  add/remove/change evidence for canonical artifacts only. Remove only if refresh
+  comparison evidence is no longer published or is replaced by an equivalent
+  generated artifact.
+- Why not extend an existing surface: `manifest.json` discovers current
+  artifacts, and `refresh-provenance.json` records operator inputs; neither is a
+  deterministic structural comparison output.
+
+Admission case: `refresh-provenance.json`
+
+- Need: maintainers need durable operator evidence for the latest refresh run,
+  including requested versions, resolved commits, backup path, and recommended
+  follow-up commands.
+- Owner: maintainers of `scripts/refresh_snapshots.py` and refresh procedure
+  documentation.
+- Verification: rerun the refresh command when updating provenance, then run the
+  printed follow-up sequence and `python scripts/verify/validate_schema.py`.
+- Bounded contract and removal criteria: this is operator evidence for the latest
+  refresh, not a canonical artifact manifest. Remove only if refreshes no longer
+  publish operator evidence or a replacement provenance artifact is admitted.
+- Why not extend an existing surface: canonical artifacts describe extracted
+  ComfyUI surfaces, while the manifest describes published files; refresh
+  provenance captures operator process state that belongs in a separate record.
+
 ## Verifier Lifecycle Policy
 
 Every verifier must have an explicit lifecycle decision.
 
-Document for each verifier:
+The machine-readable source for complete verifier lifecycle records is
+`references/verifier-lifecycle.json`. `CONTRIBUTING.md` remains the human policy
+surface and inventory; do not hand-maintain long lifecycle paragraphs when the
+manifest can carry the durable record.
+
+Document for each verifier or workflow record:
 
 - purpose
 - owner
 - target surface
 - false-positive tolerance
-- placement: blocking, supplemental, or advisory
+- placement: blocking, supplemental, advisory, manual, or workflow
 - promotion criteria
 - demotion criteria
 - removal criteria
+- `last_reviewed` as an ISO-8601 `YYYY-MM-DD` date, updated whenever maintainers
+  re-review lifecycle fit
+
+`false_positive_tolerance` is a closed object, not a free-form label:
+
+- `level`: one of `none`, `low`, `medium`, or `high`
+- `justification`: one or two sentences explaining why that level is acceptable
+
+Use this scale consistently:
+
+| Level | Meaning |
+|---|---|
+| `none` | A single false positive fails the lifecycle standard; deterministic contract checks belong here. |
+| `low` | Up to roughly 1 false positive per 100 reports is acceptable during normal maintenance. |
+| `medium` | Up to roughly 5 false positives per 100 reports is acceptable for policy-heavy or transition-sensitive advisory signals. |
+| `high` | Up to roughly 10 false positives per 100 reports is acceptable for live-runtime, external-upstream, or operator-triaged signals. |
 
 Default rollout:
 
@@ -191,6 +297,14 @@ Current example:
 
 - `scripts/verify/evidence_metadata_freshness.py` is advisory-first and must stay out of `run_all.py` until the retained page set proves stable under the rule
 
+Current governance verifier decision:
+
+- `scripts/verify/governance_lifecycle.py` is advisory-first. Plan 02 owns its
+  policy and lifecycle record; Plan 07 owns the future
+  `.github/workflows/advisory-checks.yml` edit that replays it in advisory
+  workflow automation. Do not wire it into `run_all.py` until the promotion
+  thresholds in this file are satisfied and recorded in the execution log.
+
 ### Evidence metadata verifier contract
 
 Current advisory failure criteria for `scripts/verify/evidence_metadata_freshness.py`:
@@ -202,6 +316,34 @@ Current advisory failure criteria for `scripts/verify/evidence_metadata_freshnes
 
 Do not expand this verifier's heuristic surface casually. Keep failures deterministic,
 documented, and directly actionable.
+
+### Baseline-review backlog for routed stale pages
+
+These pages remain published because they are useful routed references, but their
+opening baseline status honestly declares that current-baseline prose review is
+stale or partial. Do not remove them solely because they are stale; process the
+backlog row when a maintainer can re-review the page against the required source.
+
+| Page | Current status phrase | Required review source | Owner | Review trigger |
+|---|---|---|---|---|
+| `src/content/docs/start-here/tooling-builder.md` | `This page has not been re-reviewed against the current baseline.` | Current pinned artifacts, docs-index routing metadata, and linked start-here pages | Plan 02 governance wording owner plus page owner | Re-review when tooling-builder routing or artifact-consumer flow is next edited. |
+| `src/content/docs/start-here/service-integration.md` | `Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.` | Current pinned API/WebSocket artifacts and official docs links | Plan 02 governance wording owner plus page owner | Re-review when service integration routing or API examples are next edited. |
+| `src/content/docs/custom-nodes/registration.md` | `This page has not been re-reviewed against the current baseline.` | Current pinned custom-node docs, V3 schema references, and registration examples | Plan 02 governance wording owner plus page owner | Re-review when registration guidance or V3 examples are next edited. |
+| `src/content/docs/deep-dives/workflow-json-schema.md` | `This page has not been re-reviewed against the current baseline.` | Current pinned workflow/API schema evidence and official workflow docs | Plan 02 governance wording owner plus page owner | Re-review when workflow schema guidance is next edited. |
+| `src/content/docs/deep-dives/execution-model-inversion.md` | `This page has not been re-reviewed against the current baseline.` | Current pinned execution source, delta evidence, and architecture pages | Plan 02 governance wording owner plus page owner | Re-review when execution-model prose is next edited. |
+| `src/content/docs/deep-dives/registry-packaging-and-compatibility.md` | `This page has not been re-reviewed against the current baseline.` | Current official registry/packaging docs and pinned compatibility evidence | Plan 02 governance wording owner plus page owner | Re-review when registry or packaging compatibility guidance is next edited. |
+
+`src/content/docs/start-here/extension-developer.md` is intentionally outside
+this S13 backlog because it is not in `BASELINE_REQUIRED_PATHS` for
+`scripts/verify/evidence_metadata_freshness.py` at the time of this policy
+update. If a later policy change adds that page to `BASELINE_REQUIRED_PATHS`, add
+it to this backlog in the same change.
+
+Before Plan 05 Task 4 lands schema and generator support for
+`metadata_reviewed_at`, do not instruct maintainers to write that field into
+`references/docs-index-metadata.json`. After Plan 05 Task 4 lands, page
+re-reviews must update `Last Updated`, `metadata_reviewed_at`, and the baseline
+phrase in the same source-citation verification change.
 
 ## Generated vs Hand-Authored Boundaries
 
@@ -220,11 +362,13 @@ Default schema policy is permissive for extracted source-backed objects: use
 `additionalProperties: true` unless there is a documented maintenance reason to
 close a narrow record shape. Intentional closed-record exceptions currently are:
 
-- `public/artifacts/schemas/websocket_events.schema.json` closes
-  `metadata.commits` so the two-component core/frontend commit record cannot
-  silently grow ambiguous repository keys.
-- `public/artifacts/schemas/node_api_schema.schema.json` closes each
-  `node_flags` item so flag metadata remains a stable finite record.
+| Schema | Closed record reason |
+|---|---|
+| `public/artifacts/schemas/websocket_events.schema.json` | Closes `metadata.commits` so the two-component core/frontend commit record cannot silently grow ambiguous repository keys. |
+| `public/artifacts/schemas/node_api_schema.schema.json` | Closes each `node_flags` item so flag metadata remains a stable finite record. |
+| `public/artifacts/schemas/manifest.schema.json` | Closes the discovery object, schema map, artifact map, source records, and checksum-bearing artifact records so canonical discovery cannot silently grow registry-like fields. |
+| `public/artifacts/schemas/docs-index.schema.json` | Closes page and tooling-metadata records so the routing support index stays bounded to documented page facts and curated task hints. |
+| `public/artifacts/schemas/delta-summary.schema.json` | Closes comparison, section, and entry summary records so generated delta evidence cannot grow ambiguous ad hoc fields. |
 
 Do not add another `additionalProperties: false` schema object without recording
 the closed-record reason here or in a more specific published schema policy.
@@ -240,6 +384,18 @@ Treat `public/artifacts/versions/` as durable but bounded history.
 
 `references/_refresh_backups/` is temporary local working state for refresh
 rollback/comparison. It is outside the durable published-history policy.
+
+### Refresh backup retention
+
+Keep the latest `_refresh_backups/raw_<timestamp>/` backup for the active refresh
+until `public/artifacts/delta-summary.json` has been regenerated and reviewed.
+Older backups may be deleted manually after confirming they are not referenced by
+`public/artifacts/refresh-provenance.json`, `public/artifacts/delta-summary.json`,
+or an open execution log entry.
+
+Do not add automatic deletion in the first pass. If cleanup automation is added
+later, make it opt-in and dry-run first, and require the command to print the
+referencing provenance/delta-summary check before deleting anything.
 
 ### Versioned Artifact Regeneration
 
@@ -415,6 +571,33 @@ python -m unittest discover -s tests -v -p "test_run_all.py"
 python scripts/verify/run_all.py
 ```
 
+## CHANGELOG Maintenance Policy
+
+Owner: maintainers of repo history and release notes.
+
+Add a `CHANGELOG.md` entry for meaningful changes to any of these surfaces:
+
+- published docs surface
+- artifact contracts
+- verifiers
+- workflows
+- refresh baselines
+- examples
+- package metadata
+- repo identity
+
+Selectivity threshold: exclude routine typo-only edits and generated-only churn
+unless the change alters a documented contract, published surface, verification
+expectation, or release-facing behavior.
+
+Version bump trigger: bump `package.json` or `pyproject.toml` only when the repo
+or tooling surface maturity changes. Otherwise, dated changelog entries are
+enough.
+
+Cadence: update the changelog during release, baseline, policy, or surface-change
+batches. Do not require a changelog entry for every commit. Git history remains
+the exhaustive record; `CHANGELOG.md` is the curated maintainer-facing summary.
+
 ## Refreshing Upstream Baselines
 
 Use `scripts/refresh_snapshots.py` when proving or updating the pinned baseline.
@@ -564,6 +747,7 @@ coverage.
 | `scripts/verify/upstream_pins.py` | Confirm pinned tags and commits still resolve upstream | upstream pin validity for canonical JSON metadata | Advisory | External trust check with cached GitHub API resolution | Scheduled pin health review or after suspicious upstream changes |
 | `scripts/verify/example_surface_integrity.py` | Validate example family structure and routed example references | `examples/` plus routed start-here docs | Advisory | Checks example directory completeness and routed example paths together | Example-surface edits or start-here routing updates |
 | `scripts/verify/evidence_metadata_freshness.py` | Enforce opening evidence metadata discipline on retained pages | selected published docs pages | Advisory | Only verifier that checks allowed baseline-status wording patterns directly | Docs policy changes or refreshes affecting evidence blocks |
+| `scripts/verify/governance_lifecycle.py` | Validate lifecycle records and advisory-first governance policy coverage | verifier lifecycle manifest, policy text, schemas, and support artifact records | Advisory | Only verifier that checks lifecycle manifest shape, schema-closure documentation, support-artifact admission records, and placement wiring drift | Governance policy changes or new durable verifier/support surfaces |
 | `.github/workflows/advisory-checks.yml` | Replay advisory scripts as blocking on schedule/manual dispatch | weekly/manual advisory escalation path | Advisory workflow | Converts the non-blocking advisory script set into a durable scheduled gate | Use the workflow when maintainers want a blocking replay outside push/PR CI |
 
 ### Runtime-specific verifiers and workflows

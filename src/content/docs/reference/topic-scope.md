@@ -3,7 +3,7 @@ title: "Topic Scope"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-07
 
 > **Operational Note:** This page defines what belongs in the published docs
 > surface, what belongs only in repo-local maintainer guidance, and what should
@@ -16,6 +16,9 @@ title: "Topic Scope"
 The published docs surface is intentionally bounded. It exists to help readers
 build against ComfyUI and consume this repo's pinned reference material without
 turning the site into a second maintainer handbook.
+
+The canonical maintainer non-goal list lives in `CONTRIBUTING.md`; the root
+`README.md` mirrors that list for public orientation.
 
 ## What Belongs in Published Docs
 
