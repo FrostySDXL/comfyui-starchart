@@ -527,13 +527,65 @@ Each page entry always includes the base page facts:
 When a retained page has curated routing enrichment, `tooling_metadata` can
 include:
 
+- `metadata_reviewed_at`
+- `metadata_baseline`
 - `task_intents`
+- `primary_task_intents`
+- `excluded_task_intents`
 - `related_artifacts`
 - `related_routes`
+- `related_route_entries`
 - `related_events`
 - `runtime_required`
 - `stability_tier`
 - `recommended_next_reads`
+- `inbound_recommendations`
+
+The page entry may also expose `related_route_entries` and
+`route_classification_source` at the top level. The top-level
+`related_route_entries` and `tooling_metadata.related_route_entries` are emitted
+from the same in-memory list and must stay in sync. `related_routes` remains as a
+legacy string list for consumers that only need the route names.
+
+Each `related_route_entries` item carries:
+
+- `route`
+- `route_type`: `canonical`, `alias`, `external`, `unknown`, `deprecated`, or
+  `feature_flag`
+- `route_classification_reason`: `metadata_explicit`, `crossref_resolved`,
+  `metadata_not_provided`, `crossref_route_missing`, `crossref_ambiguous`, or
+  `metadata_and_crossref_conflict`
+
+Consumers must not treat `route_type: unknown` entries as canonical. Filter them,
+surface them to operators, or treat them as suspect until a maintainer classifies
+the route in `references/docs-index-metadata.json` or refreshes the endpoint
+baseline. Maintainers audit this surface with:
+
+```bash
+python scripts/verify/docs_index_unknown_routes.py
+```
+
+That advisory verifier prints a reason-count breakdown and a sorted triage list
+for unknown classifications. Its 10% unknown-route threshold is advisory and does
+not fail CI. Use `route_classification_reason` to choose the next action:
+
+- `metadata_not_provided`: add an explicit `related_route_entries` item in
+  docs-index metadata
+- `crossref_route_missing`: confirm the route still exists or refresh endpoint
+  artifacts
+- `crossref_ambiguous`: add explicit method-qualified metadata
+- `metadata_and_crossref_conflict`: reconcile metadata with endpoint extraction
+
+`primary_task_intents` narrows the strongest matches within `task_intents`.
+`excluded_task_intents` removes ambiguous matches; exclusions win when the same
+intent appears in both inclusion and exclusion lists. `inbound_recommendations`
+is generated from other pages' `recommended_next_reads` values so consumers can
+discover reverse navigation without scanning every page.
+
+There is no separate `artifact-task-map.json` support artifact in this pass.
+Docs-index already relates pages, task intents, artifacts, and routes; maintainers
+should extend docs-index first unless a concrete consumer need justifies a new
+support artifact and its lifecycle burden.
 
 **`task_intents` controlled vocabulary:**
 

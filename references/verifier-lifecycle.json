@@ -219,6 +219,20 @@
       "removal_criteria": "Remove only if docs-index is no longer published or no longer checked in.",
       "target_surface": "docs-index source pages, metadata, and generated output."
     },
+    "scripts/verify/docs_index_unknown_routes.py": {
+      "demotion_criteria": "Keep advisory while unknown route classifications are expected to require maintainer triage rather than block publication.",
+      "false_positive_tolerance": {
+        "justification": "Unknown route classifications can be intentional during metadata or upstream-refresh transitions, but structural input failures remain actionable.",
+        "level": "medium"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of docs-index routing metadata.",
+      "placement": "advisory",
+      "promotion_criteria": "Promote only after unknown-route counts routinely remain below the advisory threshold and promotion thresholds are recorded.",
+      "purpose": "Surface docs-index related_route_entries whose route_type or page classification source remains unknown for maintainer triage.",
+      "removal_criteria": "Remove only if route classification becomes fully blocking or another verifier provides equivalent unknown-route triage coverage.",
+      "target_surface": "public/artifacts/docs-index.json related_route_entries."
+    },
     "scripts/verify/evidence_metadata_freshness.py": {
       "demotion_criteria": "Keep advisory until retained-page metadata rules are stable across refresh and docs-edit flows.",
       "false_positive_tolerance": {

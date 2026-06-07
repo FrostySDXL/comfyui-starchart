@@ -76,19 +76,64 @@
               "null"
             ]
           },
+          "related_route_entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/related_route_entry"
+            }
+          },
+          "route_classification_source": {
+            "type": "string",
+            "enum": [
+              "metadata",
+              "server_endpoints_crossref",
+              "unknown"
+            ]
+          },
           "tooling_metadata": {
             "type": "object",
             "required": [
+              "metadata_reviewed_at",
+              "metadata_baseline",
               "task_intents",
+              "primary_task_intents",
+              "excluded_task_intents",
               "related_artifacts",
               "related_routes",
+              "related_route_entries",
               "related_events",
               "runtime_required",
               "stability_tier",
-              "recommended_next_reads"
+              "recommended_next_reads",
+              "inbound_recommendations"
             ],
             "properties": {
+              "metadata_reviewed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+              },
+              "metadata_baseline": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
               "task_intents": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "primary_task_intents": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "excluded_task_intents": {
                 "type": "array",
                 "items": {
                   "type": "string"
@@ -104,6 +149,12 @@
                 "type": "array",
                 "items": {
                   "type": "string"
+                }
+              },
+              "related_route_entries": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/related_route_entry"
                 }
               },
               "related_events": {
@@ -129,6 +180,12 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "inbound_recommendations": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               }
             },
             "additionalProperties": false
@@ -136,6 +193,44 @@
         },
         "additionalProperties": false
       }
+    }
+  },
+  "$defs": {
+    "related_route_entry": {
+      "type": "object",
+      "required": [
+        "route",
+        "route_type",
+        "route_classification_reason"
+      ],
+      "properties": {
+        "route": {
+          "type": "string"
+        },
+        "route_type": {
+          "type": "string",
+          "enum": [
+            "alias",
+            "canonical",
+            "deprecated",
+            "external",
+            "feature_flag",
+            "unknown"
+          ]
+        },
+        "route_classification_reason": {
+          "type": "string",
+          "enum": [
+            "crossref_ambiguous",
+            "crossref_resolved",
+            "crossref_route_missing",
+            "metadata_and_crossref_conflict",
+            "metadata_explicit",
+            "metadata_not_provided"
+          ]
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false

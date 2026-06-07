@@ -1,6 +1,6 @@
 {
   "artifact": "docs-index.json",
-  "artifact_schema_version": "1.1.0",
+  "artifact_schema_version": "1.2.0",
   "scope": {
     "surface": "hand-authored published docs pages included in the checked-in docs navigation with optional tooling-oriented enrichment",
     "excludes": [
@@ -18,15 +18,22 @@
       "audience": null,
       "evidence": "Operational guidance",
       "summary": "ComfyUI StarChart is a version-pinned, source-extracted companion reference for ComfyUI developers. It publishes:",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "route-docs-task"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json",
           "manifest.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "support-routing",
@@ -34,7 +41,8 @@
           "architecture/overview.md",
           "start-here/artifact-consumer.md",
           "start-here/tooling-builder.md"
-        ]
+        ],
+        "inbound_recommendations": []
       }
     },
     {
@@ -44,15 +52,22 @@
       "audience": "consumer",
       "evidence": "Operational guidance",
       "summary": null,
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "build-custom-node"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json",
           "node_api_schema.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "support-routing",
@@ -60,6 +75,10 @@
           "custom-nodes/development-guide.md",
           "custom-nodes/node-structure.md",
           "custom-nodes/registration.md"
+        ],
+        "inbound_recommendations": [
+          "custom-nodes/registration.md",
+          "deep-dives/registry-packaging-and-compatibility.md"
         ]
       }
     },
@@ -70,20 +89,35 @@
       "audience": "consumer",
       "evidence": "Source-backed from pinned snapshots",
       "summary": null,
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "discover-hooks"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json",
           "js_hooks.json",
           "server_endpoints.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "support-routing",
         "recommended_next_reads": [
+          "hooks/extension-points.md",
+          "hooks/javascript-hooks.md",
+          "hooks/server-hooks.md"
+        ],
+        "inbound_recommendations": [
+          "architecture/overview.md",
+          "custom-nodes/registration.md",
+          "deep-dives/registry-packaging-and-compatibility.md",
           "hooks/extension-points.md",
           "hooks/javascript-hooks.md",
           "hooks/server-hooks.md"
@@ -97,13 +131,40 @@
       "audience": "consumer",
       "evidence": "Source-backed from pinned snapshots",
       "summary": null,
+      "related_route_entries": [
+        {
+          "route": "GET /history/{prompt_id}",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /queue",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /ws",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "POST /prompt",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        }
+      ],
+      "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "debug-api-integration",
           "inspect-prompt-payload",
           "monitor-execution",
           "observe-server-lifecycle"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json",
           "manifest.json",
@@ -114,6 +175,28 @@
           "GET /queue",
           "GET /ws",
           "POST /prompt"
+        ],
+        "related_route_entries": [
+          {
+            "route": "GET /history/{prompt_id}",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /queue",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /ws",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "POST /prompt",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          }
         ],
         "related_events": [
           "executed",
@@ -132,6 +215,9 @@
           "api/history-queue.md",
           "api/prompt-submission.md",
           "api/websocket.md"
+        ],
+        "inbound_recommendations": [
+          "start-here/artifact-consumer.md"
         ]
       }
     },
@@ -142,20 +228,36 @@
       "audience": "consumer",
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance",
       "summary": "This page is a start-here route for builders. It helps you choose the right ComfyUI tooling surface, then points you to the next page. It does not try to reteach the full API, Manager, or extension architecture.",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "route-docs-task"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json",
           "manifest.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "support-routing",
         "recommended_next_reads": [
           "api/endpoints.md",
+          "reference/machine-readable-artifacts.md",
+          "start-here/artifact-consumer.md"
+        ],
+        "inbound_recommendations": [
+          "architecture/overview.md",
+          "deep-dives/workflow-json-schema.md",
+          "hooks/javascript-hooks.md",
+          "index.md",
+          "reference/artifact-schema-version-migration.md",
           "reference/machine-readable-artifacts.md",
           "start-here/artifact-consumer.md"
         ]
@@ -168,22 +270,36 @@
       "audience": "consumer",
       "evidence": "Operational guidance",
       "summary": "This page is the shortest start-here route for readers who consume this repo's published JSON artifacts. It covers the manifest-first loading path, the bounded routing-support surface, checksum validation, and the example boundary. It does not restate every artifact field or every API page.",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "discover-artifacts",
           "route-docs-task"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json",
           "manifest.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "support-routing",
         "recommended_next_reads": [
           "reference/machine-readable-artifacts.md",
           "start-here/service-integration.md",
+          "start-here/tooling-builder.md"
+        ],
+        "inbound_recommendations": [
+          "index.md",
+          "reference/artifact-schema-version-migration.md",
+          "reference/machine-readable-artifacts.md",
+          "reference/object-info.md",
           "start-here/tooling-builder.md"
         ]
       }
@@ -195,14 +311,21 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
       "summary": "This page is a bounded conceptual overview of ComfyUI architecture for readers who need the system shape before diving into detailed reference pages.",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "understand-architecture"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "pinned-baseline",
@@ -210,6 +333,10 @@
           "architecture/execution-pipeline.md",
           "start-here/extension-developer.md",
           "start-here/tooling-builder.md"
+        ],
+        "inbound_recommendations": [
+          "deep-dives/workflow-json-schema.md",
+          "index.md"
         ]
       }
     },
@@ -220,7 +347,37 @@
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
       "summary": "This page documents the server-side execution pipeline that turns a submitted prompt into queued work, live events, and stored history. It is an architecture-level map of responsibilities and boundaries, not a step-by-step API tutorial or a full engine internals reference.",
+      "related_route_entries": [
+        {
+          "route": "GET /history/{prompt_id}",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /queue",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /ws",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "POST /interrupt",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "POST /prompt",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        }
+      ],
+      "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "inspect-prompt-payload",
           "monitor-execution",
@@ -228,6 +385,8 @@
           "understand-architecture",
           "understand-prompt-topology"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "server_endpoints.json",
           "websocket_events.json"
@@ -238,6 +397,33 @@
           "GET /ws",
           "POST /interrupt",
           "POST /prompt"
+        ],
+        "related_route_entries": [
+          {
+            "route": "GET /history/{prompt_id}",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /queue",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /ws",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "POST /interrupt",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "POST /prompt",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          }
         ],
         "related_events": [
           "executed",
@@ -254,6 +440,12 @@
           "api/history-queue.md",
           "api/prompt-submission.md",
           "api/websocket.md"
+        ],
+        "inbound_recommendations": [
+          "api/websocket.md",
+          "architecture/overview.md",
+          "deep-dives/execution-model-inversion.md",
+          "hooks/server-hooks.md"
         ]
       }
     },
@@ -264,10 +456,42 @@
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
       "summary": "ComfyUI declares its HTTP and WebSocket surface directly in `server.py` using `aiohttp` route decorators. The current file defines 25 primary routes on `self.routes`, covering queue control, prompt submission, file upload and viewing, node metadata, system inspection, and job tracking.",
+      "related_route_entries": [
+        {
+          "route": "GET /history/{prompt_id}",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /object_info",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /queue",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /ws",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "POST /prompt",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        }
+      ],
+      "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "discover-routes"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json",
           "manifest.json",
@@ -280,6 +504,33 @@
           "GET /ws",
           "POST /prompt"
         ],
+        "related_route_entries": [
+          {
+            "route": "GET /history/{prompt_id}",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /object_info",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /queue",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /ws",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "POST /prompt",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          }
+        ],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "pinned-baseline",
@@ -287,6 +538,11 @@
           "api/prompt-submission.md",
           "api/websocket.md",
           "reference/machine-readable-artifacts.md"
+        ],
+        "inbound_recommendations": [
+          "api/prompt-submission.md",
+          "reference/object-info.md",
+          "start-here/tooling-builder.md"
         ]
       }
     },
@@ -297,17 +553,36 @@
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
       "summary": "ComfyUI uses `GET /ws` as the real-time channel for queue state, execution lifecycle messages, UI output updates, and preview images. The route is implemented with `aiohttp.WebSocketResponse` and is the main mechanism that keeps the frontend in sync while a prompt runs.",
+      "related_route_entries": [
+        {
+          "route": "GET /ws",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        }
+      ],
+      "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "monitor-execution",
           "observe-server-lifecycle"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "server_endpoints.json",
           "websocket_events.json"
         ],
         "related_routes": [
           "GET /ws"
+        ],
+        "related_route_entries": [
+          {
+            "route": "GET /ws",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          }
         ],
         "related_events": [
           "executed",
@@ -326,6 +601,13 @@
           "api/history-queue.md",
           "api/prompt-submission.md",
           "architecture/execution-pipeline.md"
+        ],
+        "inbound_recommendations": [
+          "api/endpoints.md",
+          "api/history-queue.md",
+          "api/prompt-submission.md",
+          "architecture/execution-pipeline.md",
+          "start-here/service-integration.md"
         ]
       }
     },
@@ -336,7 +618,17 @@
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
       "summary": "`POST /prompt` is the main execution entrypoint. The handler accepts a workflow payload, validates it, assigns queue priority, extracts sensitive metadata, and enqueues the prompt for asynchronous execution.",
+      "related_route_entries": [
+        {
+          "route": "POST /prompt",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        }
+      ],
+      "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "extract-prompt-text",
           "inspect-conditioning-graph",
@@ -344,12 +636,21 @@
           "submit-prompt",
           "understand-prompt-topology"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "node_api_schema.json",
           "server_endpoints.json"
         ],
         "related_routes": [
           "POST /prompt"
+        ],
+        "related_route_entries": [
+          {
+            "route": "POST /prompt",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          }
         ],
         "related_events": [
           "executed",
@@ -368,6 +669,15 @@
           "api/websocket.md",
           "deep-dives/workflow-json-schema.md",
           "reference/object-info.md"
+        ],
+        "inbound_recommendations": [
+          "api/endpoints.md",
+          "api/history-queue.md",
+          "api/websocket.md",
+          "architecture/execution-pipeline.md",
+          "deep-dives/execution-model-inversion.md",
+          "deep-dives/workflow-json-schema.md",
+          "start-here/service-integration.md"
         ]
       }
     },
@@ -378,11 +688,58 @@
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
       "summary": "ComfyUI splits live scheduling state from completed execution records:",
+      "related_route_entries": [
+        {
+          "route": "GET /api/jobs",
+          "route_type": "alias",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /api/jobs/{job_id}",
+          "route_type": "alias",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /history",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /history/{prompt_id}",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /prompt",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /queue",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "POST /history",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "POST /queue",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        }
+      ],
+      "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "lookup-history",
           "monitor-execution"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "server_endpoints.json"
         ],
@@ -396,6 +753,48 @@
           "POST /history",
           "POST /queue"
         ],
+        "related_route_entries": [
+          {
+            "route": "GET /api/jobs",
+            "route_type": "alias",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /api/jobs/{job_id}",
+            "route_type": "alias",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /history",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /history/{prompt_id}",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /prompt",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /queue",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "POST /history",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "POST /queue",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          }
+        ],
         "related_events": [
           "status"
         ],
@@ -404,6 +803,13 @@
         "recommended_next_reads": [
           "api/prompt-submission.md",
           "api/websocket.md"
+        ],
+        "inbound_recommendations": [
+          "api/prompt-submission.md",
+          "api/websocket.md",
+          "architecture/execution-pipeline.md",
+          "deep-dives/execution-model-inversion.md",
+          "start-here/service-integration.md"
         ]
       }
     },
@@ -414,15 +820,22 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
       "summary": "ComfyUI's JavaScript extension system calls named hooks on every registered frontend extension by routing through `invokeExtensions()` or `invokeExtensionsAsync()`. These hooks are the main supported way to modify client-side behavior without directly rewriting core UI code.",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "discover-hooks"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json",
           "js_hooks.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "pinned-baseline",
@@ -430,6 +843,10 @@
           "hooks/extension-points.md",
           "start-here/extension-developer.md",
           "start-here/tooling-builder.md"
+        ],
+        "inbound_recommendations": [
+          "hooks/extension-points.md",
+          "start-here/extension-developer.md"
         ]
       }
     },
@@ -440,13 +857,30 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
       "summary": "The current ComfyUI server exposes a small number of meaningful server-side hook surfaces directly in Python. The most explicit one is the prompt preprocessing hook chain stored in `self.on_prompt_handlers`. Execution also exposes progress and lifecycle messaging through the executor and WebSocket path, which is the main observability surface for server-side integrations.",
+      "related_route_entries": [
+        {
+          "route": "GET /ws",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "POST /prompt",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        }
+      ],
+      "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "discover-hooks",
           "inspect-prompt-payload",
           "monitor-execution",
           "observe-server-lifecycle"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json",
           "server_endpoints.json"
@@ -454,6 +888,18 @@
         "related_routes": [
           "GET /ws",
           "POST /prompt"
+        ],
+        "related_route_entries": [
+          {
+            "route": "GET /ws",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "POST /prompt",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          }
         ],
         "related_events": [
           "executed",
@@ -470,6 +916,10 @@
           "architecture/execution-pipeline.md",
           "hooks/extension-points.md",
           "start-here/extension-developer.md"
+        ],
+        "inbound_recommendations": [
+          "hooks/extension-points.md",
+          "start-here/extension-developer.md"
         ]
       }
     },
@@ -480,22 +930,34 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
       "summary": "ComfyUI extension work splits across a few distinct surfaces rather than one universal plugin API. In practice, you choose between frontend hooks, server-hook callbacks, custom routes, and custom nodes depending on what you are trying to change.",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "discover-hooks",
           "observe-server-lifecycle",
           "route-docs-task"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json",
           "js_hooks.json",
           "server_endpoints.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "support-routing",
         "recommended_next_reads": [
+          "hooks/javascript-hooks.md",
+          "hooks/server-hooks.md",
+          "start-here/extension-developer.md"
+        ],
+        "inbound_recommendations": [
           "hooks/javascript-hooks.md",
           "hooks/server-hooks.md",
           "start-here/extension-developer.md"
@@ -509,15 +971,22 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots",
       "summary": "ComfyUI custom nodes extend the platform's client-server model. The server side is Python and performs real work such as model execution, data processing, and file handling. The client side is JavaScript and renders the editor, widgets, and graph interactions.",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "build-custom-node"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json",
           "node_api_schema.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "pinned-baseline",
@@ -525,6 +994,12 @@
           "custom-nodes/datatypes.md",
           "custom-nodes/node-structure.md",
           "custom-nodes/registration.md"
+        ],
+        "inbound_recommendations": [
+          "custom-nodes/datatypes.md",
+          "custom-nodes/node-structure.md",
+          "custom-nodes/registration.md",
+          "start-here/author.md"
         ]
       }
     },
@@ -535,14 +1010,21 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
       "summary": "This page is the repo's main V3 node structure reference. In V3, a custom node is a Python class derived from `io.ComfyNode`. Instead of scattering configuration across multiple legacy class attributes, the node declares its public contract in one schema object and implements behavior in one execution method.",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "build-custom-node"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "node_api_schema.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "pinned-baseline",
@@ -550,6 +1032,11 @@
           "custom-nodes/datatypes.md",
           "custom-nodes/development-guide.md",
           "custom-nodes/registration.md"
+        ],
+        "inbound_recommendations": [
+          "custom-nodes/datatypes.md",
+          "custom-nodes/development-guide.md",
+          "start-here/author.md"
         ]
       }
     },
@@ -560,14 +1047,21 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Community pattern study based on pinned external version",
       "summary": "Registration is the step that makes ComfyUI discover your node classes. The exact mechanism depends on whether the package is using legacy V1 or modern V3 conventions.",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "build-custom-node"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "support-routing",
@@ -575,6 +1069,13 @@
           "custom-nodes/development-guide.md",
           "start-here/author.md",
           "start-here/extension-developer.md"
+        ],
+        "inbound_recommendations": [
+          "custom-nodes/datatypes.md",
+          "custom-nodes/development-guide.md",
+          "custom-nodes/node-structure.md",
+          "deep-dives/registry-packaging-and-compatibility.md",
+          "start-here/author.md"
         ]
       }
     },
@@ -585,14 +1086,21 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
       "summary": "ComfyUI datatypes serve two roles at once:",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "build-custom-node"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "node_api_schema.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "pinned-baseline",
@@ -600,6 +1108,10 @@
           "custom-nodes/development-guide.md",
           "custom-nodes/node-structure.md",
           "custom-nodes/registration.md"
+        ],
+        "inbound_recommendations": [
+          "custom-nodes/development-guide.md",
+          "custom-nodes/node-structure.md"
         ]
       }
     },
@@ -610,13 +1122,19 @@
       "audience": null,
       "evidence": "Operational guidance",
       "summary": "This page documents the machine-readable JSON artifacts this repository publishes. It defines the durable artifact taxonomy, discovery rules, support-artifact boundaries, schema expectations, and version/retention policy.",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "discover-artifacts",
           "extract-prompt-text",
           "inspect-conditioning-graph",
           "route-docs-task"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json",
           "js_hooks.json",
@@ -626,10 +1144,18 @@
           "websocket_events.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "support-routing",
         "recommended_next_reads": [
+          "reference/object-info.md",
+          "start-here/artifact-consumer.md",
+          "start-here/tooling-builder.md"
+        ],
+        "inbound_recommendations": [
+          "api/endpoints.md",
+          "reference/artifact-schema-version-migration.md",
           "reference/object-info.md",
           "start-here/artifact-consumer.md",
           "start-here/tooling-builder.md"
@@ -643,18 +1169,47 @@
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
       "summary": "`GET /object_info` is ComfyUI's node discovery endpoint. It returns the metadata the frontend and external tooling need to understand which nodes exist, what inputs they accept, what outputs they produce, and how they should be displayed.",
+      "related_route_entries": [
+        {
+          "route": "GET /object_info",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /object_info/{node_class}",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        }
+      ],
+      "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "extract-prompt-text",
           "inspect-conditioning-graph",
           "inspect-object-info"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "node_api_schema.json"
         ],
         "related_routes": [
           "GET /object_info",
           "GET /object_info/{node_class}"
+        ],
+        "related_route_entries": [
+          {
+            "route": "GET /object_info",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /object_info/{node_class}",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          }
         ],
         "related_events": [],
         "runtime_required": true,
@@ -663,6 +1218,10 @@
           "api/endpoints.md",
           "reference/machine-readable-artifacts.md",
           "start-here/artifact-consumer.md"
+        ],
+        "inbound_recommendations": [
+          "api/prompt-submission.md",
+          "reference/machine-readable-artifacts.md"
         ]
       }
     },
@@ -673,10 +1232,16 @@
       "audience": null,
       "evidence": "Operational guidance",
       "summary": "This page explains how tooling consumers should interpret and respond to changes in the published `artifact_schema_version` field.",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "discover-artifacts"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "js_hooks.json",
           "manifest.json",
@@ -685,6 +1250,7 @@
           "websocket_events.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "support-routing",
@@ -692,7 +1258,8 @@
           "reference/machine-readable-artifacts.md",
           "start-here/artifact-consumer.md",
           "start-here/tooling-builder.md"
-        ]
+        ],
+        "inbound_recommendations": []
       }
     },
     {
@@ -734,16 +1301,35 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
       "summary": "This page explains why the official workflow JSON specification matters as an interchange surface for ComfyUI tooling. It is not a field-by-field schema reference and not a tutorial for hand-authoring workflows.",
+      "related_route_entries": [
+        {
+          "route": "POST /prompt",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        }
+      ],
+      "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "understand-architecture",
           "understand-prompt-topology"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json"
         ],
         "related_routes": [
           "POST /prompt"
+        ],
+        "related_route_entries": [
+          {
+            "route": "POST /prompt",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          }
         ],
         "related_events": [],
         "runtime_required": false,
@@ -752,6 +1338,9 @@
           "api/prompt-submission.md",
           "architecture/overview.md",
           "start-here/tooling-builder.md"
+        ],
+        "inbound_recommendations": [
+          "api/prompt-submission.md"
         ]
       }
     },
@@ -762,10 +1351,32 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
       "summary": "This page explains the official execution-model inversion guidance for advanced custom-node and tooling authors. It focuses on what the guide changes about validation, lazy evaluation, node expansion, and migration expectations. It is not a reverse-engineered engine internals page.",
+      "related_route_entries": [
+        {
+          "route": "GET /history/{prompt_id}",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "GET /queue",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        },
+        {
+          "route": "POST /prompt",
+          "route_type": "canonical",
+          "route_classification_reason": "crossref_resolved"
+        }
+      ],
+      "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "understand-architecture"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "server_endpoints.json"
         ],
@@ -773,6 +1384,23 @@
           "GET /history/{prompt_id}",
           "GET /queue",
           "POST /prompt"
+        ],
+        "related_route_entries": [
+          {
+            "route": "GET /history/{prompt_id}",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "GET /queue",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          },
+          {
+            "route": "POST /prompt",
+            "route_type": "canonical",
+            "route_classification_reason": "crossref_resolved"
+          }
         ],
         "related_events": [
           "executed",
@@ -786,7 +1414,8 @@
           "api/history-queue.md",
           "api/prompt-submission.md",
           "architecture/execution-pipeline.md"
-        ]
+        ],
+        "inbound_recommendations": []
       }
     },
     {
@@ -796,14 +1425,21 @@
       "audience": null,
       "evidence": "Official docs-backed from docs.comfy.org",
       "summary": "This page explains the official registry packaging model for ComfyUI custom nodes. It focuses on metadata, compatibility fields, and the distribution model those fields support. It is not a repackaged step-by-step publishing guide.",
+      "related_route_entries": [],
+      "route_classification_source": "unknown",
       "tooling_metadata": {
+        "metadata_reviewed_at": null,
+        "metadata_baseline": null,
         "task_intents": [
           "build-custom-node"
         ],
+        "primary_task_intents": [],
+        "excluded_task_intents": [],
         "related_artifacts": [
           "docs-index.json"
         ],
         "related_routes": [],
+        "related_route_entries": [],
         "related_events": [],
         "runtime_required": false,
         "stability_tier": "support-routing",
@@ -811,7 +1447,8 @@
           "custom-nodes/registration.md",
           "start-here/author.md",
           "start-here/extension-developer.md"
-        ]
+        ],
+        "inbound_recommendations": []
       }
     }
   ]

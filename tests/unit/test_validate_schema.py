@@ -792,7 +792,7 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         module = self._import_module()
         data = {
             "artifact": "docs-index.json",
-            "artifact_schema_version": "1.1.0",
+            "artifact_schema_version": "1.2.0",
             "scope": {
                 "surface": "test navigation with tooling metadata",
                 "excludes": [],
@@ -805,14 +805,34 @@ class ValidateSchemaUnitTests(unittest.TestCase):
                     "audience": None,
                     "evidence": "Source-backed from pinned snapshots",
                     "summary": "Prompt summary.",
+                    "related_route_entries": [
+                        {
+                            "route": "POST /prompt",
+                            "route_type": "canonical",
+                            "route_classification_reason": "metadata_explicit",
+                        }
+                    ],
+                    "route_classification_source": "metadata",
                     "tooling_metadata": {
+                        "metadata_reviewed_at": None,
+                        "metadata_baseline": None,
                         "task_intents": ["submit-prompt"],
+                        "primary_task_intents": [],
+                        "excluded_task_intents": [],
                         "related_artifacts": ["docs-index.json", "server_endpoints.json"],
                         "related_routes": ["POST /prompt"],
+                        "related_route_entries": [
+                            {
+                                "route": "POST /prompt",
+                                "route_type": "canonical",
+                                "route_classification_reason": "metadata_explicit",
+                            }
+                        ],
                         "related_events": ["executing", "execution_success"],
                         "runtime_required": True,
                         "stability_tier": "pinned-baseline",
                         "recommended_next_reads": ["api/history-queue.md"],
+                        "inbound_recommendations": [],
                     },
                 }
             ],
