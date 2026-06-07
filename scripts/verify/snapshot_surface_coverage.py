@@ -100,6 +100,74 @@ def validate_snapshot_surface(core_root: Path | None, frontend_root: Path | None
     return sorted(set(failures))
 
 
+def _snapshot_version(root: Path | None, prefix: str) -> str:
+    """Return the upstream version suffix visible in a snapshot root."""
+    if root is None:
+        return "missing"
+    name = root.name
+    return name.removeprefix(prefix) if name.startswith(prefix) else name
+
+
+def _first_child_with_prefix(snapshot_dir: Path, prefix: str) -> Path | None:
+    """Return the first child directory whose name starts with ``prefix``."""
+    matches = sorted(path for path in snapshot_dir.glob(f"{prefix}*") if path.is_dir())
+    return matches[0] if matches else None
+
+
+def classify_snapshot_inventory(
+    snapshots_root: Path,
+    current_core_root: Path | None,
+    current_frontend_root: Path | None,
+) -> list[dict[str, str]]:
+    """Classify dated snapshot directories for maintainer inventory tables.
+
+    The blocking verifier continues to validate only the current pinned baseline.
+    This helper is advisory inventory logic for documenting historical snapshot
+    suitability without making old partial captures block refresh verification.
+    """
+    rows: list[dict[str, str]] = []
+    current_date = None
+    if current_core_root is not None:
+        current_date = current_core_root.parent.name
+    elif current_frontend_root is not None:
+        current_date = current_frontend_root.parent.name
+
+    for snapshot_dir in sorted(path for path in snapshots_root.iterdir() if path.is_dir()):
+        core_root = _first_child_with_prefix(snapshot_dir, "comfyui-core-")
+        frontend_root = _first_child_with_prefix(snapshot_dir, "comfyui-frontend-")
+        missing = validate_snapshot_surface(core_root, frontend_root)
+        if snapshot_dir.name == current_date:
+            completeness_class = (
+                "current-required-complete" if not missing else "current-required-incomplete"
+            )
+            role = "current active pinned baseline"
+            suitability = (
+                "suitable for current extraction"
+                if not missing
+                else "not suitable for current extraction until required files are restored"
+            )
+        elif missing:
+            completeness_class = "historical-partial"
+            role = "historical retained snapshot"
+            suitability = "not suitable for extraction without backfill"
+        else:
+            completeness_class = "historical-complete-known"
+            role = "historical retained snapshot"
+            suitability = "suitable for historical extraction if needed"
+
+        rows.append(
+            {
+                "snapshot_date": snapshot_dir.name,
+                "core_version": _snapshot_version(core_root, "comfyui-core-"),
+                "frontend_version": _snapshot_version(frontend_root, "comfyui-frontend-"),
+                "role": role,
+                "completeness_class": completeness_class,
+                "extraction_suitability": suitability,
+            }
+        )
+    return rows
+
+
 def main() -> int:
     """CLI entry point."""
     core_root, frontend_root = find_current_snapshot_roots()

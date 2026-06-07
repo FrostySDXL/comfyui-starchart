@@ -439,6 +439,30 @@ produces for this baseline" rather than a strict historical timestamp. If a
 strict historical record is needed, compare against the pinned snapshot
 source files directly.
 
+### Versioned artifact completeness decisions
+
+`scripts/verify/versioned_artifact_completeness.py` is advisory-first and
+classifies every directory under `public/artifacts/versions/` in sorted
+`version_key` order.
+
+Current decision table:
+
+| Version key | Classification | Decision |
+|---|---|---|
+| `core-v0.19.3_frontend-v1.42.11_2026-04-19` | `empty` with `empty-legacy-placeholder` exception | Recommend follow-up removal after confirming no active docs, manifest, provenance, or execution-log references require the placeholder. |
+| `core-v0.19.3_frontend-v1.42.11_2026-04-23` | `empty` with `empty-legacy-placeholder` exception | Recommend follow-up removal after confirming no active docs, manifest, provenance, or execution-log references require the placeholder. |
+| `core-v0.19.3_frontend-v1.42.11_2026-04-29` | `empty` with `empty-legacy-placeholder` exception | Recommend follow-up removal after confirming no active docs, manifest, provenance, or execution-log references require the placeholder. |
+| `core-v0.20.1_frontend-v1.44.13_2026-04-30` | `empty` with `empty-legacy-placeholder` exception | Recommend follow-up removal after confirming no active docs, manifest, provenance, or execution-log references require the placeholder. |
+| `core-v0.21.1_frontend-v1.45.9_2026-05-18` | `legacy-pre-websocket-events` | Retain as a documented legacy exception unless source-backed regeneration is needed. |
+| `core-v0.22.0_frontend-v1.45.12_2026-05-21` | `legacy-pre-websocket-events` | Retain as a documented legacy exception unless source-backed regeneration is needed. |
+| `core-v0.23.0_frontend-v1.46.6_2026-06-01` | `legacy-pre-websocket-events` | Retain as a documented legacy exception unless source-backed regeneration is needed. |
+| `core-v0.23.0_frontend-v1.46.6_2026-06-03` | `current-required-complete` | Keep as the current canonical versioned artifact set. |
+
+The first pass records recommendations only. Do not remove or backfill versioned
+directories without a later explicit policy/action change. Current version
+directories must contain `server_endpoints.json`, `js_hooks.json`,
+`node_api_schema.json`, and `websocket_events.json`.
+
 ## Editing Published Docs
 
 1. Read the target page and nearby linked pages.
@@ -770,6 +794,8 @@ coverage.
 | `scripts/verify/example_surface_integrity.py` | Validate example family structure and routed example references | `examples/` plus routed start-here docs | Advisory | Checks example directory completeness and routed example paths together | Example-surface edits or start-here routing updates |
 | `scripts/verify/evidence_metadata_freshness.py` | Enforce opening evidence metadata discipline on retained pages | selected published docs pages | Advisory | Only verifier that checks allowed baseline-status wording patterns directly | Docs policy changes or refreshes affecting evidence blocks |
 | `scripts/verify/governance_lifecycle.py` | Validate lifecycle records and advisory-first governance policy coverage | verifier lifecycle manifest, policy text, schemas, and support artifact records | Advisory | Only verifier that checks lifecycle manifest shape, schema-closure documentation, support-artifact admission records, and placement wiring drift | Governance policy changes or new durable verifier/support surfaces |
+| `scripts/verify/provenance_chain_integrity.py` | Validate refresh provenance follow-up ordering and flag consistency | `public/artifacts/refresh-provenance.json` plus delta/manifest/current artifact state | Advisory | Only verifier that checks stale backup references and reverse-direction published flag drift | After refreshes, publication follow-up commands, or provenance cleanup |
+| `scripts/verify/versioned_artifact_completeness.py` | Classify versioned artifact directories and current-version completeness | `public/artifacts/versions/` plus manifest `version_key` | Advisory | Only verifier that distinguishes current complete, retained complete, empty legacy placeholder, and pre-websocket historical exceptions | After publishing artifacts, changing version retention policy, or reviewing empty/partial version directories |
 | `.github/workflows/advisory-checks.yml` | Replay advisory scripts as blocking on schedule/manual dispatch | weekly/manual advisory escalation path | Advisory workflow | Converts the non-blocking advisory script set into a durable scheduled gate | Use the workflow when maintainers want a blocking replay outside push/PR CI |
 
 ### Runtime-specific verifiers and workflows

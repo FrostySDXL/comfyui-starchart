@@ -636,6 +636,14 @@ backup directories created during a refresh in the repo's ignored refresh-backup
 area. Those backup directories are local rollback and comparison working state,
 not published historical artifacts.
 
+The current versioned directory named by `manifest.json.version_key` must contain
+all four canonical artifacts. Older retained directories may be classified as
+documented legacy exceptions when they predate `websocket_events.json`, and empty
+legacy placeholders are advisory cleanup candidates rather than canonical
+artifact sets. Maintainers classify this surface with
+`python scripts/verify/versioned_artifact_completeness.py` before deciding on
+removal or source-backed backfill.
+
 ## Schema Publication Approach
 
 The schema files under `public/artifacts/schemas/` are checked into the repo as

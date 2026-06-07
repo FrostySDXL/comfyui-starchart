@@ -13,22 +13,20 @@ extractors. These files are source inputs, not generated outputs.
 
 Current layout at the time of this update:
 
-- `2026-06-03/` - current active pinned baseline used by `references/raw/`
-  and the published versioned artifacts under
-  `public/artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-03/`
-- `2026-06-01/` - prior active baseline superseded by `2026-06-03/`; retained
-  for refresh-path proof
-- `2026-05-21/` - historical baseline retained for comparison and refresh-path
-  proof
-- `2026-05-18/` - historical baseline retained for comparison and refresh-path
-  proof
-- `2026-04-19/` - earlier historical baseline retained for provenance and
-  comparison
-- `2026-04-30/` - known partial capture from an abandoned v0.20.1 / v1.44.13
-  refresh; the snapshot directory itself is empty, but the corresponding
-  versioned artifact set under
-  `public/artifacts/versions/core-v0.20.1_frontend-v1.44.13_2026-04-30/` is
-  retained for published-history completeness
+| Snapshot date | Core version | Frontend version | Role | Completeness class | Extraction suitability |
+|---|---|---|---|---|---|
+| `2026-04-19/` | `v0.19.3` | missing | Historical baseline retained for provenance and comparison. | `historical-partial` | Not suitable for extraction without backfill. |
+| `2026-04-30/` | missing | missing | Known empty capture from an abandoned v0.20.1 / v1.44.13 refresh; the corresponding versioned artifact directory is retained for published-history classification. | `historical-partial` | Not suitable for extraction without backfill. |
+| `2026-05-18/` | `v0.21.1` | missing | Historical baseline retained for comparison and refresh-path proof. | `historical-partial` | Not suitable for extraction without backfill. |
+| `2026-05-21/` | `v0.22.0` | missing | Historical baseline retained for comparison and refresh-path proof. | `historical-partial` | Not suitable for extraction without backfill. |
+| `2026-06-01/` | `v0.23.0` | missing | Prior active baseline superseded by `2026-06-03/`; retained for refresh-path proof. | `historical-partial` | Not suitable for extraction without backfill. |
+| `2026-06-03/` | `v0.23.0` | `v1.46.6` | Current active pinned baseline used by `references/raw/` and `public/artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-03/`. | `current-required-complete` | Suitable for current extraction. |
+
+Maintainer classification procedure: run
+`python scripts/verify/snapshot_surface_coverage.py`, inspect the dated
+directories under `references/snapshots/`, sort rows by snapshot date, and update
+this hand-authored table byte-stably for the same on-disk state. Historical
+partial rows are retained provenance, not blocking current-baseline failures.
 
 ## Maintainer rules
 

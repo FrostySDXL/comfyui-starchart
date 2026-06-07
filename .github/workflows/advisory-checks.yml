@@ -36,3 +36,9 @@ jobs:
 
       - name: Check evidence metadata freshness
         run: python scripts/verify/evidence_metadata_freshness.py
+
+      - name: Check refresh provenance chain integrity
+        run: python scripts/verify/provenance_chain_integrity.py
+
+      - name: Check versioned artifact completeness
+        run: python scripts/verify/versioned_artifact_completeness.py

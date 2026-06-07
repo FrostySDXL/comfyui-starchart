@@ -168,6 +168,69 @@ class SnapshotSurfaceCoverageTests(unittest.TestCase):
 
         self.assertTrue(imports_enum)
 
+    def test_classify_snapshot_inventory_marks_partial_without_failure(self):
+        module = _load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            snapshots_root = Path(tmp) / "snapshots"
+            current_core = snapshots_root / "2026-06-03" / "comfyui-core-v0.23.0"
+            current_frontend = snapshots_root / "2026-06-03" / "comfyui-frontend-v1.46.6"
+            historical_core = snapshots_root / "2026-06-01" / "comfyui-core-v0.23.0"
+            self._write_required_files(current_core, module.snapshot_surface.CORE_REQUIRED_FILES)
+            self._write_required_files(
+                current_frontend,
+                module.snapshot_surface.FRONTEND_REQUIRED_FILES,
+            )
+            self._write_required_files(historical_core, ["server.py"])
+
+            rows = module.classify_snapshot_inventory(
+                snapshots_root,
+                current_core,
+                current_frontend,
+            )
+
+        by_date = {row["snapshot_date"]: row for row in rows}
+        self.assertEqual(
+            by_date["2026-06-03"]["completeness_class"],
+            "current-required-complete",
+        )
+        self.assertEqual(
+            by_date["2026-06-01"]["completeness_class"],
+            "historical-partial",
+        )
+        self.assertIn("not suitable", by_date["2026-06-01"]["extraction_suitability"])
+
+    def test_snapshot_inventory_classification_is_stable(self):
+        module = _load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            snapshots_root = Path(tmp) / "snapshots"
+            current_core = snapshots_root / "2026-06-03" / "comfyui-core-v0.23.0"
+            current_frontend = snapshots_root / "2026-06-03" / "comfyui-frontend-v1.46.6"
+            partial_core = snapshots_root / "2026-05-21" / "comfyui-core-v0.22.0"
+            empty_snapshot = snapshots_root / "2026-04-30"
+            self._write_required_files(current_core, module.snapshot_surface.CORE_REQUIRED_FILES)
+            self._write_required_files(
+                current_frontend,
+                module.snapshot_surface.FRONTEND_REQUIRED_FILES,
+            )
+            self._write_required_files(partial_core, ["server.py", "execution.py"])
+            empty_snapshot.mkdir(parents=True)
+
+            first = module.classify_snapshot_inventory(
+                snapshots_root,
+                current_core,
+                current_frontend,
+            )
+            second = module.classify_snapshot_inventory(
+                snapshots_root,
+                current_core,
+                current_frontend,
+            )
+
+        self.assertEqual(first, second)
+        self.assertEqual(
+            [row["snapshot_date"] for row in first], sorted(row["snapshot_date"] for row in first)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

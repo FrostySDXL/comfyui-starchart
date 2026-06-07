@@ -317,6 +317,20 @@
       "removal_criteria": "Remove only with equivalent markdown formatting protection.",
       "target_surface": "Hand-authored docs markdown."
     },
+    "scripts/verify/provenance_chain_integrity.py": {
+      "demotion_criteria": "Keep advisory while historical provenance and backup references may need one cleanup pass.",
+      "false_positive_tolerance": {
+        "justification": "Stale backup references and reverse flag drift can require maintainer interpretation during refresh cleanup, while ordered follow-up command errors remain actionable.",
+        "level": "medium"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of refresh provenance and artifact publication workflow.",
+      "placement": "advisory",
+      "promotion_criteria": "Promote only after current refresh provenance has stable cleanup policy and the warning set routinely stays empty or directly actionable.",
+      "purpose": "Validate refresh-provenance follow-up ordering and published flags against manifest, current artifacts, delta summary, and backup references.",
+      "removal_criteria": "Remove only if refresh provenance state is replaced by a stricter generated state-machine verifier.",
+      "target_surface": "public/artifacts/refresh-provenance.json and public/artifacts/delta-summary.json."
+    },
     "scripts/verify/python_style.py": {
       "demotion_criteria": "Demote only if Ruff lint and format checks move to another blocking gate.",
       "false_positive_tolerance": {
@@ -470,6 +484,20 @@
       "purpose": "Confirm canonical raw artifacts match published current copies and manifest hashes.",
       "removal_criteria": "Remove only if publication integrity is checked elsewhere.",
       "target_surface": "Canonical artifact publication chain."
+    },
+    "scripts/verify/versioned_artifact_completeness.py": {
+      "demotion_criteria": "Keep advisory while historical empty and pre-websocket version directories remain documented retention exceptions.",
+      "false_positive_tolerance": {
+        "justification": "Historical version retention can require maintainer policy review, but current-version omissions are deterministic errors.",
+        "level": "medium"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of artifact publication and versioned artifact retention.",
+      "placement": "advisory",
+      "promotion_criteria": "Promote only after empty legacy placeholders are removed or documented as durable policy and retained baselines routinely satisfy the canonical set.",
+      "purpose": "Classify versioned artifact directories as current, retained, empty, or documented legacy exceptions and detect current-version artifact omissions.",
+      "removal_criteria": "Remove only if versioned artifact retention is checked by a stricter publication verifier.",
+      "target_surface": "public/artifacts/versions/ directories and manifest version_key."
     },
     "scripts/verify/wait_for_runtime.py": {
       "demotion_criteria": "Keep manual while it depends on live runtime readiness.",
