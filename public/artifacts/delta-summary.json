@@ -1,7 +1,11 @@
 {
   "comparison": {
     "old": "references/_refresh_backups/raw_20260603T183637Z",
-    "new": "references/raw"
+    "new": "references/raw",
+    "methodology": "artifact-directory-to-artifact-directory",
+    "source_kind": "pre_refresh_backup_vs_current_raw",
+    "old_label": "raw backup 2026-06-03T18:36:37Z",
+    "new_label": "current raw (extracted 2026-06-04)"
   },
   "notes": [
     "Deterministic artifact-to-artifact comparison only.",

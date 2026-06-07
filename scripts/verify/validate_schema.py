@@ -33,6 +33,7 @@ REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 PUBLISHED_SCHEMA_DIR = REPO_ROOT / "public" / "artifacts" / "schemas"
 DOCS_INDEX_PATH = REPO_ROOT / "public" / "artifacts" / "docs-index.json"
 SUPPORT_ARTIFACT_PATHS = [
+    REPO_ROOT / "public" / "artifacts" / "manifest.json",
     REPO_ROOT / "public" / "artifacts" / "delta-summary.json",
     REPO_ROOT / "public" / "artifacts" / "refresh-provenance.json",
 ]
@@ -76,6 +77,7 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
         "js_hooks.json",
         "node_api_schema.json",
         "websocket_events.json",
+        "manifest.json",
         "docs-index.json",
         "delta-summary.json",
         "refresh-provenance.json",
@@ -106,7 +108,6 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
 def main() -> int:
     all_errors: list[str] = []
     json_files = sorted(REFERENCES_RAW_DIR.glob("*.json"))
-    # manifest.json remains intentionally excluded from this schema-enforcement wave.
     all_json_files = json_files + [DOCS_INDEX_PATH, *SUPPORT_ARTIFACT_PATHS]
 
     if not all_json_files:

@@ -11,6 +11,65 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 PUBLISHED_SCHEMA_DIR = REPO_ROOT / "public" / "artifacts" / "schemas"
 
 
+def valid_delta_summary_payload() -> dict:
+    block = {"old_count": 1, "new_count": 1, "added": [], "removed": [], "changed": []}
+    return {
+        "comparison": {
+            "old": "references/old",
+            "new": "references/raw",
+            "methodology": "artifact-directory-to-artifact-directory",
+        },
+        "notes": [],
+        "artifacts": {
+            "server_endpoints": dict(block),
+            "js_hooks": dict(block),
+            "node_api_schema": {
+                "object_info_fields": dict(block),
+                "io_types": dict(block),
+                "typed_input_shapes": dict(block),
+                "prompt_conditioning_surface": {
+                    "text_input_io_types": dict(block),
+                    "conditioning_io_types": dict(block),
+                },
+                "basic_input_shapes": dict(block),
+            },
+            "websocket_events": {
+                "events": dict(block),
+                "binary_events": dict(block),
+            },
+        },
+    }
+
+
+def valid_manifest_payload() -> dict:
+    schema_names = [
+        "server_endpoints.json",
+        "js_hooks.json",
+        "node_api_schema.json",
+        "websocket_events.json",
+    ]
+    return {
+        "artifact_schema_version": "1.0.0",
+        "version_key": "core-v0.23.0_frontend-v1.46.6_2026-06-03",
+        "schemas": {
+            name: {"schema_url": f"artifacts/schemas/{name.removesuffix('.json')}.schema.json"}
+            for name in schema_names
+        },
+        "artifacts": {
+            name: {
+                "current_url": f"artifacts/current/{name}",
+                "versioned_url": f"artifacts/versions/test/{name}",
+                "sha256": "a" * 64,
+                "version": "v0.23.0",
+                "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
+                "extracted_date": "2026-06-04",
+                "sources": ["references/snapshots/source.py"],
+            }
+            for name in schema_names
+        },
+    }
+
+
 class PublishedSchemaValidationTests(unittest.TestCase):
     def test_load_published_artifact_schema_resolves_support_artifact_schemas(self):
         delta_schema = published_schema_validation.load_published_artifact_schema(
@@ -31,50 +90,11 @@ class PublishedSchemaValidationTests(unittest.TestCase):
         )
 
     def test_validate_against_published_artifact_schema_reports_delta_summary_violation(self):
+        payload = valid_delta_summary_payload()
+        payload["artifacts"]["node_api_schema"]["io_types"]["new_count"] = "wrong"
+
         errors = published_schema_validation.validate_against_published_artifact_schema(
-            {
-                "comparison": {"old": "references/old", "new": "references/raw"},
-                "notes": [],
-                "artifacts": {
-                    "server_endpoints": {
-                        "old_count": 1,
-                        "new_count": 1,
-                        "added": [],
-                        "removed": [],
-                        "changed": [],
-                    },
-                    "js_hooks": {
-                        "old_count": 1,
-                        "new_count": 1,
-                        "added": [],
-                        "removed": [],
-                        "changed": [],
-                    },
-                    "node_api_schema": {
-                        "object_info_fields": {
-                            "old_count": 1,
-                            "new_count": 1,
-                            "added": [],
-                            "removed": [],
-                            "changed": [],
-                        },
-                        "io_types": {
-                            "old_count": 1,
-                            "new_count": "wrong",
-                            "added": [],
-                            "removed": [],
-                            "changed": [],
-                        },
-                        "typed_input_shapes": {
-                            "old_count": 1,
-                            "new_count": 1,
-                            "added": [],
-                            "removed": [],
-                            "changed": [],
-                        },
-                    },
-                },
-            },
+            payload,
             "delta-summary.json",
             PUBLISHED_SCHEMA_DIR,
         )
@@ -141,6 +161,21 @@ class PublishedSchemaValidationTests(unittest.TestCase):
 
         self.assertIn("docs-index.json: unexpected key 'extra'", errors)
 
+    def test_validate_json_schema_instance_resolves_local_defs_ref(self):
+        schema = {
+            "$defs": {"name": {"type": "string"}},
+            "type": "object",
+            "properties": {"name": {"$ref": "#/$defs/name"}},
+        }
+
+        errors = published_schema_validation._validate_json_schema_instance(
+            {"name": 1},
+            schema,
+            "sample.json",
+        )
+
+        self.assertIn("sample.json.name: expected string, got int", errors)
+
     def test_validate_json_schema_instance_checks_pattern_properties(self):
         schema = {
             "type": "object",
@@ -183,19 +218,161 @@ class PublishedSchemaValidationTests(unittest.TestCase):
 
         self.assertIsNone(schema)
 
-    def test_manifest_json_is_intentionally_excluded_from_published_artifact_schemas(self):
-        self.assertNotIn(
-            "manifest.json",
-            published_schema_validation.PUBLISHED_ARTIFACT_SCHEMAS,
+    def test_manifest_json_is_included_in_published_artifact_schemas(self):
+        self.assertEqual(
+            published_schema_validation.PUBLISHED_ARTIFACT_SCHEMAS["manifest.json"],
+            "manifest.schema.json",
         )
 
-        with tempfile.TemporaryDirectory() as tmp:
-            schema = published_schema_validation.load_published_artifact_schema(
-                "manifest.json",
-                Path(tmp),
-            )
+        schema = published_schema_validation.load_published_artifact_schema(
+            "manifest.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
 
-        self.assertIsNone(schema)
+        self.assertIsNotNone(schema)
+        self.assertEqual(schema["title"], "ComfyUI StarChart manifest support artifact")
+
+    def test_manifest_json_valid_payload_passes_published_schema(self):
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            valid_manifest_payload(),
+            "manifest.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertEqual(errors, [])
+
+    def test_manifest_json_malformed_entry_fails_published_schema(self):
+        payload = valid_manifest_payload()
+        payload["artifacts"]["server_endpoints.json"]["sha256"] = "not-hex"
+
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            payload,
+            "manifest.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertTrue(any("does not match pattern" in e for e in errors))
+
+    def test_manifest_json_artifacts_closure_rejects_future_artifact(self):
+        payload = valid_manifest_payload()
+        payload["artifacts"]["future_artifact"] = {}
+
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            payload,
+            "manifest.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertTrue(any("artifacts: unexpected key 'future_artifact'" in e for e in errors))
+
+    def test_delta_summary_missing_websocket_events_is_rejected(self):
+        payload = valid_delta_summary_payload()
+        del payload["artifacts"]["websocket_events"]
+
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            payload,
+            "delta-summary.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertTrue(any("missing required key 'websocket_events'" in e for e in errors))
+
+    def test_delta_summary_current_emitted_shape_is_accepted(self):
+        payload = json.loads(
+            (REPO_ROOT / "public" / "artifacts" / "delta-summary.json").read_text()
+        )
+        payload["comparison"]["methodology"] = "artifact-directory-to-artifact-directory"
+
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            payload,
+            "delta-summary.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertEqual(errors, [])
+
+    def test_delta_summary_artifacts_closure_rejects_extra_section(self):
+        payload = valid_delta_summary_payload()
+        payload["artifacts"]["extra_section"] = {}
+
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            payload,
+            "delta-summary.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertTrue(any("artifacts: unexpected key 'extra_section'" in e for e in errors))
+
+    def test_delta_summary_node_api_schema_closure_rejects_extra_field(self):
+        payload = valid_delta_summary_payload()
+        payload["artifacts"]["node_api_schema"]["totally_new_field"] = {}
+
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            payload,
+            "delta-summary.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertTrue(
+            any("node_api_schema: unexpected key 'totally_new_field'" in e for e in errors)
+        )
+
+
+class TestComparisonSchemaClosure(unittest.TestCase):
+    def test_comparison_closure_rejects_undeclared_field(self):
+        payload = valid_delta_summary_payload()
+        payload["comparison"]["methodology_version"] = "1.1"
+
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            payload,
+            "delta-summary.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertTrue(
+            any("comparison: unexpected key 'methodology_version'" in e for e in errors)
+        )
+
+    def test_comparison_closure_rejects_missing_methodology(self):
+        payload = valid_delta_summary_payload()
+        del payload["comparison"]["methodology"]
+
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            payload,
+            "delta-summary.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertTrue(any("comparison: missing required key 'methodology'" in e for e in errors))
+
+    def test_comparison_closure_accepts_optional_fields_absent(self):
+        payload = valid_delta_summary_payload()
+
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            payload,
+            "delta-summary.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertEqual(errors, [])
+
+    def test_comparison_closure_accepts_all_fields_present(self):
+        payload = valid_delta_summary_payload()
+        payload["comparison"].update(
+            {
+                "source_kind": "pre_refresh_backup_vs_current_raw",
+                "old_label": "raw backup 2026-06-03T18:36:37Z",
+                "new_label": "current raw (extracted 2026-06-04)",
+            }
+        )
+
+        errors = published_schema_validation.validate_against_published_artifact_schema(
+            payload,
+            "delta-summary.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+        self.assertEqual(errors, [])
 
     def test_validate_against_published_artifact_schema_validates_additional_properties_dict(self):
         with tempfile.TemporaryDirectory() as tmp:

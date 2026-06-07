@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, cast
 
 PUBLISHED_ARTIFACT_SCHEMAS = {
+    "manifest.json": "manifest.schema.json",
     "server_endpoints.json": "server_endpoints.schema.json",
     "js_hooks.json": "js_hooks.schema.json",
     "node_api_schema.json": "node_api_schema.schema.json",
@@ -50,8 +51,31 @@ def _json_schema_type_label(expected_type) -> str:
     return expected_type
 
 
-def _validate_json_schema_instance(instance, schema: dict, path: str) -> list[str]:
+def _resolve_json_schema_ref(ref: str, root_schema: dict) -> dict | None:
+    """Resolve the local JSON Schema references used by checked-in schemas."""
+    if not ref.startswith("#/"):
+        return None
+    target: Any = root_schema
+    for part in ref.removeprefix("#/").split("/"):
+        if not isinstance(target, dict) or part not in target:
+            return None
+        target = target[part]
+    return target if isinstance(target, dict) else None
+
+
+def _validate_json_schema_instance(
+    instance, schema: dict, path: str, root_schema: dict | None = None
+) -> list[str]:
     errors: list[str] = []
+    if root_schema is None:
+        root_schema = schema
+
+    if "$ref" in schema:
+        resolved_schema = _resolve_json_schema_ref(schema["$ref"], root_schema)
+        if resolved_schema is None:
+            return [f"{path}: unresolved schema reference {schema['$ref']!r}"]
+        return _validate_json_schema_instance(instance, resolved_schema, path, root_schema)
+
     expected_type = schema.get("type")
     if expected_type is not None:
         allowed_types = expected_type if isinstance(expected_type, list) else [expected_type]
@@ -62,6 +86,12 @@ def _validate_json_schema_instance(instance, schema: dict, path: str) -> list[st
 
     if "enum" in schema and instance not in schema["enum"]:
         errors.append(f"{path}: value {instance!r} not in enum {schema['enum']!r}")
+
+    if "pattern" in schema and isinstance(instance, str):
+        if not re.fullmatch(schema["pattern"], instance):
+            errors.append(
+                f"{path}: value {instance!r} does not match pattern {schema['pattern']!r}"
+            )
 
     if isinstance(instance, dict):
         properties = schema.get("properties", {})
@@ -76,25 +106,37 @@ def _validate_json_schema_instance(instance, schema: dict, path: str) -> list[st
         for key, value in instance.items():
             child_path = f"{path}.{key}" if path else key
             if key in properties:
-                errors.extend(_validate_json_schema_instance(value, properties[key], child_path))
+                errors.extend(
+                    _validate_json_schema_instance(value, properties[key], child_path, root_schema)
+                )
                 continue
             matched_pattern = False
             for pattern, pattern_schema in pattern_properties.items():
                 if re.fullmatch(pattern, key):
                     matched_pattern = True
-                    errors.extend(_validate_json_schema_instance(value, pattern_schema, child_path))
+                    errors.extend(
+                        _validate_json_schema_instance(
+                            value, pattern_schema, child_path, root_schema
+                        )
+                    )
             if matched_pattern:
                 continue
             if additional_properties is False:
                 errors.append(f"{path}: unexpected key '{key}'")
             elif isinstance(additional_properties, dict):
                 errors.extend(
-                    _validate_json_schema_instance(value, additional_properties, child_path)
+                    _validate_json_schema_instance(
+                        value, additional_properties, child_path, root_schema
+                    )
                 )
 
     if isinstance(instance, list) and "items" in schema:
         for index, item in enumerate(instance):
-            errors.extend(_validate_json_schema_instance(item, schema["items"], f"{path}[{index}]"))
+            errors.extend(
+                _validate_json_schema_instance(
+                    item, schema["items"], f"{path}[{index}]", root_schema
+                )
+            )
     return errors
 
 

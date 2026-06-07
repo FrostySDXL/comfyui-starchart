@@ -1,8 +1,13 @@
 """Focused comparison tests for delta-summary semantic normalization."""
 
 import unittest
+from pathlib import Path
 
 from scripts.generate.generate_snapshot_delta_summary import build_delta_summary
+from scripts.verify import published_schema_validation
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+PUBLISHED_SCHEMA_DIR = REPO_ROOT / "public" / "artifacts" / "schemas"
 
 
 def _artifacts_with_hooks(*hooks: dict) -> dict[str, dict]:
@@ -32,6 +37,13 @@ def _artifacts_with_node_schema(*, io_types=None, typed_input_shapes=None) -> di
 
 
 class DeltaSummaryComparisonTests(unittest.TestCase):
+    def assert_default_comparison(self, summary: dict, old: str = "old", new: str = "new") -> None:
+        comparison = summary["comparison"]
+        self.assertEqual(comparison["old"], old)
+        self.assertEqual(comparison["new"], new)
+        self.assertIsInstance(comparison["methodology"], str)
+        self.assertNotEqual(comparison["methodology"], "")
+
     def test_provenance_only_hook_path_drift_does_not_count_as_changed(self):
         old_artifacts = _artifacts_with_hooks(
             {
@@ -68,6 +80,7 @@ class DeltaSummaryComparisonTests(unittest.TestCase):
 
         summary = build_delta_summary(old_artifacts, new_artifacts, "old", "new")
 
+        self.assert_default_comparison(summary)
         self.assertEqual(summary["artifacts"]["js_hooks"]["changed"], [])
 
     def test_semantic_hook_changes_still_count_as_changed(self):
@@ -109,6 +122,7 @@ class DeltaSummaryComparisonTests(unittest.TestCase):
 
         summary = build_delta_summary(old_artifacts, new_artifacts, "old", "new")
 
+        self.assert_default_comparison(summary)
         self.assertEqual(summary["artifacts"]["js_hooks"]["changed"], ["setup"])
 
     def test_meaningful_hook_location_change_still_counts_as_changed(self):
@@ -147,6 +161,7 @@ class DeltaSummaryComparisonTests(unittest.TestCase):
 
         summary = build_delta_summary(old_artifacts, new_artifacts, "old", "new")
 
+        self.assert_default_comparison(summary)
         self.assertEqual(summary["artifacts"]["js_hooks"]["changed"], ["setup"])
 
     def test_provenance_only_io_type_path_drift_does_not_count_as_changed(self):
@@ -185,6 +200,7 @@ class DeltaSummaryComparisonTests(unittest.TestCase):
 
         summary = build_delta_summary(old_artifacts, new_artifacts, "old", "new")
 
+        self.assert_default_comparison(summary)
         self.assertEqual(summary["artifacts"]["node_api_schema"]["io_types"]["changed"], [])
 
     def test_semantic_io_type_change_still_counts_as_changed(self):
@@ -223,6 +239,7 @@ class DeltaSummaryComparisonTests(unittest.TestCase):
 
         summary = build_delta_summary(old_artifacts, new_artifacts, "old", "new")
 
+        self.assert_default_comparison(summary)
         self.assertEqual(
             summary["artifacts"]["node_api_schema"]["io_types"]["changed"],
             ["BACKGROUND_REMOVAL:BackgroundRemoval"],
@@ -266,10 +283,71 @@ class DeltaSummaryComparisonTests(unittest.TestCase):
 
         summary = build_delta_summary(old_artifacts, new_artifacts, "old", "new")
 
+        self.assert_default_comparison(summary)
         self.assertEqual(
             summary["artifacts"]["node_api_schema"]["typed_input_shapes"]["changed"],
             [],
         )
+
+
+class TestComparisonSchemaClosure(unittest.TestCase):
+    def _summary(self) -> dict:
+        return build_delta_summary(
+            _artifacts_with_hooks(),
+            _artifacts_with_hooks(),
+            "old",
+            "new",
+        )
+
+    def _schema_errors(self, summary: dict) -> list[str]:
+        return published_schema_validation.validate_against_published_artifact_schema(
+            summary,
+            "delta-summary.json",
+            PUBLISHED_SCHEMA_DIR,
+        )
+
+    def test_comparison_closure_rejects_undeclared_field(self):
+        summary = self._summary()
+        summary["comparison"]["methodology_version"] = "1.1"
+
+        errors = self._schema_errors(summary)
+
+        self.assertTrue(
+            any("comparison: unexpected key 'methodology_version'" in e for e in errors)
+        )
+
+    def test_comparison_closure_rejects_missing_methodology(self):
+        summary = self._summary()
+        del summary["comparison"]["methodology"]
+
+        errors = self._schema_errors(summary)
+
+        self.assertTrue(any("comparison: missing required key 'methodology'" in e for e in errors))
+
+    def test_comparison_closure_accepts_optional_fields_absent(self):
+        summary = self._summary()
+
+        errors = self._schema_errors(summary)
+
+        self.assertEqual(errors, [])
+
+    def test_comparison_closure_accepts_all_fields_present(self):
+        summary = build_delta_summary(
+            _artifacts_with_hooks(),
+            _artifacts_with_hooks(),
+            "references/_refresh_backups/raw_20260603T183637Z",
+            "references/raw",
+            source_kind="pre_refresh_backup_vs_current_raw",
+            comparison_old_label="raw backup 2026-06-03T18:36:37Z",
+            comparison_new_label="current raw (extracted 2026-06-04)",
+        )
+
+        errors = self._schema_errors(summary)
+
+        self.assertEqual(errors, [])
+        self.assertEqual(summary["comparison"]["source_kind"], "pre_refresh_backup_vs_current_raw")
+        self.assertEqual(summary["comparison"]["old_label"], "raw backup 2026-06-03T18:36:37Z")
+        self.assertEqual(summary["comparison"]["new_label"], "current raw (extracted 2026-06-04)")
 
 
 if __name__ == "__main__":

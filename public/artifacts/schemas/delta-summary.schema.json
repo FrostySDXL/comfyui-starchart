@@ -14,7 +14,8 @@
       "type": "object",
       "required": [
         "old",
-        "new"
+        "new",
+        "methodology"
       ],
       "properties": {
         "old": {
@@ -22,9 +23,21 @@
         },
         "new": {
           "type": "string"
+        },
+        "methodology": {
+          "type": "string"
+        },
+        "source_kind": {
+          "type": "string"
+        },
+        "old_label": {
+          "type": "string"
+        },
+        "new_label": {
+          "type": "string"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": false
     },
     "notes": {
       "type": "array",
@@ -37,208 +50,115 @@
       "required": [
         "server_endpoints",
         "js_hooks",
-        "node_api_schema"
+        "node_api_schema",
+        "websocket_events"
       ],
       "properties": {
         "server_endpoints": {
-          "type": "object",
-          "required": [
-            "old_count",
-            "new_count",
-            "added",
-            "removed",
-            "changed"
-          ],
-          "properties": {
-            "old_count": {
-              "type": "integer"
-            },
-            "new_count": {
-              "type": "integer"
-            },
-            "added": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "removed": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "changed": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          "additionalProperties": true
+          "$ref": "#/$defs/deltaBlock"
         },
         "js_hooks": {
-          "type": "object",
-          "required": [
-            "old_count",
-            "new_count",
-            "added",
-            "removed",
-            "changed"
-          ],
-          "properties": {
-            "old_count": {
-              "type": "integer"
-            },
-            "new_count": {
-              "type": "integer"
-            },
-            "added": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "removed": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "changed": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          "additionalProperties": true
+          "$ref": "#/$defs/deltaBlock"
         },
         "node_api_schema": {
           "type": "object",
           "required": [
             "object_info_fields",
             "io_types",
-            "typed_input_shapes"
+            "typed_input_shapes",
+            "prompt_conditioning_surface",
+            "basic_input_shapes"
           ],
           "properties": {
             "object_info_fields": {
-              "type": "object",
-              "required": [
-                "old_count",
-                "new_count",
-                "added",
-                "removed",
-                "changed"
-              ],
-              "properties": {
-                "old_count": {
-                  "type": "integer"
-                },
-                "new_count": {
-                  "type": "integer"
-                },
-                "added": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "removed": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "changed": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "additionalProperties": true
+              "$ref": "#/$defs/deltaBlock"
             },
             "io_types": {
-              "type": "object",
-              "required": [
-                "old_count",
-                "new_count",
-                "added",
-                "removed",
-                "changed"
-              ],
-              "properties": {
-                "old_count": {
-                  "type": "integer"
-                },
-                "new_count": {
-                  "type": "integer"
-                },
-                "added": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "removed": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "changed": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "additionalProperties": true
+              "$ref": "#/$defs/deltaBlock"
             },
             "typed_input_shapes": {
+              "$ref": "#/$defs/deltaBlock"
+            },
+            "prompt_conditioning_surface": {
               "type": "object",
               "required": [
-                "old_count",
-                "new_count",
-                "added",
-                "removed",
-                "changed"
+                "text_input_io_types",
+                "conditioning_io_types"
               ],
               "properties": {
-                "old_count": {
-                  "type": "integer"
+                "text_input_io_types": {
+                  "$ref": "#/$defs/deltaBlock"
                 },
-                "new_count": {
-                  "type": "integer"
-                },
-                "added": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "removed": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "changed": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                "conditioning_io_types": {
+                  "$ref": "#/$defs/deltaBlock"
                 }
               },
-              "additionalProperties": true
+              "additionalProperties": false
+            },
+            "basic_input_shapes": {
+              "$ref": "#/$defs/deltaBlock"
             }
           },
-          "additionalProperties": true
+          "additionalProperties": false
+        },
+        "websocket_events": {
+          "type": "object",
+          "required": [
+            "events",
+            "binary_events"
+          ],
+          "properties": {
+            "events": {
+              "$ref": "#/$defs/deltaBlock"
+            },
+            "binary_events": {
+              "$ref": "#/$defs/deltaBlock"
+            }
+          },
+          "additionalProperties": false
         }
       },
-      "additionalProperties": true
+      "additionalProperties": false
     }
   },
-  "additionalProperties": true
+  "additionalProperties": false,
+  "$defs": {
+    "deltaBlock": {
+      "type": "object",
+      "required": [
+        "old_count",
+        "new_count",
+        "added",
+        "removed",
+        "changed"
+      ],
+      "properties": {
+        "old_count": {
+          "type": "integer"
+        },
+        "new_count": {
+          "type": "integer"
+        },
+        "added": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "changed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
 }

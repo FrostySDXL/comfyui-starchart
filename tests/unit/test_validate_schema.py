@@ -11,6 +11,65 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "verify" / "validate_schema.py"
 
 
+def valid_delta_summary_payload() -> dict:
+    block = {"old_count": 1, "new_count": 1, "added": [], "removed": [], "changed": []}
+    return {
+        "comparison": {
+            "old": "references/old",
+            "new": "references/raw",
+            "methodology": "artifact-directory-to-artifact-directory",
+        },
+        "notes": [],
+        "artifacts": {
+            "server_endpoints": dict(block),
+            "js_hooks": dict(block),
+            "node_api_schema": {
+                "object_info_fields": dict(block),
+                "io_types": dict(block),
+                "typed_input_shapes": dict(block),
+                "prompt_conditioning_surface": {
+                    "text_input_io_types": dict(block),
+                    "conditioning_io_types": dict(block),
+                },
+                "basic_input_shapes": dict(block),
+            },
+            "websocket_events": {
+                "events": dict(block),
+                "binary_events": dict(block),
+            },
+        },
+    }
+
+
+def valid_manifest_payload() -> dict:
+    schema_names = [
+        "server_endpoints.json",
+        "js_hooks.json",
+        "node_api_schema.json",
+        "websocket_events.json",
+    ]
+    return {
+        "artifact_schema_version": "1.0.0",
+        "version_key": "core-v0.23.0_frontend-v1.46.6_2026-06-03",
+        "schemas": {
+            name: {"schema_url": f"artifacts/schemas/{name.removesuffix('.json')}.schema.json"}
+            for name in schema_names
+        },
+        "artifacts": {
+            name: {
+                "current_url": f"artifacts/current/{name}",
+                "versioned_url": f"artifacts/versions/test/{name}",
+                "sha256": "a" * 64,
+                "version": "v0.23.0",
+                "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6",
+                "extracted_date": "2026-06-04",
+                "sources": ["references/snapshots/source.py"],
+            }
+            for name in schema_names
+        },
+    }
+
+
 class ValidateSchemaUnitTests(unittest.TestCase):
     """Direct unit tests for validation functions."""
 
@@ -1076,49 +1135,8 @@ class ValidateSchemaScriptTests(unittest.TestCase):
 
     def test_single_support_artifact_file_reports_published_schema_violation(self):
         module = self._import_module()
-        payload = {
-            "comparison": {"old": "references/old", "new": "references/raw"},
-            "notes": [],
-            "artifacts": {
-                "server_endpoints": {
-                    "old_count": 1,
-                    "new_count": 1,
-                    "added": [],
-                    "removed": [],
-                    "changed": [],
-                },
-                "js_hooks": {
-                    "old_count": 1,
-                    "new_count": 1,
-                    "added": [],
-                    "removed": [],
-                    "changed": [],
-                },
-                "node_api_schema": {
-                    "object_info_fields": {
-                        "old_count": 1,
-                        "new_count": 1,
-                        "added": [],
-                        "removed": [],
-                        "changed": [],
-                    },
-                    "io_types": {
-                        "old_count": 1,
-                        "new_count": "wrong",
-                        "added": [],
-                        "removed": [],
-                        "changed": [],
-                    },
-                    "typed_input_shapes": {
-                        "old_count": 1,
-                        "new_count": 1,
-                        "added": [],
-                        "removed": [],
-                        "changed": [],
-                    },
-                },
-            },
-        }
+        payload = valid_delta_summary_payload()
+        payload["artifacts"]["node_api_schema"]["io_types"]["new_count"] = "wrong"
         with tempfile.TemporaryDirectory() as tmpdir:
             json_file = Path(tmpdir) / "delta-summary.json"
             json_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -1127,7 +1145,7 @@ class ValidateSchemaScriptTests(unittest.TestCase):
         self.assertTrue(any("published schema violation" in e for e in errors))
         self.assertTrue(any("expected integer" in e for e in errors))
 
-    def test_main_validates_support_artifacts_and_excludes_manifest(self):
+    def test_main_validates_support_artifacts_and_manifest(self):
         module = self._import_module()
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_path = Path(tmpdir)
@@ -1150,6 +1168,12 @@ class ValidateSchemaScriptTests(unittest.TestCase):
                 ).read_text(encoding="utf-8"),
                 encoding="utf-8",
             )
+            (schema_dir / "manifest.schema.json").write_text(
+                (REPO_ROOT / "public" / "artifacts" / "schemas" / "manifest.schema.json").read_text(
+                    encoding="utf-8"
+                ),
+                encoding="utf-8",
+            )
             (schema_dir / "refresh-provenance.schema.json").write_text(
                 (
                     REPO_ROOT
@@ -1167,49 +1191,7 @@ class ValidateSchemaScriptTests(unittest.TestCase):
                 "scope": {"surface": "test", "excludes": []},
                 "pages": [],
             }
-            delta_summary_payload = {
-                "comparison": {"old": "references/old", "new": "references/raw"},
-                "notes": [],
-                "artifacts": {
-                    "server_endpoints": {
-                        "old_count": 1,
-                        "new_count": 1,
-                        "added": [],
-                        "removed": [],
-                        "changed": [],
-                    },
-                    "js_hooks": {
-                        "old_count": 1,
-                        "new_count": 1,
-                        "added": [],
-                        "removed": [],
-                        "changed": [],
-                    },
-                    "node_api_schema": {
-                        "object_info_fields": {
-                            "old_count": 1,
-                            "new_count": 1,
-                            "added": [],
-                            "removed": [],
-                            "changed": [],
-                        },
-                        "io_types": {
-                            "old_count": 1,
-                            "new_count": 1,
-                            "added": [],
-                            "removed": [],
-                            "changed": [],
-                        },
-                        "typed_input_shapes": {
-                            "old_count": 1,
-                            "new_count": 1,
-                            "added": [],
-                            "removed": [],
-                            "changed": [],
-                        },
-                    },
-                },
-            }
+            delta_summary_payload = valid_delta_summary_payload()
             refresh_provenance_payload = {
                 "backup_location": None,
                 "next_steps": {
@@ -1238,15 +1220,23 @@ class ValidateSchemaScriptTests(unittest.TestCase):
             (published_dir / "refresh-provenance.json").write_text(
                 json.dumps(refresh_provenance_payload, indent=2), encoding="utf-8"
             )
-            (published_dir / "manifest.json").write_text("{}", encoding="utf-8")
+            (published_dir / "manifest.json").write_text(
+                json.dumps(valid_manifest_payload(), indent=2), encoding="utf-8"
+            )
 
             original_raw_dir = module.REFERENCES_RAW_DIR
             original_published_schema_dir = module.PUBLISHED_SCHEMA_DIR
             original_docs_index_path = module.DOCS_INDEX_PATH
+            original_support_artifact_paths = module.SUPPORT_ARTIFACT_PATHS
 
             module.REFERENCES_RAW_DIR = raw_dir
             module.PUBLISHED_SCHEMA_DIR = schema_dir
             module.DOCS_INDEX_PATH = docs_index_path
+            module.SUPPORT_ARTIFACT_PATHS = [
+                published_dir / "manifest.json",
+                published_dir / "delta-summary.json",
+                published_dir / "refresh-provenance.json",
+            ]
             try:
                 stdout = io.StringIO()
                 with redirect_stdout(stdout):
@@ -1255,12 +1245,13 @@ class ValidateSchemaScriptTests(unittest.TestCase):
                 module.REFERENCES_RAW_DIR = original_raw_dir
                 module.PUBLISHED_SCHEMA_DIR = original_published_schema_dir
                 module.DOCS_INDEX_PATH = original_docs_index_path
+                module.SUPPORT_ARTIFACT_PATHS = original_support_artifact_paths
 
         output = stdout.getvalue()
         self.assertEqual(result, 0)
+        self.assertIn("Validating manifest.json...", output)
         self.assertIn("Validating delta-summary.json...", output)
         self.assertIn("Validating refresh-provenance.json...", output)
-        self.assertNotIn("Validating manifest.json...", output)
 
 
 if __name__ == "__main__":

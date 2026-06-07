@@ -94,11 +94,17 @@ When exact version behavior matters, prefer the pinned snapshot files first,
 then reconcile against official docs and release notes. For artifact-surface
 consumption details, see [Machine-Readable Artifacts](machine-readable-artifacts.md).
 
-## Known Baseline Deltas (v0.22.0 -> v0.23.0)
+## Known Baseline Deltas
 
-The full machine-readable delta between the v0.22.0 and v0.23.0
-extractions is published in `public/artifacts/delta-summary.json`. The
-high-level item list:
+The current checked-in machine-readable delta is published in
+`public/artifacts/delta-summary.json`. Its `comparison` block is the authority
+for what was compared. At the time of this page update, it compares the recorded
+pre-refresh raw backup `references/_refresh_backups/raw_20260603T183637Z` to the
+current `references/raw/` artifacts. That makes it a backup-vs-current artifact
+comparison, not automatically a pure upstream v0.22.0-to-v0.23.0 extraction
+delta unless the compared directories are versioned baselines.
+
+The high-level item list from that current comparison:
 
 - **`GET /system_stats` field flattening:** The extracted
   `server_endpoints.json` artifact removed per-device GPU fields that

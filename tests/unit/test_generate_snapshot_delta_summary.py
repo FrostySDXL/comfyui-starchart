@@ -110,6 +110,12 @@ class GenerateSnapshotDeltaSummaryTests(unittest.TestCase):
 
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             data = json.loads(output_path.read_text(encoding="utf-8"))
+            self.assertEqual(data["comparison"]["old"], old_dir.as_posix())
+            self.assertEqual(data["comparison"]["new"], new_dir.as_posix())
+            self.assertEqual(
+                data["comparison"]["methodology"],
+                "artifact-directory-to-artifact-directory",
+            )
             self.assertEqual(data["artifacts"]["server_endpoints"]["added"], ["POST /b"])
             self.assertEqual(data["artifacts"]["server_endpoints"]["changed"], ["GET /a"])
             self.assertEqual(data["artifacts"]["js_hooks"]["added"], ["nodeCreated"])

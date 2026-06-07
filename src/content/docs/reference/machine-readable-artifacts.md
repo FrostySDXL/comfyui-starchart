@@ -50,7 +50,7 @@ The repo also publishes non-canonical support artifacts:
 | `refresh-provenance.json` | Durable evidence about the most recent refresh run, including requested versions, resolved commits, backup path, and runtime-enrichment intent | `artifacts/refresh-provenance.json` |
 
 The repo also publishes bounded JSON Schema files for the four canonical
-artifacts:
+artifacts and selected support artifacts:
 
 | Schema file | Covers | Stable URL |
 |-------------|--------|------------|
@@ -58,6 +58,10 @@ artifacts:
 | `js_hooks.schema.json` | `js_hooks.json` guaranteed structure | `artifacts/schemas/js_hooks.schema.json` |
 | `node_api_schema.schema.json` | `node_api_schema.json` guaranteed structure | `artifacts/schemas/node_api_schema.schema.json` |
 | `websocket_events.schema.json` | `websocket_events.json` guaranteed structure | `artifacts/schemas/websocket_events.schema.json` |
+| `manifest.schema.json` | `manifest.json` discovery contract | `artifacts/schemas/manifest.schema.json` |
+| `docs-index.schema.json` | `docs-index.json` support-index structure | `artifacts/schemas/docs-index.schema.json` |
+| `delta-summary.schema.json` | `delta-summary.json` comparison-summary structure | `artifacts/schemas/delta-summary.schema.json` |
+| `refresh-provenance.schema.json` | `refresh-provenance.json` refresh-evidence structure | `artifacts/schemas/refresh-provenance.schema.json` |
 
 ## Contract Tiers
 
@@ -115,7 +119,22 @@ OpenAPI-grade semantics, or a full runtime truth layer.
 ## Interpreting delta-summary.json
 
 Use `delta-summary.json` as a bounded comparison aid between two checked-in
-artifact baselines.
+artifact baselines or repo-local artifact directories. The `comparison` block is
+the source of truth for what was compared:
+
+- `comparison.old` and `comparison.new` preserve the raw old/new paths passed to
+  the generator
+- `comparison.methodology` describes the comparison method, such as
+  `artifact-directory-to-artifact-directory`
+- `comparison.source_kind`, when present, classifies common maintainer cases such
+  as `pre_refresh_backup_vs_current_raw`
+- `comparison.old_label` and `comparison.new_label`, when present, provide
+  human-readable labels for the raw paths
+
+Do not infer a pure upstream version-to-version delta from the filename alone.
+When the old path is under `references/_refresh_backups/` and the new path is
+`references/raw`, the file describes a pre-refresh-backup versus current-raw
+comparison.
 
 - `added` lists keys or entries that appear only in the newer baseline
 - `removed` lists keys or entries that disappeared from the newer baseline
@@ -319,6 +338,12 @@ and `references/snapshots/2026-06-03/comfyui-frontend-v1.46.6/src/scripts/app.ts
 first version is intentionally narrow: keyed adds/removes/changes and count
 summaries for the canonical baseline artifacts.
 
+Read the top-level `comparison` object before interpreting the result. The file
+keeps the raw `old` and `new` paths for compatibility and also includes
+`methodology`, with optional `source_kind`, `old_label`, and `new_label` fields so
+consumers can distinguish backup-vs-current refresh evidence from a deliberately
+curated version-baseline comparison.
+
 Use it to answer questions like:
 
 - which endpoint keys were added or removed between two baselines
@@ -455,6 +480,11 @@ artifact, read its `metadata` object or consult `manifest.json`.
   - optional `commits` component provenance when an artifact combines core and
     frontend extraction sources, such as `websocket_events.json`
   - `sources` -- the pinned snapshot file(s) the artifact was extracted from
+
+The manifest discovery contract is validated by
+`artifacts/schemas/manifest.schema.json`. That schema closes the manifest's
+top-level object, `schemas` map, and `artifacts` map so the canonical discovery
+surface cannot silently grow undeclared artifact entries.
 
 Maintainership note: `python scripts/verify/verify_artifact_integrity.py` is a
 blocking verifier. It proves the canonical `references/raw/` files, published

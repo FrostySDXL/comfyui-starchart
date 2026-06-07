@@ -2,6 +2,7 @@
 """Generate a deterministic delta summary between two artifact baselines."""
 
 import argparse
+import datetime as dt
 import json
 from pathlib import Path
 
@@ -182,6 +183,51 @@ def _compare_mapping(old_map: dict, new_map: dict, *, normalizer=None) -> dict:
     }
 
 
+def _raw_backup_label(path: Path) -> str | None:
+    """Return a human-readable raw-backup label when the path follows refresh naming."""
+    name = path.name
+    prefix = "raw_"
+    if not name.startswith(prefix):
+        return None
+    timestamp = name.removeprefix(prefix)
+    try:
+        parsed = dt.datetime.strptime(timestamp, "%Y%m%dT%H%M%SZ")
+    except ValueError:
+        return None
+    return f"raw backup {parsed.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+
+
+def _artifact_extracted_dates(artifacts: dict[str, dict]) -> list[str]:
+    dates = []
+    for artifact in artifacts.values():
+        metadata = artifact.get("metadata")
+        if isinstance(metadata, dict) and isinstance(metadata.get("extracted_date"), str):
+            dates.append(metadata["extracted_date"])
+    return sorted(set(dates))
+
+
+def _current_raw_label(path: Path, artifacts: dict[str, dict]) -> str | None:
+    """Return a concise label for the active references/raw directory."""
+    if path.as_posix() != "references/raw" and path.name != "raw":
+        return None
+    dates = _artifact_extracted_dates(artifacts)
+    if len(dates) == 1:
+        return f"current raw (extracted {dates[0]})"
+    if dates:
+        return f"current raw (extracted {dates[0]} to {dates[-1]})"
+    return "current raw"
+
+
+def _comparison_source_kind(old_path: Path, new_path: Path) -> str | None:
+    """Classify the common refresh comparison case for downstream consumers."""
+    old_parts = old_path.as_posix().split("/")
+    new_posix = new_path.as_posix()
+    if "_refresh_backups" in old_parts and old_path.name.startswith("raw_"):
+        if new_posix == "references/raw" or new_path.name == "raw":
+            return "pre_refresh_backup_vs_current_raw"
+    return None
+
+
 def _server_endpoint_map(data: dict) -> dict[str, dict]:
     return {
         f"{endpoint.get('method', 'UNKNOWN')} {endpoint.get('route', '')}": endpoint
@@ -324,15 +370,31 @@ def _normalize_binary_event_for_comparison(binary: dict) -> dict:
 
 
 def build_delta_summary(
-    old_artifacts: dict[str, dict], new_artifacts: dict[str, dict], old_label: str, new_label: str
+    old_artifacts: dict[str, dict],
+    new_artifacts: dict[str, dict],
+    old_label: str,
+    new_label: str,
+    *,
+    methodology: str = "artifact-directory-to-artifact-directory",
+    source_kind: str | None = None,
+    comparison_old_label: str | None = None,
+    comparison_new_label: str | None = None,
 ) -> dict:
     old_node = _node_sections(old_artifacts["node_api_schema.json"])
     new_node = _node_sections(new_artifacts["node_api_schema.json"])
+    comparison = {
+        "old": old_label,
+        "new": new_label,
+        "methodology": methodology,
+    }
+    if source_kind is not None:
+        comparison["source_kind"] = source_kind
+    if comparison_old_label is not None:
+        comparison["old_label"] = comparison_old_label
+    if comparison_new_label is not None:
+        comparison["new_label"] = comparison_new_label
     return {
-        "comparison": {
-            "old": old_label,
-            "new": new_label,
-        },
+        "comparison": comparison,
         "notes": [
             "Deterministic artifact-to-artifact comparison only.",
             "Does not claim runtime truth or semantic compatibility beyond the compared JSON baselines.",
@@ -421,7 +483,13 @@ def main() -> int:
     old_artifacts = _artifact_map(old_dir)
     new_artifacts = _artifact_map(new_dir)
     summary = build_delta_summary(
-        old_artifacts, new_artifacts, old_dir.as_posix(), new_dir.as_posix()
+        old_artifacts,
+        new_artifacts,
+        old_dir.as_posix(),
+        new_dir.as_posix(),
+        source_kind=_comparison_source_kind(old_dir, new_dir),
+        comparison_old_label=_raw_backup_label(old_dir),
+        comparison_new_label=_current_raw_label(new_dir, new_artifacts),
     )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
