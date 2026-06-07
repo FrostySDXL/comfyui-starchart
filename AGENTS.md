@@ -69,6 +69,8 @@ Use this quick router before exploring the repo:
 | Update extracted references | matching file in `references/raw/` + extractor in `scripts/extract/` | `python scripts/verify/validate_schema.py` + relevant narrow checks |
 | Change maintainer Python tooling | `pyproject.toml` + affected `scripts/` modules | `python -m pip install -e .` + `python -m mypy` + `python -m unittest discover -s tests -v` + `python scripts/verify/run_all.py` |
 | Add or change a verifier | existing verifier + matching unit test | `python -m unittest discover -s tests -v` and place it in blocking/advisory CI intentionally |
+| Change examples | target example README + `references/example-validation-matrix.json` | `python scripts/verify/example_surface_integrity.py` + `python scripts/verify/example_validation_matrix.py` + relevant example tests |
+| Runtime-check examples | target example README + `CONTRIBUTING.md` runtime-specific verifier inventory | `python scripts/verify/example_runtime_smoke.py --url <live-url> --comfyui-root <runtime-root> --model-name <checkpoint>` |
 | Change CI workflow | relevant `.github/workflows/*.yml` + `CONTRIBUTING.md` workflow guidance | `python -m unittest discover -s tests -v -p "test_run_all.py"` + `python scripts/verify/run_all.py` |
 | Refresh upstream baselines | `scripts/refresh_snapshots.py` + `CONTRIBUTING.md` refresh section | follow the printed post-refresh command sequence, then `python scripts/verify/run_all.py` |
 | Need the full verifier inventory | `CONTRIBUTING.md` verifier inventory + `references/verifier-lifecycle.json` | run the relevant listed verifier directly |
@@ -93,12 +95,13 @@ records, and promotion rules. Keep `AGENTS.md` startup-oriented: use the key
 commands above, then read `CONTRIBUTING.md` before changing verifier placement or
 workflow wiring.
 
-Current advisory examples to remember during startup:
+Current supplemental/advisory examples to remember during startup:
 
 - `stale_content.py`
 - `extraction_idempotency.py`
 - `upstream_pins.py`
 - `example_surface_integrity.py`
+- `example_validation_matrix.py`
 - `evidence_metadata_freshness.py`
 - `governance_lifecycle.py`
 - `python -m mypy`
@@ -111,6 +114,7 @@ Current advisory examples to remember during startup:
 - `references/docs-index-metadata.json` must only target retained published pages
 - `refresh-provenance.json` is published operator evidence, not a manifest-discovered canonical artifact
 - after `scripts/refresh_snapshots.py`, use the printed `Recommended follow-up commands:` block instead of reconstructing the republish/delta-summary/verification order by hand
+- examples are validated by matrix/tier evidence; do not claim an example is runtime-validated unless `example_runtime_smoke.py` was run against a live ComfyUI instance and the exact command is recorded
 - `npm run build` may print the benign Starlight `Entry docs -> 404 was not found.` warning
 
 ## Completion Standard

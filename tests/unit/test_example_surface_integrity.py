@@ -84,6 +84,44 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
             any(error.startswith("Invalid JSON: examples/workflows/demo.json") for error in errors)
         )
 
+    def test_validate_api_prompt_graph_reports_missing_linked_node(self):
+        """Documents static coverage; B3 runtime check against pinned node_errors is deferred."""
+
+        module = _load_module()
+        payload = {
+            "prompt": {
+                "1": {
+                    "class_type": "SaveImage",
+                    "inputs": {"images": ["missing", 0]},
+                }
+            }
+        }
+
+        errors = module.validate_api_prompt_graph_structure(
+            payload,
+            Path("examples/api-calls/post-prompt.json"),
+        )
+
+        self.assertIn(
+            "API prompt graph broken link: node 1 input images references missing node missing",
+            errors,
+        )
+
+    def test_validate_api_prompt_graph_requires_output_node(self):
+        module = _load_module()
+        payload = {"prompt": {"1": {"class_type": "KSampler", "inputs": {}}}}
+
+        errors = module.validate_api_prompt_graph_structure(
+            payload,
+            Path("examples/api-calls/post-prompt.json"),
+        )
+
+        self.assertIn(
+            "API prompt graph must include at least one output node "
+            "(PreviewImage, SaveImage) in examples/api-calls/post-prompt.json",
+            errors,
+        )
+
     def test_validate_example_surface_reports_broken_local_readme_link(self):
         module = _load_module()
 
@@ -116,6 +154,27 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
 
         self.assertIn("Missing example family directory: examples/extensions", errors)
 
+    def test_routed_docs_cover_consumer_custom_node_and_extension_families(self):
+        module = _load_module()
+
+        routed_docs = {path.as_posix() for path in module.ROUTED_DOC_RELATIVE_PATHS}
+
+        self.assertIn("src/content/docs/start-here/artifact-consumer.md", routed_docs)
+        self.assertIn("src/content/docs/start-here/author.md", routed_docs)
+        self.assertIn("src/content/docs/start-here/extension-developer.md", routed_docs)
+
+    def test_examples_do_not_contain_stale_model_filename(self):
+        stale_name = "v1-5-pruned-emaonly-fp16"
+        matches = []
+        for path in (REPO_ROOT / "examples").rglob("*"):
+            if not path.is_file():
+                continue
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            if stale_name in text:
+                matches.append(path.relative_to(REPO_ROOT).as_posix())
+
+        self.assertEqual(matches, [])
+
     @staticmethod
     def _build_valid_fixture(root: Path) -> None:
         paths_to_create = [
@@ -134,11 +193,19 @@ class ExampleSurfaceIntegrityUnitTests(unittest.TestCase):
             root / "src" / "content" / "docs" / "start-here" / "artifact-consumer.md": (
                 "Repo path: `examples/consumers/alpha/`\n"
             ),
+            root / "src" / "content" / "docs" / "start-here" / "author.md": (
+                "Repo path: `examples/custom-nodes/beta/`\n"
+            ),
+            root / "src" / "content" / "docs" / "start-here" / "extension-developer.md": (
+                "Repo path: `examples/extensions/gamma/`\n"
+            ),
             root / "src" / "content" / "docs" / "start-here" / "tooling-builder.md": (
                 "- `examples/consumers/alpha/`\n"
             ),
             root / "examples" / "api-calls" / "README.md": "# API calls\n",
-            root / "examples" / "api-calls" / "payload.json": "{}\n",
+            root / "examples" / "api-calls" / "post-prompt.json": (
+                '{"prompt":{"1":{"class_type":"SaveImage","inputs":{}}}}\n'
+            ),
             root / "examples" / "consumers" / "alpha" / "README.md": (
                 "See [Artifact Consumer](../../../src/content/docs/start-here/artifact-consumer.md).\n"
             ),

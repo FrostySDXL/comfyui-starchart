@@ -124,6 +124,10 @@ all connected sockets.
 - Treat the WebSocket `sid` and the prompt `client_id` as related but not
   identical concepts: the socket assigns a session ID, while prompt
   submission chooses which client should receive execution events.
+- For a bounded repo-local starter, see
+  `examples/consumers/websocket-event-consumer/`. It watches known JSON event
+  types, skips binary preview frames, and must be run against a live instance
+  whose `client_id` matches the prompt submitter.
 
 ## Read Next
 

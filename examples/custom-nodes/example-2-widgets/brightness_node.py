@@ -5,7 +5,6 @@ Shows dropdown, slider, text input, toggle, and integer widget patterns.
 
 import torch
 from server import PromptServer
-import json
 
 
 class BrightnessNode:

@@ -7,6 +7,8 @@ from server import PromptServer
 
 def register_routes() -> None:
     prompt_server = PromptServer.instance
+    # Duplicate-registration guard: repeated invocation should not attach the
+    # same route handler more than once to the live PromptServer route table.
     if getattr(prompt_server, "_minimal_route_registration_ready", False):
         return
 

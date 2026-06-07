@@ -21,6 +21,8 @@ EXPECTED_EXAMPLE_FAMILIES = (
 README_REQUIRED_FAMILIES = ("consumers", "custom-nodes", "extensions")
 ROUTED_DOC_RELATIVE_PATHS = (
     Path("src/content/docs/start-here/artifact-consumer.md"),
+    Path("src/content/docs/start-here/author.md"),
+    Path("src/content/docs/start-here/extension-developer.md"),
     Path("src/content/docs/start-here/tooling-builder.md"),
 )
 KNOWN_REPO_ROOT_PREFIXES = (
@@ -35,6 +37,8 @@ KNOWN_REPO_ROOT_PREFIXES = (
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 BACKTICK_PATH_RE = re.compile(r"`([^`]+)`")
 ROUTED_PATH_RE = re.compile(r"examples/[A-Za-z0-9._/-]+/?")
+API_PROMPT_GRAPH_PATH = Path("examples/api-calls/post-prompt.json")
+OUTPUT_NODE_CLASS_TYPES = {"PreviewImage", "SaveImage"}
 
 
 def validate_example_surface(repo_root: Path) -> list[str]:
@@ -108,14 +112,70 @@ def check_example_json_files(repo_root: Path) -> list[str]:
     errors: list[str] = []
     for json_path in sorted((repo_root / "examples").rglob("*.json")):
         try:
-            json.loads(json_path.read_text(encoding="utf-8"))
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc:
             errors.append(
                 "Invalid JSON: "
                 f"{json_path.relative_to(repo_root).as_posix()} "
                 f"(line {exc.lineno}, column {exc.colno}): {exc.msg}"
             )
+            continue
+
+        if json_path.relative_to(repo_root) == API_PROMPT_GRAPH_PATH:
+            errors.extend(validate_api_prompt_graph_structure(payload, API_PROMPT_GRAPH_PATH))
     return errors
+
+
+def validate_api_prompt_graph_structure(payload: object, relative_path: Path) -> list[str]:
+    """Static proxy for API prompt graph shape; full runtime simulation is deferred."""
+
+    errors: list[str] = []
+    if not isinstance(payload, dict):
+        return [f"API prompt graph must be an object: {relative_path.as_posix()}"]
+    prompt = payload.get("prompt")
+    if not isinstance(prompt, dict) or not prompt:
+        return [f"API prompt graph missing non-empty prompt object: {relative_path.as_posix()}"]
+
+    has_output_node = False
+    for node_id, node in prompt.items():
+        if not isinstance(node_id, str):
+            errors.append(
+                f"API prompt graph node ID must be a string in {relative_path.as_posix()}"
+            )
+            continue
+        if not isinstance(node, dict):
+            errors.append(f"API prompt graph node {node_id} must be an object")
+            continue
+        if node.get("class_type") in OUTPUT_NODE_CLASS_TYPES:
+            has_output_node = True
+        inputs = node.get("inputs", {})
+        if not isinstance(inputs, dict):
+            errors.append(f"API prompt graph node {node_id} inputs must be an object")
+            continue
+        for input_name, input_value in inputs.items():
+            if is_linked_input(input_value):
+                linked_node_id = input_value[0]
+                if linked_node_id not in prompt:
+                    errors.append(
+                        "API prompt graph broken link: "
+                        f"node {node_id} input {input_name} references missing node {linked_node_id}"
+                    )
+
+    if not has_output_node:
+        errors.append(
+            "API prompt graph must include at least one output node "
+            f"({', '.join(sorted(OUTPUT_NODE_CLASS_TYPES))}) in {relative_path.as_posix()}"
+        )
+    return errors
+
+
+def is_linked_input(value: object) -> bool:
+    return (
+        isinstance(value, list)
+        and len(value) == 2
+        and isinstance(value[0], str)
+        and isinstance(value[1], int)
+    )
 
 
 def check_example_readme_references(repo_root: Path) -> list[str]:

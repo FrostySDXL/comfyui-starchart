@@ -25,6 +25,10 @@ dictionary and your `client_id`. Inspect the `prompt_id` in the response to
 confirm the queue accepted your request. This confirms the API integration
 surface is reachable.
 
+For a repo-local starter that pairs prompt submission with live event watching,
+see `examples/consumers/websocket-event-consumer/`. It is runtime-dependent and
+uses the same `client_id` correlation boundary described below.
+
 ## Two Integration Surfaces
 
 ### API-First Integration
@@ -42,6 +46,8 @@ Key resources:
   a prompt to the execution engine
 - [History and Queue](../api/history-queue.md) -- poll or watch execution history
   and queue state
+- `examples/consumers/websocket-event-consumer/` -- bounded runtime-dependent
+  watcher that skips binary preview frames
 
 This approach treats ComfyUI as a remote generation service without
 modifying its internals.

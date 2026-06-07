@@ -1,6 +1,7 @@
 # Prompt Submit, Monitor, and History Example
 
 **Status:** Starter pattern
+**Validation tiers:** static, offline unit-tested, opt-in runtime smoke
 
 ## What This Example Shows
 
@@ -23,6 +24,10 @@ This directory shows a bounded runtime-dependent consumer flow:
 - `websocket-client` installed from `requirements.lock`
 - a live ComfyUI runtime URL such as `http://127.0.0.1:8188`
 - a workflow JSON file that matches the target runtime's installed nodes, model names, and expected node IDs
+
+Before running the bundled `workflow.example.json`, replace
+`YOUR_MODEL_NAME_HERE.safetensors` with a checkpoint filename installed in your
+ComfyUI runtime.
 
 ## What This Proves
 

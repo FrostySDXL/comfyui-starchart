@@ -1,4 +1,10 @@
-"""In-memory timing collector for the benchmark harness example."""
+"""In-memory timing collector for the benchmark harness example.
+
+Warning: this teaching example monkey-patches
+``comfy_execution.progress.reset_progress_state`` so a benchmark progress
+handler is re-attached after ComfyUI resets progress handlers. Treat that as a
+benchmark-harness-specific pattern, not as a general extension pattern.
+"""
 
 from __future__ import annotations
 

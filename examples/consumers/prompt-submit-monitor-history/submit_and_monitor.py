@@ -29,6 +29,10 @@ WATCHED_EVENTS = {
 TERMINAL_EVENTS = {"execution_success", "execution_error", "execution_interrupted"}
 
 
+def is_binary_frame(payload: object) -> bool:
+    return not isinstance(payload, str)
+
+
 def build_ws_url(base_url: str, client_id: str) -> str:
     parsed = urllib.parse.urlparse(base_url)
     scheme = "wss" if parsed.scheme == "https" else "ws"
@@ -79,7 +83,7 @@ def monitor_prompt(base_url: str, prompt_id: str, client_id: str, timeout_second
             except WebSocketTimeoutException:
                 continue
 
-            if not isinstance(raw, str):
+            if is_binary_frame(raw):
                 print("WS binary preview frame received")
                 continue
 

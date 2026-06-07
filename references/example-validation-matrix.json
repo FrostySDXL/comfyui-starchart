@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "purpose": "Examples-only validation evidence matrix. This matrix records how each maintained example directory is checked so examples are not trusted from README claims alone.",
+  "validation_tier_definitions": {
+    "static": "Checked by repository-local static verifiers such as example_surface_integrity.py, shell_examples_syntax.py, python_style.py, and cross_references.py.",
+    "offline_unit": "Covered by unit tests or mocked/local fixtures that do not require a live ComfyUI runtime.",
+    "pinned_source": "Claims are tied to docs.comfy.org or retained pinned source snapshots under references/snapshots/.",
+    "runtime_smoke": "Can be exercised against a live ComfyUI runtime with scripts/verify/example_runtime_smoke.py.",
+    "pattern_only_caveated": "Intentionally illustrative pattern; not proof of full live runtime behavior unless a runtime smoke command is also recorded."
+  },
+  "examples": [
+    {
+      "path": "examples/api-calls/",
+      "validation_tiers": ["static", "pinned_source", "runtime_smoke"],
+      "evidence": [
+        "python scripts/verify/example_surface_integrity.py",
+        "python scripts/verify/shell_examples_syntax.py",
+        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py"
+      ],
+      "runtime_command": "python scripts/verify/example_runtime_smoke.py --url http://127.0.0.1:8188 --comfyui-root D:/projects/comfyui-test-runtime --model-name <installed-checkpoint.safetensors>"
+    },
+    {
+      "path": "examples/consumers/artifacts-plus-live-api/",
+      "validation_tiers": ["static", "pinned_source", "runtime_smoke"],
+      "evidence": [
+        "python scripts/verify/shell_examples_syntax.py",
+        "python scripts/verify/example_surface_integrity.py",
+        "public/artifacts/manifest.json",
+        "public/artifacts/current/server_endpoints.json"
+      ],
+      "runtime_command": "python scripts/verify/example_runtime_smoke.py --url http://127.0.0.1:8188 --comfyui-root D:/projects/comfyui-test-runtime --skip-prompt"
+    },
+    {
+      "path": "examples/consumers/javascript-docs-and-artifacts/",
+      "validation_tiers": ["static", "pinned_source"],
+      "evidence": [
+        "python scripts/verify/example_surface_integrity.py",
+        "public/artifacts/docs-index.json",
+        "public/artifacts/manifest.json"
+      ]
+    },
+    {
+      "path": "examples/consumers/prompt-submit-monitor-history/",
+      "validation_tiers": ["static", "offline_unit", "pinned_source", "runtime_smoke"],
+      "evidence": [
+        "python -m unittest discover -s tests -v -p \"test_prompt_submit_monitor_history.py\"",
+        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py"
+      ],
+      "runtime_command": "python scripts/verify/example_runtime_smoke.py --url http://127.0.0.1:8188 --comfyui-root D:/projects/comfyui-test-runtime --model-name <installed-checkpoint.safetensors>"
+    },
+    {
+      "path": "examples/consumers/python-artifact-delta-reader/",
+      "validation_tiers": ["static", "offline_unit", "pinned_source"],
+      "evidence": [
+        "python -m unittest discover -s tests -v -p \"test_python_artifact_delta_reader.py\"",
+        "public/artifacts/delta-summary.json"
+      ]
+    },
+    {
+      "path": "examples/consumers/python-manifest-reader/",
+      "validation_tiers": ["static", "offline_unit", "pinned_source"],
+      "evidence": [
+        "python -m unittest discover -s tests -v -p \"test_python_manifest_reader.py\"",
+        "python -m unittest discover -s tests -v -p \"test_validate_artifact.py\"",
+        "public/artifacts/manifest.json"
+      ]
+    },
+    {
+      "path": "examples/consumers/shell-jq-artifact-consumer/",
+      "validation_tiers": ["static", "pinned_source"],
+      "evidence": [
+        "python scripts/verify/shell_examples_syntax.py",
+        "public/artifacts/manifest.json",
+        "public/artifacts/current/server_endpoints.json"
+      ]
+    },
+    {
+      "path": "examples/consumers/websocket-event-consumer/",
+      "validation_tiers": ["static", "offline_unit", "pinned_source", "runtime_smoke"],
+      "evidence": [
+        "python -m unittest discover -s tests -v -p \"test_websocket_event_consumer.py\"",
+        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py"
+      ],
+      "runtime_command": "python scripts/verify/example_runtime_smoke.py --url http://127.0.0.1:8188 --comfyui-root D:/projects/comfyui-test-runtime --skip-prompt"
+    },
+    {
+      "path": "examples/custom-nodes/example-2-widgets/",
+      "validation_tiers": ["static", "pinned_source", "pattern_only_caveated"],
+      "evidence": ["python scripts/verify/example_surface_integrity.py", "src/content/docs/custom-nodes/development-guide.md"],
+      "caveat": "Teaching pattern; runtime object_info validation requires installing the example into ComfyUI."
+    },
+    {
+      "path": "examples/custom-nodes/example-3-node-communication/",
+      "validation_tiers": ["static", "pinned_source", "pattern_only_caveated"],
+      "evidence": ["python scripts/verify/example_surface_integrity.py", "src/content/docs/custom-nodes/development-guide.md"],
+      "caveat": "Teaching pattern; runtime object_info validation requires installing the example into ComfyUI."
+    },
+    {
+      "path": "examples/custom-nodes/example-4-progress-ui/",
+      "validation_tiers": ["static", "pinned_source", "pattern_only_caveated"],
+      "evidence": ["python scripts/verify/example_surface_integrity.py", "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_execution/progress.py"],
+      "caveat": "Progress UI behavior needs live runtime validation after installation."
+    },
+    {
+      "path": "examples/custom-nodes/example-5-full-extension-package/",
+      "validation_tiers": ["static", "pinned_source", "pattern_only_caveated"],
+      "evidence": ["python scripts/verify/example_surface_integrity.py", "examples/custom-nodes/example-5-full-extension-package/README.md"],
+      "caveat": "Package-layout pattern; Manager/registry behavior is not proven by static checks alone."
+    },
+    {
+      "path": "examples/custom-nodes/example-6-v1-string-reference/",
+      "validation_tiers": ["static", "pinned_source", "runtime_smoke"],
+      "evidence": ["python scripts/verify/example_surface_integrity.py", "src/content/docs/custom-nodes/registration.md"],
+      "runtime_command": "python scripts/verify/example_runtime_smoke.py --url http://127.0.0.1:8188 --comfyui-root D:/projects/comfyui-test-runtime --skip-prompt --expect-node StringEchoReference"
+    },
+    {
+      "path": "examples/custom-nodes/example-7-v3-caveated-node/",
+      "validation_tiers": ["static", "pinned_source", "pattern_only_caveated"],
+      "evidence": ["src/content/docs/custom-nodes/node-structure.md", "src/content/docs/custom-nodes/registration.md"],
+      "caveat": "The V3 example is illustrative until Python-side ComfyExtension/comfy_entrypoint behavior is pinned or validated live."
+    },
+    {
+      "path": "examples/custom-nodes/minimal-node-template/",
+      "validation_tiers": ["static", "pinned_source", "pattern_only_caveated"],
+      "evidence": ["python scripts/verify/example_surface_integrity.py", "src/content/docs/custom-nodes/development-guide.md"],
+      "caveat": "Template pattern; runtime object_info validation requires installing the example into ComfyUI."
+    },
+    {
+      "path": "examples/extensions/benchmark-harness-skeleton/",
+      "validation_tiers": ["static", "pinned_source", "pattern_only_caveated"],
+      "evidence": [
+        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_execution/progress.py"
+      ],
+      "caveat": "Benchmark monkey-patch behavior is runtime/operator-specific and must be validated after installation."
+    },
+    {
+      "path": "examples/extensions/hybrid-v1-route/",
+      "validation_tiers": ["static", "pinned_source", "pattern_only_caveated"],
+      "evidence": ["python scripts/verify/example_surface_integrity.py", "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py"],
+      "caveat": "Hybrid route/node behavior requires installing the example into ComfyUI for live validation."
+    },
+    {
+      "path": "examples/extensions/minimal-route-registration/",
+      "validation_tiers": ["static", "offline_unit", "pinned_source", "runtime_smoke"],
+      "evidence": [
+        "python -m unittest discover -s tests -v -p \"test_minimal_route_registration.py\"",
+        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py"
+      ],
+      "runtime_command": "python scripts/verify/example_runtime_smoke.py --url http://127.0.0.1:8188 --comfyui-root D:/projects/comfyui-test-runtime --skip-prompt --expect-extension-route"
+    },
+    {
+      "path": "examples/workflows/",
+      "validation_tiers": ["static", "pattern_only_caveated"],
+      "evidence": ["python scripts/verify/example_surface_integrity.py"],
+      "caveat": "Workflow examples are parse-checked only unless a live runtime smoke command is recorded for a specific workflow."
+    }
+  ]
+}

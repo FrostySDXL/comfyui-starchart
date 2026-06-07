@@ -77,6 +77,9 @@ The submitted `prompt` value is an API prompt graph, not the editor-exported
 workflow JSON document. The pinned `/prompt` handler passes this graph directly
 to `execution.validate_prompt` before queueing it. Source-backed from pinned
 snapshots: `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py`.
+The repo-local `examples/api-calls/post-prompt.json` file uses this API graph
+shape directly; editor workflow exports usually need client-side conversion
+before they can be submitted to `/prompt`.
 
 The sub-sections below are Source-backed from pinned snapshots:
 `references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`.

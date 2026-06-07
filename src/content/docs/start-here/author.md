@@ -59,6 +59,12 @@ Use the repo examples as bounded patterns, not as a full curriculum:
 - `examples/custom-nodes/example-2-widgets/`
 - `examples/custom-nodes/example-3-node-communication/`
 - `examples/custom-nodes/example-4-progress-ui/`
+- `examples/custom-nodes/example-5-full-extension-package/` -- advanced package
+  layout for multi-file node packs with frontend and lifecycle surfaces
+- `examples/custom-nodes/example-6-v1-string-reference/` -- minimal V1 string
+  reference for legacy mapping and tuple-return basics
+- `examples/custom-nodes/example-7-v3-caveated-node/` -- caveated V3 shape
+  example; read its caveats before treating it as runtime discovery proof
 
 ## When to Switch to Repo-Local Workflow Docs
 

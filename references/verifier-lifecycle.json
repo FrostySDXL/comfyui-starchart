@@ -233,6 +233,20 @@
       "removal_criteria": "Remove only if evidence metadata policy is retired or replaced.",
       "target_surface": "Selected published docs pages."
     },
+    "scripts/verify/example_runtime_smoke.py": {
+      "demotion_criteria": "Keep manual while it depends on a live ComfyUI runtime, installed checkpoints, and operator-installed examples.",
+      "false_positive_tolerance": {
+        "justification": "Live runtime state and installed custom nodes/routes are outside repo control, so failures require operator triage.",
+        "level": "high"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of examples and runtime-facing validation guidance.",
+      "placement": "manual",
+      "promotion_criteria": "Promote only if a deterministic examples runtime fixture becomes maintained in CI.",
+      "purpose": "Exercise repo-local examples against a live ComfyUI runtime.",
+      "removal_criteria": "Remove only if examples no longer support live runtime validation or an equivalent examples-only smoke verifier replaces it.",
+      "target_surface": "examples/ API prompt, WebSocket, optional installed example nodes, and optional installed example routes."
+    },
     "scripts/verify/example_surface_integrity.py": {
       "demotion_criteria": "Keep advisory while example routing remains under active refinement.",
       "false_positive_tolerance": {
@@ -246,6 +260,20 @@
       "purpose": "Validate example family structure and routed example references.",
       "removal_criteria": "Remove only if examples are removed or checked by a stricter replacement.",
       "target_surface": "examples/ plus routed start-here docs."
+    },
+    "scripts/verify/example_validation_matrix.py": {
+      "demotion_criteria": "Keep supplemental unless example validation tiers become part of the default blocking contract.",
+      "false_positive_tolerance": {
+        "justification": "Matrix checks are deterministic over checked-in JSON and example paths.",
+        "level": "none"
+      },
+      "last_reviewed": "2026-06-07",
+      "owner": "Maintainers of examples and example validation policy.",
+      "placement": "supplemental",
+      "promotion_criteria": "Promote only after example validation tiers are stable and maintainers agree matrix drift should block the default gate.",
+      "purpose": "Validate explicit examples-only evidence tiers and runtime-smoke commands.",
+      "removal_criteria": "Remove only if examples are removed or a stricter examples-only validation artifact replaces it.",
+      "target_surface": "references/example-validation-matrix.json plus examples/ paths."
     },
     "scripts/verify/extraction_idempotency.py": {
       "demotion_criteria": "Keep advisory while extractor reproducibility may require maintainer interpretation.",

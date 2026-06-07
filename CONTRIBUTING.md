@@ -139,6 +139,7 @@ admission policy below.
 | Update extracted references | matching file in `references/raw/` + matching extractor | `python scripts/verify/validate_schema.py` + relevant narrow checks |
 | Change maintainer Python tooling | `pyproject.toml` + affected `scripts/` modules | `python -m pip install -e .` + `python -m mypy` + `python -m unittest discover -s tests -v` + `python scripts/verify/run_all.py` |
 | Add or change a verifier | existing verifier + matching tests + policy sections below | `python -m unittest discover -s tests -v` |
+| Add or change examples | target example README + `references/example-validation-matrix.json` + relevant verifier/test files | `python scripts/verify/example_surface_integrity.py` + `python scripts/verify/example_validation_matrix.py` + targeted tests |
 | Change CI workflow | target workflow + composite action + this file | `python -m unittest discover -s tests -v -p "test_run_all.py"` + `python scripts/verify/run_all.py` |
 | Refresh upstream baselines | `scripts/refresh_snapshots.py` + refresh sections below | republish + delta summary + `python scripts/verify/delta_summary_integrity.py` + `python scripts/verify/run_all.py` |
 
@@ -249,6 +250,25 @@ Admission case: `refresh-provenance.json`
 - Why not extend an existing surface: canonical artifacts describe extracted
   ComfyUI surfaces, while the manifest describes published files; refresh
   provenance captures operator process state that belongs in a separate record.
+
+Admission case: `example-validation-matrix.json`
+
+- Need: maintainers need a compact, examples-only evidence map so example READMEs
+  cannot self-certify accuracy without static checks, offline tests,
+  pinned-source evidence, caveats, or opt-in runtime smoke commands.
+- Owner: maintainers of `examples/`, `scripts/verify/example_surface_integrity.py`,
+  `scripts/verify/example_validation_matrix.py`, and runtime-facing example docs.
+- Verification: `python scripts/verify/example_validation_matrix.py`,
+  `python scripts/verify/example_surface_integrity.py`, and targeted example unit
+  tests must pass after example or matrix changes.
+- Bounded contract and removal criteria: the matrix records validation evidence
+  tiers for repo-local example families only. It is not a package registry,
+  quality ranking, or live runtime result log. Remove only if examples are
+  retired or a stricter examples-only validation artifact replaces it.
+- Why not extend an existing surface: docs-index routing metadata describes
+  published pages, while canonical artifacts describe extracted ComfyUI source
+  surfaces. Example validation status belongs beside maintainer evidence, not in
+  generated published artifacts.
 
 ## Verifier Lifecycle Policy
 
@@ -665,6 +685,7 @@ python scripts/verify/rendered_links.py
 ```bash
 python scripts/verify/run_all.py --skip-tests
 python scripts/verify/shell_examples_syntax.py
+python scripts/verify/example_validation_matrix.py
 ```
 
 ### Advisory
@@ -736,6 +757,7 @@ coverage.
 |---|---|---|---|---|---|
 | `python -m mypy` | Advisory typing pass for Python tooling | typed Python surfaces | Supplemental / advisory | Static type signal without blocking the default maintainer gate | Python refactors, interface changes, or before promoting stricter typing |
 | `python scripts/verify/run_all.py --skip-tests` | Smoke the blocking wrapper without rerunning Python or Node tests | blocking pipeline minus Python/Node tests | Supplemental | Fastest way to exercise the Starlight-era blocking path end-to-end without a wrapper script | Iterating on blocking verifiers or site build behavior |
+| `scripts/verify/example_validation_matrix.py` | Validate explicit examples-only evidence tiers and runtime-smoke commands | `references/example-validation-matrix.json` plus `examples/` paths | Supplemental | Prevents examples from claiming validation without a recorded evidence tier or command | After adding, removing, or changing examples |
 | `scripts/verify/shell_examples_syntax.py` | Parse-check repo shell examples with `bash -n` | `examples/**/*.sh` | Supplemental | Only direct syntax check for shell example scripts | After adding or editing shell examples |
 
 ### Advisory verifiers and replay workflows
@@ -755,6 +777,7 @@ coverage.
 | Verifier / workflow | Purpose | Scope | Blocking/advisory/manual | Unique signal | When to run directly |
 |---|---|---|---|---|---|
 | `scripts/verify/runtime_smoke.py` | Probe a live ComfyUI instance for basic API readiness and prompt submission | live runtime endpoints | Manual runtime-specific | Only repo-local verifier that exercises real HTTP runtime behavior directly | When validating a running ComfyUI instance or runtime-facing examples |
+| `scripts/verify/example_runtime_smoke.py` | Exercise repo-local examples against a live ComfyUI runtime | `examples/` API prompt, WebSocket, optional installed example nodes/routes | Manual runtime-specific | Only examples-only live validation path; checks object_info classes, prompt submission, WebSocket status, and optional example route/node expectations | Before claiming an example is runtime-validated against a live ComfyUI instance |
 | `scripts/verify/wait_for_runtime.py` | Poll a live endpoint until JSON readiness | live runtime startup/readiness | Manual runtime-specific | Purpose-built readiness gate for headless runtime workflows | Before runtime capture steps that require a live ComfyUI server |
 | `.github/workflows/runtime-smoke.yml` | Run `runtime_smoke.py` against a user-supplied ComfyUI URL | manual live-runtime smoke workflow | Manual runtime-specific workflow | Reproducible GitHub Actions wrapper for runtime smoke without local setup | When maintainers need remote/manual runtime verification evidence |
 | `.github/workflows/headless-runtime-metadata.yml` | Launch pinned ComfyUI headlessly, wait for readiness, capture runtime metadata, and optionally build a hybrid schema artifact | pinned runtime metadata capture | Manual runtime-specific workflow | Only workflow that clones the pinned runtime and captures fresh `object_info` evidence | When runtime metadata or hybrid-schema evidence is needed |
@@ -776,6 +799,7 @@ coverage.
 - artifact-integrity failure: republish canonical artifacts and recheck the manifest/current copies
 - delta-summary integrity failure: regenerate `public/artifacts/delta-summary.json` from the recorded refresh backup and rerun `python scripts/verify/delta_summary_integrity.py`
 - rendered-links failure: rebuild and fix the source markdown or route mismatch
+- example validation failure: fix the example, its README, or `references/example-validation-matrix.json`; do not relabel examples as runtime-validated without a live `example_runtime_smoke.py` result
 
 ## Common Pitfalls
 

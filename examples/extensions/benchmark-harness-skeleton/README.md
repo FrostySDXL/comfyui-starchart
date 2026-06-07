@@ -1,6 +1,7 @@
 # Example: Benchmark Harness Skeleton
 
 **Status:** Source-backed example with implementation caveats
+**Validation tiers:** static, pinned-source, pattern with implementation caveats; live validation is runtime/operator-specific
 
 ## What This Example Is
 
@@ -85,6 +86,18 @@ route. This keeps the UI small and avoids custom message formats.
 - no attempt to replicate ProfilerX storage or UI features
 - `update_handler(...)` is implemented as a no-op because this example only measures node start and finish timing
 - the handler re-attachment logic is intentionally minimal and depends on the current pinned progress-reset lifecycle, so revisit it when updating snapshots or targeting newer ComfyUI versions
+
+## Monkey-Patch Warning
+
+`metrics_collector.py` wraps
+`comfy_execution.progress.reset_progress_state` only for this benchmark harness
+example so its progress handler can be re-attached after the reset path shown in
+the pinned execution source. Do not treat this as a general extension pattern.
+
+Pinned source paths for this warning:
+
+- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`
+- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_execution/progress.py`
 
 ## Usage Notes
 

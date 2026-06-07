@@ -29,7 +29,7 @@
   "4": {
     "class_type": "CheckpointLoaderSimple",
     "inputs": {
-      "ckpt_name": "v1-5-pruned-emaonly-fp16.safetensors"
+      "ckpt_name": "YOUR_MODEL_NAME_HERE.safetensors"
     }
   },
   "5": {

@@ -161,6 +161,29 @@ Consumer starter examples live in
 [src/content/docs/start-here/artifact-consumer.md](src/content/docs/start-here/artifact-consumer.md)
 and `examples/consumers/`.
 
+## Example Validation
+
+Repo-local examples are not accepted as correct because they read well. Their
+evidence is tracked in `references/example-validation-matrix.json` and checked by
+examples-only verifiers:
+
+```bash
+python scripts/verify/example_surface_integrity.py
+python scripts/verify/example_validation_matrix.py
+python scripts/verify/shell_examples_syntax.py
+```
+
+Live ComfyUI validation is opt-in because it depends on a running runtime and an
+installed checkpoint. For a local runtime such as `D:/projects/comfyui-test-runtime`,
+run:
+
+```bash
+python scripts/verify/example_runtime_smoke.py --url http://127.0.0.1:8188 --comfyui-root D:/projects/comfyui-test-runtime --model-name <installed-checkpoint.safetensors>
+```
+
+Use `--skip-prompt` when you only want object-info, WebSocket, custom-node, or
+extension-route checks.
+
 ## Maintainer Workflow Routing
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) is the canonical maintainer workflow guide

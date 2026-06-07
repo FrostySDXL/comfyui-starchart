@@ -1,15 +1,17 @@
 # Python Artifact Delta Reader Example
 
 **Status:** Starter pattern
+**Validation tiers:** static, offline unit-tested
 
 ## What This Example Shows
 
 This directory shows a small Python consumer flow for the published support
 artifact `artifacts/delta-summary.json`:
 
-1. download the delta summary directly from the published site
-2. print the compared old/new version keys
-3. print a compact changed-count summary for each artifact family
+1. load the delta summary from a published site URL, direct JSON URL,
+   `file://` URL, or local JSON path
+2. print the current `comparison` metadata
+3. print compact counts for each top-level or nested artifact section
 
 ## Files
 
@@ -32,8 +34,22 @@ artifact `artifacts/delta-summary.json`:
 
 ## Usage
 
+Published site base URL:
+
 ```bash
 py -3.11 examples/consumers/python-artifact-delta-reader/read_delta_summary.py https://example.com/comfyui-starchart
+```
+
+Local offline artifact:
+
+```bash
+py -3.11 examples/consumers/python-artifact-delta-reader/read_delta_summary.py public/artifacts/delta-summary.json
+```
+
+Direct `file://` URL:
+
+```bash
+py -3.11 examples/consumers/python-artifact-delta-reader/read_delta_summary.py file:///path/to/delta-summary.json
 ```
 
 For the contract boundaries this example assumes, read
