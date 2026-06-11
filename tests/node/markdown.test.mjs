@@ -2,9 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  normalizeSiteBaseNoTrailingSlash,
   rewriteDocLinkHref,
   stripLeadingH1,
 } from '../../src/site/markdown.js';
+
+test('normalizeSiteBaseNoTrailingSlash matches Python formula for subpath with trailing slash', () => {
+  assert.equal(
+    normalizeSiteBaseNoTrailingSlash('https://example.com', '/docs/'),
+    'https://example.com/docs',
+  );
+});
 
 test('rewriteDocLinkHref rewrites markdown page links to Starlight-style routes', () => {
   assert.equal(rewriteDocLinkHref('reference/machine-readable-artifacts.md'), 'reference/machine-readable-artifacts/');
@@ -18,6 +26,20 @@ test('rewriteDocLinkHref preserves anchors, queries, and external URLs', () => {
   assert.equal(rewriteDocLinkHref('../api/endpoints.md?view=full'), '../api/endpoints/?view=full');
   assert.equal(rewriteDocLinkHref('https://docs.comfy.org/custom-nodes/overview'), 'https://docs.comfy.org/custom-nodes/overview');
   assert.equal(rewriteDocLinkHref('#scope'), '#scope');
+});
+
+test('rewriteDocLinkHref preserves query-before-hash order after route rewriting', () => {
+  assert.equal(
+    rewriteDocLinkHref('reference/object-info.md?view=full#response-shape'),
+    'reference/object-info/?view=full#response-shape',
+  );
+});
+
+test('rewriteDocLinkHref preserves URL-encoded path segments', () => {
+  assert.equal(
+    rewriteDocLinkHref('reference/special%20topic.md'),
+    'reference/special%20topic/',
+  );
 });
 
 test('rewriteDocLinkHref normalizes backslashes and preserves combined query-plus-hash suffixes', () => {
@@ -120,6 +142,27 @@ test('rewriteDocLinkHref resolves deeply nested relative links correctly', () =>
     rewriteDocLinkHref('../../../reference/glossary.md', 'start-here/nested/deep/page.md'),
     '/comfyui-starchart/reference/glossary/',
   );
+});
+
+test('rewriteDocLinkHref removes duplicate slashes when resolving current-file links', () => {
+  assert.equal(
+    rewriteDocLinkHref('reference//glossary.md', 'index.md'),
+    '/comfyui-starchart/reference/glossary/',
+  );
+});
+
+test('rewriteDocLinkHref resolved markdown routes always end with a slash before suffixes', () => {
+  const rewritten = [
+    rewriteDocLinkHref('reference/glossary.md'),
+    rewriteDocLinkHref('reference/object-info.md?view=full'),
+    rewriteDocLinkHref('reference/source-evidence-policy.md#trust'),
+  ];
+
+  assert.deepEqual(rewritten, [
+    'reference/glossary/',
+    'reference/object-info/?view=full',
+    'reference/source-evidence-policy/#trust',
+  ]);
 });
 
 test('rewriteDocLinkHref resolves index.md links to directory paths with base', () => {

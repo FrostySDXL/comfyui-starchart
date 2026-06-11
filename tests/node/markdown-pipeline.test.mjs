@@ -70,3 +70,18 @@ test('remarkRewriteDocLinks rewrites definition-style markdown links in a real p
 
   assert.match(output, /\.\.\/reference\/version-pin-status\/\?view=compact#automation/);
 });
+
+test('remarkRewriteDocLinks leaves image URLs unchanged in a real pipeline', async () => {
+  const input = '![Diagram](../images/architecture.md)';
+
+  const output = String(
+    await unified()
+      .use(remarkParse)
+      .use(remarkRewriteDocLinks)
+      .use(remarkStringify)
+      .process(input),
+  );
+
+  assert.match(output, /\.\.\/images\/architecture\.md/);
+  assert.doesNotMatch(output, /architecture\//);
+});

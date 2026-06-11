@@ -15,6 +15,7 @@ Exits 0 if all internal links are valid, exits 1 with a report of broken links.
 """
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -24,9 +25,21 @@ from scripts.common.display_path import display_path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DIST_DIR = REPO_ROOT / "dist"
-# Must match the `base` setting in astro.config.mjs and the SITE_BASE constant in
-# src/site/markdown.js. If astro.config.mjs changes, update both files together.
-SITE_BASE = "/comfyui-starchart"
+SITE_CONFIG_PATH = REPO_ROOT / "src" / "site" / "site-config.json"
+
+
+def load_site_config(path: Path = SITE_CONFIG_PATH) -> dict[str, str]:
+    """Load the shared site configuration."""
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def normalize_base_path(base: str) -> str:
+    """Normalize the Astro base path for rendered URL-path checks."""
+    normalized = "/" + (base or "").lstrip("/").rstrip("/").lstrip("/")
+    return normalized.rstrip("/") or ""
+
+
+SITE_BASE = normalize_base_path(load_site_config()["base"])
 
 
 def find_html_files(directory: Path) -> list[Path]:

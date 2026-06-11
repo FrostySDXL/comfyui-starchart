@@ -1,9 +1,20 @@
+import siteConfig from './site-config.json' with { type: 'json' };
+
 const LEADING_SKIPPABLE_NODE_TYPES = new Set(['html', 'definition']);
 
-// Base path for the site. Must match the `base` setting in astro.config.mjs.
-// If astro.config.mjs changes, this constant AND scripts/verify/rendered_links.py SITE_BASE
-// must be updated together. There is no shared config source yet.
-const SITE_BASE = '/comfyui-starchart';
+export function normalizeSiteBaseNoTrailingSlash(site, base) {
+  const normalized = `${String(site || '').replace(/\/+$/u, '')}/${String(base || '')
+    .replace(/^\/+|\/+$/gu, '')
+    .replace(/^\/+/, '')}`;
+  return normalized.replace(/\/+$/u, '') || '';
+}
+
+function normalizeBasePath(base) {
+  const normalized = `/${String(base || '').replace(/^\/+|\/+$/gu, '')}`;
+  return normalized.replace(/\/+$/u, '') || '';
+}
+
+const SITE_BASE = normalizeBasePath(siteConfig.base);
 
 function splitUrlParts(url) {
   const hashIndex = url.indexOf('#');

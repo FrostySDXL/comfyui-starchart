@@ -6,8 +6,26 @@ import { fileURLToPath } from 'node:url';
 export const SIDEBAR_DATA_PATH = fileURLToPath(new URL('./sidebar-data.json', import.meta.url));
 
 /** @returns {SidebarEntry[]} */
-export function loadSidebarData() {
-  return JSON.parse(readFileSync(SIDEBAR_DATA_PATH, 'utf8'));
+export function loadSidebarData(path = SIDEBAR_DATA_PATH) {
+  let rawData;
+  try {
+    rawData = readFileSync(path, 'utf8');
+  } catch (error) {
+    throw new Error(`Failed to read sidebar data at ${path}: ${error.message}`);
+  }
+
+  let data;
+  try {
+    data = JSON.parse(rawData);
+  } catch (error) {
+    throw new Error(`Failed to parse sidebar data JSON at ${path}: ${error.message}`);
+  }
+
+  if (!Array.isArray(data)) {
+    throw new Error(`Sidebar data at ${path} must be a top-level array`);
+  }
+
+  return data;
 }
 
 /** @param {string} docPath */

@@ -1,0 +1,19 @@
+---
+import siteConfig from '../site/site-config.json';
+
+const REPO_URL = 'https://github.com/FrostySDXL/comfyui-starchart';
+const basePath = siteConfig.base.replace(/\/+$/u, '') || '';
+const withBase = (path: string) => `${basePath}${path}`;
+---
+
+<main class="sl-markdown-content">
+  <h1>Page not found</h1>
+  <p>The requested page does not exist; check the URL or use the navigation sidebar to find a nearby topic.</p>
+  <ul>
+    <li><a href={withBase('/')}>Home</a></li>
+    <li><a href={withBase('/start-here/tooling-builder/')}>Start here</a></li>
+    <li><a href={withBase('/reference/topic-scope/')}>Reference</a></li>
+    <li><a href={REPO_URL}>GitHub repository</a></li>
+  </ul>
+  <p>The docs also include a search bar in the top navigation.</p>
+</main>

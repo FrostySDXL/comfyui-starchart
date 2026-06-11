@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
 import {
   docPathToSlug,
@@ -18,6 +21,42 @@ test('loadSidebarData returns checked-in sidebar entries', () => {
   assert.ok(Array.isArray(sidebarData));
   assert.equal(sidebarData[0].label, 'Home');
   assert.equal(sidebarData[1].label, 'Start Here');
+});
+
+test('loadSidebarData reports file read errors with path context', () => {
+  const missingPath = join(tmpdir(), 'missing-sidebar-data.json');
+
+  assert.throws(() => loadSidebarData(missingPath), {
+    message: new RegExp(`Failed to read sidebar data at ${missingPath.replaceAll('\\', '\\\\')}:`),
+  });
+});
+
+test('loadSidebarData reports malformed JSON with path context', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'sidebar-json-'));
+  const malformedPath = join(dir, 'sidebar-data.json');
+  writeFileSync(malformedPath, '[{"label": "Broken"}', 'utf8');
+
+  try {
+    assert.throws(() => loadSidebarData(malformedPath), {
+      message: new RegExp(`Failed to parse sidebar data JSON at ${malformedPath.replaceAll('\\', '\\\\')}:`),
+    });
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('loadSidebarData rejects non-array JSON with a clear error', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'sidebar-json-'));
+  const nonArrayPath = join(dir, 'sidebar-data.json');
+  writeFileSync(nonArrayPath, '{"label": "Broken"}', 'utf8');
+
+  try {
+    assert.throws(() => loadSidebarData(nonArrayPath), {
+      message: new RegExp(`Sidebar data at ${nonArrayPath.replaceAll('\\', '\\\\')} must be a top-level array`),
+    });
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test('toStarlightSidebar converts checked-in paths to Starlight sidebar items', () => {

@@ -685,6 +685,19 @@ Version-pin follow-up docs to review after a refresh:
 
 Run narrow checks while iterating, then use the wrapper before handoff.
 
+### Frontend test boundaries
+
+Current site-navigation coverage is intentionally utility and rendered-output
+based: Node-side markdown/sidebar tests, `npm run check`, `npm run build`, and
+`python scripts/verify/rendered_links.py`. Browser-level navigation tests
+(Playwright or equivalent) are deferred until a concrete visual regression or
+interactive navigation requirement exists.
+
+`tsconfig.json` intentionally excludes `tests/` because current Node tests are
+`.mjs` runtime tests executed by `npm test`, not TypeScript source checked by
+Astro. Revisit this boundary if tests migrate to TypeScript or if a JavaScript
+lint/type verifier is admitted under the new-surface policy.
+
 ### Blocking path (`run_all.py` and main CI)
 
 ```bash

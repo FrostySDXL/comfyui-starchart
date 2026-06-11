@@ -429,6 +429,20 @@
       "removal_criteria": "Remove only with equivalent navigation coverage.",
       "target_surface": "src/site/sidebar-data.json and src/content/docs/."
     },
+    "scripts/verify/site_base_consistency.py": {
+      "demotion_criteria": "Keep advisory unless site/base parity is fully covered by an existing blocking rendered-site verifier.",
+      "false_positive_tolerance": {
+        "justification": "The check is deterministic over checked-in site configuration and source references, but starts advisory while the shared config contract settles.",
+        "level": "low"
+      },
+      "last_reviewed": "2026-06-11",
+      "owner": "Maintainers of site configuration and rendered-link verification.",
+      "placement": "advisory",
+      "promotion_criteria": "Promote only after the shared site config remains stable and Plan 02 promotion thresholds are recorded.",
+      "purpose": "Detect drift between shared site/base JSON configuration, Astro config, markdown route rewriting, and rendered-link verification.",
+      "removal_criteria": "Remove only if Astro, markdown rewriting, and rendered-link verification consume a stricter shared configuration contract.",
+      "target_surface": "src/site/site-config.json, astro.config.mjs, src/site/markdown.js, and scripts/verify/rendered_links.py."
+    },
     "scripts/verify/snapshot_surface_coverage.py": {
       "demotion_criteria": "Demote if the check expands into heuristic source-quality scoring.",
       "false_positive_tolerance": {
