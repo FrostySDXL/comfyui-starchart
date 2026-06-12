@@ -4,12 +4,16 @@
 import argparse
 import datetime as dt
 import json
+import logging
+import os
 from pathlib import Path
 
 from scripts.common.display_path import display_path
 from scripts.common.json_utils import write_json
+from scripts.common.path_normalization import normalize_to_posix
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+logger = logging.getLogger(__name__)
 DEFAULT_OUTPUT = REPO_ROOT / "public" / "artifacts" / "delta-summary.json"
 CANONICAL_ARTIFACTS = [
     "server_endpoints.json",
@@ -37,7 +41,7 @@ def _artifact_map(base_dir: Path) -> dict[str, dict]:
         if not path.exists():
             if name in REQUIRED_ARTIFACTS:
                 raise FileNotFoundError(f"Missing required artifact: {path}")
-            print(f"Warning: optional artifact not found, skipping: {path}")
+            logger.warning("Warning: optional artifact not found, skipping: %s", path)
             continue
         artifacts[name] = _load_json(path)
     return artifacts
@@ -50,7 +54,7 @@ def _json_key(value: object) -> str:
 def _normalize_snapshot_source_path(path: object) -> object:
     if not isinstance(path, str):
         return path
-    normalized = path.replace("\\", "/")
+    normalized = normalize_to_posix(path)
     snapshot_marker = "references/snapshots/"
     snapshot_index = normalized.find(snapshot_marker)
     if snapshot_index != -1:
@@ -458,6 +462,7 @@ def build_delta_summary(
 
 
 def main() -> int:
+    logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO"), format="%(message)s")
     parser = argparse.ArgumentParser(
         description=(
             "Generate a snapshot delta summary from two artifact baselines. "
@@ -517,7 +522,7 @@ def _update_provenance_delta_flag() -> None:
     published["delta_summary_updated_by_refresh"] = True
     published.setdefault("provenance_path", "public/artifacts/refresh-provenance.json")
     write_json(provenance_path, data)
-    print(f"Updated {display_path(provenance_path)} published flags.")
+    logger.info("Updated %s published flags.", display_path(provenance_path))
 
 
 if __name__ == "__main__":

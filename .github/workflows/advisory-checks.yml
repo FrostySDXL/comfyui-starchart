@@ -46,3 +46,7 @@ jobs:
 
       - name: Check versioned artifact completeness
         run: python scripts/verify/versioned_artifact_completeness.py
+
+      - name: Check governance lifecycle policy coverage
+        run: python scripts/verify/governance_lifecycle.py
+        continue-on-error: true

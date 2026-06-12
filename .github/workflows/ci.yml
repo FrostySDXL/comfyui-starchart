@@ -151,7 +151,7 @@ jobs:
         continue-on-error: true
 
   refresh-snapshots:
-    name: Refresh snapshots dry run
+    name: Refresh snapshots (no commit)
     if: github.event_name == 'workflow_dispatch' && (inputs.core_version != '' || inputs.frontend_version != '')
     runs-on: ubuntu-latest
     steps:
@@ -166,13 +166,31 @@ jobs:
       - name: Configure git for clone operations
         run: git config --global user.email "ci@comfyui-kb.invalid" && git config --global user.name "CI Bot"
 
-      - name: Refresh snapshots
+      - name: Validate refresh snapshot inputs
+        env:
+          CORE_VERSION: ${{ inputs.core_version }}
+          FRONTEND_VERSION: ${{ inputs.frontend_version }}
         run: |
-          ARGS=""
-          if [ -n "${{ inputs.core_version }}" ]; then
-            ARGS="$ARGS --core-version ${{ inputs.core_version }}"
+          VERSION_TAG_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+$'
+          if [ -n "${CORE_VERSION}" ] && ! [[ "${CORE_VERSION}" =~ ${VERSION_TAG_REGEX} ]]; then
+            echo "core_version must be a canonical release tag like v0.22.0; pre-release and build metadata tags are intentionally rejected."
+            exit 1
           fi
-          if [ -n "${{ inputs.frontend_version }}" ]; then
-            ARGS="$ARGS --frontend-version ${{ inputs.frontend_version }}"
+          if [ -n "${FRONTEND_VERSION}" ] && ! [[ "${FRONTEND_VERSION}" =~ ${VERSION_TAG_REGEX} ]]; then
+            echo "frontend_version must be a canonical release tag like v1.46.6; pre-release and build metadata tags are intentionally rejected."
+            exit 1
           fi
-          python scripts/refresh_snapshots.py $ARGS
+
+      - name: Refresh snapshots
+        env:
+          CORE_VERSION: ${{ inputs.core_version }}
+          FRONTEND_VERSION: ${{ inputs.frontend_version }}
+        run: |
+          ARGS=()
+          if [ -n "${CORE_VERSION}" ]; then
+            ARGS+=(--core-version "${CORE_VERSION}")
+          fi
+          if [ -n "${FRONTEND_VERSION}" ]; then
+            ARGS+=(--frontend-version "${FRONTEND_VERSION}")
+          fi
+          python scripts/refresh_snapshots.py "${ARGS[@]}"

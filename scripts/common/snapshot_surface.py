@@ -1,6 +1,11 @@
 """Snapshot source surface contract for pinned upstream inputs."""
 
+import logging
 from pathlib import Path
+
+from scripts.common.path_normalization import normalize_to_posix
+
+logger = logging.getLogger(__name__)
 
 CORE_REQUIRED_FILES = [
     "server.py",
@@ -43,7 +48,7 @@ FRONTEND_INCLUDE_GLOBS = [
 
 def _normalize_relative_path(path: Path) -> str:
     """Return a forward-slash relative path string."""
-    return path.as_posix()
+    return normalize_to_posix(path)
 
 
 def resolve_snapshot_files(
@@ -61,7 +66,7 @@ def resolve_snapshot_files(
     missing_required: list[str] = []
 
     for rel_path in required_files:
-        normalized = rel_path.replace("\\", "/")
+        normalized = normalize_to_posix(rel_path)
         if (root / normalized).exists():
             resolved.add(normalized)
         else:

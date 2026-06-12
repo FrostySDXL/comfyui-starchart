@@ -1,8 +1,16 @@
+import logging
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 def normalize_repo_path(value: str | Path) -> str:
     return str(value).replace("\\", "/")
+
+
+def normalize_to_posix(value: str | Path) -> str:
+    """Alias for normalizing repo-local path text to forward slashes."""
+    return normalize_repo_path(value)
 
 
 def has_backslashes(value: str | Path) -> bool:

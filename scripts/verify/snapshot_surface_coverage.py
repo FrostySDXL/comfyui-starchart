@@ -178,6 +178,8 @@ def main() -> int:
             print(f"- {failure}")
         return 1
 
+    assert core_root is not None
+    assert frontend_root is not None
     print("Snapshot surface coverage passed.")
     print(f"Core snapshot: {_repo_relative(core_root)}")
     print(f"Frontend snapshot: {_repo_relative(frontend_root)}")

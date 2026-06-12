@@ -40,56 +40,54 @@ def _load_module():
 
 
 class DisplayPathTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = _load_module()
+
     def test_in_repo_absolute_path_returns_repo_relative_posix(self):
-        module = _load_module()
         inside = FAKE_REPO / "references" / "raw" / "x.json"
         self.assertEqual(
-            module.display_path(inside, repo_root=FAKE_REPO),
+            self.module.display_path(inside, repo_root=FAKE_REPO),
             "references/raw/x.json",
         )
 
     def test_out_of_repo_absolute_path_returns_basename_only(self):
-        module = _load_module()
         self.assertEqual(
-            module.display_path(ABS_OUTSIDE_FILE, repo_root=FAKE_REPO),
+            self.module.display_path(ABS_OUTSIDE_FILE, repo_root=FAKE_REPO),
             "x.json",
         )
 
     def test_none_returns_empty_string(self):
-        module = _load_module()
-        self.assertEqual(module.display_path(None, repo_root=FAKE_REPO), "")
+        self.assertEqual(self.module.display_path(None, repo_root=FAKE_REPO), "")
 
     def test_empty_string_returns_empty_string(self):
-        module = _load_module()
-        self.assertEqual(module.display_path("", repo_root=FAKE_REPO), "")
+        self.assertEqual(self.module.display_path("", repo_root=FAKE_REPO), "")
 
     def test_display_command_replaces_sys_executable_with_python(self):
-        module = _load_module()
         self.assertEqual(
-            module.display_command([sys.executable, "scripts/verify/run_all.py", "--skip-tests"]),
+            self.module.display_command(
+                [sys.executable, "scripts/verify/run_all.py", "--skip-tests"]
+            ),
             "python scripts/verify/run_all.py --skip-tests",
         )
 
     def test_display_path_accepts_string_input(self):
-        module = _load_module()
         inside_str = str(FAKE_REPO / "references" / "raw" / "x.json")
         self.assertEqual(
-            module.display_path(inside_str, repo_root=FAKE_REPO),
+            self.module.display_path(inside_str, repo_root=FAKE_REPO),
             "references/raw/x.json",
         )
 
     def test_display_command_preserves_non_python_first_arg(self):
-        module = _load_module()
         self.assertEqual(
-            module.display_command(["git", "status"]),
+            self.module.display_command(["git", "status"]),
             "git status",
         )
 
     def test_display_command_redacts_absolute_path_args_to_basename(self):
-        module = _load_module()
         # Simulates `git clone … <tmpdir>` where tmpdir is an absolute path.
         tmpdir = str(ABS_OUTSIDE_TMP / "tmpabc")
-        result = module.display_command(
+        result = self.module.display_command(
             [
                 "git",
                 "clone",
@@ -107,9 +105,8 @@ class DisplayPathTests(unittest.TestCase):
         )
 
     def test_display_command_redacts_absolute_path_arg_after_sys_executable(self):
-        module = _load_module()
         # Simulates `python scripts/x.py --input <abs-path>`.
-        result = module.display_command(
+        result = self.module.display_command(
             [sys.executable, "scripts/x.py", "--input", str(ABS_OUTSIDE_TMP / "thing.json")]
         )
         self.assertEqual(
@@ -118,11 +115,10 @@ class DisplayPathTests(unittest.TestCase):
         )
 
     def test_display_command_preserves_non_https_url_with_drive_like_prefix(self):
-        module = _load_module()
         # A URL whose first component is a single ASCII letter followed by ``://``
         # must NOT be redacted, even on Windows where ``Path("g://...").is_absolute()``
         # could otherwise be confused with a drive letter.
-        result = module.display_command(
+        result = self.module.display_command(
             ["git", "clone", "git://github.com/user/repo.git", str(ABS_OUTSIDE_TMP / "dest")]
         )
         self.assertEqual(
@@ -131,15 +127,13 @@ class DisplayPathTests(unittest.TestCase):
         )
 
     def test_display_path_preserves_url_with_drive_like_prefix(self):
-        module = _load_module()
         # ``g://host/path`` must pass through unchanged, not be redacted to ``path``.
         self.assertEqual(
-            module.display_path("g://host/path", repo_root=FAKE_REPO),
+            self.module.display_path("g://host/path", repo_root=FAKE_REPO),
             "g://host/path",
         )
 
     def test_display_path_preserves_url_wrapped_as_path_object(self):
-        module = _load_module()
         # ``Path("g://host/path")`` cannot preserve the ``://`` marker on
         # any platform: WindowsPath treats ``g:`` as a drive and rewrites
         # ``://`` to ``:\\``, while PurePosixPath collapses ``//`` to ``/``
@@ -151,32 +145,29 @@ class DisplayPathTests(unittest.TestCase):
         # case is covered separately by
         # ``test_display_path_preserves_url_with_drive_like_prefix``.
         self.assertEqual(
-            module.display_path(Path("g://host/path"), repo_root=FAKE_REPO),
+            self.module.display_path(Path("g://host/path"), repo_root=FAKE_REPO),
             "path",
         )
 
     def test_relative_path_returns_basename(self):
-        module = _load_module()
         rel = Path("foo/bar/x.txt")
         self.assertEqual(
-            module.display_path(rel, repo_root=FAKE_REPO),
+            self.module.display_path(rel, repo_root=FAKE_REPO),
             "x.txt",
         )
 
     def test_non_path_object_returns_empty_string(self):
-        module = _load_module()
         # display_path catches TypeError from Path(int) and returns ""
         self.assertEqual(
-            module.display_path(42, repo_root=FAKE_REPO),
+            self.module.display_path(42, repo_root=FAKE_REPO),
             "",
         )
 
     def test_display_path_uses_default_repo_root(self):
         """When repo_root is omitted, resolves from this module's location."""
-        module = _load_module()
         # Use a path that we know is inside the actual repo.
         tests_dir = str(Path(__file__).resolve().parent)
-        result = module.display_path(tests_dir)
+        result = self.module.display_path(tests_dir)
         # Should produce a POSIX path relative to repo root, ending in tests/unit.
         self.assertTrue(
             result.endswith("tests/unit"),

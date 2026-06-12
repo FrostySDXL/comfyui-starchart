@@ -5,27 +5,71 @@ from collections.abc import Callable
 from pathlib import Path
 
 from scripts.common.display_path import display_command, display_path
+from scripts.common.subprocess_utils import DEFAULT_CLONE_TIMEOUT_SECONDS
+
+OUTPUT_SNIPPET_CHARS = 500
+
+
+def _make_log_dir() -> Path:
+    return Path(tempfile.mkdtemp(prefix="refresh-git-ops-", dir=tempfile.gettempdir()))
+
+
+def _output_snippets(label: str, output: str) -> list[str]:
+    if not output:
+        return []
+    return [
+        f"{label} head: {output[:OUTPUT_SNIPPET_CHARS]}",
+        f"{label} tail: {output[-OUTPUT_SNIPPET_CHARS:]}",
+    ]
+
+
+def _write_failure_log(log_dir: Path, cmd: list[str], result: subprocess.CompletedProcess) -> Path:
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_path = log_dir / "log.txt"
+    log_path.write_text(
+        "command: "
+        + display_command(cmd)
+        + "\n\nstdout:\n"
+        + (result.stdout or "")
+        + "\n\nstderr:\n"
+        + (result.stderr or ""),
+        encoding="utf-8",
+    )
+    return log_path
 
 
 def _run_cmd(
-    cmd: list[str], description: str, cwd: str | None = None
+    cmd: list[str],
+    description: str,
+    cwd: str | None = None,
+    timeout_seconds: int = DEFAULT_CLONE_TIMEOUT_SECONDS,
+    log_dir: Path | None = None,
 ) -> subprocess.CompletedProcess:
     """Run a command and raise on failure."""
     print(f"  Running: {display_command(cmd)}")
-    result = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        cwd=cwd,
+        timeout=timeout_seconds,
+    )
     if result.returncode != 0:
         message_lines = [f"FAILED: {description}"]
-        if result.stdout:
-            message_lines.append(f"stdout: {result.stdout[:500]}")
-        if result.stderr:
-            message_lines.append(f"stderr: {result.stderr[:500]}")
+        message_lines.extend(_output_snippets("stdout", result.stdout or ""))
+        message_lines.extend(_output_snippets("stderr", result.stderr or ""))
+        if log_dir is not None:
+            log_path = _write_failure_log(log_dir, cmd, result)
+            message_lines.append(f"full log: {log_path}")
         raise RuntimeError("\n".join(message_lines))
     return result
 
 
-def _resolve_commit(clone_dir: str) -> str:
+def _resolve_commit(clone_dir: str, log_dir: Path | None = None) -> str:
     """Get the full commit hash from a cloned repo."""
-    result = _run_cmd(["git", "rev-parse", "HEAD"], "resolving commit hash", cwd=clone_dir)
+    result = _run_cmd(
+        ["git", "rev-parse", "HEAD"], "resolving commit hash", cwd=clone_dir, log_dir=log_dir
+    )
     return result.stdout.strip()
 
 
@@ -85,31 +129,42 @@ def _refresh_repo_snapshot(
 
     print(f"\n=== Refreshing {heading_label} {version} ===")
 
-    with tempfile.TemporaryDirectory(prefix=temp_prefix) as tmpdir:
-        _run_cmd(
-            ["git", "clone", "--depth", "1", "--branch", tag, repo_url, tmpdir],
-            f"cloning {clone_label} at {tag}",
-        )
+    log_dir = _make_log_dir()
+    try:
+        with tempfile.TemporaryDirectory(prefix=temp_prefix) as tmpdir:
+            _run_cmd(
+                ["git", "clone", "--depth", "1", "--branch", tag, repo_url, tmpdir],
+                f"cloning {clone_label} at {tag}",
+                timeout_seconds=DEFAULT_CLONE_TIMEOUT_SECONDS,
+                log_dir=log_dir,
+            )
 
-        commit = _resolve_commit(tmpdir)
-        print(f"  Resolved commit: {commit}")
+            commit = _resolve_commit(tmpdir, log_dir=log_dir)
+            print(f"  Resolved commit: {commit}")
 
-        resolved_files = files
-        missing_required: list[str] = []
-        if resolve_files is not None:
-            resolved_files, missing_required = resolve_files(Path(tmpdir))
-        if missing_required:
-            missing_text = ", ".join(missing_required)
-            raise RuntimeError(f"Missing required {copy_label} snapshot files: {missing_text}")
+            resolved_files = files
+            missing_required: list[str] = []
+            if resolve_files is not None:
+                resolved_files, missing_required = resolve_files(Path(tmpdir))
+            if missing_required:
+                missing_text = ", ".join(missing_required)
+                raise RuntimeError(f"Missing required {copy_label} snapshot files: {missing_text}")
 
-        dest_dir.mkdir(parents=True, exist_ok=True)
-        _copy_source_files(
-            tmpdir,
-            dest_dir,
-            resolved_files,
-            copy_label,
-            required_files=required_files,
-        )
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            _copy_source_files(
+                tmpdir,
+                dest_dir,
+                resolved_files,
+                copy_label,
+                required_files=required_files,
+            )
+    finally:
+        try:
+            shutil.rmtree(log_dir)
+        except OSError as exc:
+            print(
+                f"  WARNING: failed to clean up refresh git log directory {display_path(log_dir)}: {exc}"
+            )
 
     return commit, dest_name
 

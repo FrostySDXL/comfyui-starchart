@@ -135,27 +135,28 @@ def build_hook_coverage(
     source_map: dict[str, str] | None = None,
     deferred: list[str] | None = None,
 ) -> dict:
+    deferred_notes = list(HOOK_COVERAGE["deferred"])
     coverage = {
         "description": HOOK_COVERAGE["description"],
         "guaranteed_fields": list(HOOK_COVERAGE["guaranteed_fields"]),
         "best_effort_fields": list(HOOK_COVERAGE["best_effort_fields"]),
-        "deferred": list(HOOK_COVERAGE["deferred"]),
+        "deferred": deferred_notes,
     }
     if deferred:
-        coverage["deferred"].extend(deferred)
+        deferred_notes.extend(deferred)
     if not extension_fields:
         if not source_map:
-            coverage["deferred"].append(
+            deferred_notes.append(
                 f"{MISSING_COMFY_EXTENSION_NOTE}: no frontend source files were supplied."
             )
         elif any(
             _extract_interface_body(source_text) is not None for source_text in source_map.values()
         ):
-            coverage["deferred"].append(
+            deferred_notes.append(
                 f"{MISSING_COMFY_EXTENSION_NOTE}: interface was present but no parseable extension fields were found."
             )
         else:
-            coverage["deferred"].append(
+            deferred_notes.append(
                 f"{MISSING_COMFY_EXTENSION_NOTE}: supplied frontend sources did not declare the interface."
             )
     return coverage

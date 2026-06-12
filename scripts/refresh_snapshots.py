@@ -25,6 +25,7 @@ from scripts.common import (
     refresh_support,
     snapshot_surface,
 )
+from scripts.common.refresh_context import RefreshContext
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -116,6 +117,24 @@ def compute_diff_summary(old_json: dict, new_json: dict, json_name: str) -> list
 def _run_cmd(cmd: list[str], description: str, cwd: str | None = None):
     """Compatibility wrapper around the shared git/runtime command helper."""
     return refresh_git_ops._run_cmd(cmd, description, cwd=cwd)
+
+
+DEFAULT_REFRESH_CONTEXT = RefreshContext(
+    repo_root=REPO_ROOT,
+    references_dir=REFERENCES_DIR,
+    references_raw_dir=REFERENCES_RAW_DIR,
+    snapshots_dir=SNAPSHOTS_DIR,
+    scripts_extract_dir=SCRIPTS_EXTRACT_DIR,
+    scripts_generate_dir=SCRIPTS_GENERATE_DIR,
+    provenance_output_path=PROVENANCE_OUTPUT_PATH,
+    python_executable=sys.executable,
+    run_cmd=_run_cmd,
+)
+
+
+def _refresh_context(context: RefreshContext | None = None) -> RefreshContext:
+    """Return the explicit refresh context or the module default context."""
+    return context or DEFAULT_REFRESH_CONTEXT
 
 
 def _resolve_commit(clone_dir: str) -> str:
@@ -305,11 +324,13 @@ def run_extractors(
     frontend_commit: str | None = None,
     snapshot_date: str | None = None,
     runtime_object_info_path: str | None = None,
+    context: RefreshContext | None = None,
 ) -> dict:
     """Re-run all extractors against the new snapshot files.
 
     Returns a dict with extraction results (counts of endpoints, hooks, etc.).
     """
+    active_context = _refresh_context(context)
     return refresh_pipeline.run_extractors(
         core_version=core_version,
         core_commit=core_commit,
@@ -317,11 +338,11 @@ def run_extractors(
         frontend_commit=frontend_commit,
         snapshot_date=snapshot_date,
         runtime_object_info_path=runtime_object_info_path,
-        snapshots_dir=SNAPSHOTS_DIR,
-        python_executable=sys.executable,
-        scripts_extract_dir=SCRIPTS_EXTRACT_DIR,
-        repo_root=REPO_ROOT,
-        run_cmd=_run_cmd,
+        snapshots_dir=active_context.snapshots_dir,
+        python_executable=active_context.python_executable,
+        scripts_extract_dir=active_context.scripts_extract_dir,
+        repo_root=active_context.repo_root,
+        run_cmd=active_context.run_cmd,
     )
 
 

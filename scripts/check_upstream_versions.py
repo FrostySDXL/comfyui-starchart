@@ -10,6 +10,7 @@ Exits 0 after producing summaries. Exits 1 on network or data errors.
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any, cast
@@ -27,6 +28,18 @@ CORE_TAGS_URL = "https://api.github.com/repos/Comfy-Org/ComfyUI/tags?per_page=10
 FRONTEND_TAGS_URL = "https://api.github.com/repos/Comfy-Org/ComfyUI_Frontend/tags?per_page=100"
 
 
+def _github_api_headers() -> dict[str, str]:
+    """Return GitHub API headers, adding auth when GITHUB_TOKEN is available."""
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "comfyui-kb-upstream-watch",
+    }
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
+
+
 def _fetch_json(url: str, timeout: int = 30) -> list[Any] | dict[str, Any]:
     """Fetch and parse JSON from a URL."""
     return cast(
@@ -34,10 +47,7 @@ def _fetch_json(url: str, timeout: int = 30) -> list[Any] | dict[str, Any]:
         http_utils.get_json(
             url,
             timeout=timeout,
-            headers={
-                "Accept": "application/vnd.github+json",
-                "User-Agent": "comfyui-kb-upstream-watch",
-            },
+            headers=_github_api_headers(),
         ),
     )
 

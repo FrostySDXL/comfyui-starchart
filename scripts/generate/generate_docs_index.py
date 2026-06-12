@@ -398,8 +398,14 @@ def build_related_route_entries(
 
 
 def metadata_matches_intent(metadata: dict[str, object], intent: str) -> bool:
-    task_intents = set(metadata.get("task_intents", []))
-    excluded_task_intents = set(metadata.get("excluded_task_intents", []))
+    task_intents = set(
+        _expect_string_list("metadata", "task_intents", metadata.get("task_intents", []))
+    )
+    excluded_task_intents = set(
+        _expect_string_list(
+            "metadata", "excluded_task_intents", metadata.get("excluded_task_intents", [])
+        )
+    )
     return intent in task_intents and intent not in excluded_task_intents
 
 
@@ -449,8 +455,12 @@ def build_docs_index(
         repo_root / "references" / "raw" / "server_endpoints.json"
     )
     inbound_recommendations: dict[str, list[str]] = {path: [] for path in eligible_paths}
-    for source_path, page_metadata in resolved_metadata.items():
-        for target_path in page_metadata.get("recommended_next_reads", []):
+    for source_path, source_metadata in resolved_metadata.items():
+        for target_path in _expect_string_list(
+            source_path,
+            "recommended_next_reads",
+            source_metadata.get("recommended_next_reads", []),
+        ):
             if isinstance(target_path, str) and target_path in inbound_recommendations:
                 inbound_recommendations[target_path].append(source_path)
 

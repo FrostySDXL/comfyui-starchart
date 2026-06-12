@@ -2,6 +2,7 @@
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import unittest
@@ -162,6 +163,17 @@ class CheckUpstreamVersionsUnitTests(unittest.TestCase):
         with patch.object(module.http_utils, "get_json", return_value=[{"name": "v1.0.0"}]):
             result = module._fetch_json("http://example.com/tags")
         self.assertEqual(result, [{"name": "v1.0.0"}])
+
+    def test_fetch_json_includes_github_token_header_when_available(self):
+        module = _load_module()
+        with (
+            patch.dict(os.environ, {"GITHUB_TOKEN": "secret-token"}, clear=False),
+            patch.object(module.http_utils, "get_json", return_value=[]) as get_json_mock,
+        ):
+            module._fetch_json("http://example.com/tags")
+
+        headers = get_json_mock.call_args.kwargs["headers"]
+        self.assertEqual(headers["Authorization"], "Bearer secret-token")
 
     def test_fetch_json_http_error(self):
         module = _load_module()

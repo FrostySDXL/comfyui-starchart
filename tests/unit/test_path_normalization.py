@@ -28,6 +28,13 @@ class PathNormalizationTests(unittest.TestCase):
             "references/raw/server_endpoints.json",
         )
 
+    def test_normalize_to_posix_alias_matches_repo_path_normalizer(self):
+        module = _load_module()
+        self.assertEqual(
+            module.normalize_to_posix(r"references\raw\server_endpoints.json"),
+            module.normalize_repo_path(r"references\raw\server_endpoints.json"),
+        )
+
     def test_has_backslashes_detects_validator_case(self):
         module = _load_module()
         self.assertTrue(module.has_backslashes(r"path\with\backslashes"))

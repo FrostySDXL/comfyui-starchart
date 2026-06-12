@@ -203,10 +203,11 @@ def _json_response_payload_fields(function_node: ast.AST) -> tuple[set[str], set
         keys = _literal_dict_keys(payload)
         if isinstance(payload, ast.Name):
             keys = assigned_dicts.get(payload.id, [])
-        status = None
+        status: int | str | None = None
         for keyword in node.keywords:
             if keyword.arg == "status" and isinstance(keyword.value, ast.Constant):
-                status = keyword.value.value
+                if isinstance(keyword.value.value, int | str):
+                    status = keyword.value.value
         if status and int(status) >= 400:
             error_fields.update(keys)
         else:
@@ -348,7 +349,7 @@ def _extract_prompt_validation_errors(
             continue
         for node in ast.walk(tree):
             if isinstance(node, ast.Dict):
-                entry = _error_entry_from_dict(node, source_file)
+                entry = _error_entry_from_dict(node, source_file or "unknown")
                 if entry is not None:
                     if not _is_prompt_validation_context(entry["source_function"]):
                         continue
@@ -440,7 +441,7 @@ def _extract_queue_history_contract(
 
     if "PromptQueue" in {
         node.name
-        for node in ast.walk(_parse_python(execution_text) or ast.Module(body=[]))
+        for node in ast.walk(_parse_python(execution_text) or ast.Module(body=[], type_ignores=[]))
         if isinstance(node, ast.ClassDef)
     }:
         sections.append(

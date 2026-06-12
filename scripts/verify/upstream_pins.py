@@ -15,8 +15,11 @@ Exits 0 if all pins are valid, exits 1 if any are broken or unreachable.
 """
 
 import json
+import os
 import sys
 import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -24,6 +27,16 @@ REFERENCES_RAW_DIR = REPO_ROOT / "references" / "raw"
 CACHE_DIR = REPO_ROOT / ".cache"
 CACHE_FILE = CACHE_DIR / "upstream_pins.json"
 CACHE_TTL_SECONDS = 24 * 60 * 60  # 24 hours
+EXPECTED_GITHUB_ERRORS = (
+    urllib.error.HTTPError,
+    urllib.error.URLError,
+    TimeoutError,
+    json.JSONDecodeError,
+    OSError,
+    IOError,
+    KeyError,
+    ValueError,
+)
 
 # Map from JSON file to its upstream GitHub repo. Artifacts with multiple
 # upstream components can override this default per extracted pin.
@@ -45,6 +58,15 @@ REPO_MAP = {
         "repo": "ComfyUI",
     },
 }
+
+
+def _github_api_headers(user_agent: str = "comfyui-kb-pin-checker/1.0") -> dict[str, str]:
+    """Return GitHub API headers, adding auth when GITHUB_TOKEN is available."""
+    headers = {"User-Agent": user_agent}
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
 
 
 def _load_cache() -> dict:
@@ -72,11 +94,8 @@ def _check_commit_via_github_api(owner: str, repo: str, commit: str) -> tuple[bo
     Uses urllib.request from stdlib (no external deps).
     Returns (is_valid, detail_message).
     """
-    import urllib.error
-    import urllib.request
-
     url = f"https://api.github.com/repos/{owner}/{repo}/git/commits/{commit}"
-    req = urllib.request.Request(url, headers={"User-Agent": "comfyui-kb-pin-checker/1.0"})
+    req = urllib.request.Request(url, headers=_github_api_headers())
 
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
@@ -90,8 +109,8 @@ def _check_commit_via_github_api(owner: str, repo: str, commit: str) -> tuple[bo
         return False, f"HTTP {e.code} checking commit {commit[:12]} in {owner}/{repo}"
     except urllib.error.URLError as e:
         return False, f"network error checking {owner}/{repo}: {e.reason}"
-    except Exception as e:
-        return False, f"unexpected error checking {owner}/{repo}: {e}"
+    except EXPECTED_GITHUB_ERRORS as e:
+        return False, f"expected error checking {owner}/{repo}: {e}"
 
     return False, f"unexpected response checking commit {commit[:12]} in {owner}/{repo}"
 
@@ -101,11 +120,8 @@ def _check_tag_via_github_api(owner: str, repo: str, tag: str) -> tuple[bool, st
 
     Returns (is_valid, detail_message).
     """
-    import urllib.error
-    import urllib.request
-
     url = f"https://api.github.com/repos/{owner}/{repo}/git/refs/tags/{tag}"
-    req = urllib.request.Request(url, headers={"User-Agent": "comfyui-kb-pin-checker/1.0"})
+    req = urllib.request.Request(url, headers=_github_api_headers())
 
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
@@ -117,8 +133,8 @@ def _check_tag_via_github_api(owner: str, repo: str, tag: str) -> tuple[bool, st
         return False, f"HTTP {e.code} checking tag {tag} in {owner}/{repo}"
     except urllib.error.URLError as e:
         return False, f"network error checking {owner}/{repo}: {e.reason}"
-    except Exception as e:
-        return False, f"unexpected error checking {owner}/{repo}: {e}"
+    except EXPECTED_GITHUB_ERRORS as e:
+        return False, f"expected error checking {owner}/{repo}: {e}"
 
     return False, f"unexpected response checking tag {tag} in {owner}/{repo}"
 

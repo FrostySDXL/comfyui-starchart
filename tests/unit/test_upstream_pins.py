@@ -176,6 +176,19 @@ class UpstreamPinsMockTests(unittest.TestCase):
 
         self.assertTrue(result[0])
 
+    def test_expected_key_error_is_reported_without_catching_programming_errors(self):
+        """Expected data/cache errors are reported, but AttributeError must propagate."""
+        module = _load_module()
+        with patch("urllib.request.urlopen", side_effect=KeyError("missing cache key")):
+            valid, detail = module._check_commit_via_github_api("Comfy-Org", "ComfyUI", "abc123")
+
+        self.assertFalse(valid)
+        self.assertTrue(detail.startswith("expected error checking Comfy-Org/ComfyUI"))
+
+        with patch("urllib.request.urlopen", side_effect=AttributeError("programmer bug")):
+            with self.assertRaises(AttributeError):
+                module._check_commit_via_github_api("Comfy-Org", "ComfyUI", "abc123")
+
     def test_cache_round_trip(self):
         """Cache should be saveable and loadable."""
         module = _load_module()

@@ -1,0 +1,29 @@
+name: Dependency Advisory
+
+on:
+  schedule:
+    - cron: "45 11 * * 1"
+  workflow_dispatch:
+
+jobs:
+  dependency-advisory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up repo
+        uses: ./.github/actions/setup-repo
+        with:
+          setup-node: "true"
+          install-node-deps: "true"
+
+      - name: Run npm high-severity audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Install pip-audit
+        run: python -m pip install pip-audit
+
+      - name: Run pip advisory audit
+        run: python -m pip_audit -r requirements.lock
+        continue-on-error: true

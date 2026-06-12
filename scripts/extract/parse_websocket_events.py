@@ -437,7 +437,7 @@ def build_artifact(
         for name, enum_value in sorted(binary_values.items(), key=lambda item: item[1])
     ]
 
-    metadata = {
+    metadata: dict[str, object] = {
         "sources": list(normalized_sources),
         "extracted_date": datetime.now().strftime("%Y-%m-%d"),
         "version": version or "unknown",

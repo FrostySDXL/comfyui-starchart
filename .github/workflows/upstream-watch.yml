@@ -27,6 +27,8 @@ jobs:
           install-node-deps: "false"
 
       - name: Check upstream versions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python scripts/check_upstream_versions.py --output-json upstream_summary.json --output-md upstream_summary.md
 

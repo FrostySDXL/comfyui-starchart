@@ -251,6 +251,76 @@ class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
         self.assertTrue(callable(module.compute_diff_summary))
         self.assertTrue(callable(module.build_follow_up_commands_from_provenance))
 
+    def test_default_refresh_context_matches_module_paths(self):
+        """Default RefreshContext should centralize refresh paths and command runner."""
+        module = _load_module()
+        self.assertIsInstance(module.DEFAULT_REFRESH_CONTEXT, module.RefreshContext)
+        self.assertEqual(module.DEFAULT_REFRESH_CONTEXT.repo_root, module.REPO_ROOT)
+        self.assertEqual(
+            module.DEFAULT_REFRESH_CONTEXT.references_raw_dir,
+            module.REFERENCES_RAW_DIR,
+        )
+        self.assertEqual(module.DEFAULT_REFRESH_CONTEXT.snapshots_dir, module.SNAPSHOTS_DIR)
+        self.assertEqual(
+            module.DEFAULT_REFRESH_CONTEXT.scripts_extract_dir,
+            module.SCRIPTS_EXTRACT_DIR,
+        )
+        self.assertEqual(
+            module.DEFAULT_REFRESH_CONTEXT.scripts_generate_dir,
+            module.SCRIPTS_GENERATE_DIR,
+        )
+        self.assertEqual(
+            module.DEFAULT_REFRESH_CONTEXT.provenance_output_path,
+            module.PROVENANCE_OUTPUT_PATH,
+        )
+        self.assertEqual(module.DEFAULT_REFRESH_CONTEXT.python_executable, sys.executable)
+        self.assertIs(module.DEFAULT_REFRESH_CONTEXT.run_cmd, module._run_cmd)
+
+    def test_run_extractors_accepts_refresh_context(self):
+        """run_extractors should use a supplied RefreshContext without global path lookups."""
+        module = _load_module()
+        context = module.RefreshContext(
+            repo_root=Path("repo-root"),
+            references_dir=Path("references"),
+            references_raw_dir=Path("raw"),
+            snapshots_dir=Path("snapshots"),
+            scripts_extract_dir=Path("extract"),
+            scripts_generate_dir=Path("generate"),
+            provenance_output_path=Path("provenance.json"),
+            python_executable="python-custom",
+            run_cmd=mock.Mock(name="run_cmd"),
+        )
+        expected = {"server_endpoints": "summary"}
+        with mock.patch.object(
+            module.refresh_pipeline,
+            "run_extractors",
+            return_value=expected,
+        ) as pipeline_mock:
+            result = module.run_extractors(
+                core_version="v0.20.1",
+                core_commit="core-sha",
+                frontend_version=None,
+                frontend_commit=None,
+                snapshot_date="2026-05-14",
+                runtime_object_info_path=None,
+                context=context,
+            )
+
+        pipeline_mock.assert_called_once_with(
+            core_version="v0.20.1",
+            core_commit="core-sha",
+            frontend_version=None,
+            frontend_commit=None,
+            snapshot_date="2026-05-14",
+            runtime_object_info_path=None,
+            snapshots_dir=Path("snapshots"),
+            python_executable="python-custom",
+            scripts_extract_dir=Path("extract"),
+            repo_root=Path("repo-root"),
+            run_cmd=context.run_cmd,
+        )
+        self.assertEqual(result, expected)
+
     def test_build_delta_summary_command_uses_repo_preferred_python_command(self):
         """Follow-up commands should use the repo's maintainer-friendly Python invocation."""
         module = _load_module()
@@ -483,6 +553,63 @@ class RefreshSnapshotsBoundaryTests(unittest.TestCase):
                 refresh_git_ops._run_cmd(["git", "status"], "git status")
 
         self.assertIn("FAILED: git status", str(exc.exception))
+
+    def test_refresh_git_ops_run_cmd_uses_clone_timeout(self):
+        """Shared git helper should pass the clone timeout to subprocess.run."""
+        with mock.patch.object(
+            refresh_git_ops.subprocess,
+            "run",
+            return_value=mock.Mock(returncode=0, stdout="ok", stderr=""),
+        ) as run_mock:
+            refresh_git_ops._run_cmd(["git", "status"], "git status")
+
+        self.assertEqual(
+            run_mock.call_args.kwargs["timeout"], refresh_git_ops.DEFAULT_CLONE_TIMEOUT_SECONDS
+        )
+
+    def test_refresh_git_ops_run_cmd_failure_includes_tails_and_log_path(self):
+        """Git failures should include bounded output tails and the full temp log path."""
+        log_dir = Path(tempfile.gettempdir()) / "refresh-git-ops-test"
+        with mock.patch.object(
+            refresh_git_ops.subprocess,
+            "run",
+            return_value=mock.Mock(returncode=1, stdout="a" * 700, stderr="b" * 700),
+        ):
+            with self.assertRaises(RuntimeError) as exc:
+                refresh_git_ops._run_cmd(["git", "status"], "git status", log_dir=log_dir)
+
+        message = str(exc.exception)
+        self.assertIn("stdout head:", message)
+        self.assertIn("stdout tail:", message)
+        self.assertIn("stderr head:", message)
+        self.assertIn("stderr tail:", message)
+        self.assertIn(str(log_dir / "log.txt"), message)
+
+    def test_refresh_repo_snapshot_cleans_temp_log_dir(self):
+        """Refresh helper should remove the per-invocation git log directory."""
+        log_dir = Path(tempfile.gettempdir()) / "refresh-git-ops-cleanup-test"
+        log_dir.mkdir(exist_ok=True)
+        with (
+            mock.patch.object(refresh_git_ops.tempfile, "mkdtemp", return_value=str(log_dir)),
+            mock.patch.object(refresh_git_ops.tempfile, "TemporaryDirectory") as tmpdir_mock,
+            mock.patch.object(refresh_git_ops, "_run_cmd", return_value=mock.Mock(stdout="sha\n")),
+            mock.patch.object(refresh_git_ops, "_copy_source_files", return_value=[]),
+        ):
+            tmpdir_mock.return_value.__enter__.return_value = str(log_dir / "clone")
+            refresh_git_ops._refresh_repo_snapshot(
+                version="v0.20.1",
+                snapshot_date="2026-05-14",
+                repo_url="https://example.invalid/repo.git",
+                snapshots_dir=Path(tempfile.gettempdir()),
+                dest_prefix="repo",
+                heading_label="Repo",
+                clone_label="Repo",
+                copy_label="repo",
+                temp_prefix="repo-",
+                files=[],
+            )
+
+        self.assertFalse(log_dir.exists())
 
     def test_refresh_git_ops_verify_git_available_returns_version_string(self):
         """Shared git availability helper should return the resolved version string."""

@@ -28,6 +28,11 @@ ignore = ["E501"]
 
 [tool.mypy]
 python_version = "3.11"
-files = ["scripts/common", "scripts/verify/schema_common.py", "scripts/verify/schema_hooks.py", "scripts/verify/schema_node_api.py", "scripts/verify/schema_server.py", "scripts/verify/schema_websocket_events.py"]
+files = [
+    "scripts/common",
+    "scripts/extract",
+    "scripts/generate",
+    "scripts/verify",
+]
 ignore_missing_imports = true
 warn_unused_configs = true

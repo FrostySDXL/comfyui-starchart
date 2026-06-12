@@ -4,10 +4,15 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 from pathlib import Path
 
 import yaml
+
+from scripts.common.path_normalization import normalize_to_posix
+
+logger = logging.getLogger(__name__)
 
 TITLE_RE = re.compile(r"^\s*#\s+(.+?)\s*$", re.MULTILINE)
 EVIDENCE_RE = re.compile(r"^\s*\*\*Evidence:\*\*\s*(.+?)\s*$", re.MULTILINE)
@@ -40,7 +45,7 @@ def load_sidebar_nav(nav_source: Path) -> list:
 
 
 def normalize_rel_doc_path(path: str) -> str:
-    normalized = path.replace("\\", "/")
+    normalized = normalize_to_posix(path)
     if normalized.startswith("src/content/docs/"):
         normalized = normalized[len("src/content/docs/") :]
     return normalized
