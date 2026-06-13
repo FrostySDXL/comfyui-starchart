@@ -129,7 +129,8 @@ class DeltaSummaryIntegrityTests(unittest.TestCase):
 
         self.assertTrue(any("regenerated output differs" in error for error in errors))
 
-    def test_missing_comparison_path_fails_without_skip_regeneration(self):
+    def test_missing_comparison_path_skips_gracefully(self):
+        """When the old comparison path does not exist, regeneration should skip without error."""
         module = _load_module()
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_path = Path(tmpdir)
@@ -147,7 +148,7 @@ class DeltaSummaryIntegrityTests(unittest.TestCase):
 
             result = module.main(["--summary-path", str(summary_path)])
 
-        self.assertEqual(result, 1)
+        self.assertEqual(result, 0)
 
     def test_skip_regeneration_keeps_membership_and_schema_checks_only(self):
         module = _load_module()

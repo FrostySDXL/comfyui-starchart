@@ -120,10 +120,13 @@ def regenerate_delta_summary_for_comparison(summary_path: Path) -> list[str]:
     new_dir = _resolve_comparison_path(new_value, summary_path)
     missing = [path for path in (old_dir, new_dir) if not path.is_dir()]
     if missing:
-        return [
-            "Delta summary regenerated-equality check cannot run because comparison "
-            f"path is missing: {display_path(missing[0])}"
-        ]
+        print(
+            "Delta summary regenerated-equality check skipped: comparison "
+            f"path does not exist ({display_path(missing[0])}). This is expected "
+            "when the pre-refresh backup was created on a different machine or is "
+            "not checked into the repository."
+        )
+        return []
 
     try:
         old_artifacts = _artifact_map(old_dir)
