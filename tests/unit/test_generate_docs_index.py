@@ -1109,6 +1109,69 @@ class GenerateDocsIndexTests(unittest.TestCase):
                 ],
             )
 
+    def test_metadata_and_crossref_conflict_reason_when_classification_disagrees(self):
+        """Metadata classifies a route differently than the crossref heuristic."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            self._write_sidebar_data(root, [{"label": "API", "path": "api/history-queue.md"}])
+            self._write_page(
+                root,
+                "api/history-queue.md",
+                "History and Queue",
+                "Source-backed from pinned snapshots",
+                "History summary.",
+            )
+            # Write server_endpoints.json with a non-/api/ route.
+            raw_dir = root / "references" / "raw"
+            raw_dir.mkdir(parents=True, exist_ok=True)
+            server_endpoints = {
+                "endpoints": [
+                    {"method": "GET", "route": "/object_info"},
+                    {"method": "GET", "route": "/api/upload"},
+                ]
+            }
+            (raw_dir / "server_endpoints.json").write_text(
+                json.dumps(server_endpoints, indent=2) + "\n", encoding="utf-8"
+            )
+            # Metadata says /object_info is "alias" but crossref would say "canonical"
+            # (doesn't start with /api/) --> conflict.
+            # Metadata says /api/upload is "canonical" but crossref would say "alias"
+            # (starts with /api/) --> conflict.
+            self._write_metadata(
+                root,
+                {
+                    "api/history-queue.md": self._metadata_entry(
+                        related_artifacts=["server_endpoints.json"],
+                        related_routes=["GET /object_info", "GET /api/upload"],
+                        related_route_entries=[
+                            {"route": "GET /object_info", "route_type": "alias"},
+                            {"route": "GET /api/upload", "route_type": "canonical"},
+                        ],
+                    )
+                },
+            )
+
+            docs_index = generate_docs_index.build_docs_index(root)
+            page = docs_index["pages"][0]
+            entries = {e["route"]: e for e in page["related_route_entries"]}
+
+            # Non-/api/ route: metadata=alias, crossref=canonical --> conflict.
+            self.assertEqual(
+                entries["GET /object_info"]["route_classification_reason"],
+                "metadata_and_crossref_conflict",
+            )
+            self.assertEqual(entries["GET /object_info"]["route_type"], "alias")
+
+            # /api/ route: metadata=canonical, crossref=alias --> conflict.
+            self.assertEqual(
+                entries["GET /api/upload"]["route_classification_reason"],
+                "metadata_and_crossref_conflict",
+            )
+            self.assertEqual(entries["GET /api/upload"]["route_type"], "canonical")
+
+            self.assertEqual(page["route_classification_source"], "metadata")
+
     def test_all_route_type_enum_values_are_accepted_and_capitalized_value_fails(self):
         entries = [
             {"route": f"GET /route-{route_type}", "route_type": route_type}

@@ -371,7 +371,17 @@ def build_related_route_entries(
     for route in _sorted_strings(list(entry.get("related_routes", []))):
         if route in explicit_entries:
             route_type = explicit_entries[route]
-            reason = "metadata_explicit"
+            if route in server_routes:
+                crossref_type = (
+                    "alias" if route.split(" ", 1)[1].startswith("/api/") else "canonical"
+                )
+                reason = (
+                    "metadata_and_crossref_conflict"
+                    if route_type != crossref_type
+                    else "metadata_explicit"
+                )
+            else:
+                reason = "metadata_explicit"
             sources.add("metadata")
         elif route in server_routes:
             route_type = "alias" if route.split(" ", 1)[1].startswith("/api/") else "canonical"
