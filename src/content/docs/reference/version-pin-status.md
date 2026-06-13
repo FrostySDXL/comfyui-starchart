@@ -34,7 +34,7 @@ than implying current-baseline review that did not happen.
 
 Earlier pinned baselines under `references/snapshots/2026-06-01/`,
 `references/snapshots/2026-05-21/`, `references/snapshots/2026-05-18/`,
-`references/snapshots/2026-04-30/`, and `references/snapshots/2026-04-19/`
+and `references/snapshots/2026-04-19/`
 remain preserved for historical comparison and refresh-path proof.
 
 Published artifact history is intentionally bounded: keep the current baseline,
@@ -99,7 +99,7 @@ consumption details, see [Machine-Readable Artifacts](machine-readable-artifacts
 The current checked-in machine-readable delta is published in
 `public/artifacts/delta-summary.json`. Its `comparison` block is the authority
 for what was compared. At the time of this page update, it compares the recorded
-pre-refresh raw backup `references/_refresh_backups/raw_20260613T202328Z` to the
+pre-refresh raw backup (created during the refresh) against the
 current `references/raw/` artifacts.
 
 The extraction surface is structurally stable between v0.23.0 and v0.24.0:
