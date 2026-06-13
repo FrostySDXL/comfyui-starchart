@@ -10,6 +10,48 @@ Maintenance policy for this file lives in `CONTRIBUTING.md` under
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-06-13 - verification hardening, route audit, and baseline refresh
+
+### Verification and governance
+
+- Add a `governance_lifecycle.py` advisory verifier with a seeded lifecycle
+  manifest so durable verifier, support artifact, and schema-closure policy
+  drift is checkable.
+- Add `example_surface_integrity.py` and `example_validation_matrix.py`
+  advisory verifiers plus `example_runtime_smoke.py` for offline and live
+  example validation.
+- Add `versioned_artifact_completeness.py` advisory check and
+  `historical_snapshot_classification.py` for retention integrity; classify
+  historical snapshots without backfilling or removing legacy directories.
+- Enforce artifact contract schemas for `delta-summary.json` and
+  `manifest.json` so stale or incomplete comparison artifacts fail locally.
+- Harden maintainer tooling: workflow dispatch validation, dependency
+  advisory wiring, HTTP retry limits, subprocess timeouts, refresh git
+  diagnostics, and typing coverage.
+- Fix `delta-summary` backup label parsing (strip trailing `Z` before
+  `strptime` on Windows) and deduplicate raw-path guard logic.
+- Fix `docs-index` to emit `metadata_and_crossref_conflict` reason when
+  metadata route_type and crossref inference disagree.
+
+### Site and routing
+
+- Centralize site base configuration with parity checks so route rewriting,
+  Astro config, and rendered-link verification stay aligned.
+- Add route audit metadata to `docs-index` so routing consumers can
+  distinguish canonical, alias, and unknown API links without scraping prose.
+- Improve sidebar and markdown edge coverage; add a custom 404 recovery page.
+
+### Baseline refresh
+
+- Refresh pinned baseline: core v0.23.0 to **v0.24.0** (`f49bdb655`),
+  frontend v1.46.6 to **v1.46.14** (`f212c7d40`).
+- Snapshot date 2026-06-13; republished all canonical current/versioned
+  artifacts.
+- Delta summary confirms zero structural extraction changes between v0.23.0
+  and v0.24.0 (all counts identical).
+- Made `upstream_pins` websocket test refresh-agnostic (asserts component
+  repositories instead of exact version strings).
+
 ## 2026-06-04 - baseline alignment and artifact drift prevention
 
 ### Artifacts and extraction
