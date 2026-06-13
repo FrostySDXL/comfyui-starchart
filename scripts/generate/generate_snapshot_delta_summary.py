@@ -194,8 +194,11 @@ def _raw_backup_label(path: Path) -> str | None:
     if not name.startswith(prefix):
         return None
     timestamp = name.removeprefix(prefix)
+    # Strip trailing Z before parsing to avoid platform strptime variance
+    # (Python C runtime strptime on Windows may mishandle a literal Z).
+    timestamp = timestamp.rstrip("Z")
     try:
-        parsed = dt.datetime.strptime(timestamp, "%Y%m%dT%H%M%SZ")
+        parsed = dt.datetime.strptime(timestamp, "%Y%m%dT%H%M%S")
     except ValueError:
         return None
     return f"raw backup {parsed.strftime('%Y-%m-%dT%H:%M:%SZ')}"
@@ -210,9 +213,18 @@ def _artifact_extracted_dates(artifacts: dict[str, dict]) -> list[str]:
     return sorted(set(dates))
 
 
+def _is_references_raw(path: Path) -> bool:
+    """Return True when `path` points to the active references/raw directory.
+
+    Accepts both relative (``references/raw``) and absolute forms ending in
+    ``raw`` so the check survives caller-supplied absolute paths.
+    """
+    return path.as_posix() == "references/raw" or path.name == "raw"
+
+
 def _current_raw_label(path: Path, artifacts: dict[str, dict]) -> str | None:
     """Return a concise label for the active references/raw directory."""
-    if path.as_posix() != "references/raw" and path.name != "raw":
+    if not _is_references_raw(path):
         return None
     dates = _artifact_extracted_dates(artifacts)
     if len(dates) == 1:
@@ -225,9 +237,8 @@ def _current_raw_label(path: Path, artifacts: dict[str, dict]) -> str | None:
 def _comparison_source_kind(old_path: Path, new_path: Path) -> str | None:
     """Classify the common refresh comparison case for downstream consumers."""
     old_parts = old_path.as_posix().split("/")
-    new_posix = new_path.as_posix()
     if "_refresh_backups" in old_parts and old_path.name.startswith("raw_"):
-        if new_posix == "references/raw" or new_path.name == "raw":
+        if _is_references_raw(new_path):
             return "pre_refresh_backup_vs_current_raw"
     return None
 
