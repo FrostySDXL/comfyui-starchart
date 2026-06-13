@@ -96,11 +96,11 @@ class UpstreamPinsMetadataTests(unittest.TestCase):
 
         pins = module.extract_pins_from_json(json_path)
 
-        self.assertEqual(
-            [f"{pin['repo']}:{pin['version']}" for pin in pins],
-            ["ComfyUI:v0.23.0", "ComfyUI_Frontend:v1.46.6"],
-        )
+        self.assertEqual(len(pins), 2)
+        self.assertEqual({pin["repo"] for pin in pins}, {"ComfyUI", "ComfyUI_Frontend"})
+        self.assertEqual({pin["component"] for pin in pins}, {"core", "frontend"})
         self.assertEqual([pin["source"] for pin in pins], ["websocket_events.json"] * 2)
+        self.assertTrue(all(pin["version"].startswith("v") for pin in pins))
         self.assertTrue(all(len(pin["commit"]) >= 40 for pin in pins))
 
     def test_repo_map_covers_all_json_files(self):

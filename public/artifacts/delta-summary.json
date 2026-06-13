@@ -1,11 +1,11 @@
 {
   "comparison": {
-    "old": "references/_refresh_backups/raw_20260603T183637Z",
+    "old": "references/_refresh_backups/raw_20260613T202328Z",
     "new": "references/raw",
     "methodology": "artifact-directory-to-artifact-directory",
     "source_kind": "pre_refresh_backup_vs_current_raw",
-    "old_label": "raw backup 2026-06-03T18:36:37Z",
-    "new_label": "current raw (extracted 2026-06-04)"
+    "old_label": "raw backup 2026-06-13T20:23:28Z",
+    "new_label": "current raw (extracted 2026-06-13)"
   },
   "notes": [
     "Deterministic artifact-to-artifact comparison only.",
@@ -74,33 +74,16 @@
     },
     "websocket_events": {
       "events": {
-        "old_count": 0,
+        "old_count": 11,
         "new_count": 11,
-        "added": [
-          "executed",
-          "executing",
-          "execution_cached",
-          "execution_error",
-          "execution_interrupted",
-          "execution_start",
-          "execution_success",
-          "feature_flags",
-          "progress",
-          "progress_state",
-          "status"
-        ],
+        "added": [],
         "removed": [],
         "changed": []
       },
       "binary_events": {
-        "old_count": 0,
+        "old_count": 4,
         "new_count": 4,
-        "added": [
-          "PREVIEW_IMAGE",
-          "PREVIEW_IMAGE_WITH_METADATA",
-          "TEXT",
-          "UNENCODED_PREVIEW_IMAGE"
-        ],
+        "added": [],
         "removed": [],
         "changed": []
       }

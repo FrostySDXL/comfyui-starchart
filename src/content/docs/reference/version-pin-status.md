@@ -3,7 +3,7 @@ title: "Version Pin Status"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-06-04
+**Last Updated:** 2026-06-13
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.
@@ -19,13 +19,13 @@ reference data.
 
 Pinned source set:
 
-- ComfyUI core tag `v0.23.0`
-- core commit `a88e02b18576283b1ff25a4b564548c5dc42cbf6`
-- official frontend package version `1.46.6`
-- official frontend tag `v1.46.6`
-- frontend commit `9e32b7db5173bc2879d4c19c1d058d733b3074b8`
+- ComfyUI core tag `v0.24.0`
+- core commit `f49bdb655707b97952dcef40e12e5af1f08d2007`
+- official frontend package version `1.46.14`
+- official frontend tag `v1.46.14`
+- frontend commit `f212c7d40955a5ed54951a94a51ca40d1f4d4cbf`
 
-The active pinned files now live under `references/snapshots/2026-06-03/` and
+The active pinned files now live under `references/snapshots/2026-06-13/` and
 the extracted JSON in `references/raw/` points at those snapshot files.
 
 Prose docs may lag this canonical artifact baseline. When they do, they should
@@ -34,8 +34,8 @@ than implying current-baseline review that did not happen.
 
 Earlier pinned baselines under `references/snapshots/2026-06-01/`,
 `references/snapshots/2026-05-21/`, `references/snapshots/2026-05-18/`,
-and `references/snapshots/2026-04-19/` remain preserved for historical
-comparison and refresh-path proof.
+`references/snapshots/2026-04-30/`, and `references/snapshots/2026-04-19/`
+remain preserved for historical comparison and refresh-path proof.
 
 Published artifact history is intentionally bounded: keep the current baseline,
 the last 2 prior baselines, and any older baseline still referenced by active
@@ -70,7 +70,7 @@ with current copies and versioned copies keyed to the pinned baseline. See
 and consumption details.
 
 The current published versioned artifact directory is
-`public/artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-03/`.
+`public/artifacts/versions/core-v0.24.0_frontend-v1.46.14_2026-06-13/`.
 
 ## Automation
 
@@ -99,26 +99,14 @@ consumption details, see [Machine-Readable Artifacts](machine-readable-artifacts
 The current checked-in machine-readable delta is published in
 `public/artifacts/delta-summary.json`. Its `comparison` block is the authority
 for what was compared. At the time of this page update, it compares the recorded
-pre-refresh raw backup `references/_refresh_backups/raw_20260603T183637Z` to the
-current `references/raw/` artifacts. That makes it a backup-vs-current artifact
-comparison, not automatically a pure upstream v0.22.0-to-v0.23.0 extraction
-delta unless the compared directories are versioned baselines.
+pre-refresh raw backup `references/_refresh_backups/raw_20260613T202328Z` to the
+current `references/raw/` artifacts.
 
-The high-level item list from that current comparison:
-
-- **`GET /system_stats` field flattening:** The extracted
-  `server_endpoints.json` artifact removed per-device GPU fields that
-  were incorrectly listed as flat top-level entries; the `devices` array
-  remains present in the actual API response.
-- **New 3D IO types in `node_api_schema.json`:** SPLAT, FILE_3D_SPLAT,
-  FILE_3D_PLY, FILE_3D_KSPLAT, FILE_3D_SPZ, LOAD3D_MODEL_INFO.
-- **`prompt_conditioning_surface` section:** New section in
-  `node_api_schema.json` with source-backed STRING and CONDITIONING
-  summaries plus optional runtime node output enrichment.
-- **`POST /interrupt` body:** `server_endpoints.json` now documents an
-  optional JSON body for targeted interruption.
-- **`output_parameters` and `output_parameter_details`:** New fields
-  on IO type entries in `node_api_schema.json`.
+The extraction surface is structurally stable between v0.23.0 and v0.24.0:
+no endpoints, hooks, IO types, WebSocket events, or other canonical artifact
+sections were added, removed, or changed at the extraction level. All counts
+are identical between the two baselines (25 endpoints, 19 hooks, 76 IO types,
+11 WebSocket events).
 
 For item-level proof and field-level diff coverage, read
 `public/artifacts/delta-summary.json` directly.

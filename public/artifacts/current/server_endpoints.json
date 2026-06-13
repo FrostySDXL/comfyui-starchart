@@ -1,12 +1,12 @@
 {
   "metadata": {
     "sources": [
-      "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
-      "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py"
+      "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+      "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py"
     ],
-    "extracted_date": "2026-06-04",
-    "version": "v0.23.0",
-    "commit": "a88e02b18576283b1ff25a4b564548c5dc42cbf6"
+    "extracted_date": "2026-06-13",
+    "version": "v0.24.0",
+    "commit": "f49bdb655707b97952dcef40e12e5af1f08d2007"
   },
   "coverage": {
     "description": "Static extraction of ComfyUI HTTP and WebSocket endpoint structure.",
@@ -1151,7 +1151,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1164,7 +1164,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1177,7 +1177,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1190,7 +1190,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1203,7 +1203,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1216,7 +1216,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1229,7 +1229,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         }
       }
@@ -1244,7 +1244,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1257,7 +1257,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1270,7 +1270,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         }
       }
@@ -1285,7 +1285,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1298,7 +1298,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         }
       }
@@ -1313,7 +1313,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1330,7 +1330,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1345,7 +1345,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1361,7 +1361,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1381,7 +1381,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_prompt"
         },
         "extraction_method": "ast-structural",
@@ -1397,7 +1397,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1415,7 +1415,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_prompt"
         },
         "extraction_method": "ast-structural",
@@ -1432,7 +1432,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "post_prompt"
         },
         "extraction_method": "ast-structural"
@@ -1444,7 +1444,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_prompt"
         },
         "extraction_method": "ast-structural"
@@ -1456,7 +1456,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_prompt"
         },
         "extraction_method": "ast-structural"
@@ -1468,7 +1468,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1483,7 +1483,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1501,7 +1501,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1518,7 +1518,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1535,7 +1535,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1560,7 +1560,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "get_queue"
         },
         "coverage": "deferred",
@@ -1572,7 +1572,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "get_queue"
         },
         "coverage": "deferred",
@@ -1584,7 +1584,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "get_history"
         },
         "coverage": "deferred",
@@ -1596,7 +1596,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "task_done"
         },
         "coverage": "deferred",
@@ -1608,7 +1608,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
           "source_function": "ExecutionStatus"
         },
         "coverage": "source-backed"
@@ -1619,7 +1619,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
+          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
           "source_function": "system_stats"
         },
         "coverage": "source-backed"
