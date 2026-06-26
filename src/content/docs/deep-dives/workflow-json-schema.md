@@ -3,9 +3,10 @@ title: "Deep Dive: Workflow JSON as an Interchange Surface"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-26
 **Primary Source:** https://docs.comfy.org/specs/workflow_json
-**Baseline verification status:** This page has not been re-reviewed against the current baseline.
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
+**Current baseline check:** Rechecked against `public/artifacts/delta-summary.json` and the current `server_endpoints.json` `/prompt` extraction; no source delta changes the workflow-JSON versus prompt-payload boundary described here.
 
 ## Scope
 
@@ -21,7 +22,7 @@ tooling that needs a durable graph-shaped document format.
 ## Why workflow JSON matters
 
 Workflow JSON is the strongest officially documented graph interchange surface in
- the ComfyUI ecosystem. It gives tooling authors a stable place to reason about:
+the ComfyUI ecosystem. It gives tooling authors a stable place to reason about:
 
 - graph identity through node, link, group, and reroute objects
 - editor-state persistence such as positions, sizes, and canvas metadata

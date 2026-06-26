@@ -3,7 +3,7 @@ title: "ComfyUI StarChart"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-06-04
+**Last Updated:** 2026-06-26
 
 ## Scope
 

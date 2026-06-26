@@ -3,9 +3,9 @@ title: "V3 Node Structure"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-26
 **Primary Source:** https://docs.comfy.org/custom-nodes/v3_migration
-**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
 
 ## Primary Sources
 

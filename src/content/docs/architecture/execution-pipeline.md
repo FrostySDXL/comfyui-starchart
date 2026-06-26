@@ -3,11 +3,11 @@ title: "Execution Pipeline"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-26
 **Primary Sources:**
-- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py` (v0.23.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
-- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py` (v0.23.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
-**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py` (v0.26.0, commit f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40)
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py` (v0.26.0, commit f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40)
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
 
 ## Scope
 
@@ -18,7 +18,7 @@ API tutorial or a full engine internals reference.
 
 ## Pipeline Stages at a Glance
 
-At the pinned `v0.23.0` baseline, prompt execution crosses a few distinct
+At the pinned `v0.26.0` baseline, prompt execution crosses a few distinct
 stages:
 
 1. request parsing in `POST /prompt`
@@ -41,8 +41,8 @@ The submitted `prompt` is already the API prompt graph at this boundary. Each
 graph entry is keyed by node ID, names a `class_type`, and carries `inputs` that
 may be literal values or linked-input pairs. Use [Prompt Submission](../api/prompt-submission.md)
 for the request contract and extraction limits. Source-backed from pinned
-snapshots: `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py`
-and `references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`.
+snapshots: `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py`
+and `references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`.
 
 - `number` controls explicit queue ordering when provided.
 - `front: true` negates the generated queue number so the prompt runs earlier.
@@ -56,8 +56,8 @@ executor see the final graph.
 Prompt hooks run before validation and queue insertion, so they are the pipeline
 surface for prompt-time inspection or normalization. WebSocket lifecycle events
 start later, after queued work is picked up for execution. Source-backed from
-pinned snapshots: `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py`
-and `references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`.
+pinned snapshots: `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py`
+and `references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`.
 
 ## Stage 2: Validation
 
@@ -128,8 +128,8 @@ queue and history lookup.
 These lifecycle names are WebSocket-facing event types, not proof of a separate
 Python callback hook for each transition. Use hook docs for extension timing and
 the WebSocket page for event envelopes, targeting, and live state. Source-backed
-from pinned snapshots: `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py`
-and `references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`.
+from pinned snapshots: `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py`
+and `references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`.
 
 ## Stage 6: History Assembly
 

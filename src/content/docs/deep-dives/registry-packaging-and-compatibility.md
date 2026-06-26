@@ -3,9 +3,10 @@ title: "Deep Dive: Registry Packaging and Compatibility"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-26
 **Primary Sources:** https://docs.comfy.org/registry/specifications; https://docs.comfy.org/registry/publishing; https://docs.comfy.org/registry/cicd
-**Baseline verification status:** This page has not been re-reviewed against the current baseline.
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
+**Current baseline check:** Rechecked against `public/artifacts/delta-summary.json` and the current frontend registry-search source under `references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/services/`; no source delta changes this packaging and compatibility framing.
 
 ## Scope
 

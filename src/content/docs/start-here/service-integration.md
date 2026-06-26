@@ -3,9 +3,9 @@ title: "Start Here: Service Integration"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-06-01
-**Primary Sources:** `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py`, `references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`
-**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
+**Last Updated:** 2026-06-26
+**Primary Sources:** `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py`, `references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`, `references/raw/server_endpoints.json`, `references/raw/websocket_events.json`
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
 
 ## Who This Path Is For
 
@@ -21,13 +21,13 @@ You want to integrate ComfyUI with an external service or tool. This includes:
 ## First Practical Step
 
 Make a `POST /prompt` call to your ComfyUI instance with a minimal prompt
-dictionary and your `client_id`. Inspect the `prompt_id` in the response to
-confirm the queue accepted your request. This confirms the API integration
+dictionary and your prompt `client_id`. Inspect the `prompt_id` in the response
+to confirm the queue accepted your request. This confirms the API integration
 surface is reachable.
 
 For a repo-local starter that pairs prompt submission with live event watching,
 see `examples/consumers/websocket-event-consumer/`. It is runtime-dependent and
-uses the same `client_id` correlation boundary described below.
+uses the same prompt-targeting boundary described below.
 
 ## Two Integration Surfaces
 
@@ -85,7 +85,8 @@ The response gives you a `prompt_id` to track execution.
 
 ### Monitor Execution Events (quick-reference subset)
 
-Connect to the WebSocket at `/ws?client_id=...`. Messages include:
+Connect to the WebSocket at `/ws?clientId=...` when reusing a known socket
+session. Messages include:
 
 - `status` -- queue status snapshot sent on connect and broader queue updates
 - `executing` -- node execution started for the prompt client

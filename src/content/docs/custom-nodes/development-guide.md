@@ -3,9 +3,9 @@ title: "Custom Node Development Guide"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-26
 **Primary Source:** https://docs.comfy.org/custom-nodes/overview
-**Baseline verification status:** Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
 
 ## Primary Sources
 
@@ -13,8 +13,10 @@ title: "Custom Node Development Guide"
 - https://docs.comfy.org/custom-nodes/backend/server_overview
 - https://docs.comfy.org/custom-nodes/backend/more_on_inputs
 - https://docs.comfy.org/custom-nodes/walkthrough
-- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py`
-- `references/snapshots/2026-06-03/comfyui-frontend-v1.46.6/src/types/comfy.ts`
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/nodes.py`
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_api/latest/__init__.py`
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_api/latest/_io.py`
+- `references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/types/comfy.ts`
 
 ## Scope
 
@@ -35,16 +37,15 @@ outputs, and an execution function so the graph can pass data through
 them like any built-in Comfy node.
 
 This page has been re-reviewed at its current level of guidance against the
-active pinned baseline. The observed-Python-entrypoint caveat above still
-applies where the repo is relying on frontend and community evidence rather than
-direct pinned Python entrypoint source.
+active pinned baseline. The Python V3 entrypoint and `ComfyExtension` path is now
+directly pinned in the current core snapshot.
 
 For current development, V3 is the recommended mental model: declare a
 schema with `io.Schema`, implement execution with `execute`, and expose
 nodes through a `ComfyExtension` entrypoint (observed from the frontend
-extension API in pinned TypeScript source; the Python-side entrypoint
-convention is documented in community examples). V1 still matters for older
-repos and for understanding the large installed base of existing nodes.
+extension API in pinned TypeScript source and from the Python discovery path in
+`nodes.py`). V1 still matters for older repos and for understanding the large
+installed base of existing nodes.
 
 ## Development Environment
 
@@ -112,9 +113,8 @@ V3 nodes inherit from `io.ComfyNode` and typically provide:
 
 - `define_schema()` returning `io.Schema`
 - `execute()` returning `io.NodeOutput(...)`
-- registration through `ComfyExtension` and `comfy_entrypoint()` (observed from
-  pinned frontend TypeScript source and community examples; see caveats in
-  [Registration](registration.md))
+- registration through `ComfyExtension` and `comfy_entrypoint()` as implemented
+  in the pinned Python discovery path; see [Registration](registration.md)
 
 This model is more explicit, more structured, and better aligned with
 newer ComfyUI extension guidance.

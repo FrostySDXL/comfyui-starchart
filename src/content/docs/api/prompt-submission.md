@@ -3,14 +3,14 @@ title: "Prompt Submission"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-06-01
-**Primary Source:** ComfyUI core v0.23.0 `server.py` (pinned snapshot)
-**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
+**Last Updated:** 2026-06-26
+**Primary Source:** ComfyUI core v0.26.0 `server.py` (pinned snapshot)
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
 
 ## Primary Sources
 
-- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py` (v0.23.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
-- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py` (v0.23.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py` (v0.26.0, commit f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40)
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py` (v0.26.0, commit f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40)
 - https://docs.comfy.org/development/comfyui-server/comms_routes
 
 ## Scope
@@ -76,13 +76,13 @@ Minimal request shape:
 The submitted `prompt` value is an API prompt graph, not the editor-exported
 workflow JSON document. The pinned `/prompt` handler passes this graph directly
 to `execution.validate_prompt` before queueing it. Source-backed from pinned
-snapshots: `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py`.
+snapshots: `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py`.
 The repo-local `examples/api-calls/post-prompt.json` file uses this API graph
 shape directly; editor workflow exports usually need client-side conversion
 before they can be submitted to `/prompt`.
 
 The sub-sections below are Source-backed from pinned snapshots:
-`references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`.
+`references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`.
 
 At validation time, each graph entry is keyed by a node ID. Each node must name a
 `class_type`, and its `inputs` object may contain literal values or linked
@@ -152,26 +152,26 @@ role, the prompt-bearing input is a literal string, and the field's node class i
 present in the submitted graph. In that case, the submitted graph contains the
 candidate text without requiring execution-time reconstruction. Source-backed
 from pinned snapshots:
-`references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`.
+`references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`.
 
 Extraction becomes ambiguous when conditioning has been transformed, composed, or
 routed through linked inputs. During execution, `get_input_data` resolves linked
 inputs from cached upstream outputs, and execution can work with runtime objects
 rather than the original literal text. Source-backed from pinned snapshots:
-`references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`.
+`references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`.
 
 Not every conditioning terminal is textual. The validator and executor operate on
 declared input and output types, so a graph can carry conditioning or model data
 without preserving a recoverable text string at the terminal node. Source-backed
 from pinned snapshots:
-`references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`.
+`references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`.
 
 Use object-info and node-schema artifacts as bounded hints, not as proof that a
 submitted graph has recoverable prompt text. `/object_info` reports class input
 and output declarations, while `/prompt` validation only proves that this graph
 is executable against the loaded node classes. Source-backed from pinned
-snapshots: `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py` and
-`references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`.
+snapshots: `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py` and
+`references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`.
 
 ## Response and Execution Flow
 

@@ -3,7 +3,7 @@ title: "Version Pin Status"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-06-13
+**Last Updated:** 2026-06-26
 
 > **Operational Note:** This is an operational tracking page that records the
 > repository's current pinned extraction baseline. It is maintained manually.
@@ -19,13 +19,13 @@ reference data.
 
 Pinned source set:
 
-- ComfyUI core tag `v0.24.0`
-- core commit `f49bdb655707b97952dcef40e12e5af1f08d2007`
-- official frontend package version `1.46.14`
-- official frontend tag `v1.46.14`
-- frontend commit `f212c7d40955a5ed54951a94a51ca40d1f4d4cbf`
+- ComfyUI core tag `v0.26.0`
+- core commit `f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40`
+- official frontend package version `1.47.5`
+- official frontend tag `v1.47.5`
+- frontend commit `e604c85b88cc3eb5f6c07063aba2cbb536fd8e85`
 
-The active pinned files now live under `references/snapshots/2026-06-13/` and
+The active pinned files now live under `references/snapshots/2026-06-26/` and
 the extracted JSON in `references/raw/` points at those snapshot files.
 
 Prose docs may lag this canonical artifact baseline. When they do, they should
@@ -70,7 +70,7 @@ with current copies and versioned copies keyed to the pinned baseline. See
 and consumption details.
 
 The current published versioned artifact directory is
-`public/artifacts/versions/core-v0.24.0_frontend-v1.46.14_2026-06-13/`.
+`public/artifacts/versions/core-v0.26.0_frontend-v1.47.5_2026-06-26/`.
 
 ## Automation
 
@@ -102,11 +102,17 @@ for what was compared. At the time of this page update, it compares the recorded
 pre-refresh raw backup (created during the refresh) against the
 current `references/raw/` artifacts.
 
-The extraction surface is structurally stable between v0.23.0 and v0.24.0:
-no endpoints, hooks, IO types, WebSocket events, or other canonical artifact
-sections were added, removed, or changed at the extraction level. All counts
-are identical between the two baselines (25 endpoints, 19 hooks, 76 IO types,
-11 WebSocket events).
+The current refresh changed the extracted endpoint and IO-type surfaces while
+leaving the hook and WebSocket event inventories stable. The published delta
+shows 25 -> 27 endpoints, adding `POST /api/jobs/cancel` and
+`POST /api/jobs/{job_id}/cancel`, and also marks `GET /system_stats` and
+`POST /prompt` as changed at the extraction level. The `GET /system_stats`
+response now includes `deploy_environment`; the current `/prompt` prose keeps the
+branch-conditioned request contract explicit. The node schema changed 76 -> 78 IO
+types, adding
+`FILE_3D_POINT_CLOUD_ANY:File3DPointCloudAny` and
+`FILE_3D_SPLAT_ANY:File3DSplatAny`; 19 frontend hooks with no hook changes; and
+11 WebSocket events plus 4 binary events with no event changes.
 
 For item-level proof and field-level diff coverage, read
 `public/artifacts/delta-summary.json` directly.

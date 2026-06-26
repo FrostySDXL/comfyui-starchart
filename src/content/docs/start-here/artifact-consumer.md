@@ -3,8 +3,8 @@ title: "Start Here: Artifact Consumer"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-06-04
-**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
+**Last Updated:** 2026-06-26
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
 
 ## Scope
 

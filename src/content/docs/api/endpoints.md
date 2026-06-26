@@ -3,20 +3,20 @@ title: "API Endpoints"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-06-01
-**Primary Source:** ComfyUI core v0.23.0 `server.py` (pinned snapshot)
-**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
+**Last Updated:** 2026-06-26
+**Primary Source:** ComfyUI core v0.26.0 `server.py` (pinned snapshot)
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
 
 ## Primary Sources
 
-- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py` (v0.23.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py` (v0.26.0, commit f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40)
 - https://docs.comfy.org/development/comfyui-server/comms_routes
 - https://docs.comfy.org/development/comfyui-server/comms_messages
 
 ## Scope
 
 ComfyUI declares its HTTP and WebSocket surface directly in `server.py`
-using `aiohttp` route decorators. The current file defines 25 primary
+using `aiohttp` route decorators. The current file defines 27 primary
 routes on `self.routes`, covering queue control, prompt submission,
 file upload and viewing, node metadata, system inspection, and job
 tracking.
@@ -31,9 +31,10 @@ This repo does not promote those aliases into the canonical
 machine-readable endpoint surface for this pinned baseline. The aliasing is
 added generically in `add_routes()` as a delegation convenience, and routes
 already declared under `/api` in the base list also receive a second alias pass.
-For example, `GET /api/jobs` and `GET /api/jobs/{job_id}` also gain
-`/api/api/jobs` variants from the same loop. Use the undecorated route path in
-the artifact and treat `/api/...` mirrors as snapshot-backed compatibility
+For example, `GET /api/jobs`, `GET /api/jobs/{job_id}`,
+`POST /api/jobs/cancel`, and `POST /api/jobs/{job_id}/cancel` also gain
+`/api/api/jobs...` variants from the same loop. Use the undecorated route path
+in the artifact and treat `/api/...` mirrors as snapshot-backed compatibility
 behavior documented in prose.
 
 ## Endpoint Inventory
@@ -73,9 +74,11 @@ behavior documented in prose.
 
 ### System and job inspection
 
-- `GET /system_stats` — returns nested `{system: {os, ram_total, ram_free, comfyui_version, ...}, devices: [{name, type, index, vram_total, vram_free, ...}]}` with per-device VRAM breakdown, plus Python and package-version info. **Privacy note:** The `argv` field in this response exposes the full server command-line arguments, which may include local filesystem paths and configuration values.
+- `GET /system_stats` — returns nested `{system: {os, ram_total, ram_free, comfyui_version, deploy_environment, ...}, devices: [{name, type, index, vram_total, vram_free, ...}]}` with per-device VRAM breakdown, deployment-environment metadata, plus Python and package-version info. **Privacy note:** The `argv` field in this response exposes the full server command-line arguments, which may include local filesystem paths and configuration values.
 - `GET /api/jobs` — returns filtered and paginated job listings
 - `GET /api/jobs/{job_id}` — returns one job record
+- `POST /api/jobs/{job_id}/cancel` — cancels one running or pending job by ID and returns `{"cancelled": true}` or `{"cancelled": false}`
+- `POST /api/jobs/cancel` — accepts `{"job_ids": ["..."]}` and cancels each running or pending job in the batch; finished or unknown IDs are no-ops
 
 ## High-value route details
 
@@ -111,6 +114,12 @@ Success response shape:
 
 Failure path returns HTTP 400 with an `error` object and `node_errors`.
 
+The current delta summary also marks `POST /prompt` as changed at the extracted
+artifact level. The prose contract above covers the current pinned handler:
+`prompt` is the only API-level required request field, while `number`, `front`,
+`prompt_id`, `client_id`, `extra_data`, and `partial_execution_targets` are
+optional or branch-conditioned request fields.
+
 ### `GET /ws`
 
 The WebSocket route accepts an optional `clientId` query parameter.
@@ -135,9 +144,8 @@ and tooling that need to inspect available nodes programmatically.
 - Base routes are duplicated under `/api` in `add_routes()`. Treat the
   `/api` prefix as a compatibility alias for non-static routes, not as the
   canonical machine-readable route surface for this repo.
-- `GET /api/jobs` and `GET /api/jobs/{job_id}` are already declared with
-  `/api` in the base route list, so the aliasing logic also creates
-  `/api/api/jobs` variants.
+- The native jobs routes are already declared with `/api` in the base route
+  list, so the aliasing logic also creates `/api/api/jobs...` variants.
 - Several routes deliberately return bare `HTTP 200` responses instead of
   JSON payloads for mutating operations like `/queue`, `/interrupt`,
   `/free`, and `/history` POSTs.

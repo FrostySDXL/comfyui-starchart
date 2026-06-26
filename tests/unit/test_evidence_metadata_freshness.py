@@ -38,7 +38,7 @@ class EvidenceMetadataFreshnessUnitTests(unittest.TestCase):
                     "",
                     "**Evidence:** Source-backed from pinned snapshots",
                     "**Last Updated:** 2026-05-24",
-                    "**Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`.",
+                    "**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.",
                 ],
             )
 
@@ -61,7 +61,7 @@ class EvidenceMetadataFreshnessUnitTests(unittest.TestCase):
                 "api/endpoints.md",
                 [
                     "**Last Updated:** 2026-05-24",
-                    "**Baseline verification status:** Verified against the current pinned baseline: core `v0.22.0`, frontend `v1.45.12`, snapshots `2026-05-21`.",
+                    "**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.",
                 ],
             )
 
@@ -121,6 +121,32 @@ class EvidenceMetadataFreshnessUnitTests(unittest.TestCase):
             try:
                 module.DOCS_ROOT = docs_root
                 module.BASELINE_REQUIRED_PATHS = {"deep-dives/workflow-json-schema.md"}
+                errors = module.verify_pages()
+            finally:
+                module.DOCS_ROOT = old_docs_root
+                module.BASELINE_REQUIRED_PATHS = old_paths
+
+            self.assertTrue(any("approved phrasing" in error for error in errors))
+
+    def test_fails_when_old_current_transition_phrase_is_used(self):
+        module = _load_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            docs_root = Path(tmpdir)
+            self._write_page(
+                docs_root,
+                "api/endpoints.md",
+                [
+                    "**Evidence:** Source-backed from pinned snapshots",
+                    "**Last Updated:** 2026-06-26",
+                    "**Baseline verification status:** Re-reviewed for core v0.26.0 / frontend v1.47.5 transition.",
+                ],
+            )
+
+            old_docs_root = module.DOCS_ROOT
+            old_paths = module.BASELINE_REQUIRED_PATHS
+            try:
+                module.DOCS_ROOT = docs_root
+                module.BASELINE_REQUIRED_PATHS = {"api/endpoints.md"}
                 errors = module.verify_pages()
             finally:
                 module.DOCS_ROOT = old_docs_root

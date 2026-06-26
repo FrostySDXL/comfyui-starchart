@@ -455,7 +455,7 @@
       "nav_section": "API Reference",
       "audience": null,
       "evidence": "Source-backed from pinned snapshots",
-      "summary": "ComfyUI declares its HTTP and WebSocket surface directly in `server.py` using `aiohttp` route decorators. The current file defines 25 primary routes on `self.routes`, covering queue control, prompt submission, file upload and viewing, node metadata, system inspection, and job tracking.",
+      "summary": "ComfyUI declares its HTTP and WebSocket surface directly in `server.py` using `aiohttp` route decorators. The current file defines 27 primary routes on `self.routes`, covering queue control, prompt submission, file upload and viewing, node metadata, system inspection, and job tracking.",
       "related_route_entries": [
         {
           "route": "GET /history/{prompt_id}",

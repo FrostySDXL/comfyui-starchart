@@ -3,14 +3,16 @@ title: "Registration"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Community pattern study based on pinned external version
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-26
 **Primary Sources:**
 
 - https://docs.comfy.org/custom-nodes/overview
 - https://docs.comfy.org/custom-nodes/backend/server_overview
-- `references/snapshots/2026-06-03/comfyui-frontend-v1.46.6/src/types/comfy.ts` (ComfyExtension interface)
-- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_api/latest/_io.py` (io.Schema, io.ComfyNode, NodeOutput)
-**Baseline verification status:** This page has not been re-reviewed against the current baseline.
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/nodes.py` (V1 and V3 custom-node discovery)
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_api/latest/__init__.py` (Python `ComfyExtension`)
+- `references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/types/comfy.ts` (ComfyExtension interface)
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_api/latest/_io.py` (io.Schema, io.ComfyNode, NodeOutput)
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
 
 ## Scope
 
@@ -23,13 +25,12 @@ modern V3 conventions.
 In V3, nodes are exposed through a `ComfyExtension` plus a module-level
 `comfy_entrypoint()` function.
 
-**Caveat:** The Python-side `ComfyExtension` class and `comfy_entrypoint()`
-convention are observed from the pinned frontend TypeScript source
-(`ComfyExtension` interface in `comfy.ts`) and from community node examples.
-The Python-side registration entrypoint mechanism has not been directly pinned
-from a Python source file in this repository. The `io.Schema`, `io.ComfyNode`,
-and `io.NodeOutput` classes used in V3 nodes ARE pinned from the Python
-snapshot at `comfy_api/latest/_io.py`.
+The current pinned Python source directly handles this path. During custom-node
+discovery, `nodes.py` accepts modules that export a callable
+`comfy_entrypoint()`, requires it to return a Python `ComfyExtension`, awaits
+`get_node_list()`, and registers each returned node class by its schema
+`node_id`. The `io.Schema`, `io.ComfyNode`, and `io.NodeOutput` classes used in
+V3 nodes are pinned from `comfy_api/latest/_io.py`.
 
 Typical pattern:
 

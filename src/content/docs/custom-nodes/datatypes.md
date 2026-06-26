@@ -3,9 +3,9 @@ title: "Datatypes"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-26
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/datatypes
-**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
 
 ## Primary Sources
 
@@ -82,21 +82,26 @@ These are important for advanced sampling nodes, but many node authors
 can avoid them initially and focus on `IMAGE`, `MASK`, `LATENT`, and
 primitive types.
 
-Additional execution types defined in the v0.23.0 IO type registry
+Additional execution types defined in the v0.26.0 IO type registry
 include `HOOKS`, `HOOK_KEYFRAMES`, `TIMESTEPS_RANGE`,
 `LATENT_OPERATION`, `FLOW_CONTROL`, `ACCUMULATION`, `TRACKS`,
 `LOAD_3D`, and `LOAD_3D_ANIMATION`. See the pinned
-`node_api_schema.json` artifact for the full 76-type inventory.
+`node_api_schema.json` artifact for the full 78-type inventory.
 
-### 3D data types (v0.23.0)
+### 3D data types (v0.26.0)
 
-The current baseline adds six 3D IO types:
+The current baseline includes eight 3D-specific IO types beyond the existing
+generic 3D file family:
 
 - `SPLAT` -> `SPLAT` custom type for Gaussian splat data
 - `FILE_3D_PLY` -> `File3DPLY` for PLY mesh files
 - `FILE_3D_SPLAT` -> `File3DSPLAT` for splat file loading
 - `FILE_3D_SPZ` -> `File3DSPZ` for compressed splat files
 - `FILE_3D_KSPLAT` -> `File3DKSPLAT` for K-splat files
+- `FILE_3D_SPLAT_ANY` -> `File3DSplatAny` for supported splat containers
+  (`.ply`, `.spz`, `.splat`, `.ksplat`)
+- `FILE_3D_POINT_CLOUD_ANY` -> `File3DPointCloudAny` for supported point cloud
+  containers; the pinned source currently names `.ply`
 - `LOAD3D_MODEL_INFO` -> `Load3DModelInfo` for 3D model metadata
 
 These join the existing 3D file types (`FILE_3D`, `FILE_3D_GLB`,

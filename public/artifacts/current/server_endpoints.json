@@ -1,12 +1,12 @@
 {
   "metadata": {
     "sources": [
-      "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
-      "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py"
+      "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
+      "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py"
     ],
-    "extracted_date": "2026-06-13",
-    "version": "v0.24.0",
-    "commit": "f49bdb655707b97952dcef40e12e5af1f08d2007"
+    "extracted_date": "2026-06-26",
+    "version": "v0.26.0",
+    "commit": "f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40"
   },
   "coverage": {
     "description": "Static extraction of ComfyUI HTTP and WebSocket endpoint structure.",
@@ -474,7 +474,7 @@
       "parameters": [],
       "returns": {
         "kind": "json",
-        "summary": "JSON object with fields: system, os, ram_total, ram_free, comfyui_version, required_frontend_version, installed_templates_version, required_templates_version, comfy_package_versions, python_version, pytorch_version, embedded_python, argv, devices.",
+        "summary": "JSON object with fields: system, os, ram_total, ram_free, comfyui_version, required_frontend_version, installed_templates_version, required_templates_version, comfy_package_versions, python_version, pytorch_version, embedded_python, deploy_environment, argv, devices.",
         "status_codes": [
           200
         ],
@@ -514,6 +514,9 @@
           },
           {
             "name": "embedded_python"
+          },
+          {
+            "name": "deploy_environment"
           },
           {
             "name": "argv"
@@ -771,6 +774,86 @@
       "notes": []
     },
     {
+      "route": "/api/jobs/{job_id}/cancel",
+      "method": "POST",
+      "description": "Cancel a single job by id, regardless of state. Idempotent: cancelling a job that has already finished, or an id that is not known, returns 200 with {\"cancelled\": false} rather than an error.",
+      "parameters": [
+        {
+          "name": "job_id",
+          "location": "path",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "route_token",
+            "detail": "/api/jobs/{job_id}/cancel"
+          }
+        }
+      ],
+      "returns": {
+        "kind": "json",
+        "summary": "JSON object with fields: cancelled.",
+        "status_codes": [
+          200,
+          400
+        ],
+        "fields": [
+          {
+            "name": "cancelled"
+          }
+        ],
+        "notes": [
+          "Returns 400 for validation failures or bad requests."
+        ],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
+      },
+      "notes": [
+        "Parameters marked 'required' reflect static subscript access patterns, not API-level requiredness. Only fields that cause the handler to return an error status when missing are truly mandatory. Consult the prose API docs for precise mutation-request contracts."
+      ]
+    },
+    {
+      "route": "/api/jobs/cancel",
+      "method": "POST",
+      "description": "Cancel a batch of jobs by id. Body: {\"job_ids\": [\"<uuid>\", ...]} Best-effort and idempotent: every well-formed id is cancelled if it is running or pending; ids that are already finished or unknown are no-ops, not errors. A batch of all no-ops still returns 200 with {\"cancelled\": false}. This matches the single-cancel endpoint and means \"cancel all\" still cancels the in-progress jobs even if some finished between the client's snapshot and the request. Malformed ids are still rejected up front with 400 (see below).",
+      "parameters": [
+        {
+          "name": "job_ids",
+          "location": "json",
+          "required": true,
+          "traceability": {
+            "source_type": "source-backed",
+            "strategy": "json_access.get",
+            "detail": "json_data"
+          }
+        }
+      ],
+      "returns": {
+        "kind": "json",
+        "summary": "JSON object with fields: cancelled.",
+        "status_codes": [
+          200,
+          400
+        ],
+        "fields": [
+          {
+            "name": "cancelled"
+          }
+        ],
+        "notes": [
+          "Returns 400 for validation failures or bad requests."
+        ],
+        "traceability": {
+          "source_type": "source-backed",
+          "strategy": "web.json_response"
+        }
+      },
+      "notes": [
+        "Parameters marked 'required' reflect static subscript access patterns, not API-level requiredness. Only fields that cause the handler to return an error status when missing are truly mandatory. Consult the prose API docs for precise mutation-request contracts."
+      ]
+    },
+    {
       "route": "/history",
       "method": "GET",
       "description": "",
@@ -937,7 +1020,7 @@
         {
           "name": "prompt_id",
           "location": "json",
-          "required": false,
+          "required": true,
           "traceability": {
             "source_type": "source-backed",
             "strategy": "json_access.get",
@@ -1151,7 +1234,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1164,7 +1247,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1177,7 +1260,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1190,7 +1273,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1203,7 +1286,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1216,7 +1299,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1229,7 +1312,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         }
       }
@@ -1244,7 +1327,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1257,7 +1340,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1270,7 +1353,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         }
       }
@@ -1285,7 +1368,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         }
       },
@@ -1298,7 +1381,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         }
       }
@@ -1313,7 +1396,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1330,7 +1413,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1345,7 +1428,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1361,7 +1444,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1381,7 +1464,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_prompt"
         },
         "extraction_method": "ast-structural",
@@ -1397,7 +1480,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1409,13 +1492,25 @@
         ]
       },
       {
+        "type": "invalid_prompt_id",
+        "summary": "prompt_id must be a valid UUID",
+        "source_function": "post_prompt",
+        "traceability": {
+          "source_type": "pinned_snapshot",
+          "strategy": "ast-structural",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
+          "source_function": "post_prompt"
+        },
+        "extraction_method": "ast-structural"
+      },
+      {
         "type": "missing_node_type",
         "summary": "A prompt node is missing class_type or references an unknown node class.",
         "source_function": "validate_prompt",
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_prompt"
         },
         "extraction_method": "ast-structural",
@@ -1432,7 +1527,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "post_prompt"
         },
         "extraction_method": "ast-structural"
@@ -1444,7 +1539,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_prompt"
         },
         "extraction_method": "ast-structural"
@@ -1456,7 +1551,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_prompt"
         },
         "extraction_method": "ast-structural"
@@ -1468,7 +1563,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1483,7 +1578,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1501,7 +1596,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1518,7 +1613,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1535,7 +1630,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "validate_inputs"
         },
         "extraction_method": "ast-structural",
@@ -1549,7 +1644,8 @@
     "coverage": "source-backed",
     "deferred": [
       "Runtime node-specific validation messages from custom nodes are not statically knowable.",
-      "Prompt validation error extraction is scoped to validation functions; unrelated literal dictionaries with type keys are ignored."
+      "Prompt validation error extraction is scoped to validation functions; unrelated literal dictionaries with type keys are ignored.",
+      "unknown prompt validation error types were preserved without curated summaries: invalid_prompt_id."
     ]
   },
   "queue_history_contract": {
@@ -1560,7 +1656,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "get_queue"
         },
         "coverage": "deferred",
@@ -1572,7 +1668,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "get_queue"
         },
         "coverage": "deferred",
@@ -1584,7 +1680,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "get_history"
         },
         "coverage": "deferred",
@@ -1596,7 +1692,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "task_done"
         },
         "coverage": "deferred",
@@ -1608,7 +1704,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/execution.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
           "source_function": "ExecutionStatus"
         },
         "coverage": "source-backed"
@@ -1619,7 +1715,7 @@
         "traceability": {
           "source_type": "pinned_snapshot",
           "strategy": "ast-structural",
-          "source_file": "references/snapshots/2026-06-13/comfyui-core-v0.24.0/server.py",
+          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
           "source_function": "system_stats"
         },
         "coverage": "source-backed"

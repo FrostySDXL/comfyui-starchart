@@ -1,11 +1,11 @@
 {
   "comparison": {
-    "old": "references/_refresh_backups/raw_20260613T202328Z",
+    "old": "references/_refresh_backups/raw_20260626T225001Z",
     "new": "references/raw",
     "methodology": "artifact-directory-to-artifact-directory",
     "source_kind": "pre_refresh_backup_vs_current_raw",
-    "old_label": "raw backup 2026-06-13T20:23:28Z",
-    "new_label": "current raw (extracted 2026-06-13)"
+    "old_label": "raw backup 2026-06-26T22:50:01Z",
+    "new_label": "current raw (extracted 2026-06-26)"
   },
   "notes": [
     "Deterministic artifact-to-artifact comparison only.",
@@ -14,10 +14,16 @@
   "artifacts": {
     "server_endpoints": {
       "old_count": 25,
-      "new_count": 25,
-      "added": [],
+      "new_count": 27,
+      "added": [
+        "POST /api/jobs/cancel",
+        "POST /api/jobs/{job_id}/cancel"
+      ],
       "removed": [],
-      "changed": []
+      "changed": [
+        "GET /system_stats",
+        "POST /prompt"
+      ]
     },
     "js_hooks": {
       "old_count": 19,
@@ -36,8 +42,11 @@
       },
       "io_types": {
         "old_count": 76,
-        "new_count": 76,
-        "added": [],
+        "new_count": 78,
+        "added": [
+          "FILE_3D_POINT_CLOUD_ANY:File3DPointCloudAny",
+          "FILE_3D_SPLAT_ANY:File3DSplatAny"
+        ],
         "removed": [],
         "changed": []
       },

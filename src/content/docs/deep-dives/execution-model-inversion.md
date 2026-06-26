@@ -3,9 +3,10 @@ title: "Deep Dive: Execution Model Inversion"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-26
 **Primary Source:** https://docs.comfy.org/development/comfyui-server/execution_model_inversion_guide
-**Baseline verification status:** This page has not been re-reviewed against the current baseline.
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
+**Current baseline check:** Rechecked against `references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`, `references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_execution/graph.py`, and `public/artifacts/delta-summary.json`; current source still shows validation hooks, lazy-input handling, dynamic prompt expansion, and topological execution-list behavior consistent with this scope.
 
 ## Scope
 
@@ -17,7 +18,7 @@ not a reverse-engineered engine internals page.
 ## What changed at a high level
 
 The official guide describes a shift from a back-to-front recursive execution
-model to a front-to-back topological sort. That is not just an implementation
+model to a topological execution-list model. That is not just an implementation
 detail. It changes which custom-node assumptions are safe.
 
 Before the inversion, some nodes could appear to work because validation and

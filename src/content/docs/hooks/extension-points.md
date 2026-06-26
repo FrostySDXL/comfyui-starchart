@@ -3,16 +3,16 @@ title: "Extension Points"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-26
 **Primary Source:** https://docs.comfy.org/custom-nodes/js/javascript_hooks
-**Baseline verification status:** Re-reviewed for core v0.23.0 / frontend v1.46.6 transition.
+**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
 
 ## Primary Sources
 
 - https://docs.comfy.org/custom-nodes/js/javascript_hooks
 - https://docs.comfy.org/custom-nodes/js/javascript_objects_and_hijacking
-- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py` (v0.23.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
-- `references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py` (v0.23.0, commit a88e02b18576283b1ff25a4b564548c5dc42cbf6)
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py` (v0.26.0, commit f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40)
+- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py` (v0.26.0, commit f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40)
 
 ## Scope
 
@@ -72,8 +72,8 @@ inspect submitted prompt graphs with the prompt hook surface, then observe
 execution progress through WebSocket lifecycle events. The hook can see the
 request before validation and queueing; the event stream reports what happens
 after queued work starts. Source-backed from pinned snapshots:
-`references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py` and
-`references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py`.
+`references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py` and
+`references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`.
 
 ### Request/response integration
 
