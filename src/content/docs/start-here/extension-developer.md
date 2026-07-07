@@ -108,5 +108,5 @@ to the repo's `CONTRIBUTING.md` file for maintainer-grade workflow details.
 - [Architecture Overview](../architecture/overview.md) -- system map for server-owned extension surfaces
 - [Server Hooks](../hooks/server-hooks.md) -- execution lifecycle callbacks
 - [Extension Points](../hooks/extension-points.md) -- architectural chooser for retained extension surfaces
-- [Start Here: Service Integration](service-integration.md) -- if the problem is
+- [Start Here: Local API Integration](service-integration.md) -- if the problem is
   really API-first integration rather than an extension

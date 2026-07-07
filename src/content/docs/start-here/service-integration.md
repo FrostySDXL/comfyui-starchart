@@ -1,5 +1,5 @@
 ---
-title: "Start Here: Service Integration"
+title: "Start Here: Local API Integration"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
@@ -9,7 +9,8 @@ title: "Start Here: Service Integration"
 
 ## Who This Path Is For
 
-You want to integrate ComfyUI with an external service or tool. This includes:
+You want to integrate with a local ComfyUI API from an external service or tool.
+This includes:
 
 - embedding ComfyUI in another application
 - driving workflows programmatically from a script or service

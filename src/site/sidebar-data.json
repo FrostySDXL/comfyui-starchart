@@ -6,18 +6,20 @@
   {
     "label": "Start Here",
     "items": [
-      { "label": "Custom Node Author", "path": "start-here/author.md" },
-      { "label": "Extension Developer", "path": "start-here/extension-developer.md" },
-      { "label": "Service Integration", "path": "start-here/service-integration.md" },
+      { "label": "Artifact Consumer", "path": "start-here/artifact-consumer.md" },
       { "label": "Tooling Builder", "path": "start-here/tooling-builder.md" },
-      { "label": "Artifact Consumer", "path": "start-here/artifact-consumer.md" }
+      { "label": "Local API Integration", "path": "start-here/service-integration.md" },
+      { "label": "Extension Developer", "path": "start-here/extension-developer.md" },
+      { "label": "Custom Node Author", "path": "start-here/author.md" }
     ]
   },
   {
-    "label": "Architecture",
+    "label": "Machine-Readable Reference",
     "items": [
-      { "label": "Overview", "path": "architecture/overview.md" },
-      { "label": "Execution Pipeline", "path": "architecture/execution-pipeline.md" }
+      { "label": "Machine-Readable Artifacts", "path": "reference/machine-readable-artifacts.md" },
+      { "label": "Artifact Schema Version Migration", "path": "reference/artifact-schema-version-migration.md" },
+      { "label": "Version Pin Status", "path": "reference/version-pin-status.md" },
+      { "label": "Object Info", "path": "reference/object-info.md" }
     ]
   },
   {
@@ -30,11 +32,19 @@
     ]
   },
   {
-    "label": "Hooks",
+    "label": "Workflow and Architecture",
     "items": [
+      { "label": "Workflow JSON Schema", "path": "deep-dives/workflow-json-schema.md" },
+      { "label": "Execution Pipeline", "path": "architecture/execution-pipeline.md" },
+      { "label": "Overview", "path": "architecture/overview.md" }
+    ]
+  },
+  {
+    "label": "Hooks and Extensions",
+    "items": [
+      { "label": "Extension Points", "path": "hooks/extension-points.md" },
       { "label": "JavaScript Hooks", "path": "hooks/javascript-hooks.md" },
-      { "label": "Server Hooks", "path": "hooks/server-hooks.md" },
-      { "label": "Extension Points", "path": "hooks/extension-points.md" }
+      { "label": "Server Hooks", "path": "hooks/server-hooks.md" }
     ]
   },
   {
@@ -47,23 +57,18 @@
     ]
   },
   {
-    "label": "Reference",
+    "label": "Advanced",
     "items": [
-      { "label": "Machine-Readable Artifacts", "path": "reference/machine-readable-artifacts.md" },
-      { "label": "Object Info", "path": "reference/object-info.md" },
-      { "label": "Artifact Schema Version Migration", "path": "reference/artifact-schema-version-migration.md" },
-      { "label": "Source Evidence Policy", "path": "reference/source-evidence-policy.md" },
-      { "label": "Writing Style Guide", "path": "reference/writing-style-guide.md" },
-      { "label": "Version Pin Status", "path": "reference/version-pin-status.md" },
-      { "label": "Topic Scope", "path": "reference/topic-scope.md" }
+      { "label": "Execution Model Inversion", "path": "deep-dives/execution-model-inversion.md" },
+      { "label": "Registry Packaging and Compatibility", "path": "deep-dives/registry-packaging-and-compatibility.md" }
     ]
   },
   {
-    "label": "Deep Dives",
+    "label": "Repository Policy",
     "items": [
-      { "label": "Workflow JSON Schema", "path": "deep-dives/workflow-json-schema.md" },
-      { "label": "Execution Model Inversion", "path": "deep-dives/execution-model-inversion.md" },
-      { "label": "Registry Packaging and Compatibility", "path": "deep-dives/registry-packaging-and-compatibility.md" }
+      { "label": "Source Evidence Policy", "path": "reference/source-evidence-policy.md" },
+      { "label": "Topic Scope", "path": "reference/topic-scope.md" },
+      { "label": "Writing Style Guide", "path": "reference/writing-style-guide.md" }
     ]
   }
 ]

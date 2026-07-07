@@ -112,5 +112,4 @@ repo-local maintainer workflow in `CONTRIBUTING.md`.
 
 - [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md)
 - [Start Here: Tooling Builder](tooling-builder.md)
-- [Start Here: Service Integration](service-integration.md)
-- [Reference: Topic Scope](../reference/topic-scope.md)
+- [Start Here: Local API Integration](service-integration.md)

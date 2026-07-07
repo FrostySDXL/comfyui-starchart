@@ -26,7 +26,18 @@ Use StarChart when you need to:
 
 ## Use StarChart in 3 Minutes
 
-Start without cloning, building, or running ComfyUI:
+To consume the hosted artifacts without cloning, start from the manifest URL:
+
+```text
+https://frostysdxl.github.io/comfyui-starchart/artifacts/manifest.json
+```
+
+Then load the canonical current artifact URL from the manifest and validate the
+downloaded bytes against its `sha256` before using the artifact in strict
+tooling.
+
+After cloning the repo, run the no-runtime demo without building the site or
+starting ComfyUI:
 
 ```bash
 python examples/consumers/three-minute-artifact-reader/read_starchart.py
@@ -36,16 +47,6 @@ The demo reads the checked-in `public/artifacts/manifest.json` and
 `public/artifacts/current/server_endpoints.json`, then prints the pinned baseline,
 published artifacts, and whether key local API routes such as `POST /prompt`,
 `GET /queue`, `GET /history/{prompt_id}`, and `GET /ws` are present.
-
-For hosted consumption, start from the manifest:
-
-```text
-https://frostysdxl.github.io/comfyui-starchart/artifacts/manifest.json
-```
-
-Then load the canonical current artifact URL from the manifest and validate the
-downloaded bytes against its `sha256` before using the artifact in strict
-tooling.
 
 ## What This Repository Is
 
@@ -126,10 +127,11 @@ community breadcrumbs.
 Start here:
 
 - **Consumers:** [Docs home](src/content/docs/index.md)
-  - [Custom Node Author](src/content/docs/start-here/author.md)
-  - [Extension Developer](src/content/docs/start-here/extension-developer.md)
-  - [Service Integration](src/content/docs/start-here/service-integration.md)
+  - [Artifact Consumer](src/content/docs/start-here/artifact-consumer.md)
   - [Tooling Builder](src/content/docs/start-here/tooling-builder.md)
+  - [Local API Integration](src/content/docs/start-here/service-integration.md)
+  - [Extension Developer](src/content/docs/start-here/extension-developer.md)
+  - [Custom Node Author](src/content/docs/start-here/author.md)
 - **Agents:** start with [Docs home](src/content/docs/index.md), then use [Tooling Builder](src/content/docs/start-here/tooling-builder.md), [Machine-Readable Artifacts](src/content/docs/reference/machine-readable-artifacts.md), and [AGENTS.md](AGENTS.md)
 - **Contributors:** [CONTRIBUTING.md](CONTRIBUTING.md) plus the editorial policy stack under `src/content/docs/reference/`
 - **Maintainers:** [CONTRIBUTING.md](CONTRIBUTING.md) for canonical workflows, plus [AGENTS.md](AGENTS.md) for startup-critical repo guidance
@@ -238,10 +240,12 @@ full verification matrix.
 
 ## Scope Boundaries
 
-- official docs replacement
-- community wiki
-- package registry
-- unbounded maintainer-handbook content inside the published docs tree
+StarChart intentionally does not try to be:
+
+- an official docs replacement
+- a community wiki
+- a package registry
+- an unbounded maintainer handbook inside the published docs tree
 
 See CONTRIBUTING.md Non-Goal Addendum for the full list of rejected feature classes and their rationale.
 

@@ -26,7 +26,7 @@ Choose the shortest route for the job you need to finish:
 |--------------|------------|
 | Load pinned ComfyUI routes, hooks, schemas, or WebSocket events as JSON | [Artifact Consumer](start-here/artifact-consumer.md) |
 | Build an agent, integration, dashboard, or CI check against ComfyUI facts | [Tooling Builder](start-here/tooling-builder.md) |
-| Submit, monitor, or retrieve work through a local ComfyUI API | [API Endpoints](api/endpoints.md) and [WebSocket](api/websocket.md) |
+| Submit, monitor, or retrieve work through a local ComfyUI API | [Local API Integration](start-here/service-integration.md) |
 | Build a custom node with source-backed constraints | [Custom Node Author](start-here/author.md) |
 | Extend ComfyUI through frontend or server hooks | [Extension Developer](start-here/extension-developer.md) |
 
@@ -44,18 +44,6 @@ artifact copies, schemas, source metadata, and checksums.
 - `artifacts/docs-index.json` for bounded docs routing when an agent or tool
   needs a first page to read
 
-## Who This Section Is For
-
-Choose your starting point based on what you are building:
-
-| Goal | Start Here |
-|------|-----------|
-| Build custom nodes | [Custom Node Author](start-here/author.md) |
-| Extend ComfyUI (frontend or server) | [Extension Developer](start-here/extension-developer.md) |
-| Integrate ComfyUI into an external service | [Service Integration](start-here/service-integration.md) |
-| Build tools or agents against ComfyUI | [Tooling Builder](start-here/tooling-builder.md) |
-| Consume published artifacts directly | [Artifact Consumer](start-here/artifact-consumer.md) |
-
 If you are maintaining this repo rather than consuming it, switch to
 `CONTRIBUTING.md` and `AGENTS.md` for repo-local workflow guidance.
 
@@ -64,12 +52,14 @@ If you are maintaining this repo rather than consuming it, switch to
 The retained published surface stays intentionally small:
 
 - **Start Here** for audience routing
-- **Architecture** for system-shape context
+- **Machine-Readable Reference** for artifacts, version pins, schemas, and live
+  object-info boundaries
 - **API** for route, prompt, queue, history, and WebSocket reference
+- **Workflow and Architecture** for workflow JSON and execution-system context
 - **Hooks** for frontend and server extension surfaces
 - **Custom Nodes** for authoring guidance
-- **Reference** for artifacts, evidence rules, and editorial boundaries
-- **Deep Dives** for a few durable advanced topics
+- **Repository Policy** for evidence rules and editorial boundaries
+- **Advanced** for durable secondary topics
 
 ## Artifact Entry Rule
 
@@ -103,10 +93,7 @@ artifact and snapshot context this repo preserves.
 
 ## Read Next
 
-- [Start Here: Custom Node Author](start-here/author.md)
-- [Start Here: Extension Developer](start-here/extension-developer.md)
-- [Start Here: Service Integration](start-here/service-integration.md)
-- [Start Here: Tooling Builder](start-here/tooling-builder.md)
 - [Start Here: Artifact Consumer](start-here/artifact-consumer.md)
+- [Start Here: Tooling Builder](start-here/tooling-builder.md)
+- [Start Here: Local API Integration](start-here/service-integration.md)
 - [Machine-Readable Artifacts](reference/machine-readable-artifacts.md)
-- [Source Evidence Policy](reference/source-evidence-policy.md)
