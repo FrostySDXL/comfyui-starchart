@@ -7,6 +7,7 @@ import argparse
 import datetime as dt
 import json
 import re
+import warnings
 from pathlib import Path
 from typing import Any
 
@@ -174,17 +175,25 @@ def load_docs_index_metadata(metadata_path: Path = METADATA_PATH) -> dict[str, d
 def load_metadata_freshness_defaults(repo_root: Path = REPO_ROOT) -> tuple[str, str]:
     """Return docs-index freshness defaults from the current artifact manifest."""
     manifest_path = repo_root / "public" / "artifacts" / "manifest.json"
+    fallback_message = (
+        f"using fallback docs-index metadata freshness because {display_path(manifest_path)} "
+        "is unavailable or does not contain a date-suffixed version_key"
+    )
     if not manifest_path.exists():
+        warnings.warn(fallback_message, RuntimeWarning, stacklevel=2)
         return FALLBACK_METADATA_REVIEWED_AT, FALLBACK_METADATA_BASELINE
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
+        warnings.warn(fallback_message, RuntimeWarning, stacklevel=2)
         return FALLBACK_METADATA_REVIEWED_AT, FALLBACK_METADATA_BASELINE
     version_key = manifest.get("version_key")
     if not isinstance(version_key, str) or not version_key:
+        warnings.warn(fallback_message, RuntimeWarning, stacklevel=2)
         return FALLBACK_METADATA_REVIEWED_AT, FALLBACK_METADATA_BASELINE
     match = re.search(r"_(\d{4}-\d{2}-\d{2})$", version_key)
     if not match:
+        warnings.warn(fallback_message, RuntimeWarning, stacklevel=2)
         return FALLBACK_METADATA_REVIEWED_AT, version_key
     return match.group(1), version_key
 

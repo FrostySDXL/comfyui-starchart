@@ -563,6 +563,23 @@ class GenerateDocsIndexTests(unittest.TestCase):
             self.assertEqual(tooling_metadata["metadata_reviewed_at"], "2030-01-02")
             self.assertEqual(tooling_metadata["metadata_baseline"], version_key)
 
+    def test_metadata_freshness_fallback_emits_warning(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            with self.assertWarnsRegex(
+                RuntimeWarning, "using fallback docs-index metadata freshness"
+            ):
+                defaults = generate_docs_index.load_metadata_freshness_defaults(root)
+
+        self.assertEqual(
+            defaults,
+            (
+                generate_docs_index.FALLBACK_METADATA_REVIEWED_AT,
+                generate_docs_index.FALLBACK_METADATA_BASELINE,
+            ),
+        )
+
     def test_build_docs_index_accepts_discover_hooks_task_intent(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

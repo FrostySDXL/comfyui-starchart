@@ -21,12 +21,14 @@ jobs:
           install-node-deps: "true"
 
       - name: Run npm high-severity audit
+        continue-on-error: true
         shell: bash
         run: |
           set -o pipefail
           npm audit --audit-level=high --json | tee npm-audit.json
 
       - name: Run pip advisory audit
+        continue-on-error: true
         shell: bash
         run: |
           set -o pipefail
@@ -42,5 +44,6 @@ jobs:
             echo "- npm audit command: \`npm audit --audit-level=high --json\`"
             echo "- pip audit command: \`python -m pip_audit -r requirements.lock --format json\`"
             echo
+            echo "The npm and pip audit steps use \`continue-on-error\` so both advisory reports are collected independently."
             echo "Inspect the job log for full JSON output when a command fails."
           } >> "$GITHUB_STEP_SUMMARY"

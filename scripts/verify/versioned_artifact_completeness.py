@@ -208,7 +208,11 @@ def evaluate_versioned_artifacts(
     exceptions = sorted_retention_exceptions(retention_exceptions or RETENTION_EXCEPTIONS)
     current_version_key = _load_current_version_key(manifest_path)
     current_artifact_hashes = _load_current_artifact_hashes(manifest_path)
-    retained_hashes = expected_retained_hashes or EXPECTED_RETAINED_COMPLETE_HASHES
+    retained_hashes = (
+        expected_retained_hashes
+        if expected_retained_hashes is not None
+        else EXPECTED_RETAINED_COMPLETE_HASHES
+    )
     rows = tuple(
         _classify_directory(path, current_version_key, exceptions)
         for path in sorted(versions_dir.iterdir())

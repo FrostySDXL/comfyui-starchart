@@ -40,6 +40,10 @@ snapshots. All paths below are site-relative to the built documentation.
 
 Each artifact also has a versioned copy under `artifacts/versions/<key>/`, where
 the key includes the pinned core version, frontend version, and extraction date.
+The key format is `core-<core-version>_frontend-<frontend-version>_YYYY-MM-DD`.
+The trailing date is part of the maintainer contract: generators use it as the
+default freshness date for docs-index metadata when current manifest data is
+available.
 
 The repo also publishes non-canonical support artifacts:
 
@@ -464,6 +468,12 @@ current-copy bytes plus the current versioned bytes named by
 also hash-verified by `scripts/verify/versioned_artifact_completeness.py` against
 the verifier's deterministic expected-hash table.
 
+Retained-complete historical artifacts are checked against the current published
+schemas under `public/artifacts/schemas/`. Schema hardening can therefore require
+a maintainer decision for older retained baselines: regenerate from pinned
+sources, keep a documented exception, or adjust the schema only when the
+published contract itself is intentionally changing.
+
 If you need the exact commit, extraction date, or published checksum for an
 artifact, read its `metadata` object or consult `manifest.json`.
 
@@ -488,6 +498,11 @@ The manifest discovery contract is validated by
 `artifacts/schemas/manifest.schema.json`. That schema closes the manifest's
 top-level object, `schemas` map, and `artifacts` map so the canonical discovery
 surface cannot silently grow undeclared artifact entries.
+
+`version_key` values must end with the extraction date suffix in `YYYY-MM-DD`
+form. That suffix is used as the default `metadata_reviewed_at` value for
+generated `docs-index.json` entries when their curated metadata omits an explicit
+review date.
 
 Maintainership note: `python scripts/verify/verify_artifact_integrity.py` is a
 blocking verifier. It proves the canonical `references/raw/` files, published

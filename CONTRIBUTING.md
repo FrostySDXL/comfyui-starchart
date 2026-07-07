@@ -461,6 +461,23 @@ artifact hashes must match the corresponding `sha256` values in
 must match the deterministic expected-hash table in
 `scripts/verify/versioned_artifact_completeness.py`.
 
+Retained-complete historical artifacts are validated against the current
+checked-in schemas under `public/artifacts/schemas/`. If a schema hardening makes
+an intentionally retained baseline fail, do not weaken the verifier casually;
+record the maintenance decision, either regenerate the baseline from pinned
+sources or add an explicit lifecycle exception with the reason.
+
+When adding or intentionally republishing a retained-complete baseline, update
+`EXPECTED_RETAINED_COMPLETE_HASHES` in the same change:
+
+1. Regenerate or copy the complete versioned artifact directory.
+2. For each required JSON artifact in that directory, compute the normalized
+   hash with `compute_textual_json_sha256` from `scripts/common/json_utils.py`.
+3. Add the new `version_key` entry and artifact hashes to
+   `scripts/verify/versioned_artifact_completeness.py`.
+4. Run `python scripts/verify/versioned_artifact_completeness.py` and the
+   matching unit test file before publishing the baseline.
+
 ## Editing Published Docs
 
 1. Read the target page and nearby linked pages.
@@ -662,6 +679,11 @@ Expected flow:
 5. republish canonical artifacts
 6. regenerate delta summary when comparing against the pre-refresh backup
 7. rerun blocking verification
+
+Deployment does not regenerate canonical artifacts. The Pages workflow verifies
+and publishes the generated artifact tree already committed under
+`public/artifacts/`; run `publish_reference_artifacts.py` locally as a maintainer
+step before commit when the canonical raw artifacts or pinned baseline change.
 
 Commands:
 

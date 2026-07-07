@@ -249,6 +249,28 @@ class TestVersionedArtifactCompletenessNegative(unittest.TestCase):
 
         self.assertTrue(any("sha256 mismatch" in error for error in result.errors))
 
+    def test_empty_retained_hash_override_disables_default_hash_table(self):
+        module = _load_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            manifest_path = _write_manifest(root, version_key="current")
+            schema_dir = _write_schema_dir(root)
+            versions_dir = root / "public" / "artifacts" / "versions"
+            retained_key = "core-v0.23.0_frontend-v1.46.6_2026-06-03"
+            _write_artifacts(versions_dir / "current", module.REQUIRED_ARTIFACTS)
+            _write_artifacts(versions_dir / retained_key, module.REQUIRED_ARTIFACTS)
+
+            result = module.evaluate_versioned_artifacts(
+                manifest_path,
+                versions_dir,
+                {},
+                schema_dir,
+                expected_retained_hashes={},
+            )
+
+        self.assertTrue(any("missing expected sha256" in error for error in result.errors))
+        self.assertFalse(any("sha256 mismatch" in error for error in result.errors))
+
 
 if __name__ == "__main__":
     unittest.main()
