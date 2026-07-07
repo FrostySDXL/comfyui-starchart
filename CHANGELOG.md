@@ -10,6 +10,23 @@ Maintenance policy for this file lives in `CONTRIBUTING.md` under
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-07-07 - artifact consumer routing and review hardening
+
+### Docs and examples
+
+- Promote artifact-consumer onboarding across the README, sidebar, start-here
+  pages, docs-index metadata, and consumer examples.
+- Add the three-minute artifact reader example and tighten artifact-entry routing
+  for API, hooks, schema, and service-integration readers.
+
+### Verification and governance
+
+- Keep dependency advisory reports independent, warn when docs-index metadata
+  falls back to static freshness defaults, and preserve explicit retained-hash
+  override behavior.
+- Document retained artifact hash/schema maintenance, clarify deploy-time artifact
+  publication boundaries, and expand sidebar structure coverage.
+
 ## 2026-06-26 - current baseline refresh and governance alignment
 
 ### Baseline refresh
