@@ -76,6 +76,15 @@
       ]
     },
     {
+      "path": "examples/consumers/three-minute-artifact-reader/",
+      "validation_tiers": ["static", "pinned_source"],
+      "evidence": [
+        "python scripts/verify/example_surface_integrity.py",
+        "public/artifacts/manifest.json",
+        "public/artifacts/current/server_endpoints.json"
+      ]
+    },
+    {
       "path": "examples/consumers/websocket-event-consumer/",
       "validation_tiers": ["static", "offline_unit", "pinned_source", "runtime_smoke"],
       "evidence": [

@@ -37,7 +37,7 @@ artifact `artifacts/delta-summary.json`:
 Published site base URL:
 
 ```bash
-py -3.11 examples/consumers/python-artifact-delta-reader/read_delta_summary.py https://example.com/comfyui-starchart
+py -3.11 examples/consumers/python-artifact-delta-reader/read_delta_summary.py https://frostysdxl.github.io/comfyui-starchart
 ```
 
 Local offline artifact:

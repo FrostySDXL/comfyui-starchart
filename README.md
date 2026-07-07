@@ -5,6 +5,48 @@
 
 **Evidence:** Operational guidance
 
+ComfyUI StarChart is a pinned, source-backed ComfyUI developer fact layer for
+tools, agents, integrations, and version-aware developers.
+
+- Hosted docs: <https://frostysdxl.github.io/comfyui-starchart/>
+- Artifact manifest: <https://frostysdxl.github.io/comfyui-starchart/artifacts/manifest.json>
+- Current server endpoints: <https://frostysdxl.github.io/comfyui-starchart/artifacts/current/server_endpoints.json>
+- Current JavaScript hooks: <https://frostysdxl.github.io/comfyui-starchart/artifacts/current/js_hooks.json>
+
+Use StarChart when you need to:
+
+- check whether a ComfyUI route, hook, schema surface, or WebSocket event exists
+  in the pinned baseline
+- give an agent bounded ComfyUI development context without scraping scattered
+  web sources
+- build integration or CI tooling against versioned JSON artifacts with schemas
+  and checksums
+- compare current pinned facts with retained source snapshots and published delta
+  summaries
+
+## Use StarChart in 3 Minutes
+
+Start without cloning, building, or running ComfyUI:
+
+```bash
+python examples/consumers/three-minute-artifact-reader/read_starchart.py
+```
+
+The demo reads the checked-in `public/artifacts/manifest.json` and
+`public/artifacts/current/server_endpoints.json`, then prints the pinned baseline,
+published artifacts, and whether key local API routes such as `POST /prompt`,
+`GET /queue`, `GET /history/{prompt_id}`, and `GET /ws` are present.
+
+For hosted consumption, start from the manifest:
+
+```text
+https://frostysdxl.github.io/comfyui-starchart/artifacts/manifest.json
+```
+
+Then load the canonical current artifact URL from the manifest and validate the
+downloaded bytes against its `sha256` before using the artifact in strict
+tooling.
+
 ## What This Repository Is
 
 ComfyUI StarChart is a version-pinned, source-extracted companion reference for
@@ -92,7 +134,7 @@ Start here:
 - **Contributors:** [CONTRIBUTING.md](CONTRIBUTING.md) plus the editorial policy stack under `src/content/docs/reference/`
 - **Maintainers:** [CONTRIBUTING.md](CONTRIBUTING.md) for canonical workflows, plus [AGENTS.md](AGENTS.md) for startup-critical repo guidance
 
-## Quick Start
+## Maintainer Quick Start
 
 Supported Python: `3.11+`
 Supported Node.js for site/framework work: `24.x`

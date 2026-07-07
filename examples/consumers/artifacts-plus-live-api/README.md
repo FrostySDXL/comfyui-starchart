@@ -44,13 +44,13 @@ right now.
 Artifact discovery only:
 
 ```bash
-bash examples/consumers/artifacts-plus-live-api/discover_and_probe_queue.sh https://example.com/comfyui-starchart
+bash examples/consumers/artifacts-plus-live-api/discover_and_probe_queue.sh https://frostysdxl.github.io/comfyui-starchart
 ```
 
 Artifact discovery plus live runtime probe:
 
 ```bash
-bash examples/consumers/artifacts-plus-live-api/discover_and_probe_queue.sh https://example.com/comfyui-starchart http://127.0.0.1:8188
+bash examples/consumers/artifacts-plus-live-api/discover_and_probe_queue.sh https://frostysdxl.github.io/comfyui-starchart http://127.0.0.1:8188
 ```
 
 If you omit the runtime URL or the runtime is unreachable, the script stops after

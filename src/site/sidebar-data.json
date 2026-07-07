@@ -6,7 +6,7 @@
   {
     "label": "Start Here",
     "items": [
-      { "label": "Author", "path": "start-here/author.md" },
+      { "label": "Custom Node Author", "path": "start-here/author.md" },
       { "label": "Extension Developer", "path": "start-here/extension-developer.md" },
       { "label": "Service Integration", "path": "start-here/service-integration.md" },
       { "label": "Tooling Builder", "path": "start-here/tooling-builder.md" },

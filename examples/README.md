@@ -22,6 +22,9 @@ content-level evidence labels.
 - `consumers/python-artifact-delta-reader/` - Python starter for reading
   `artifacts/delta-summary.json` without treating it as a canonical manifest
   artifact
+- `consumers/three-minute-artifact-reader/` - no-runtime Python demo that prints
+  the pinned baseline, published artifact set, and presence of key local API
+  routes from checked-in artifacts
 
 ## Conventions
 

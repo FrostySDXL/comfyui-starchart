@@ -18,6 +18,32 @@ Use [docs.comfy.org](https://docs.comfy.org/) for the official human reference.
 Use [Machine-Readable Artifacts](reference/machine-readable-artifacts.md) when
 you need this repo's pinned JSON artifact contract.
 
+## Fast Paths
+
+Choose the shortest route for the job you need to finish:
+
+| I want to... | Start here |
+|--------------|------------|
+| Load pinned ComfyUI routes, hooks, schemas, or WebSocket events as JSON | [Artifact Consumer](start-here/artifact-consumer.md) |
+| Build an agent, integration, dashboard, or CI check against ComfyUI facts | [Tooling Builder](start-here/tooling-builder.md) |
+| Submit, monitor, or retrieve work through a local ComfyUI API | [API Endpoints](api/endpoints.md) and [WebSocket](api/websocket.md) |
+| Build a custom node with source-backed constraints | [Custom Node Author](start-here/author.md) |
+| Extend ComfyUI through frontend or server hooks | [Extension Developer](start-here/extension-developer.md) |
+
+If you only need the machine-readable entrypoint, start with
+`artifacts/manifest.json`. It points to the canonical current and versioned
+artifact copies, schemas, source metadata, and checksums.
+
+## What You Can Use Immediately
+
+- `artifacts/manifest.json` for canonical artifact discovery
+- `artifacts/current/server_endpoints.json` for pinned local API routes
+- `artifacts/current/js_hooks.json` for pinned frontend hook names
+- `artifacts/current/node_api_schema.json` for pinned node schema surfaces
+- `artifacts/current/websocket_events.json` for pinned live-event names
+- `artifacts/docs-index.json` for bounded docs routing when an agent or tool
+  needs a first page to read
+
 ## Who This Section Is For
 
 Choose your starting point based on what you are building:
