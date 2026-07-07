@@ -730,10 +730,14 @@ patterns, not full SDK or OpenAPI generation guarantees.
 If you want runnable starter patterns instead of inline conceptual snippets, use
 the self-contained consumer examples under `examples/consumers/`:
 
+- Three-minute artifact reader - repo-local no-runtime proof that prints the
+  pinned baseline, canonical artifact names, and key route-presence checks
 - Python manifest reader - manifest-first canonical artifact loading with checksum validation
 - JavaScript docs-index routing example - optional `docs-index.json` routing plus separate manifest-based artifact discovery
 - Shell + jq artifact consumer - manifest-first endpoint discovery with optional live zero-parameter `GET` probing
 - Artifacts plus live API example - artifact discovery plus optional live `GET /queue` interaction
+- Python artifact delta reader - bounded `delta-summary.json` comparison reading
+  without treating it as a canonical manifest artifact
 
 Treat those directories as starter patterns, not a formal supported library
 surface.
@@ -777,20 +781,23 @@ for field in hooks["extension_fields"]:
     print(f"{field['name']}: {field['type_hint']} [{kind}]")
 ```
 
-### Validating node-surface assumptions from node_api_schema.json
+### Inspecting node-surface assumptions from node_api_schema.json
 
-Before submitting a workflow to a ComfyUI instance, compare the node types and
-inputs your workflow uses against the pinned schema. This catches mismatches
-when the instance version differs from the pinned baseline.
+Before submitting a workflow to a ComfyUI instance, use the pinned schema to
+inspect source-backed object-info field names, I/O datatypes, and basic input
+shapes. This catches broad baseline mismatches before you fall back to live
+`GET /object_info` for installed-node truth.
 
 ```python
 schema = json.load(urllib.request.urlopen(
     "https://<your-site>/artifacts/current/node_api_schema.json"
 ))
 
-# Example: verify a node type exists in the pinned schema
-node_type = "CheckpointLoaderSimple"
-assert node_type in schema.get("object_info", {}), f"{node_type} not in schema"
+assert "object_info_fields" in schema
+assert "io_types" in schema
+
+print("Object-info fields:", ", ".join(schema["object_info_fields"]))
+print("Known I/O type count:", len(schema["io_types"]))
 ```
 
 ### Verifying a published artifact checksum from manifest.json
@@ -871,6 +878,7 @@ presence depends on whether someone ran the live runtime capture path at all.
 
 - [Start Here: Artifact Consumer](../start-here/artifact-consumer.md)
 - [Start Here: Tooling Builder](../start-here/tooling-builder.md)
-- [Version Pin Status](version-pin-status.md)
-- [API Reference: Endpoints](../api/endpoints.md)
-- [Hooks: JavaScript Hooks](../hooks/javascript-hooks.md)
+- [Start Here: Local API Integration](../start-here/service-integration.md)
+- [API Endpoints](../api/endpoints.md)
+- [Object Info](object-info.md)
+- [JavaScript Hooks](../hooks/javascript-hooks.md)

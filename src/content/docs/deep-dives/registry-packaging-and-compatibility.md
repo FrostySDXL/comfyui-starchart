@@ -165,5 +165,6 @@ repository structure.
 ## Read Next
 
 - [Registration](../custom-nodes/registration.md)
+- [Start Here: Custom Node Author](../start-here/author.md)
+- [Start Here: Extension Developer](../start-here/extension-developer.md)
 - [Tooling Builder](../start-here/tooling-builder.md)
-- [Topic Scope](../reference/topic-scope.md)

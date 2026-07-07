@@ -121,4 +121,4 @@ For item-level proof and field-level diff coverage, read
 
 - [Machine-Readable Artifacts](machine-readable-artifacts.md)
 - [Artifact Schema Version Migration](artifact-schema-version-migration.md)
-- [Source Evidence Policy](source-evidence-policy.md)
+- [API Endpoints](../api/endpoints.md)

@@ -222,5 +222,7 @@ practice. They do not add new native queue or history semantics.
 
 ## Read Next
 
+- [Start Here: Local API Integration](../start-here/service-integration.md)
+- [API Endpoints](endpoints.md)
 - [Prompt Submission](prompt-submission.md)
 - [WebSocket](websocket.md)

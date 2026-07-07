@@ -52,6 +52,9 @@ This repo's [Prompt Submission](../api/prompt-submission.md) page documents the
 execution contract. Treat workflow JSON as the better surface for document-level
 tooling, diffing, migration support, and graph exchange.
 
+For a repo-authored starter fixture that connects this boundary to API execution
+tracking examples, see `examples/workflows/api-execution-tracking-workflow.json`.
+
 ## Where schema structure matters
 
 The official schema is valuable because it narrows what a conforming tool can

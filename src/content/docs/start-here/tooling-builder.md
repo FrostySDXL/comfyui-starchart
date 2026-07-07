@@ -155,6 +155,7 @@ Use these bounded starter patterns when you want concrete consumer-side examples
 - `examples/consumers/python-manifest-reader/`
 - `examples/consumers/javascript-docs-and-artifacts/`
 - `examples/consumers/shell-jq-artifact-consumer/`
+- `examples/consumers/python-artifact-delta-reader/`
 - `examples/consumers/artifacts-plus-live-api/`
 - `examples/consumers/websocket-event-consumer/`
 

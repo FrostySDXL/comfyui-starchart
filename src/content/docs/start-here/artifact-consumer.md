@@ -24,10 +24,11 @@ Use this path when you need to:
 ## First Practical Consumer Flow
 
 1. Read `artifacts/manifest.json`.
-2. Pick the canonical current copy from `artifacts/current/<name>.json`.
-3. Validate the downloaded bytes against the manifest `sha256`.
-4. Build strict logic only against guaranteed fields and published schemas.
-5. Use `docs-index.json` only if you need bounded docs routing after artifact
+2. Pick the canonical current copy from the manifest's `artifacts` map.
+3. Read the matching schema URL from the manifest's `schemas` map.
+4. Validate the downloaded bytes against the manifest `sha256`.
+5. Build strict logic only against guaranteed fields and published schemas.
+6. Use `docs-index.json` only if you need bounded docs routing after artifact
    discovery.
 
 Read [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md)
@@ -44,6 +45,18 @@ Use `artifacts/manifest.json` first.
   checksums.
 - Strict tooling should trust guaranteed fields and published schema files, not
   descriptive best-effort prose fields.
+
+Hosted consumers can start with one URL:
+
+```text
+https://frostysdxl.github.io/comfyui-starchart/artifacts/manifest.json
+```
+
+For a canonical artifact key such as `server_endpoints.json`, resolve:
+
+- `manifest["artifacts"]["server_endpoints.json"]["current_url"]`
+- `manifest["artifacts"]["server_endpoints.json"]["sha256"]`
+- `manifest["schemas"]["server_endpoints.json"]["schema_url"]`
 
 ## Read Guarantees Conservatively
 
@@ -72,6 +85,20 @@ If you download `artifacts/current/server_endpoints.json`, compare the file's
 SHA-256 to `manifest.json -> artifacts -> server_endpoints.json -> sha256`
 before trusting the bytes as the published current copy.
 
+## Quick No-Runtime Proof
+
+If you have cloned the repo and want a local first success path, run:
+
+```bash
+python examples/consumers/three-minute-artifact-reader/read_starchart.py
+```
+
+The script reads the checked-in manifest and endpoint artifact, prints the pinned
+baseline and canonical artifact names, then confirms key local API routes such as
+`POST /prompt`, `GET /queue`, `GET /history/{prompt_id}`, and `GET /ws` in the
+pinned baseline. Treat it as a proof of the artifact entrypoint, not as the
+primary consumer contract.
+
 ## Use the Routing Support Surface Sparingly
 
 The repo also publishes a bounded support index for docs and tooling routing.
@@ -94,13 +121,14 @@ the question directly.
 
 The consumer examples under `examples/consumers/` are starter patterns only.
 
-- They show small manifest, route, and runtime-consumer flows.
+- They show small manifest, route, delta, and runtime-consumer flows.
 - They are intentionally bounded.
 - They do not create a supported SDK, client library, or broader productized
   integration contract.
 
-Runtime-dependent examples remain optional. The manifest-first and artifact-only
-parts are the stable starting point.
+Use examples to verify a concrete pattern after you understand the manifest-first
+contract. Runtime-dependent examples remain optional. The manifest-first and
+artifact-only parts are the stable starting point.
 
 ## When to Switch to Repo-Local Workflow Docs
 

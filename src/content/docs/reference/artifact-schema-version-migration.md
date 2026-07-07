@@ -74,5 +74,6 @@ Those cases usually mean baseline review, not guaranteed-structure migration.
 ## Read Next
 
 - [Machine-Readable Artifacts](machine-readable-artifacts.md)
+- [Start Here: Artifact Consumer](../start-here/artifact-consumer.md)
+- [Start Here: Tooling Builder](../start-here/tooling-builder.md)
 - [Version Pin Status](version-pin-status.md)
-- [Topic Scope](topic-scope.md)

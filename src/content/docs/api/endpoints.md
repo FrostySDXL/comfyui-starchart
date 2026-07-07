@@ -154,5 +154,9 @@ and tooling that need to inspect available nodes programmatically.
 
 ## Read Next
 
+- [Start Here: Local API Integration](../start-here/service-integration.md)
 - [WebSocket](websocket.md)
 - [Prompt Submission](prompt-submission.md)
+- [History and Queue](history-queue.md)
+- [Object Info](../reference/object-info.md)
+- [Machine-Readable Artifacts](../reference/machine-readable-artifacts.md)

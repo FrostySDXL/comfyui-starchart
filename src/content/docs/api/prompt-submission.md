@@ -81,6 +81,9 @@ The repo-local `examples/api-calls/post-prompt.json` file uses this API graph
 shape directly; editor workflow exports usually need client-side conversion
 before they can be submitted to `/prompt`.
 
+For a small workflow fixture used by prompt-submission and execution-tracking
+examples, see `examples/workflows/api-execution-tracking-workflow.json`.
+
 The sub-sections below are Source-backed from pinned snapshots:
 `references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`.
 
@@ -264,6 +267,7 @@ rather than replacing them.
 
 ## Read Next
 
+- [Start Here: Local API Integration](../start-here/service-integration.md)
 - [API Endpoints](endpoints.md)
 - [Object Info](../reference/object-info.md)
 - [Workflow JSON](../deep-dives/workflow-json-schema.md)

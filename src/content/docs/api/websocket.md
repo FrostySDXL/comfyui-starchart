@@ -131,5 +131,7 @@ all connected sockets.
 
 ## Read Next
 
+- [Start Here: Local API Integration](../start-here/service-integration.md)
 - [Prompt Submission](prompt-submission.md)
+- [History and Queue](history-queue.md)
 - [API Endpoints](endpoints.md)

@@ -12,7 +12,7 @@ from urllib.request import urlopen
 SUMMARY_FIELDS = {
     "server_endpoints.json": ("endpoints", "coverage"),
     "js_hooks.json": ("hooks", "coverage"),
-    "node_api_schema.json": ("object_info", "coverage"),
+    "node_api_schema.json": ("object_info_fields", "io_types", "coverage"),
 }
 
 

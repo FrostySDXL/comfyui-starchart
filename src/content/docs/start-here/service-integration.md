@@ -30,6 +30,11 @@ For a repo-local starter that pairs prompt submission with live event watching,
 see `examples/consumers/websocket-event-consumer/`. It is runtime-dependent and
 uses the same prompt-targeting boundary described below.
 
+If you want to inspect the route surface before touching a live runtime, start
+with `public/artifacts/manifest.json` and
+`public/artifacts/current/server_endpoints.json`, or read
+[Artifact Consumer](artifact-consumer.md) for the manifest-first path.
+
 ## Two Integration Surfaces
 
 ### API-First Integration
@@ -47,6 +52,8 @@ Key resources:
   a prompt to the execution engine
 - [History and Queue](../api/history-queue.md) -- poll or watch execution history
   and queue state
+- `examples/api-calls/` -- raw `POST /prompt`, queue, history, and curl starter
+  calls for a live local instance
 - `examples/consumers/websocket-event-consumer/` -- bounded runtime-dependent
   watcher that skips binary preview frames
 

@@ -116,5 +116,6 @@ unless it was generated from the ComfyUI instance you plan to inspect.
 ## Read Next
 
 - [API Endpoints](../api/endpoints.md)
-- [Prompt Submission](../api/prompt-submission.md)
 - [Machine-Readable Artifacts](machine-readable-artifacts.md)
+- [Start Here: Tooling Builder](../start-here/tooling-builder.md)
+- [Start Here: Artifact Consumer](../start-here/artifact-consumer.md)

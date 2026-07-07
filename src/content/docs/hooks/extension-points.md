@@ -104,7 +104,7 @@ These are the preferred way to modify client-side behavior.
 
 For the full inventory of all 19 frontend hooks (including menu extensions,
 auth hooks, and additional lifecycle hooks), see
-[JavaScript Extension Hooks](javascript-hooks.md) and
+[JavaScript Hooks](javascript-hooks.md) and
 `public/artifacts/current/js_hooks.json` for the complete machine-readable
 catalog.
 
@@ -198,6 +198,6 @@ for the same extension API. They solve different classes of problems.
 ## Read Next
 
 - [JavaScript Hooks](javascript-hooks.md)
+- [Start Here: Extension Developer](../start-here/extension-developer.md)
 - [Server Hooks](server-hooks.md)
-- [Architecture Overview](../architecture/overview.md)
 - [Custom Node Development Guide](../custom-nodes/development-guide.md)

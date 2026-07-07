@@ -72,8 +72,11 @@
     "runtime_required": false,
     "stability_tier": "pinned-baseline",
     "recommended_next_reads": [
+      "start-here/service-integration.md",
       "api/prompt-submission.md",
+      "api/history-queue.md",
       "api/websocket.md",
+      "reference/object-info.md",
       "reference/machine-readable-artifacts.md"
     ]
   },
@@ -101,6 +104,8 @@
     "runtime_required": true,
     "stability_tier": "pinned-baseline",
     "recommended_next_reads": [
+      "start-here/service-integration.md",
+      "api/endpoints.md",
       "api/prompt-submission.md",
       "api/websocket.md"
     ]
@@ -132,6 +137,7 @@
     "runtime_required": true,
     "stability_tier": "pinned-baseline",
     "recommended_next_reads": [
+      "start-here/service-integration.md",
       "api/history-queue.md",
       "api/websocket.md",
       "deep-dives/workflow-json-schema.md",
@@ -165,6 +171,7 @@
     "runtime_required": true,
     "stability_tier": "pinned-baseline",
     "recommended_next_reads": [
+      "start-here/service-integration.md",
       "api/history-queue.md",
       "api/prompt-submission.md",
       "architecture/execution-pipeline.md"
@@ -386,8 +393,9 @@
     "runtime_required": false,
     "stability_tier": "support-routing",
     "recommended_next_reads": [
-      "architecture/overview.md",
       "start-here/artifact-consumer.md",
+      "start-here/service-integration.md",
+      "reference/machine-readable-artifacts.md",
       "start-here/tooling-builder.md"
     ]
   },
@@ -412,6 +420,8 @@
     "stability_tier": "support-routing",
     "recommended_next_reads": [
       "reference/object-info.md",
+      "start-here/service-integration.md",
+      "api/endpoints.md",
       "start-here/artifact-consumer.md",
       "start-here/tooling-builder.md"
     ]
@@ -435,6 +445,7 @@
     "recommended_next_reads": [
       "api/endpoints.md",
       "reference/machine-readable-artifacts.md",
+      "start-here/tooling-builder.md",
       "start-here/artifact-consumer.md"
     ]
   },
@@ -528,6 +539,9 @@
     "runtime_required": true,
     "stability_tier": "support-routing",
     "recommended_next_reads": [
+      "reference/machine-readable-artifacts.md",
+      "start-here/artifact-consumer.md",
+      "api/endpoints.md",
       "api/history-queue.md",
       "api/prompt-submission.md",
       "api/websocket.md"
