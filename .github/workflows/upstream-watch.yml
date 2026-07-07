@@ -18,7 +18,7 @@ jobs:
   upstream-watch:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       - name: Set up repo
         uses: ./.github/actions/setup-repo
@@ -33,7 +33,7 @@ jobs:
           python scripts/check_upstream_versions.py --output-json upstream_summary.json --output-md upstream_summary.md
 
       - name: Upload summary artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: upstream-summary
           path: |

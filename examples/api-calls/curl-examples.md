@@ -1,6 +1,6 @@
 # Native ComfyUI API Call Examples
 
-**Primary Source:** `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py` (v0.23.0, commit `a88e02b18576283b1ff25a4b564548c5dc42cbf6`)
+**Primary Source:** `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py` (v0.26.0, commit `f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40`)
 
 These examples target native ComfyUI routes, not wrapper APIs.
 
@@ -12,7 +12,7 @@ curl -X POST http://127.0.0.1:8188/prompt \
   --data @examples/api-calls/post-prompt.json
 ```
 
-Expected success shape from current upstream `server.py`:
+Expected success shape from the current pinned `server.py`:
 
 ```json
 {
@@ -28,7 +28,7 @@ Expected success shape from current upstream `server.py`:
 curl http://127.0.0.1:8188/queue
 ```
 
-Current upstream route returns:
+The current pinned route returns:
 
 - `queue_running`
 - `queue_pending`
@@ -48,11 +48,11 @@ prompt.
 ws://127.0.0.1:8188/ws?clientId=<your-client-id>
 ```
 
-Current upstream `server.py` sends an initial `status` event and can later send
+The current pinned `server.py` sends an initial `status` event and can later send
 execution-related messages tied to the same `client_id` used in `POST /prompt`.
 
 ## Notes
 
-- `/api/...` prefixed copies also exist in current upstream server setup
+- `/api/...` prefixed copies also exist in the current pinned server setup
 - exact message/event shapes are pinned to the repo's currently extracted
   upstream commit and may drift in future refreshes

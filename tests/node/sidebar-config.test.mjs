@@ -63,9 +63,9 @@ test('toStarlightSidebar converts checked-in paths to Starlight sidebar items', 
   const sidebar = toStarlightSidebar(loadSidebarData());
   assert.equal(sidebar[0].label, 'Home');
   assert.equal(sidebar[0].slug, '');
-  assert.equal(sidebar[1].items[0].slug, 'start-here/author');
+  assert.equal(sidebar[1].items[0].slug, 'start-here/artifact-consumer');
 
-  const referenceSection = sidebar.find((entry) => entry.label === 'Reference');
+  const referenceSection = sidebar.find((entry) => entry.label === 'Repository Policy');
   assert.ok(referenceSection);
   const topicScopeEntry = referenceSection.items.find((entry) => entry.label === 'Topic Scope');
   assert.equal(topicScopeEntry.slug, 'reference/topic-scope');

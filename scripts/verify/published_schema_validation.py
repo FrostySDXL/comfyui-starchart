@@ -87,11 +87,19 @@ def _validate_json_schema_instance(
     if "enum" in schema and instance not in schema["enum"]:
         errors.append(f"{path}: value {instance!r} not in enum {schema['enum']!r}")
 
+    if "const" in schema and instance != schema["const"]:
+        errors.append(f"{path}: expected constant {schema['const']!r}")
+
     if "pattern" in schema and isinstance(instance, str):
         if not re.fullmatch(schema["pattern"], instance):
             errors.append(
                 f"{path}: value {instance!r} does not match pattern {schema['pattern']!r}"
             )
+
+    if "minLength" in schema and isinstance(instance, str):
+        min_length = schema["minLength"]
+        if isinstance(min_length, int) and len(instance) < min_length:
+            errors.append(f"{path}: expected string length >= {min_length}")
 
     if isinstance(instance, dict):
         properties = schema.get("properties", {})

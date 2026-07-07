@@ -1165,6 +1165,15 @@ class ValidateSchemaScriptTests(unittest.TestCase):
         self.assertTrue(any("published schema violation" in e for e in errors))
         self.assertTrue(any("expected integer" in e for e in errors))
 
+    def test_single_missing_file_reports_controlled_error(self):
+        module = self._import_module()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            json_file = Path(tmpdir) / "manifest.json"
+            errors = []
+            module._validate_json_file(json_file, errors)
+
+        self.assertTrue(any("missing JSON artifact" in e for e in errors))
+
     def test_main_validates_support_artifacts_and_manifest(self):
         module = self._import_module()
         with tempfile.TemporaryDirectory() as tmpdir:

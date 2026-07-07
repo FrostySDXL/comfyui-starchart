@@ -115,6 +115,14 @@ class GenerateDocsIndexTests(unittest.TestCase):
         metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
         return metadata_path
 
+    def _write_manifest(self, root: Path, version_key: str) -> None:
+        manifest_path = root / "public" / "artifacts" / "manifest.json"
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        manifest_path.write_text(
+            json.dumps({"version_key": version_key, "artifacts": {}}, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
     def test_build_docs_index_is_deterministic_and_extracts_expected_fields(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -517,8 +525,8 @@ class GenerateDocsIndexTests(unittest.TestCase):
             self.assertEqual(
                 prompt_entry["tooling_metadata"],
                 {
-                    "metadata_reviewed_at": None,
-                    "metadata_baseline": None,
+                    "metadata_reviewed_at": "2026-06-26",
+                    "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
                     "task_intents": ["submit-prompt"],
                     "primary_task_intents": [],
                     "excluded_task_intents": [],
@@ -538,6 +546,22 @@ class GenerateDocsIndexTests(unittest.TestCase):
                     "inbound_recommendations": [],
                 },
             )
+
+    def test_metadata_freshness_defaults_come_from_manifest_version_key(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._with_temp_repo_paths(root)
+            version_key = "core-v9.9.9_frontend-v8.8.8_2030-01-02"
+            self._write_manifest(root, version_key)
+            self._write_sidebar_data(root, [{"label": "Home", "path": "index.md"}])
+            self._write_page(root, "index.md", "Docs Home", "Operational guidance", "Home.")
+            self._write_minimal_metadata(root, ["index.md"])
+
+            docs_index = generate_docs_index.build_docs_index(root)
+            tooling_metadata = docs_index["pages"][0]["tooling_metadata"]
+
+            self.assertEqual(tooling_metadata["metadata_reviewed_at"], "2030-01-02")
+            self.assertEqual(tooling_metadata["metadata_baseline"], version_key)
 
     def test_build_docs_index_accepts_discover_hooks_task_intent(self):
         with tempfile.TemporaryDirectory() as tmp:

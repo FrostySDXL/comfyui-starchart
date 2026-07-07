@@ -16,11 +16,13 @@ Current layout at the time of this update:
 | Snapshot date | Core version | Frontend version | Role | Completeness class | Extraction suitability |
 |---|---|---|---|---|---|
 | `2026-04-19/` | `v0.19.3` | missing | Historical baseline retained for provenance and comparison. | `historical-partial` | Not suitable for extraction without backfill. |
-| `2026-04-30/` | missing | missing | Known empty capture from an abandoned v0.20.1 / v1.44.13 refresh; the corresponding versioned artifact directory is retained for published-history classification. | `historical-partial` | Not suitable for extraction without backfill. |
+| `2026-04-30/` | missing | missing | Known empty capture from an abandoned v0.20.1 / v1.44.13 refresh; the empty versioned artifact placeholder was removed after confirming no active publication references required it. | `historical-partial` | Not suitable for extraction without backfill. |
 | `2026-05-18/` | `v0.21.1` | missing | Historical baseline retained for comparison and refresh-path proof. | `historical-partial` | Not suitable for extraction without backfill. |
 | `2026-05-21/` | `v0.22.0` | missing | Historical baseline retained for comparison and refresh-path proof. | `historical-partial` | Not suitable for extraction without backfill. |
 | `2026-06-01/` | `v0.23.0` | missing | Prior active baseline superseded by `2026-06-03/`; retained for refresh-path proof. | `historical-partial` | Not suitable for extraction without backfill. |
-| `2026-06-03/` | `v0.23.0` | `v1.46.6` | Current active pinned baseline used by `references/raw/` and `public/artifacts/versions/core-v0.23.0_frontend-v1.46.6_2026-06-03/`. | `current-required-complete` | Suitable for current extraction. |
+| `2026-06-03/` | `v0.23.0` | `v1.46.6` | Retained complete baseline superseded by `2026-06-13/` and `2026-06-26/`. | `retained-complete` | Suitable for historical extraction and comparison. |
+| `2026-06-13/` | `v0.24.0` | `v1.46.14` | Retained complete baseline superseded by `2026-06-26/`. | `retained-complete` | Suitable for historical extraction and comparison. |
+| `2026-06-26/` | `v0.26.0` | `v1.47.5` | Current active pinned baseline used by `references/raw/` and `public/artifacts/versions/core-v0.26.0_frontend-v1.47.5_2026-06-26/`. | `current-required-complete` | Suitable for current extraction. |
 
 Maintainer classification procedure: run
 `python scripts/verify/snapshot_surface_coverage.py`, inspect the dated

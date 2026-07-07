@@ -16,9 +16,13 @@ import json
 from pathlib import Path
 from typing import NamedTuple
 
+from scripts.common.json_utils import compute_textual_json_sha256
+from scripts.verify.published_schema_validation import validate_against_published_artifact_schema
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST_PATH = REPO_ROOT / "public" / "artifacts" / "manifest.json"
 DEFAULT_VERSIONS_DIR = REPO_ROOT / "public" / "artifacts" / "versions"
+DEFAULT_SCHEMA_DIR = REPO_ROOT / "public" / "artifacts" / "schemas"
 
 REQUIRED_ARTIFACTS = (
     "server_endpoints.json",
@@ -28,13 +32,24 @@ REQUIRED_ARTIFACTS = (
 )
 
 RETENTION_EXCEPTIONS = {
-    "core-v0.19.3_frontend-v1.42.11_2026-04-19": "empty-legacy-placeholder",
-    "core-v0.19.3_frontend-v1.42.11_2026-04-23": "empty-legacy-placeholder",
-    "core-v0.19.3_frontend-v1.42.11_2026-04-29": "empty-legacy-placeholder",
-    "core-v0.20.1_frontend-v1.44.13_2026-04-30": "empty-legacy-placeholder",
     "core-v0.21.1_frontend-v1.45.9_2026-05-18": "legacy-pre-websocket-events",
     "core-v0.22.0_frontend-v1.45.12_2026-05-21": "legacy-pre-websocket-events",
     "core-v0.23.0_frontend-v1.46.6_2026-06-01": "legacy-pre-websocket-events",
+}
+
+EXPECTED_RETAINED_COMPLETE_HASHES = {
+    "core-v0.23.0_frontend-v1.46.6_2026-06-03": {
+        "server_endpoints.json": "4cc10ad89bfeae48bdd45a07e5a672b452ff757a9127f4cdc3f450a752a21568",
+        "js_hooks.json": "97b29257626d3a22f0d549e059c23572125f0f4be9f36f7e3630caa9e5f95468",
+        "node_api_schema.json": "3cf27a19dbc1ff6f7321c531414a7fa5a27d7764d339492a3d3344e518bdde4c",
+        "websocket_events.json": "cfa10c399a5f32b8d244c900313ae0d9e58c0b41ed2b44701f87aa44f6ed3f27",
+    },
+    "core-v0.24.0_frontend-v1.46.14_2026-06-13": {
+        "server_endpoints.json": "5b9617e3983b144049c08373ab7b047b7c94b3db0623c235fea27b8e9442c760",
+        "js_hooks.json": "552588680280a964ab867a916f06e5e9a5c0911b3c5dccff72260dc615e643f0",
+        "node_api_schema.json": "638ee67eaa5e30f1b29f8797d687cd0d3e9dd35c200fff64dddd405514d4dd29",
+        "websocket_events.json": "8e47de995e20eb123fa4fe51edb5c93c602bbf69ebc4cd5b75ccabb3d144d210",
+    },
 }
 
 
@@ -74,6 +89,26 @@ def _load_current_version_key(manifest_path: Path) -> str:
     if not isinstance(version_key, str) or not version_key:
         raise ValueError(f"{manifest_path.as_posix()}: missing non-empty version_key")
     return version_key
+
+
+def _load_current_artifact_hashes(manifest_path: Path) -> dict[str, str]:
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    artifacts = manifest.get("artifacts")
+    if not isinstance(artifacts, dict):
+        raise ValueError(f"{manifest_path.as_posix()}: missing artifacts object")
+
+    hashes: dict[str, str] = {}
+    for artifact_name in REQUIRED_ARTIFACTS:
+        entry = artifacts.get(artifact_name)
+        if not isinstance(entry, dict):
+            raise ValueError(
+                f"{manifest_path.as_posix()}: missing artifact entry for {artifact_name}"
+            )
+        sha256 = entry.get("sha256")
+        if not isinstance(sha256, str) or not sha256:
+            raise ValueError(f"{manifest_path.as_posix()}: missing sha256 for {artifact_name}")
+        hashes[artifact_name] = sha256
+    return hashes
 
 
 def _json_files(directory: Path) -> tuple[str, ...]:
@@ -125,14 +160,55 @@ def _classify_directory(
     )
 
 
+def _validate_versioned_artifact_file(artifact_path: Path, schema_dir: Path) -> list[str]:
+    try:
+        data = json.loads(artifact_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        return [f"{artifact_path.parent.name}/{artifact_path.name}: invalid JSON: {exc}"]
+    except OSError as exc:
+        return [f"{artifact_path.parent.name}/{artifact_path.name}: failed to read: {exc}"]
+
+    if not isinstance(data, dict):
+        return [f"{artifact_path.parent.name}/{artifact_path.name}: top-level value is not a dict"]
+
+    return [
+        f"{artifact_path.parent.name}/{artifact_path.name}: {error}"
+        for error in validate_against_published_artifact_schema(
+            data,
+            artifact_path.name,
+            schema_dir,
+        )
+    ]
+
+
+def _verify_artifact_hash(
+    artifact_path: Path,
+    expected_sha256: str,
+) -> list[str]:
+    try:
+        actual_sha256 = compute_textual_json_sha256(artifact_path)
+    except OSError as exc:
+        return [f"{artifact_path.parent.name}/{artifact_path.name}: failed to hash: {exc}"]
+    if actual_sha256 == expected_sha256:
+        return []
+    return [
+        f"{artifact_path.parent.name}/{artifact_path.name}: sha256 mismatch: "
+        f"expected {expected_sha256}, got {actual_sha256}"
+    ]
+
+
 def evaluate_versioned_artifacts(
     manifest_path: Path,
     versions_dir: Path,
     retention_exceptions: dict[str, str] | None = None,
+    schema_dir: Path = DEFAULT_SCHEMA_DIR,
+    expected_retained_hashes: dict[str, dict[str, str]] | None = None,
 ) -> EvaluationResult:
     """Evaluate versioned artifact completeness and retention exceptions."""
     exceptions = sorted_retention_exceptions(retention_exceptions or RETENTION_EXCEPTIONS)
     current_version_key = _load_current_version_key(manifest_path)
+    current_artifact_hashes = _load_current_artifact_hashes(manifest_path)
+    retained_hashes = expected_retained_hashes or EXPECTED_RETAINED_COMPLETE_HASHES
     rows = tuple(
         _classify_directory(path, current_version_key, exceptions)
         for path in sorted(versions_dir.iterdir())
@@ -168,6 +244,30 @@ def evaluate_versioned_artifacts(
                 f"{row.version_key}: partial version directory missing artifacts without exception: "
                 f"{', '.join(row.missing_artifacts)}"
             )
+        should_validate_content = row.classification in {
+            "current-required-complete",
+            "retained-complete",
+        }
+        for artifact_name in row.present_artifacts:
+            if should_validate_content and artifact_name in REQUIRED_ARTIFACTS:
+                artifact_path = versions_dir / row.version_key / artifact_name
+                errors.extend(
+                    _validate_versioned_artifact_file(
+                        artifact_path,
+                        schema_dir,
+                    )
+                )
+                if row.classification == "current-required-complete":
+                    expected_hash = current_artifact_hashes[artifact_name]
+                else:
+                    expected_hash = retained_hashes.get(row.version_key, {}).get(artifact_name, "")
+                if expected_hash:
+                    errors.extend(_verify_artifact_hash(artifact_path, expected_hash))
+                else:
+                    errors.append(
+                        f"{row.version_key}/{artifact_name}: missing expected sha256 for "
+                        f"{row.classification} artifact"
+                    )
 
     return EvaluationResult(
         current_version_key=current_version_key,
@@ -206,12 +306,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest-path", default=str(DEFAULT_MANIFEST_PATH))
     parser.add_argument("--versions-dir", default=str(DEFAULT_VERSIONS_DIR))
+    parser.add_argument("--schema-dir", default=str(DEFAULT_SCHEMA_DIR))
     args = parser.parse_args()
 
     result = evaluate_versioned_artifacts(
         Path(args.manifest_path),
         Path(args.versions_dir),
         RETENTION_EXCEPTIONS,
+        Path(args.schema_dir),
     )
     print(format_report(result), end="")
     if result.errors:

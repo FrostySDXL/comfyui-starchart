@@ -52,6 +52,9 @@ def _validate_json_file(json_file: Path, all_errors: list[str]) -> None:
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         all_errors.append(f"{json_file.name}: invalid JSON: {exc}")
         return
+    except OSError as exc:
+        all_errors.append(f"{json_file.name}: missing JSON artifact or failed to read: {exc}")
+        return
 
     if not isinstance(data, dict):
         all_errors.append(f"{json_file.name}: top-level value is not a dict")

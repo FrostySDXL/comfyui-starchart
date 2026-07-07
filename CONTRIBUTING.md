@@ -19,7 +19,7 @@ py -3.11 -m venv .venv
 # Linux / macOS:
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.lock
+python -m pip install --require-hashes -r requirements.lock
 python -m pip install -e .
 npm ci
 python -m unittest discover -s tests -v
@@ -30,6 +30,8 @@ Windows bootstrap rule:
 
 - create the venv once with `py -3.11 -m venv .venv`
 - after activation, `python` resolves to the venv interpreter and version is always `3.11.x`
+- install Python dependencies from the hash-pinned `requirements.lock` with
+  `python -m pip install --require-hashes -r requirements.lock`
 - prefer `python scripts/verify/run_all.py` as the default maintainer gate on Windows
 
 Default maintainer gate:
@@ -319,11 +321,10 @@ Current example:
 
 Current governance verifier decision:
 
-- `scripts/verify/governance_lifecycle.py` is advisory-first. Plan 02 owns its
-  policy and lifecycle record; Plan 07 owns the future
-  `.github/workflows/advisory-checks.yml` edit that replays it in advisory
-  workflow automation. Do not wire it into `run_all.py` until the promotion
-  thresholds in this file are satisfied and recorded in the execution log.
+- `scripts/verify/governance_lifecycle.py` is advisory-first and replayed by
+  `.github/workflows/advisory-checks.yml`. Do not wire it into `run_all.py`
+  until the promotion thresholds in this file are satisfied and recorded in the
+  lifecycle manifest.
 
 ### Evidence metadata verifier contract
 
@@ -337,33 +338,25 @@ Current advisory failure criteria for `scripts/verify/evidence_metadata_freshnes
 Do not expand this verifier's heuristic surface casually. Keep failures deterministic,
 documented, and directly actionable.
 
-### Baseline-review backlog for routed stale pages
+### Baseline-review status for routed pages
 
-These pages remain published because they are useful routed references, but their
-opening baseline status honestly declares that current-baseline prose review is
-stale or partial. Do not remove them solely because they are stale; process the
-backlog row when a maintainer can re-review the page against the required source.
+Routed pages are retained when their opening evidence block and baseline status
+accurately describe the review state. Do not maintain a separate stale-page
+backlog unless a current page explicitly declares partial or non-current review.
 
-| Page | Current status phrase | Required review source | Owner | Review trigger |
-|---|---|---|---|---|
-| `src/content/docs/start-here/tooling-builder.md` | `This page has not been re-reviewed against the current baseline.` | Current pinned artifacts, docs-index routing metadata, and linked start-here pages | Plan 02 governance wording owner plus page owner | Re-review when tooling-builder routing or artifact-consumer flow is next edited. |
-| `src/content/docs/start-here/service-integration.md` | `Citation paths were updated where mechanical drift was obvious, but prose claims in this page have not yet been fully re-reviewed against the current baseline.` | Current pinned API/WebSocket artifacts and official docs links | Plan 02 governance wording owner plus page owner | Re-review when service integration routing or API examples are next edited. |
-| `src/content/docs/custom-nodes/registration.md` | `This page has not been re-reviewed against the current baseline.` | Current pinned custom-node docs, V3 schema references, and registration examples | Plan 02 governance wording owner plus page owner | Re-review when registration guidance or V3 examples are next edited. |
-| `src/content/docs/deep-dives/workflow-json-schema.md` | `This page has not been re-reviewed against the current baseline.` | Current pinned workflow/API schema evidence and official workflow docs | Plan 02 governance wording owner plus page owner | Re-review when workflow schema guidance is next edited. |
-| `src/content/docs/deep-dives/execution-model-inversion.md` | `This page has not been re-reviewed against the current baseline.` | Current pinned execution source, delta evidence, and architecture pages | Plan 02 governance wording owner plus page owner | Re-review when execution-model prose is next edited. |
-| `src/content/docs/deep-dives/registry-packaging-and-compatibility.md` | `This page has not been re-reviewed against the current baseline.` | Current official registry/packaging docs and pinned compatibility evidence | Plan 02 governance wording owner plus page owner | Re-review when registry or packaging compatibility guidance is next edited. |
+When re-reviewing a routed page against a new pinned baseline, update these
+surfaces together:
 
-`src/content/docs/start-here/extension-developer.md` is intentionally outside
-this S13 backlog because it is not in `BASELINE_REQUIRED_PATHS` for
-`scripts/verify/evidence_metadata_freshness.py` at the time of this policy
-update. If a later policy change adds that page to `BASELINE_REQUIRED_PATHS`, add
-it to this backlog in the same change.
+- the page `**Last Updated:**` line
+- the page `**Baseline verification status:**` line
+- any source paths or commit references in the page body
+- `references/docs-index-metadata.json` when routing metadata changes
+- `public/artifacts/docs-index.json` by running
+  `python scripts/generate/generate_docs_index.py`
 
-Before Plan 05 Task 4 lands schema and generator support for
-`metadata_reviewed_at`, do not instruct maintainers to write that field into
-`references/docs-index-metadata.json`. After Plan 05 Task 4 lands, page
-re-reviews must update `Last Updated`, `metadata_reviewed_at`, and the baseline
-phrase in the same source-citation verification change.
+Generated docs-index tooling metadata emits `metadata_reviewed_at` and
+`metadata_baseline` from the current pinned artifact baseline when a page entry
+does not override those fields explicitly.
 
 ## Generated vs Hand-Authored Boundaries
 
@@ -449,19 +442,24 @@ Current decision table:
 
 | Version key | Classification | Decision |
 |---|---|---|
-| `core-v0.19.3_frontend-v1.42.11_2026-04-19` | `empty` with `empty-legacy-placeholder` exception | Recommend follow-up removal after confirming no active docs, manifest, provenance, or execution-log references require the placeholder. |
-| `core-v0.19.3_frontend-v1.42.11_2026-04-23` | `empty` with `empty-legacy-placeholder` exception | Recommend follow-up removal after confirming no active docs, manifest, provenance, or execution-log references require the placeholder. |
-| `core-v0.19.3_frontend-v1.42.11_2026-04-29` | `empty` with `empty-legacy-placeholder` exception | Recommend follow-up removal after confirming no active docs, manifest, provenance, or execution-log references require the placeholder. |
-| `core-v0.20.1_frontend-v1.44.13_2026-04-30` | `empty` with `empty-legacy-placeholder` exception | Recommend follow-up removal after confirming no active docs, manifest, provenance, or execution-log references require the placeholder. |
 | `core-v0.21.1_frontend-v1.45.9_2026-05-18` | `legacy-pre-websocket-events` | Retain as a documented legacy exception unless source-backed regeneration is needed. |
 | `core-v0.22.0_frontend-v1.45.12_2026-05-21` | `legacy-pre-websocket-events` | Retain as a documented legacy exception unless source-backed regeneration is needed. |
 | `core-v0.23.0_frontend-v1.46.6_2026-06-01` | `legacy-pre-websocket-events` | Retain as a documented legacy exception unless source-backed regeneration is needed. |
-| `core-v0.23.0_frontend-v1.46.6_2026-06-03` | `current-required-complete` | Keep as the current canonical versioned artifact set. |
+| `core-v0.23.0_frontend-v1.46.6_2026-06-03` | `retained-complete` | Retain as a complete historical baseline. |
+| `core-v0.24.0_frontend-v1.46.14_2026-06-13` | `retained-complete` | Retain as a complete historical baseline. |
+| `core-v0.26.0_frontend-v1.47.5_2026-06-26` | `current-required-complete` | Keep as the current canonical versioned artifact set. |
 
-The first pass records recommendations only. Do not remove or backfill versioned
-directories without a later explicit policy/action change. Current version
-directories must contain `server_endpoints.json`, `js_hooks.json`,
-`node_api_schema.json`, and `websocket_events.json`.
+The 2026-04 empty legacy placeholders were removed after confirming they had no
+tracked artifact files and no active manifest, docs, or provenance references.
+Do not backfill legacy versioned directories without a later explicit
+policy/action change. Current and retained-complete version directories must
+contain `server_endpoints.json`, `js_hooks.json`, `node_api_schema.json`, and
+`websocket_events.json`; the advisory verifier parses, schema-validates, and
+hash-verifies those current/retained-complete JSON files. Current versioned
+artifact hashes must match the corresponding `sha256` values in
+`public/artifacts/manifest.json`. Retained-complete historical artifact hashes
+must match the deterministic expected-hash table in
+`scripts/verify/versioned_artifact_completeness.py`.
 
 ## Editing Published Docs
 
@@ -602,11 +600,13 @@ the same change.
 - Prefer the shared composite setup action where it reduces real duplication
 - Keep workflow-specific logic out of the composite action
 - `npm audit` is intentionally excluded from the blocking CI path and from
-  `scripts/verify/run_all.py`. This repo has a small dependency surface and no
-  current automation for dependency vulnerability scanning (Dependabot, Renovate,
-  or advisory replay). This is an accepted gap for now; if dependency risk
-  warrants it, add a non-blocking advisory signal rather than restoring
-  `npm audit` to the blocking path.
+  `scripts/verify/run_all.py`. Dependency risk is handled by Dependabot for pip,
+  npm, and GitHub Actions plus the scheduled/manual
+  `.github/workflows/dependency-advisory.yml` workflow, which runs npm and Python
+  advisory audits outside push/PR blocking CI.
+- Pin external GitHub Actions to full commit SHAs rather than moving major tags.
+  Dependabot's `github-actions` ecosystem entry is the maintained update path
+  for those pinned workflow dependencies.
 
 Verify:
 
@@ -733,6 +733,11 @@ python scripts/verify/extraction_idempotency.py
 python scripts/verify/upstream_pins.py
 python scripts/verify/example_surface_integrity.py
 python scripts/verify/evidence_metadata_freshness.py
+python scripts/verify/docs_index_unknown_routes.py
+python scripts/verify/provenance_chain_integrity.py
+python scripts/verify/versioned_artifact_completeness.py
+python scripts/verify/site_base_consistency.py
+python scripts/verify/governance_lifecycle.py
 python -m mypy
 ```
 
@@ -806,9 +811,12 @@ coverage.
 | `scripts/verify/upstream_pins.py` | Confirm pinned tags and commits still resolve upstream | upstream pin validity for canonical JSON metadata | Advisory | External trust check with cached GitHub API resolution | Scheduled pin health review or after suspicious upstream changes |
 | `scripts/verify/example_surface_integrity.py` | Validate example family structure and routed example references | `examples/` plus routed start-here docs | Advisory | Checks example directory completeness and routed example paths together | Example-surface edits or start-here routing updates |
 | `scripts/verify/evidence_metadata_freshness.py` | Enforce opening evidence metadata discipline on retained pages | selected published docs pages | Advisory | Only verifier that checks allowed baseline-status wording patterns directly | Docs policy changes or refreshes affecting evidence blocks |
+| `scripts/verify/docs_index_unknown_routes.py` | Surface unclassified docs-index route entries for maintainer triage | `public/artifacts/docs-index.json` route metadata | Advisory | Only verifier that summarizes unknown docs-index route classifications and reason counts | Docs-index route metadata changes or route-classification audits |
 | `scripts/verify/governance_lifecycle.py` | Validate lifecycle records and advisory-first governance policy coverage | verifier lifecycle manifest, policy text, schemas, and support artifact records | Advisory | Only verifier that checks lifecycle manifest shape, schema-closure documentation, support-artifact admission records, and placement wiring drift | Governance policy changes or new durable verifier/support surfaces |
 | `scripts/verify/provenance_chain_integrity.py` | Validate refresh provenance follow-up ordering and flag consistency | `public/artifacts/refresh-provenance.json` plus delta/manifest/current artifact state | Advisory | Only verifier that checks stale backup references and reverse-direction published flag drift | After refreshes, publication follow-up commands, or provenance cleanup |
-| `scripts/verify/versioned_artifact_completeness.py` | Classify versioned artifact directories and current-version completeness | `public/artifacts/versions/` plus manifest `version_key` | Advisory | Only verifier that distinguishes current complete, retained complete, empty legacy placeholder, and pre-websocket historical exceptions | After publishing artifacts, changing version retention policy, or reviewing empty/partial version directories |
+| `scripts/verify/versioned_artifact_completeness.py` | Classify versioned artifact directories and current-version completeness | `public/artifacts/versions/` plus manifest `version_key` | Advisory | Only verifier that distinguishes current complete, retained complete, empty directory drift, and pre-websocket historical exceptions | After publishing artifacts, changing version retention policy, or reviewing empty/partial version directories |
+| `scripts/verify/site_base_consistency.py` | Detect shared site/base configuration drift | `src/site/site-config.json`, Astro config, markdown rewriting, and rendered-link verification | Advisory | Only verifier that checks site/base URL settings across config and verifier consumers | Site base, route rewriting, or rendered-link verifier changes |
+| `.github/workflows/dependency-advisory.yml` | Run scheduled/manual dependency vulnerability audits | npm and Python dependency surfaces | Advisory workflow | Durable dependency-risk signal outside push/PR blocking CI | Use the workflow for weekly or manual dependency advisory review |
 | `.github/workflows/advisory-checks.yml` | Replay advisory scripts as blocking on schedule/manual dispatch | weekly/manual advisory escalation path | Advisory workflow | Converts the non-blocking advisory script set into a durable scheduled gate | Use the workflow when maintainers want a blocking replay outside push/PR CI |
 
 ### Runtime-specific verifiers and workflows
@@ -826,7 +834,7 @@ coverage.
 | Verifier / workflow | Purpose | Scope | Blocking/advisory/manual | Unique signal | When to run directly |
 |---|---|---|---|---|---|
 | `.github/workflows/ci.yml` | Main CI entrypoint for blocking, supplemental, advisory-in-CI, and optional refresh jobs | push/PR/manual repo verification | Workflow orchestration | Shows how blocking, supplemental, and non-blocking advisory checks are staged in CI | Inspect when changing verifier placement or CI parity with `run_all.py` |
-| `.github/workflows/deploy-pages.yml` | Publish artifacts, rerun the blocking wrapper, and deploy the built site | deploy pipeline | Workflow orchestration | Couples publication and full blocking verification before Pages deploy | Inspect when changing deployment or publication flow |
+| `.github/workflows/deploy-pages.yml` | Verify committed artifacts and deploy the built site | deploy pipeline | Workflow orchestration | Publishes the committed generated artifact tree only after the blocking wrapper passes | Inspect when changing deployment or publication flow |
 | `.github/workflows/upstream-watch.yml` | Check upstream versions and open/update a tracking issue | upstream monitoring automation | Workflow orchestration | Tracks refresh opportunities rather than repo correctness | Inspect when changing upstream-watch automation or issue workflow |
 
 ## Maintainer Failure-Path Quick Guide

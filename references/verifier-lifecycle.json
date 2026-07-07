@@ -37,17 +37,31 @@
       "removal_criteria": "Remove only if another CI entrypoint fully replaces push, pull request, and manual verification.",
       "target_surface": "GitHub Actions CI."
     },
+    ".github/workflows/dependency-advisory.yml": {
+      "demotion_criteria": "Keep outside push/PR blocking CI unless maintainers explicitly promote dependency audits into the default gate.",
+      "false_positive_tolerance": {
+        "justification": "Dependency advisories can require maintainer triage, but scheduled/manual replay should produce an actionable failure and summary when high-severity findings are present.",
+        "level": "medium"
+      },
+      "last_reviewed": "2026-06-26",
+      "owner": "Maintainers of dependency-risk automation.",
+      "placement": "workflow",
+      "promotion_criteria": "Promote only after audit noise is controlled and maintainers agree dependency vulnerabilities should block push/PR verification.",
+      "purpose": "Run scheduled and manual npm/Python dependency advisory checks with durable summary output.",
+      "removal_criteria": "Remove only if dependency-risk scanning moves to another maintained workflow or service.",
+      "target_surface": "npm, Python, and workflow dependency-risk automation."
+    },
     ".github/workflows/deploy-pages.yml": {
       "demotion_criteria": "Demote only if Pages deployment is retired.",
       "false_positive_tolerance": {
         "justification": "Deployment verification failures must be rare and actionable because they block publication.",
         "level": "low"
       },
-      "last_reviewed": "2026-06-07",
+      "last_reviewed": "2026-06-26",
       "owner": "Maintainers of publication and Pages deployment.",
       "placement": "workflow",
-      "promotion_criteria": "Already the deployment workflow for published artifacts and site output.",
-      "purpose": "Publish artifacts, rerun blocking verification, and deploy the built site.",
+      "promotion_criteria": "Already the deployment workflow for committed published artifacts and site output.",
+      "purpose": "Verify committed generated artifacts with the blocking wrapper and deploy the built site.",
       "removal_criteria": "Remove only with a replacement deploy workflow and documented publication path.",
       "target_surface": "GitHub Pages deployment."
     },
@@ -144,7 +158,7 @@
       "last_reviewed": "2026-06-07",
       "owner": "Maintainers of Python tooling interfaces.",
       "placement": "supplemental",
-      "promotion_criteria": "Promote only after the Plan 02 routinely-passes and promotion thresholds are satisfied.",
+      "promotion_criteria": "Promote only after advisory typing results routinely pass and promotion thresholds are satisfied.",
       "purpose": "Provide advisory static typing coverage for Python tooling.",
       "removal_criteria": "Remove only if typing is abandoned or replaced by an equivalent static analysis gate.",
       "target_surface": "Typed Python surfaces."
@@ -242,7 +256,7 @@
       "last_reviewed": "2026-06-07",
       "owner": "Maintainers of evidence metadata policy.",
       "placement": "advisory",
-      "promotion_criteria": "Promote only after the Plan 02 routinely-passes and promotion thresholds are satisfied.",
+      "promotion_criteria": "Promote only after evidence metadata checks routinely pass and promotion thresholds are satisfied.",
       "purpose": "Check opening evidence metadata discipline on retained pages.",
       "removal_criteria": "Remove only if evidence metadata policy is retired or replaced.",
       "target_surface": "Selected published docs pages."
@@ -270,7 +284,7 @@
       "last_reviewed": "2026-06-07",
       "owner": "Maintainers of examples and start-here routing.",
       "placement": "advisory",
-      "promotion_criteria": "Promote only after example surface stability and Plan 02 thresholds are satisfied.",
+      "promotion_criteria": "Promote only after example surface stability and advisory promotion thresholds are satisfied.",
       "purpose": "Validate example family structure and routed example references.",
       "removal_criteria": "Remove only if examples are removed or checked by a stricter replacement.",
       "target_surface": "examples/ plus routed start-here docs."
@@ -298,7 +312,7 @@
       "last_reviewed": "2026-06-07",
       "owner": "Maintainers of extractors and raw artifacts.",
       "placement": "advisory",
-      "promotion_criteria": "Promote only after deterministic output is proven across the Plan 02 thresholds.",
+      "promotion_criteria": "Promote only after deterministic output is proven across advisory promotion thresholds.",
       "purpose": "Rerun extractors against pinned inputs and compare outputs.",
       "removal_criteria": "Remove only if extractor determinism is covered by another verifier.",
       "target_surface": "references/raw extractor reproducibility."
@@ -312,7 +326,7 @@
       "last_reviewed": "2026-06-07",
       "owner": "Maintainers of governance policy and verifier lifecycle records.",
       "placement": "advisory",
-      "promotion_criteria": "Promote only after the Plan 02 routinely-passes and promotion thresholds are recorded.",
+      "promotion_criteria": "Promote only after governance lifecycle checks routinely pass and promotion thresholds are recorded.",
       "purpose": "Validate verifier lifecycle records, new-surface policy references, schema-closure documentation, and advisory wiring signals.",
       "removal_criteria": "Remove only if lifecycle and admission policy enforcement is replaced by a stricter maintained verifier.",
       "target_surface": "Governance policy, verifier lifecycle manifest, and new-surface records."
@@ -438,7 +452,7 @@
       "last_reviewed": "2026-06-11",
       "owner": "Maintainers of site configuration and rendered-link verification.",
       "placement": "advisory",
-      "promotion_criteria": "Promote only after the shared site config remains stable and Plan 02 promotion thresholds are recorded.",
+      "promotion_criteria": "Promote only after the shared site config remains stable and advisory promotion thresholds are recorded.",
       "purpose": "Detect drift between shared site/base JSON configuration, Astro config, markdown route rewriting, and rendered-link verification.",
       "removal_criteria": "Remove only if Astro, markdown rewriting, and rendered-link verification consume a stricter shared configuration contract.",
       "target_surface": "src/site/site-config.json, astro.config.mjs, src/site/markdown.js, and scripts/verify/rendered_links.py."
@@ -466,7 +480,7 @@
       "last_reviewed": "2026-06-07",
       "owner": "Maintainers of docs freshness policy.",
       "placement": "advisory",
-      "promotion_criteria": "Promote only after thresholds and false positives are stable under Plan 02 policy.",
+      "promotion_criteria": "Promote only after thresholds and false positives are stable under the advisory promotion policy.",
       "purpose": "Scan for stale markers and aging content.",
       "removal_criteria": "Remove only if stale content policy is retired or covered elsewhere.",
       "target_surface": "Docs plus extracted JSON."
@@ -480,7 +494,7 @@
       "last_reviewed": "2026-06-07",
       "owner": "Maintainers of upstream pin health.",
       "placement": "advisory",
-      "promotion_criteria": "Promote only with caching and false-positive evidence satisfying Plan 02 thresholds.",
+      "promotion_criteria": "Promote only with caching and false-positive evidence satisfying advisory promotion thresholds.",
       "purpose": "Confirm pinned tags and commits still resolve upstream.",
       "removal_criteria": "Remove only if upstream pin checks are replaced or no longer maintained.",
       "target_surface": "Upstream pin validity for canonical JSON metadata."
@@ -522,7 +536,7 @@
       "last_reviewed": "2026-06-07",
       "owner": "Maintainers of artifact publication and versioned artifact retention.",
       "placement": "advisory",
-      "promotion_criteria": "Promote only after empty legacy placeholders are removed or documented as durable policy and retained baselines routinely satisfy the canonical set.",
+      "promotion_criteria": "Promote only after retained baselines routinely satisfy the canonical set and pre-websocket exceptions remain stable.",
       "purpose": "Classify versioned artifact directories as current, retained, empty, or documented legacy exceptions and detect current-version artifact omissions.",
       "removal_criteria": "Remove only if versioned artifact retention is checked by a stricter publication verifier.",
       "target_surface": "public/artifacts/versions/ directories and manifest version_key."

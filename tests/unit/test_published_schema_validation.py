@@ -195,6 +195,28 @@ class PublishedSchemaValidationTests(unittest.TestCase):
             errors,
         )
 
+    def test_validate_json_schema_instance_enforces_const(self):
+        schema = {"type": "object", "properties": {"version": {"const": "3.0"}}}
+
+        errors = published_schema_validation._validate_json_schema_instance(
+            {"version": "3.1"},
+            schema,
+            "node_api_schema.json",
+        )
+
+        self.assertIn("node_api_schema.json.version: expected constant '3.0'", errors)
+
+    def test_validate_json_schema_instance_enforces_min_length(self):
+        schema = {"type": "object", "properties": {"path": {"type": "string", "minLength": 1}}}
+
+        errors = published_schema_validation._validate_json_schema_instance(
+            {"path": ""},
+            schema,
+            "node_api_schema.json",
+        )
+
+        self.assertIn("node_api_schema.json.path: expected string length >= 1", errors)
+
     def test_validate_against_published_artifact_schema_reports_invalid_schema_json(self):
         with tempfile.TemporaryDirectory() as tmp:
             schema_dir = Path(tmp)

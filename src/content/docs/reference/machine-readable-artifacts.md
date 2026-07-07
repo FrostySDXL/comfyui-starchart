@@ -98,7 +98,7 @@ to these minimum rules:
   points to instead of hardcoding versioned artifact paths
 - verify the manifest metadata before trusting a download; at minimum, compare
   the artifact bytes against the manifest `sha256` for canonical current-copy
-  URLs
+  URLs and the current versioned URLs named by the same manifest entries
 - build strict logic only against guaranteed fields and the published schema
   files; treat best-effort summaries, traceability, and other descriptive fields
   as optional helpers
@@ -459,7 +459,10 @@ built site.
 For the canonical published artifacts, `references/raw/` remains the
 canonical repo-local source. `public/artifacts/current/` must stay byte-identical
 to those canonical files, and the manifest checksum must match the published
-current-copy bytes.
+current-copy bytes plus the current versioned bytes named by
+`manifest.json.version_key`. Retained-complete historical version directories are
+also hash-verified by `scripts/verify/versioned_artifact_completeness.py` against
+the verifier's deterministic expected-hash table.
 
 If you need the exact commit, extraction date, or published checksum for an
 artifact, read its `metadata` object or consult `manifest.json`.
@@ -490,6 +493,12 @@ Maintainership note: `python scripts/verify/verify_artifact_integrity.py` is a
 blocking verifier. It proves the canonical `references/raw/` files, published
 `public/artifacts/current/` copies, and manifest `sha256` values remain aligned
 for those artifacts.
+
+`python scripts/verify/versioned_artifact_completeness.py` is the matching
+advisory verifier for `public/artifacts/versions/`. For the current version key,
+it checks each versioned artifact against the matching manifest `sha256`. For
+retained-complete historical directories, it checks each artifact against the
+expected hash recorded in the verifier.
 
 `python scripts/verify/validate_schema.py` is the matching blocking verifier for
 the schema contract. It validates canonical artifacts against the checked-in
@@ -858,8 +867,9 @@ presence depends on whether someone ran the live runtime capture path at all.
   They describe what the source declares, not what every runtime instance will
   expose.
 - Manifest `sha256` fields prove byte integrity for the published canonical
-  current copies only. They do not provide signatures, provenance attestations,
-  or schema-compatibility guarantees by themselves.
+  current copies and the current versioned copies named by the manifest. They do
+  not provide signatures, provenance attestations, or schema-compatibility
+  guarantees by themselves.
 - Return shape inference is best-effort static analysis. Some endpoints return
   variable structures that cannot be captured precisely without runtime data.
 - Traceability fields indicate where an extracted fact came from, not that the

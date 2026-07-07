@@ -31,7 +31,7 @@ deep maintainer playbooks.
 ```bash
 py -3.11 -m venv .venv
 .venv\Scripts\activate
-python -m pip install -r requirements.lock
+python -m pip install --require-hashes -r requirements.lock
 python -m pip install -e .
 npm ci
 python -m unittest discover -s tests -v

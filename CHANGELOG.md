@@ -10,6 +10,35 @@ Maintenance policy for this file lives in `CONTRIBUTING.md` under
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-06-26 - current baseline refresh and governance alignment
+
+### Baseline refresh
+
+- Refresh pinned baseline to core **v0.26.0** (`f6c162ddc`) and frontend
+  **v1.47.5** (`9c3c429d7`) with snapshots under `2026-06-26`.
+- Republish the canonical current and versioned artifact surfaces for the active
+  baseline, with `2026-06-13` and `2026-06-03` retained as complete historical
+  baselines.
+
+### Verification and governance
+
+- Harden published schema validation for checked-in schema keywords and add
+  controlled missing-artifact errors for schema validation failures.
+- Validate current and retained-complete versioned artifacts for JSON parseability
+  and published schema conformance.
+- Align deploy, advisory, dependency, and workflow-permission guidance so Pages
+  deployment verifies committed artifacts instead of regenerating publication
+  outputs during deploy.
+
+### Docs, examples, and routing metadata
+
+- Refresh example evidence paths and wording to the current pinned source
+  baseline where examples claim current behavior.
+- Reconcile the V3 caveated-node example with current registration-source
+  evidence while preserving installed-runtime validation caveats.
+- Populate generated docs-index review freshness fields from the current pinned
+  baseline for tooling metadata consumers.
+
 ## 2026-06-13 - verification hardening, route audit, and baseline refresh
 
 ### Verification and governance

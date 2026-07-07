@@ -3,7 +3,7 @@
 ## Caveats
 
 - `io.Schema`, `io.ComfyNode`, and `io.NodeOutput` are pinned to source definitions in the upstream `_io.py` snapshot. Behavior matches the pinned snapshot within the supported pin window; new V3 additions beyond the pin are not yet reflected.
-- `ComfyExtension` and `comfy_entrypoint()` are not yet backed by a pinned Python source; treat this example as illustrative for the shape of the API only and verify against a live ComfyUI runtime before relying on it.
+- `ComfyExtension` and `comfy_entrypoint()` are pinned through the current registration page's Python sources, but this example still needs live runtime validation before you treat package discovery as proven in an installed ComfyUI environment.
 
 These caveats mirror the canonical wording in
 [`src/content/docs/custom-nodes/registration.md`](../../../src/content/docs/custom-nodes/registration.md).
@@ -15,9 +15,9 @@ These caveats mirror the canonical wording in
 ## What This Example Is
 
 This directory contains a deliberately small V3-style `io.ComfyNode` pattern
-aligned with the retained V3 node-structure page. It demonstrates schema-first
-node shape and `io.NodeOutput` return shape without claiming that this repository
-has pinned every Python-side package discovery behavior for V3.
+aligned with the retained V3 node-structure and registration pages. It
+demonstrates schema-first node shape and `io.NodeOutput` return shape while
+leaving installed-runtime discovery proof to opt-in runtime validation.
 
 ## Files
 
@@ -25,8 +25,8 @@ has pinned every Python-side package discovery behavior for V3.
 
 ## What This Example Does Not Prove
 
-- It does not prove full runtime discovery through `ComfyExtension` or
-  `comfy_entrypoint()`.
+- It does not prove installed-runtime discovery through `ComfyExtension` or
+  `comfy_entrypoint()` in your local ComfyUI environment.
 - It does not replace live validation against your installed ComfyUI version.
 - It does not document new V3 APIs beyond the pinned `_io.py` source window.
 

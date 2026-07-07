@@ -15,7 +15,7 @@
       "evidence": [
         "python scripts/verify/example_surface_integrity.py",
         "python scripts/verify/shell_examples_syntax.py",
-        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py"
+        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py"
       ],
       "runtime_command": "python scripts/verify/example_runtime_smoke.py --url http://127.0.0.1:8188 --comfyui-root D:/projects/comfyui-test-runtime --model-name <installed-checkpoint.safetensors>"
     },
@@ -44,8 +44,8 @@
       "validation_tiers": ["static", "offline_unit", "pinned_source", "runtime_smoke"],
       "evidence": [
         "python -m unittest discover -s tests -v -p \"test_prompt_submit_monitor_history.py\"",
-        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
-        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py"
+        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
+        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py"
       ],
       "runtime_command": "python scripts/verify/example_runtime_smoke.py --url http://127.0.0.1:8188 --comfyui-root D:/projects/comfyui-test-runtime --model-name <installed-checkpoint.safetensors>"
     },
@@ -89,8 +89,8 @@
       "validation_tiers": ["static", "offline_unit", "pinned_source", "runtime_smoke"],
       "evidence": [
         "python -m unittest discover -s tests -v -p \"test_websocket_event_consumer.py\"",
-        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
-        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py"
+        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
+        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py"
       ],
       "runtime_command": "python scripts/verify/example_runtime_smoke.py --url http://127.0.0.1:8188 --comfyui-root D:/projects/comfyui-test-runtime --skip-prompt"
     },
@@ -109,7 +109,7 @@
     {
       "path": "examples/custom-nodes/example-4-progress-ui/",
       "validation_tiers": ["static", "pinned_source", "pattern_only_caveated"],
-      "evidence": ["python scripts/verify/example_surface_integrity.py", "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_execution/progress.py"],
+      "evidence": ["python scripts/verify/example_surface_integrity.py", "references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_execution/progress.py"],
       "caveat": "Progress UI behavior needs live runtime validation after installation."
     },
     {
@@ -128,7 +128,7 @@
       "path": "examples/custom-nodes/example-7-v3-caveated-node/",
       "validation_tiers": ["static", "pinned_source", "pattern_only_caveated"],
       "evidence": ["src/content/docs/custom-nodes/node-structure.md", "src/content/docs/custom-nodes/registration.md"],
-      "caveat": "The V3 example is illustrative until Python-side ComfyExtension/comfy_entrypoint behavior is pinned or validated live."
+      "caveat": "The V3 example is source-backed for the retained V3 registration shape, but installed-runtime discovery still requires live validation."
     },
     {
       "path": "examples/custom-nodes/minimal-node-template/",
@@ -140,16 +140,16 @@
       "path": "examples/extensions/benchmark-harness-skeleton/",
       "validation_tiers": ["static", "pinned_source", "pattern_only_caveated"],
       "evidence": [
-        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py",
-        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/execution.py",
-        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/comfy_execution/progress.py"
+        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
+        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_execution/progress.py"
       ],
       "caveat": "Benchmark monkey-patch behavior is runtime/operator-specific and must be validated after installation."
     },
     {
       "path": "examples/extensions/hybrid-v1-route/",
       "validation_tiers": ["static", "pinned_source", "pattern_only_caveated"],
-      "evidence": ["python scripts/verify/example_surface_integrity.py", "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py"],
+      "evidence": ["python scripts/verify/example_surface_integrity.py", "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py"],
       "caveat": "Hybrid route/node behavior requires installing the example into ComfyUI for live validation."
     },
     {
@@ -157,7 +157,7 @@
       "validation_tiers": ["static", "offline_unit", "pinned_source", "runtime_smoke"],
       "evidence": [
         "python -m unittest discover -s tests -v -p \"test_minimal_route_registration.py\"",
-        "references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py"
+        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py"
       ],
       "runtime_command": "python scripts/verify/example_runtime_smoke.py --url http://127.0.0.1:8188 --comfyui-root D:/projects/comfyui-test-runtime --skip-prompt --expect-extension-route"
     },

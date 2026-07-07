@@ -191,8 +191,8 @@ directories such as `2026-06-01/`, `2026-05-21/`, `2026-05-18/`, and
 - some prose pages may still reflect a prior baseline or only partial
   current-baseline review; those pages should declare that with a baseline
   verification status block near the top
-- routed pages with stale or partial current-baseline status are tracked in the
-  baseline-review backlog in `CONTRIBUTING.md` until re-reviewed
+- routed pages with partial current-baseline status should declare that status in
+  their opening metadata until re-reviewed
 - this policy now formally integrates with the writing style guide at
   `writing-style-guide.md`
 

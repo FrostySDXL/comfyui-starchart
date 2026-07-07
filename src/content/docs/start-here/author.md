@@ -2,7 +2,7 @@
 title: "Start Here: Custom Node Author"
 ---
 
-**Evidence:** Operational guidance
+**Evidence:** Operational guidance; Source-backed from pinned snapshots
 **Last Updated:** 2026-06-26
 **Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
 

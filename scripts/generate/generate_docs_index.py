@@ -24,6 +24,8 @@ DOCS_ROOT = REPO_ROOT / "src" / "content" / "docs"
 METADATA_PATH = REPO_ROOT / "references" / "docs-index-metadata.json"
 OUTPUT_PATH = REPO_ROOT / "public" / "artifacts" / "docs-index.json"
 SERVER_ENDPOINTS_PATH = REPO_ROOT / "references" / "raw" / "server_endpoints.json"
+FALLBACK_METADATA_REVIEWED_AT = "2026-06-26"
+FALLBACK_METADATA_BASELINE = "core-v0.26.0_frontend-v1.47.5_2026-06-26"
 
 KNOWN_TASK_INTENTS = {
     "build-custom-node",
@@ -167,6 +169,24 @@ def load_docs_index_metadata(metadata_path: Path = METADATA_PATH) -> dict[str, d
         if not isinstance(key, str) or not isinstance(value, dict):
             raise ValueError("Metadata entries must map string docs paths to objects")
     return data
+
+
+def load_metadata_freshness_defaults(repo_root: Path = REPO_ROOT) -> tuple[str, str]:
+    """Return docs-index freshness defaults from the current artifact manifest."""
+    manifest_path = repo_root / "public" / "artifacts" / "manifest.json"
+    if not manifest_path.exists():
+        return FALLBACK_METADATA_REVIEWED_AT, FALLBACK_METADATA_BASELINE
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return FALLBACK_METADATA_REVIEWED_AT, FALLBACK_METADATA_BASELINE
+    version_key = manifest.get("version_key")
+    if not isinstance(version_key, str) or not version_key:
+        return FALLBACK_METADATA_REVIEWED_AT, FALLBACK_METADATA_BASELINE
+    match = re.search(r"_(\d{4}-\d{2}-\d{2})$", version_key)
+    if not match:
+        return FALLBACK_METADATA_REVIEWED_AT, version_key
+    return match.group(1), version_key
 
 
 def _nav_paths_for_validation(repo_root: Path, nav_source: str | Path) -> set[str]:
@@ -423,10 +443,15 @@ def normalize_tooling_metadata(
     entry: dict[str, Any],
     related_route_entries: list[dict[str, str]] | None = None,
     inbound_recommendations: list[str] | None = None,
+    metadata_defaults: tuple[str, str] | None = None,
 ) -> dict[str, object]:
+    default_reviewed_at, default_baseline = metadata_defaults or (
+        FALLBACK_METADATA_REVIEWED_AT,
+        FALLBACK_METADATA_BASELINE,
+    )
     return {
-        "metadata_reviewed_at": entry.get("metadata_reviewed_at", None),
-        "metadata_baseline": entry.get("metadata_baseline", None),
+        "metadata_reviewed_at": entry.get("metadata_reviewed_at", default_reviewed_at),
+        "metadata_baseline": entry.get("metadata_baseline", default_baseline),
         "task_intents": _sorted_strings(list(entry.get("task_intents", []))),
         "primary_task_intents": _sorted_strings(list(entry.get("primary_task_intents", []))),
         "excluded_task_intents": _sorted_strings(list(entry.get("excluded_task_intents", []))),
@@ -464,6 +489,7 @@ def build_docs_index(
     server_routes = load_server_endpoint_routes(
         repo_root / "references" / "raw" / "server_endpoints.json"
     )
+    metadata_defaults = load_metadata_freshness_defaults(repo_root)
     inbound_recommendations: dict[str, list[str]] = {path: [] for path in eligible_paths}
     for source_path, source_metadata in resolved_metadata.items():
         for target_path in _expect_string_list(
@@ -488,6 +514,7 @@ def build_docs_index(
                 page_metadata,
                 related_route_entries=related_route_entries,
                 inbound_recommendations=inbound_recommendations.get(str(page["path"]), []),
+                metadata_defaults=metadata_defaults,
             )
         merged_pages.append(merged)
 

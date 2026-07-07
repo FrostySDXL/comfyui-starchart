@@ -5,11 +5,14 @@ on:
     - cron: "30 11 * * 1"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   advisory-replay:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       - name: Set up repo
         uses: ./.github/actions/setup-repo
@@ -17,7 +20,7 @@ jobs:
           setup-node: "false"
           install-node-deps: "false"
 
-      # Replay the advisory scripts here as blocking on a weekly schedule and on
+      # Replay advisory scripts here as blocking on a weekly schedule and on
       # manual dispatch. This keeps push/PR CI focused on the normal blocking
       # gate while preserving a durable escalation path for advisory failures.
       - name: Check for stale content
@@ -39,7 +42,6 @@ jobs:
 
       - name: Audit docs-index unknown routes
         run: python scripts/verify/docs_index_unknown_routes.py
-        continue-on-error: true
 
       - name: Check refresh provenance chain integrity
         run: python scripts/verify/provenance_chain_integrity.py
@@ -47,6 +49,8 @@ jobs:
       - name: Check versioned artifact completeness
         run: python scripts/verify/versioned_artifact_completeness.py
 
+      - name: Check site base consistency
+        run: python scripts/verify/site_base_consistency.py
+
       - name: Check governance lifecycle policy coverage
         run: python scripts/verify/governance_lifecycle.py
-        continue-on-error: true

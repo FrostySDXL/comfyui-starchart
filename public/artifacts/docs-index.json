@@ -21,8 +21,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "route-docs-task"
         ],
@@ -51,13 +51,13 @@
       "path": "start-here/artifact-consumer.md",
       "nav_section": "Start Here",
       "audience": "consumer",
-      "evidence": "Operational guidance",
+      "evidence": "Operational guidance; Source-backed from pinned snapshots",
       "summary": "This page is the shortest start-here route for readers who consume this repo's published JSON artifacts. It covers the manifest-first loading path, the bounded routing-support surface, checksum validation, and the example boundary. It does not restate every artifact field or every API page.",
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "discover-artifacts",
           "route-docs-task"
@@ -98,8 +98,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "route-docs-task"
         ],
@@ -162,8 +162,8 @@
       ],
       "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "debug-api-integration",
           "inspect-prompt-payload",
@@ -247,8 +247,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "discover-hooks"
         ],
@@ -284,13 +284,13 @@
       "path": "start-here/author.md",
       "nav_section": "Start Here",
       "audience": "consumer",
-      "evidence": "Operational guidance",
+      "evidence": "Operational guidance; Source-backed from pinned snapshots",
       "summary": null,
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "build-custom-node"
         ],
@@ -326,8 +326,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "discover-artifacts",
           "extract-prompt-text",
@@ -377,8 +377,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "discover-artifacts"
         ],
@@ -433,8 +433,8 @@
       ],
       "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "extract-prompt-text",
           "inspect-conditioning-graph",
@@ -513,8 +513,8 @@
       ],
       "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "discover-routes"
         ],
@@ -596,8 +596,8 @@
       ],
       "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "monitor-execution",
           "observe-server-lifecycle"
@@ -662,8 +662,8 @@
       ],
       "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "extract-prompt-text",
           "inspect-conditioning-graph",
@@ -768,8 +768,8 @@
       ],
       "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "lookup-history",
           "monitor-execution"
@@ -868,8 +868,8 @@
       ],
       "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "understand-architecture",
           "understand-prompt-topology"
@@ -938,8 +938,8 @@
       ],
       "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "inspect-prompt-payload",
           "monitor-execution",
@@ -1021,8 +1021,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "understand-architecture"
         ],
@@ -1056,8 +1056,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "discover-hooks",
           "observe-server-lifecycle",
@@ -1097,8 +1097,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "discover-hooks"
         ],
@@ -1145,8 +1145,8 @@
       ],
       "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "discover-hooks",
           "inspect-prompt-payload",
@@ -1207,8 +1207,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "build-custom-node"
         ],
@@ -1246,8 +1246,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "build-custom-node"
         ],
@@ -1283,8 +1283,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "build-custom-node"
         ],
@@ -1322,8 +1322,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "build-custom-node"
         ],
@@ -1374,8 +1374,8 @@
       ],
       "route_classification_source": "server_endpoints_crossref",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "understand-architecture"
         ],
@@ -1432,8 +1432,8 @@
       "related_route_entries": [],
       "route_classification_source": "unknown",
       "tooling_metadata": {
-        "metadata_reviewed_at": null,
-        "metadata_baseline": null,
+        "metadata_reviewed_at": "2026-06-26",
+        "metadata_baseline": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
         "task_intents": [
           "build-custom-node"
         ],

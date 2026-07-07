@@ -1,12 +1,12 @@
 # Examples: API Calls
 
 **Status:** Source-backed examples
-**Primary Sources:** `references/snapshots/2026-06-03/comfyui-core-v0.23.0/server.py` (v0.23.0, commit `a88e02b18576283b1ff25a4b564548c5dc42cbf6`), https://docs.comfy.org/
+**Primary Sources:** `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py` (v0.26.0, commit `f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40`), https://docs.comfy.org/
 **Validation tiers:** static, pinned-source, opt-in runtime smoke
 
 ## What This Directory Contains
 
-These examples are derived from current upstream ComfyUI route behavior and are
+These examples are derived from the current pinned ComfyUI route behavior and are
 meant as practical starter calls for tools that talk to native ComfyUI.
 
 ## Included Examples
@@ -20,7 +20,7 @@ meant as practical starter calls for tools that talk to native ComfyUI.
 
 ## Evidence Level
 
-- upstream source behavior: current `server.py` route implementations
+- upstream source behavior: current pinned `server.py` route implementations
 - official behavior: official docs where available
 - community wrappers: excluded from these examples on purpose
 

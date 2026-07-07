@@ -158,7 +158,7 @@ source .venv/bin/activate
 **After activation (all platforms):**
 
 ```bash
-python -m pip install -r requirements.lock
+python -m pip install --require-hashes -r requirements.lock
 python -m pip install -e .
 npm ci
 python -m unittest discover -s tests -v
