@@ -198,10 +198,6 @@ def load_metadata_freshness_defaults(repo_root: Path = REPO_ROOT) -> tuple[str, 
     return match.group(1), version_key
 
 
-def _nav_paths_for_validation(repo_root: Path, nav_source: str | Path) -> set[str]:
-    return {entry["path"] for entry in flatten_nav_from_source(repo_root, nav_source)}
-
-
 def _nav_paths_from_entries(nav_entries: list[dict[str, str]]) -> set[str]:
     return {entry["path"] for entry in nav_entries}
 

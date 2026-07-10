@@ -93,6 +93,22 @@ class PublishedSchemaValidationTests(unittest.TestCase):
                 self.assertIsNotNone(schema)
                 self.assertEqual(schema["title"], expected_title)
 
+    def test_load_published_artifact_schema_reuses_cached_schema(self):
+        published_schema_validation.load_published_artifact_schema.cache_clear()
+        try:
+            first_schema = published_schema_validation.load_published_artifact_schema(
+                "manifest.json",
+                PUBLISHED_SCHEMA_DIR,
+            )
+            second_schema = published_schema_validation.load_published_artifact_schema(
+                "manifest.json",
+                PUBLISHED_SCHEMA_DIR,
+            )
+        finally:
+            published_schema_validation.load_published_artifact_schema.cache_clear()
+
+        self.assertIs(first_schema, second_schema)
+
     def test_validate_against_published_artifact_schema_reports_support_violations(self):
         delta_payload = valid_delta_summary_payload()
         delta_payload["artifacts"]["node_api_schema"]["io_types"]["new_count"] = "wrong"
