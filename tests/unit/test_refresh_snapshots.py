@@ -25,23 +25,19 @@ def _load_module():
 class RefreshSnapshotsImportTests(unittest.TestCase):
     """Test that the refresh_snapshots module imports correctly."""
 
-    def test_module_imports(self):
-        """The refresh_snapshots module should be importable."""
+    def test_key_functions_are_importable_and_callable(self):
+        """The refresh_snapshots module should expose callable entrypoints."""
         module = _load_module()
-        self.assertTrue(hasattr(module, "main"))
-        self.assertTrue(hasattr(module, "refresh_core"))
-        self.assertTrue(hasattr(module, "refresh_frontend"))
-        self.assertTrue(hasattr(module, "run_extractors"))
-        self.assertTrue(hasattr(module, "run_markdown_generation"))
-
-    def test_key_functions_are_callable(self):
-        """Key functions should be callable."""
-        module = _load_module()
-        self.assertTrue(callable(module.main))
-        self.assertTrue(callable(module.refresh_core))
-        self.assertTrue(callable(module.refresh_frontend))
-        self.assertTrue(callable(module.run_extractors))
-        self.assertTrue(callable(module.run_markdown_generation))
+        for name in [
+            "main",
+            "refresh_core",
+            "refresh_frontend",
+            "run_extractors",
+            "run_markdown_generation",
+        ]:
+            with self.subTest(name=name):
+                self.assertTrue(hasattr(module, name))
+                self.assertTrue(callable(getattr(module, name)))
 
 
 class RefreshSnapshotsArgumentTests(unittest.TestCase):
@@ -120,18 +116,20 @@ class RefreshSnapshotsArgumentTests(unittest.TestCase):
 class RefreshSnapshotsConstantsTests(unittest.TestCase):
     """Test that file list constants are correct."""
 
-    def test_module_repo_root_matches_repo(self):
-        """Module REPO_ROOT should resolve to this repository root."""
+    def test_module_paths_are_existing_repo_local_paths(self):
+        """Module path constants should resolve inside this repository."""
         module = _load_module()
         self.assertEqual(module.REPO_ROOT, REPO_ROOT)
-
-    def test_derived_paths_exist(self):
-        """Derived script and references paths should exist in-repo."""
-        module = _load_module()
-        self.assertTrue(module.REFERENCES_RAW_DIR.exists())
-        self.assertTrue(module.SNAPSHOTS_DIR.exists())
-        self.assertTrue(module.SCRIPTS_EXTRACT_DIR.exists())
-        self.assertTrue(module.SCRIPTS_GENERATE_DIR.exists())
+        for name in [
+            "REFERENCES_RAW_DIR",
+            "SNAPSHOTS_DIR",
+            "SCRIPTS_EXTRACT_DIR",
+            "SCRIPTS_GENERATE_DIR",
+        ]:
+            with self.subTest(name=name):
+                path = getattr(module, name)
+                self.assertTrue(path.exists())
+                self.assertTrue(str(path).startswith(str(module.REPO_ROOT)))
 
     def test_core_snapshot_surface_contract(self):
         """Core snapshot contract should require source files needed by extractors."""
@@ -215,28 +213,14 @@ class RefreshSnapshotsConstantsTests(unittest.TestCase):
     def test_repo_urls_are_set(self):
         """CORE_REPO_URL and FRONTEND_REPO_URL should be set."""
         module = _load_module()
-        self.assertIn("github.com", module.CORE_REPO_URL)
-        self.assertIn("github.com", module.FRONTEND_REPO_URL)
-        self.assertIn("ComfyUI", module.CORE_REPO_URL)
-        self.assertIn("ComfyUI_Frontend", module.FRONTEND_REPO_URL)
-
-    def test_paths_are_within_repo(self):
-        """Key paths should resolve within the repo root."""
-        module = _load_module()
-        self.assertTrue(str(module.REFERENCES_RAW_DIR).startswith(str(module.REPO_ROOT)))
-        self.assertTrue(str(module.SNAPSHOTS_DIR).startswith(str(module.REPO_ROOT)))
-        self.assertTrue(str(module.SCRIPTS_EXTRACT_DIR).startswith(str(module.REPO_ROOT)))
-        self.assertTrue(str(module.SCRIPTS_GENERATE_DIR).startswith(str(module.REPO_ROOT)))
-
-
-class RefreshSnapshotsRuntimeTests(unittest.TestCase):
-    """Test runtime extraction support."""
-
-    def test_run_runtime_extraction_exists(self):
-        """run_runtime_extraction should be defined and callable."""
-        module = _load_module()
-        self.assertTrue(hasattr(module, "run_runtime_extraction"))
-        self.assertTrue(callable(module.run_runtime_extraction))
+        cases = [
+            (module.CORE_REPO_URL, "ComfyUI"),
+            (module.FRONTEND_REPO_URL, "ComfyUI_Frontend"),
+        ]
+        for url, repo_name in cases:
+            with self.subTest(repo_name=repo_name):
+                self.assertIn("github.com", url)
+                self.assertIn(repo_name, url)
 
 
 class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
@@ -250,6 +234,7 @@ class RefreshSnapshotsSafetyAndProvenanceTests(unittest.TestCase):
         self.assertTrue(callable(module.write_refresh_provenance))
         self.assertTrue(callable(module.compute_diff_summary))
         self.assertTrue(callable(module.build_follow_up_commands_from_provenance))
+        self.assertTrue(callable(module.run_runtime_extraction))
 
     def test_default_refresh_context_matches_module_paths(self):
         """Default RefreshContext should centralize refresh paths and command runner."""
@@ -622,55 +607,60 @@ class RefreshSnapshotsBoundaryTests(unittest.TestCase):
 
         self.assertEqual(version, "git version 2.50.0")
 
-    def test_refresh_core_delegates_to_generic_snapshot_helper(self):
-        """refresh_core should bind the core constants to the shared snapshot helper."""
+    def test_refresh_wrappers_delegate_to_generic_snapshot_helper(self):
+        """refresh_core and refresh_frontend should bind constants to the shared helper."""
         module = _load_module()
-        with mock.patch.object(
-            module,
-            "_refresh_repo_snapshot",
-            return_value=("core-sha", "comfyui-core-v0.20.1"),
-        ) as helper_mock:
-            result = module.refresh_core("v0.20.1", "2026-05-14")
+        cases = [
+            (
+                "core",
+                module.refresh_core,
+                "v0.20.1",
+                ("core-sha", "comfyui-core-v0.20.1"),
+                {
+                    "repo_url": module.CORE_REPO_URL,
+                    "dest_prefix": "comfyui-core",
+                    "heading_label": "ComfyUI Core",
+                    "clone_label": "ComfyUI core",
+                    "copy_label": "core",
+                    "temp_prefix": "comfyui-core-",
+                    "files": module.CORE_FILES,
+                    "required_files": module.snapshot_surface.CORE_REQUIRED_FILES,
+                    "include_globs": module.snapshot_surface.CORE_INCLUDE_GLOBS,
+                },
+            ),
+            (
+                "frontend",
+                module.refresh_frontend,
+                "v1.44.13",
+                ("frontend-sha", "comfyui-frontend-v1.44.13"),
+                {
+                    "repo_url": module.FRONTEND_REPO_URL,
+                    "dest_prefix": "comfyui-frontend",
+                    "heading_label": "ComfyUI Frontend",
+                    "clone_label": "ComfyUI Frontend",
+                    "copy_label": "frontend",
+                    "temp_prefix": "comfyui-frontend-",
+                    "files": module.FRONTEND_FILES,
+                    "required_files": module.snapshot_surface.FRONTEND_REQUIRED_FILES,
+                    "include_globs": module.snapshot_surface.FRONTEND_INCLUDE_GLOBS,
+                },
+            ),
+        ]
+        for name, refresh_func, version, expected_result, expected_kwargs in cases:
+            with self.subTest(name=name):
+                with mock.patch.object(
+                    module,
+                    "_refresh_repo_snapshot",
+                    return_value=expected_result,
+                ) as helper_mock:
+                    result = refresh_func(version, "2026-05-14")
 
-        helper_mock.assert_called_once_with(
-            version="v0.20.1",
-            snapshot_date="2026-05-14",
-            repo_url=module.CORE_REPO_URL,
-            dest_prefix="comfyui-core",
-            heading_label="ComfyUI Core",
-            clone_label="ComfyUI core",
-            copy_label="core",
-            temp_prefix="comfyui-core-",
-            files=module.CORE_FILES,
-            required_files=module.snapshot_surface.CORE_REQUIRED_FILES,
-            include_globs=module.snapshot_surface.CORE_INCLUDE_GLOBS,
-        )
-        self.assertEqual(result, ("core-sha", "comfyui-core-v0.20.1"))
-
-    def test_refresh_frontend_delegates_to_generic_snapshot_helper(self):
-        """refresh_frontend should bind the frontend constants to the shared snapshot helper."""
-        module = _load_module()
-        with mock.patch.object(
-            module,
-            "_refresh_repo_snapshot",
-            return_value=("frontend-sha", "comfyui-frontend-v1.44.13"),
-        ) as helper_mock:
-            result = module.refresh_frontend("v1.44.13", "2026-05-14")
-
-        helper_mock.assert_called_once_with(
-            version="v1.44.13",
-            snapshot_date="2026-05-14",
-            repo_url=module.FRONTEND_REPO_URL,
-            dest_prefix="comfyui-frontend",
-            heading_label="ComfyUI Frontend",
-            clone_label="ComfyUI Frontend",
-            copy_label="frontend",
-            temp_prefix="comfyui-frontend-",
-            files=module.FRONTEND_FILES,
-            required_files=module.snapshot_surface.FRONTEND_REQUIRED_FILES,
-            include_globs=module.snapshot_surface.FRONTEND_INCLUDE_GLOBS,
-        )
-        self.assertEqual(result, ("frontend-sha", "comfyui-frontend-v1.44.13"))
+                helper_mock.assert_called_once_with(
+                    version=version,
+                    snapshot_date="2026-05-14",
+                    **expected_kwargs,
+                )
+                self.assertEqual(result, expected_result)
 
     def test_run_extractors_preserves_server_hooks_schema_websocket_sequence(self):
         """refresh_pipeline.run_extractors should keep server, hooks, schema, then websocket order."""

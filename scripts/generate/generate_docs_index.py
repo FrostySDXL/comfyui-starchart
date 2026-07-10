@@ -13,7 +13,7 @@ from typing import Any
 
 from scripts.common.display_path import display_path
 from scripts.common.published_docs_surface import (
-    build_published_docs_surface,
+    build_published_docs_surface_from_nav_entries,
     flatten_nav_from_source,
 )
 
@@ -200,6 +200,10 @@ def load_metadata_freshness_defaults(repo_root: Path = REPO_ROOT) -> tuple[str, 
 
 def _nav_paths_for_validation(repo_root: Path, nav_source: str | Path) -> set[str]:
     return {entry["path"] for entry in flatten_nav_from_source(repo_root, nav_source)}
+
+
+def _nav_paths_from_entries(nav_entries: list[dict[str, str]]) -> set[str]:
+    return {entry["path"] for entry in nav_entries}
 
 
 def _expect_string_list(path: str, field_name: str, value: object) -> list[str]:
@@ -483,9 +487,10 @@ def build_docs_index(
 ) -> dict[str, object]:
     resolved_nav_source = nav_source if nav_source is not None else DEFAULT_NAV_SOURCE
     resolved_metadata_path = metadata_path if metadata_path is not None else METADATA_PATH
-    pages = build_published_docs_surface(repo_root, resolved_nav_source, DOCS_ROOT)
+    nav_entries = flatten_nav_from_source(repo_root, resolved_nav_source)
+    pages = build_published_docs_surface_from_nav_entries(nav_entries, DOCS_ROOT)
     eligible_paths: set[str] = {str(page["path"]) for page in pages}
-    nav_paths = _nav_paths_for_validation(repo_root, resolved_nav_source)
+    nav_paths = _nav_paths_from_entries(nav_entries)
     resolved_metadata = (
         metadata if metadata is not None else load_docs_index_metadata(resolved_metadata_path)
     )

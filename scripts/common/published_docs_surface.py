@@ -187,7 +187,14 @@ def build_page_entry(nav_entry: dict[str, str], docs_root: Path) -> dict[str, ob
 def build_published_docs_surface(
     repo_root: Path, nav_source: str | Path, docs_root: Path
 ) -> list[dict[str, object]]:
-    nav_entries = flatten_nav_from_source(repo_root, nav_source)
+    return build_published_docs_surface_from_nav_entries(
+        flatten_nav_from_source(repo_root, nav_source), docs_root
+    )
+
+
+def build_published_docs_surface_from_nav_entries(
+    nav_entries: list[dict[str, str]], docs_root: Path
+) -> list[dict[str, object]]:
     pages: list[dict[str, object]] = []
     seen_paths: set[str] = set()
 
