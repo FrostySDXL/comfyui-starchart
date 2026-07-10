@@ -23,42 +23,45 @@ def _load_module():
 class MarkdownTopLevelSpacingUnitTests(unittest.TestCase):
     """Unit tests for leading-space markdown verification."""
 
-    def test_detects_indented_top_level_heading(self):
+    def test_find_leading_space_issues(self):
         module = _load_module()
-        issues = module.find_leading_space_issues("# Title\n\n ## Scope\n")
-        self.assertEqual(issues, [(3, " ## Scope")])
+        cases = [
+            (
+                "indented top-level heading",
+                "# Title\n\n ## Scope\n",
+                [(3, " ## Scope")],
+            ),
+            (
+                "indented metadata label",
+                " **Last Updated:** 2026-05-07\n",
+                [(1, " **Last Updated:** 2026-05-07")],
+            ),
+            (
+                "fenced code block ignored",
+                "```md\n ## Scope\n **Last Updated:** nope\n```\n",
+                [],
+            ),
+            ("empty file", "", []),
+            (
+                "fenced block only file",
+                "```python\n   ## Scope\n   **Last Updated:** no\n```\n",
+                [],
+            ),
+            (
+                "multiple fenced blocks toggle cleanly",
+                "```md\n ## Scope\n```\n\n```text\n **Last Updated:** nope\n```\n\n  ## Real issue\n",
+                [(9, "  ## Real issue")],
+            ),
+            (
+                "deeply indented heading",
+                "# Title\n\n   ### Deep heading\n",
+                [(3, "   ### Deep heading")],
+            ),
+        ]
 
-    def test_detects_indented_metadata_label(self):
-        module = _load_module()
-        issues = module.find_leading_space_issues(" **Last Updated:** 2026-05-07\n")
-        self.assertEqual(issues, [(1, " **Last Updated:** 2026-05-07")])
-
-    def test_ignores_fenced_code_blocks(self):
-        module = _load_module()
-        content = "```md\n ## Scope\n **Last Updated:** nope\n```\n"
-        issues = module.find_leading_space_issues(content)
-        self.assertEqual(issues, [])
-
-    def test_empty_file_has_no_issues(self):
-        module = _load_module()
-        self.assertEqual(module.find_leading_space_issues(""), [])
-
-    def test_fenced_block_only_file_has_no_issues(self):
-        module = _load_module()
-        content = "```python\n   ## Scope\n   **Last Updated:** no\n```\n"
-        self.assertEqual(module.find_leading_space_issues(content), [])
-
-    def test_multiple_fenced_blocks_toggle_cleanly(self):
-        module = _load_module()
-        content = (
-            "```md\n ## Scope\n```\n\n```text\n **Last Updated:** nope\n```\n\n  ## Real issue\n"
-        )
-        self.assertEqual(module.find_leading_space_issues(content), [(9, "  ## Real issue")])
-
-    def test_detects_deeply_indented_heading(self):
-        module = _load_module()
-        issues = module.find_leading_space_issues("# Title\n\n   ### Deep heading\n")
-        self.assertEqual(issues, [(3, "   ### Deep heading")])
+        for name, content, expected in cases:
+            with self.subTest(name=name):
+                self.assertEqual(module.find_leading_space_issues(content), expected)
 
     def test_verify_directory_reports_repo_relative_paths(self):
         module = _load_module()

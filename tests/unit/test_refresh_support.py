@@ -35,36 +35,30 @@ class RefreshSupportImportTests(unittest.TestCase):
 class RefreshSupportCommandTests(unittest.TestCase):
     """Test repo-preferred maintainer command rendering."""
 
-    def test_recommended_python_command_uses_python_on_windows(self):
-        """Windows follow-up commands should use `python` (venv-activated)."""
+    def test_recommended_python_command_uses_portable_python(self):
         module = _load_module()
-        self.assertEqual(module.recommended_python_command("win32"), "python")
-
-    def test_recommended_python_command_uses_python_on_non_windows(self):
-        """Non-Windows follow-up commands should stay portable."""
-        module = _load_module()
-        self.assertEqual(module.recommended_python_command("linux"), "python")
+        for platform in ["win32", "linux"]:
+            with self.subTest(platform=platform):
+                self.assertEqual(module.recommended_python_command(platform), "python")
 
 
 class RefreshSupportPathTests(unittest.TestCase):
     """Test repo-relative path handling."""
 
-    def test_repo_relative_path_returns_relative_path(self):
-        """Paths inside the repo should be normalized to forward-slash-relative form."""
+    def test_repo_relative_path_normalization_cases(self):
         module = _load_module()
         repo_root = Path("D:/repo")
-        path = repo_root / "references" / "raw" / "server_endpoints.json"
-        self.assertEqual(
-            module.repo_relative_path(path, repo_root),
-            "references/raw/server_endpoints.json",
-        )
+        cases = [
+            (
+                repo_root / "references" / "raw" / "server_endpoints.json",
+                "references/raw/server_endpoints.json",
+            ),
+            (Path("D:/other/file.txt"), "D:/other/file.txt"),
+        ]
 
-    def test_repo_relative_path_leaves_external_path_posix(self):
-        """Paths outside the repo should still be returned in POSIX form."""
-        module = _load_module()
-        repo_root = Path("D:/repo")
-        external = Path("D:/other/file.txt")
-        self.assertEqual(module.repo_relative_path(external, repo_root), "D:/other/file.txt")
+        for path, expected in cases:
+            with self.subTest(path=path):
+                self.assertEqual(module.repo_relative_path(path, repo_root), expected)
 
 
 class RefreshSupportBackupTests(unittest.TestCase):
@@ -318,101 +312,109 @@ class RefreshSupportProvenanceTests(unittest.TestCase):
 class RefreshSupportDiffSummaryTests(unittest.TestCase):
     """Test the diff summary computation."""
 
-    def test_endpoint_diff_detects_additions(self):
-        """compute_diff_summary should detect new endpoints."""
+    def test_compute_diff_summary_cases(self):
         module = _load_module()
-        old = {"endpoints": [{"route": "/ws", "method": "GET"}]}
-        new = {
-            "endpoints": [{"route": "/ws", "method": "GET"}, {"route": "/new", "method": "POST"}]
-        }
-        changes = module.compute_diff_summary(old, new, "server_endpoints.json")
-        self.assertTrue(any("New endpoints" in change for change in changes))
+        cases = [
+            (
+                "endpoint additions",
+                {"endpoints": [{"route": "/ws", "method": "GET"}]},
+                {
+                    "endpoints": [
+                        {"route": "/ws", "method": "GET"},
+                        {"route": "/new", "method": "POST"},
+                    ]
+                },
+                "server_endpoints.json",
+                "New endpoints",
+            ),
+            (
+                "endpoint removals",
+                {
+                    "endpoints": [
+                        {"route": "/ws", "method": "GET"},
+                        {"route": "/old", "method": "POST"},
+                    ]
+                },
+                {"endpoints": [{"route": "/ws", "method": "GET"}]},
+                "server_endpoints.json",
+                "Removed endpoints",
+            ),
+            (
+                "hook additions",
+                {"hooks": [{"name": "init"}]},
+                {"hooks": [{"name": "init"}, {"name": "newHook"}]},
+                "js_hooks.json",
+                "New hooks",
+            ),
+            (
+                "hook removals",
+                {"hooks": [{"name": "init"}, {"name": "oldHook"}]},
+                {"hooks": [{"name": "init"}]},
+                "js_hooks.json",
+                "Removed hooks",
+            ),
+            (
+                "no endpoint changes",
+                {"endpoints": [{"route": "/ws", "method": "GET"}]},
+                {"endpoints": [{"route": "/ws", "method": "GET"}]},
+                "server_endpoints.json",
+                "No endpoint changes",
+            ),
+            (
+                "provenance mode change",
+                {
+                    "metadata": {"provenance": {"mode": "source-only"}},
+                    "object_info_fields": [],
+                    "io_types": [],
+                },
+                {
+                    "metadata": {"provenance": {"mode": "hybrid"}},
+                    "object_info_fields": [],
+                    "io_types": [],
+                },
+                "node_api_schema.json",
+                "Provenance mode changed",
+            ),
+            (
+                "runtime node count change",
+                {
+                    "metadata": {},
+                    "object_info_fields": [],
+                    "io_types": [],
+                    "runtime_object_info": {"A": {}},
+                },
+                {
+                    "metadata": {},
+                    "object_info_fields": [],
+                    "io_types": [],
+                    "runtime_object_info": {"A": {}, "B": {}},
+                },
+                "node_api_schema.json",
+                "Runtime object_info node count",
+            ),
+            (
+                "no schema changes with runtime",
+                {
+                    "metadata": {"provenance": {"mode": "hybrid"}},
+                    "object_info_fields": ["input"],
+                    "io_types": [],
+                    "runtime_object_info": {"A": {}},
+                },
+                {
+                    "metadata": {"provenance": {"mode": "hybrid"}},
+                    "object_info_fields": ["input"],
+                    "io_types": [],
+                    "runtime_object_info": {"A": {}},
+                },
+                "node_api_schema.json",
+                "No schema changes",
+            ),
+        ]
 
-    def test_endpoint_diff_detects_removals(self):
-        """compute_diff_summary should detect removed endpoints."""
-        module = _load_module()
-        old = {
-            "endpoints": [{"route": "/ws", "method": "GET"}, {"route": "/old", "method": "POST"}]
-        }
-        new = {"endpoints": [{"route": "/ws", "method": "GET"}]}
-        changes = module.compute_diff_summary(old, new, "server_endpoints.json")
-        self.assertTrue(any("Removed endpoints" in change for change in changes))
-
-    def test_hook_diff_detects_changes(self):
-        """compute_diff_summary should detect hook changes."""
-        module = _load_module()
-        old = {"hooks": [{"name": "init"}]}
-        new = {"hooks": [{"name": "init"}, {"name": "newHook"}]}
-        changes = module.compute_diff_summary(old, new, "js_hooks.json")
-        self.assertTrue(any("New hooks" in change for change in changes))
-
-    def test_hook_diff_detects_removals(self):
-        """compute_diff_summary should detect removed hooks."""
-        module = _load_module()
-        old = {"hooks": [{"name": "init"}, {"name": "oldHook"}]}
-        new = {"hooks": [{"name": "init"}]}
-        changes = module.compute_diff_summary(old, new, "js_hooks.json")
-        self.assertTrue(any("Removed hooks" in change for change in changes))
-
-    def test_no_changes_detected(self):
-        """compute_diff_summary should report no changes when content is identical."""
-        module = _load_module()
-        old = {"endpoints": [{"route": "/ws", "method": "GET"}]}
-        new = {"endpoints": [{"route": "/ws", "method": "GET"}]}
-        changes = module.compute_diff_summary(old, new, "server_endpoints.json")
-        self.assertTrue(any("No endpoint changes" in change for change in changes))
-
-    def test_schema_diff_detects_provenance_mode_change(self):
-        """compute_diff_summary should detect provenance mode changes."""
-        module = _load_module()
-        old = {
-            "metadata": {"provenance": {"mode": "source-only"}},
-            "object_info_fields": [],
-            "io_types": [],
-        }
-        new = {
-            "metadata": {"provenance": {"mode": "hybrid"}},
-            "object_info_fields": [],
-            "io_types": [],
-        }
-        changes = module.compute_diff_summary(old, new, "node_api_schema.json")
-        self.assertTrue(any("Provenance mode changed" in change for change in changes))
-
-    def test_schema_diff_detects_runtime_node_count_change(self):
-        """compute_diff_summary should detect runtime_object_info size changes."""
-        module = _load_module()
-        old = {
-            "metadata": {},
-            "object_info_fields": [],
-            "io_types": [],
-            "runtime_object_info": {"A": {}},
-        }
-        new = {
-            "metadata": {},
-            "object_info_fields": [],
-            "io_types": [],
-            "runtime_object_info": {"A": {}, "B": {}},
-        }
-        changes = module.compute_diff_summary(old, new, "node_api_schema.json")
-        self.assertTrue(any("Runtime object_info node count" in change for change in changes))
-
-    def test_schema_diff_no_changes_with_runtime(self):
-        """compute_diff_summary should report no changes when runtime and schema are stable."""
-        module = _load_module()
-        old = {
-            "metadata": {"provenance": {"mode": "hybrid"}},
-            "object_info_fields": ["input"],
-            "io_types": [],
-            "runtime_object_info": {"A": {}},
-        }
-        new = {
-            "metadata": {"provenance": {"mode": "hybrid"}},
-            "object_info_fields": ["input"],
-            "io_types": [],
-            "runtime_object_info": {"A": {}},
-        }
-        changes = module.compute_diff_summary(old, new, "node_api_schema.json")
-        self.assertTrue(any("No schema changes" in change for change in changes))
+        for name, old, new, filename, expected_change in cases:
+            with self.subTest(name=name):
+                changes = module.compute_diff_summary(old, new, filename)
+                self.assertTrue(any(expected_change in change for change in changes))
 
 
 if __name__ == "__main__":

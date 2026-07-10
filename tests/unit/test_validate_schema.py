@@ -471,40 +471,57 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors.extend(module.validate_server_runtime_contracts(data, "server_endpoints.json"))
         self.assertEqual(errors, [])
 
-    def test_server_coverage_dotted_runtime_paths_require_existing_parent(self):
+    def test_coverage_dotted_path_validation_cases(self):
         module = self._import_module()
-        data = self._valid_server_endpoints_data()
-        del data["prompt_submission_contract"]
-        data["coverage"]["best_effort_fields"].append("prompt_submission_contract.request_fields")
-        errors = module.validate_coverage(data, "server_endpoints.json")
-        self.assertTrue(
-            any("unresolved coverage.best_effort_fields path" in error for error in errors)
-        )
+        cases = [
+            (
+                "missing runtime parent",
+                self._valid_server_endpoints_data,
+                "server_endpoints.json",
+                lambda data: (
+                    data.pop("prompt_submission_contract"),
+                    data["coverage"]["best_effort_fields"].append(
+                        "prompt_submission_contract.request_fields"
+                    ),
+                ),
+                "unresolved coverage.best_effort_fields path",
+            ),
+            (
+                "existing runtime parent",
+                self._valid_server_endpoints_data,
+                "server_endpoints.json",
+                lambda data: data["coverage"]["best_effort_fields"].append(
+                    "prompt_submission_contract.request_fields"
+                ),
+                None,
+            ),
+            (
+                "non-container parent",
+                self._valid_websocket_events_data,
+                "websocket_events.json",
+                lambda data: data.__setitem__("events", "not-a-list"),
+                "parent top-level key 'events' is str",
+            ),
+            (
+                "unsupported path pattern",
+                self._valid_websocket_events_data,
+                "websocket_events.json",
+                lambda data: data["coverage"]["best_effort_fields"].append(
+                    "events..payload_fields"
+                ),
+                "invalid coverage.best_effort_fields path",
+            ),
+        ]
 
-    def test_server_coverage_dotted_runtime_paths_accept_existing_parent(self):
-        module = self._import_module()
-        data = self._valid_server_endpoints_data()
-        data["coverage"]["best_effort_fields"].append("prompt_submission_contract.request_fields")
-        errors = module.validate_coverage(data, "server_endpoints.json")
-        self.assertEqual(errors, [])
-
-    def test_coverage_dotted_paths_reject_non_container_parent(self):
-        module = self._import_module()
-        data = self._valid_websocket_events_data()
-        data["events"] = "not-a-list"
-
-        errors = module.validate_coverage(data, "websocket_events.json")
-
-        self.assertTrue(any("parent top-level key 'events' is str" in e for e in errors))
-
-    def test_coverage_paths_must_match_supported_pattern(self):
-        module = self._import_module()
-        data = self._valid_websocket_events_data()
-        data["coverage"]["best_effort_fields"].append("events..payload_fields")
-
-        errors = module.validate_coverage(data, "websocket_events.json")
-
-        self.assertTrue(any("invalid coverage.best_effort_fields path" in e for e in errors))
+        for name, data_factory, filename, mutate_data, expected_error in cases:
+            with self.subTest(name=name):
+                data = data_factory()
+                mutate_data(data)
+                errors = module.validate_coverage(data, filename)
+                if expected_error is None:
+                    self.assertEqual(errors, [])
+                else:
+                    self.assertTrue(any(expected_error in error for error in errors))
 
     def test_valid_server_endpoints_pass_published_schema(self):
         module = self._import_module()
@@ -521,24 +538,47 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors = module.validate_against_published_artifact_schema(data, "server_endpoints.json")
         self.assertTrue(any("missing required key 'route'" in e for e in errors))
 
-    def test_server_endpoints_rejects_singular_metadata_source(self):
+    def test_server_endpoints_metadata_sources_cases(self):
         module = self._import_module()
-        data = self._valid_server_endpoints_data()
-        data["metadata"] = {
-            "source": "references/snapshots/server.py",
-            "extracted_date": "2026-04-22",
-            "version": "v0.19.3",
-            "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-        }
-        errors = module.validate_metadata(data, "server_endpoints.json")
-        self.assertTrue(any("missing required field 'sources'" in e for e in errors))
+        cases = [
+            (
+                "singular source rejected",
+                lambda data: data.__setitem__(
+                    "metadata",
+                    {
+                        "source": "references/snapshots/server.py",
+                        "extracted_date": "2026-04-22",
+                        "version": "v0.19.3",
+                        "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+                    },
+                ),
+                "missing required field 'sources'",
+            ),
+            (
+                "non-list sources rejected",
+                lambda data: data["metadata"].__setitem__(
+                    "sources", "references/snapshots/server.py"
+                ),
+                "metadata.sources expected list",
+            ),
+            (
+                "forward-slash source accepted",
+                lambda data: data["metadata"].__setitem__(
+                    "sources", ["references/snapshots/server.py"]
+                ),
+                None,
+            ),
+        ]
 
-    def test_server_endpoints_rejects_non_list_sources(self):
-        module = self._import_module()
-        data = self._valid_server_endpoints_data()
-        data["metadata"]["sources"] = "references/snapshots/server.py"
-        errors = module.validate_metadata(data, "server_endpoints.json")
-        self.assertTrue(any("metadata.sources expected list" in e for e in errors))
+        for name, mutate_data, expected_error in cases:
+            with self.subTest(name=name):
+                data = self._valid_server_endpoints_data()
+                mutate_data(data)
+                errors = module.validate_metadata(data, "server_endpoints.json")
+                if expected_error is None:
+                    self.assertEqual(errors, [])
+                else:
+                    self.assertTrue(any(expected_error in e for e in errors))
 
     def test_server_endpoints_rejects_missing_coverage(self):
         module = self._import_module()
@@ -561,83 +601,56 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors = module.validate_coverage(data, "server_endpoints.json")
         self.assertTrue(any("coverage.guaranteed_fields expected list" in e for e in errors))
 
-    def test_malformed_returns_missing_kind_fails(self):
+    def test_server_endpoint_malformed_return_cases(self):
         module = self._import_module()
-        data = self._valid_server_endpoints_data()
-        data["endpoints"] = [
-            {
-                "route": "/prompt",
-                "method": "POST",
-                "description": "Queue a prompt.",
-                "parameters": [],
-                "returns": {
+        endpoint_base = {
+            "route": "/prompt",
+            "method": "POST",
+            "description": "Queue a prompt.",
+            "parameters": [],
+        }
+        cases = [
+            (
+                "missing kind",
+                {
                     "summary": "missing kind",
                     "status_codes": [],
                     "fields": [],
                     "notes": [],
                 },
-            }
-        ]
-        errors = module.validate_endpoints(data, "server_endpoints.json")
-        self.assertTrue(any("missing required key 'kind'" in e for e in errors))
-
-    def test_malformed_returns_status_codes_not_int_fails(self):
-        module = self._import_module()
-        data = self._valid_server_endpoints_data()
-        data["endpoints"] = [
-            {
-                "route": "/prompt",
-                "method": "POST",
-                "description": "Queue a prompt.",
-                "parameters": [],
-                "returns": {
+                "missing required key 'kind'",
+            ),
+            (
+                "status code not int",
+                {
                     "kind": "json",
                     "summary": "ok",
                     "status_codes": [200, "400"],
                     "fields": [],
                     "notes": [],
                 },
-            }
-        ]
-        errors = module.validate_endpoints(data, "server_endpoints.json")
-        self.assertTrue(any("status_codes[1] expected int" in e for e in errors))
-
-    def test_malformed_returns_field_missing_name_fails(self):
-        module = self._import_module()
-        data = self._valid_server_endpoints_data()
-        data["endpoints"] = [
-            {
-                "route": "/prompt",
-                "method": "POST",
-                "description": "Queue a prompt.",
-                "parameters": [],
-                "returns": {
+                "status_codes[1] expected int",
+            ),
+            (
+                "field missing name",
+                {
                     "kind": "json",
                     "summary": "ok",
                     "status_codes": [200],
                     "fields": [{"type_hint": "str"}],
                     "notes": [],
                 },
-            }
+                "fields[0] missing required key 'name'",
+            ),
+            ("legacy string returns", "TODO", "expected dict"),
         ]
-        errors = module.validate_endpoints(data, "server_endpoints.json")
-        self.assertTrue(any("fields[0] missing required key 'name'" in e for e in errors))
 
-    def test_legacy_string_returns_are_rejected(self):
-        """String returns are no longer accepted; structured dict is required."""
-        module = self._import_module()
-        data = self._valid_server_endpoints_data()
-        data["endpoints"] = [
-            {
-                "route": "/prompt",
-                "method": "POST",
-                "description": "Queue a prompt.",
-                "parameters": [],
-                "returns": "TODO",
-            }
-        ]
-        errors = module.validate_endpoints(data, "server_endpoints.json")
-        self.assertTrue(any("expected dict" in e for e in errors))
+        for name, returns, expected_error in cases:
+            with self.subTest(name=name):
+                data = self._valid_server_endpoints_data()
+                data["endpoints"] = [{**endpoint_base, "returns": returns}]
+                errors = module.validate_endpoints(data, "server_endpoints.json")
+                self.assertTrue(any(expected_error in e for e in errors))
 
     def test_valid_node_api_schema_passes(self):
         module = self._import_module()
@@ -652,28 +665,38 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors.extend(module.validate_v3_schema_contract(data, "node_api_schema.json"))
         self.assertEqual(errors, [])
 
-    def test_v3_schema_contract_rejects_unknown_node_flag_ref(self):
+    def test_v3_schema_contract_rejects_invalid_node_flag_cases(self):
         module = self._import_module()
-        data = self._valid_node_api_schema_data()
-        data["v3_schema_contract"]["node_flags"][0]["schema_fields_ref"] = "missing"
-        errors = module.validate_v3_schema_contract(data, "node_api_schema.json")
-        self.assertTrue(any("does not resolve" in e for e in errors))
+        cases = [
+            (
+                "unknown schema field ref",
+                lambda data: data["v3_schema_contract"]["node_flags"][0].__setitem__(
+                    "schema_fields_ref", "missing"
+                ),
+                "does not resolve",
+            ),
+            (
+                "extra key",
+                lambda data: data["v3_schema_contract"]["node_flags"][0].__setitem__(
+                    "extra", "not allowed"
+                ),
+                "must contain exactly",
+            ),
+            (
+                "missing schema_fields_ref",
+                lambda data: data["v3_schema_contract"]["node_flags"][0].__delitem__(
+                    "schema_fields_ref"
+                ),
+                "missing required key 'schema_fields_ref'",
+            ),
+        ]
 
-    def test_v3_schema_contract_rejects_extra_node_flag_key(self):
-        module = self._import_module()
-        data = self._valid_node_api_schema_data()
-        data["v3_schema_contract"]["node_flags"][0]["extra"] = "not allowed"
-        errors = module.validate_v3_schema_contract(data, "node_api_schema.json")
-        self.assertTrue(any("must contain exactly" in e for e in errors))
-
-    def test_v3_schema_contract_rejects_missing_node_flag_schema_fields_ref(self):
-        module = self._import_module()
-        data = self._valid_node_api_schema_data()
-        del data["v3_schema_contract"]["node_flags"][0]["schema_fields_ref"]
-
-        errors = module.validate_v3_schema_contract(data, "node_api_schema.json")
-
-        self.assertTrue(any("missing required key 'schema_fields_ref'" in e for e in errors))
+        for name, mutate_data, expected_error in cases:
+            with self.subTest(name=name):
+                data = self._valid_node_api_schema_data()
+                mutate_data(data)
+                errors = module.validate_v3_schema_contract(data, "node_api_schema.json")
+                self.assertTrue(any(expected_error in e for e in errors))
 
     def test_endpoint_parameter_rejects_invalid_allowed_values(self):
         module = self._import_module()
@@ -691,39 +714,29 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors.extend(module.validate_hooks(data, "js_hooks.json"))
         self.assertEqual(errors, [])
 
-    def test_extension_fields_reject_missing_required_field_metadata(self):
+    def test_extension_fields_reject_invalid_metadata_cases(self):
         module = self._import_module()
-        data = self._valid_js_hooks_data()
-        data["extension_fields"][0].pop("defined_in")
+        cases = [
+            (
+                "missing defined_in",
+                lambda data: data["extension_fields"][0].pop("defined_in"),
+                "extension_fields[0] missing required key 'defined_in'",
+            ),
+            (
+                "missing traceability strategy",
+                lambda data: data["extension_fields"][0].__setitem__(
+                    "traceability", {"source_type": "source-backed"}
+                ),
+                "extension_fields[0].traceability missing required key 'strategy'",
+            ),
+        ]
 
-        errors = module.validate_extension_fields(data, "js_hooks.json")
-
-        self.assertTrue(
-            any("extension_fields[0] missing required key 'defined_in'" in e for e in errors)
-        )
-
-    def test_extension_fields_reject_invalid_traceability_shape(self):
-        module = self._import_module()
-        data = self._valid_js_hooks_data()
-        data["extension_fields"][0]["traceability"] = {"source_type": "source-backed"}
-
-        errors = module.validate_extension_fields(data, "js_hooks.json")
-
-        self.assertTrue(
-            any(
-                "extension_fields[0].traceability missing required key 'strategy'" in e
-                for e in errors
-            )
-        )
-
-    def test_metadata_sources_accept_forward_slash_repo_paths(self):
-        module = self._import_module()
-        data = self._valid_server_endpoints_data()
-        data["metadata"]["sources"] = ["references/snapshots/server.py"]
-
-        errors = module.validate_metadata(data, "server_endpoints.json")
-
-        self.assertEqual(errors, [])
+        for name, mutate_data, expected_error in cases:
+            with self.subTest(name=name):
+                data = self._valid_js_hooks_data()
+                mutate_data(data)
+                errors = module.validate_extension_fields(data, "js_hooks.json")
+                self.assertTrue(any(expected_error in e for e in errors))
 
     def test_valid_js_hooks_pass_published_schema(self):
         module = self._import_module()
@@ -847,73 +860,74 @@ class ValidateSchemaUnitTests(unittest.TestCase):
             "scripts.verify.published_schema_validation",
         )
 
-    def test_typed_input_shapes_rejects_missing_field_type(self):
+    def test_node_api_schema_rejects_malformed_sections(self):
         module = self._import_module()
-        data = {
-            "metadata": {
-                "sources": ["references/snapshots/server.py"],
-                "extracted_date": "2026-04-22",
-                "version": "v0.19.3",
-                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-            },
-            "object_info_fields": [],
-            "io_types": [],
-            "basic_input_shapes": {},
-            "typed_input_shapes": {
-                "AudioInput": {
-                    "description": "audio",
-                    "fields": {"waveform": {}},
-                }
-            },
-            "coverage": {
-                "description": "Static and optional runtime coverage for object_info and IO typing.",
-                "sources_covered": ["object_info_fields"],
-                "runtime_enriched": False,
-                "deferred": [],
-            },
+        metadata = {
+            "sources": ["references/snapshots/server.py"],
+            "extracted_date": "2026-04-22",
+            "version": "v0.19.3",
+            "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
         }
-        errors = module.validate_typed_input_shapes(data, "node_api_schema.json")
-        self.assertTrue(any("missing required key 'type'" in e for e in errors))
-
-    def test_node_api_schema_rejects_missing_coverage(self):
-        module = self._import_module()
-        data = {
-            "metadata": {
-                "sources": ["references/snapshots/server.py"],
-                "extracted_date": "2026-04-22",
-                "version": "v0.19.3",
-                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-            },
-            "object_info_fields": ["input", "output"],
-            "io_types": [],
-            "basic_input_shapes": {},
-        }
-        errors = module.validate_top_level(
-            data, module.SCHEMAS["node_api_schema.json"], "node_api_schema.json"
-        )
-        self.assertTrue(any("missing required key 'coverage'" in e for e in errors))
-
-    def test_malformed_io_type_missing_class_name_fails(self):
-        module = self._import_module()
-        data = {
-            "metadata": {
-                "sources": ["references/snapshots/_io.py"],
-                "extracted_date": "2026-04-22",
-                "version": "v0.19.3",
-                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-            },
-            "object_info_fields": [],
-            "io_types": [
+        cases = [
+            (
+                "typed input field missing type",
                 {
-                    "io_type": "BOOLEAN",
-                    "input_class": "WidgetInput",
-                    "input_parameters": [],
-                }
-            ],
-            "basic_input_shapes": {},
-        }
-        errors = module.validate_io_types(data, "node_api_schema.json")
-        self.assertTrue(any("io_types[0] missing required key 'class_name'" in e for e in errors))
+                    "metadata": metadata,
+                    "object_info_fields": [],
+                    "io_types": [],
+                    "basic_input_shapes": {},
+                    "typed_input_shapes": {
+                        "AudioInput": {
+                            "description": "audio",
+                            "fields": {"waveform": {}},
+                        }
+                    },
+                    "coverage": {
+                        "description": "Static and optional runtime coverage for object_info and IO typing.",
+                        "sources_covered": ["object_info_fields"],
+                        "runtime_enriched": False,
+                        "deferred": [],
+                    },
+                },
+                lambda data: module.validate_typed_input_shapes(data, "node_api_schema.json"),
+                "missing required key 'type'",
+            ),
+            (
+                "missing coverage",
+                {
+                    "metadata": metadata,
+                    "object_info_fields": ["input", "output"],
+                    "io_types": [],
+                    "basic_input_shapes": {},
+                },
+                lambda data: module.validate_top_level(
+                    data, module.SCHEMAS["node_api_schema.json"], "node_api_schema.json"
+                ),
+                "missing required key 'coverage'",
+            ),
+            (
+                "io type missing class name",
+                {
+                    "metadata": {**metadata, "sources": ["references/snapshots/_io.py"]},
+                    "object_info_fields": [],
+                    "io_types": [
+                        {
+                            "io_type": "BOOLEAN",
+                            "input_class": "WidgetInput",
+                            "input_parameters": [],
+                        }
+                    ],
+                    "basic_input_shapes": {},
+                },
+                lambda data: module.validate_io_types(data, "node_api_schema.json"),
+                "io_types[0] missing required key 'class_name'",
+            ),
+        ]
+
+        for name, data, validate_data, expected_error in cases:
+            with self.subTest(name=name):
+                errors = validate_data(data)
+                self.assertTrue(any(expected_error in e for e in errors))
 
     def test_valid_object_info_runtime_passes(self):
         module = self._import_module()
@@ -939,36 +953,37 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors.extend(module.validate_object_info_runtime(data, "object_info_runtime.json"))
         self.assertEqual(errors, [])
 
-    def test_malformed_object_info_runtime_missing_url_fails(self):
+    def test_malformed_object_info_runtime_cases_fail(self):
         module = self._import_module()
-        data = {
-            "metadata": {
-                "extracted_date": "2026-04-22",
-                "version": "v0.19.3",
-                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-                "response_sha256": "abc123",
-            },
-            "object_info": {},
+        metadata = {
+            "url": "http://127.0.0.1:8188",
+            "extracted_date": "2026-04-22",
+            "version": "v0.19.3",
+            "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
+            "response_sha256": "abc123",
         }
-        errors = module.validate_metadata(data, "object_info_runtime.json")
-        self.assertTrue(any("missing required field 'url'" in e for e in errors))
+        cases = [
+            (
+                "missing metadata url",
+                {
+                    "metadata": {key: value for key, value in metadata.items() if key != "url"},
+                    "object_info": {},
+                },
+                lambda data: module.validate_metadata(data, "object_info_runtime.json"),
+                "missing required field 'url'",
+            ),
+            (
+                "non-dict object info value",
+                {"metadata": metadata, "object_info": {"KSampler": "not-a-dict"}},
+                lambda data: module.validate_object_info_runtime(data, "object_info_runtime.json"),
+                "object_info['KSampler'] is not a dict",
+            ),
+        ]
 
-    def test_malformed_object_info_runtime_non_dict_value_fails(self):
-        module = self._import_module()
-        data = {
-            "metadata": {
-                "url": "http://127.0.0.1:8188",
-                "extracted_date": "2026-04-22",
-                "version": "v0.19.3",
-                "commit": "3086026401180c9216bcb6ace442a4e3587d2c66",
-                "response_sha256": "abc123",
-            },
-            "object_info": {
-                "KSampler": "not-a-dict",
-            },
-        }
-        errors = module.validate_object_info_runtime(data, "object_info_runtime.json")
-        self.assertTrue(any("object_info['KSampler'] is not a dict" in e for e in errors))
+        for name, data, validate_data, expected_error in cases:
+            with self.subTest(name=name):
+                errors = validate_data(data)
+                self.assertTrue(any(expected_error in e for e in errors))
 
     def test_validate_prompt_conditioning_surface_valid_returns_empty(self):
         """Valid surface with both io_type lists passes validation."""
@@ -992,31 +1007,27 @@ class ValidateSchemaUnitTests(unittest.TestCase):
         errors = module.validate_prompt_conditioning_surface(data, "test.json")
         self.assertEqual(errors, [])
 
-    def test_validate_prompt_conditioning_surface_missing_io_type(self):
-        """Entry without required 'io_type' returns an error."""
+    def test_validate_prompt_conditioning_surface_rejects_invalid_entries(self):
         module = self._import_module()
-        data = {
-            "prompt_conditioning_surface": {
-                "text_input_io_types": [
-                    {"class_name": "String", "supports_multiline_parameter": False}
-                ],
-                "conditioning_io_types": [],
-            }
-        }
-        errors = module.validate_prompt_conditioning_surface(data, "test.json")
-        self.assertTrue(any("missing required key 'io_type'" in e for e in errors))
+        cases = [
+            (
+                "missing io_type",
+                {"class_name": "String", "supports_multiline_parameter": False},
+                "missing required key 'io_type'",
+            ),
+            ("wrong io_type type", {"io_type": 42, "class_name": "String"}, "expected str"),
+        ]
 
-    def test_validate_prompt_conditioning_surface_wrong_type(self):
-        """Entry with int where str is expected returns a type error."""
-        module = self._import_module()
-        data = {
-            "prompt_conditioning_surface": {
-                "text_input_io_types": [{"io_type": 42, "class_name": "String"}],
-                "conditioning_io_types": [],
-            }
-        }
-        errors = module.validate_prompt_conditioning_surface(data, "test.json")
-        self.assertTrue(any("expected str" in e for e in errors))
+        for name, entry, expected_error in cases:
+            with self.subTest(name=name):
+                data = {
+                    "prompt_conditioning_surface": {
+                        "text_input_io_types": [entry],
+                        "conditioning_io_types": [],
+                    }
+                }
+                errors = module.validate_prompt_conditioning_surface(data, "test.json")
+                self.assertTrue(any(expected_error in e for e in errors))
 
 
 class ValidateSchemaScriptTests(unittest.TestCase):

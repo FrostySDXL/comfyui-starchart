@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 from scripts.common.display_path import display_path
@@ -88,7 +89,7 @@ def main() -> int:
     sidebar_path_set = set(sidebar_paths)
     docs_paths = collect_hand_authored_docs_paths(DOCS_ROOT)
 
-    duplicates = sorted({path for path in sidebar_paths if sidebar_paths.count(path) > 1})
+    duplicates = sorted(path for path, count in Counter(sidebar_paths).items() if count > 1)
     missing_from_sidebar = sorted(docs_paths - sidebar_path_set)
     missing_on_disk = sorted(path for path in sidebar_path_set if not (DOCS_ROOT / path).exists())
 

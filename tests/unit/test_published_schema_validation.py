@@ -72,150 +72,138 @@ def valid_manifest_payload() -> dict:
 
 class PublishedSchemaValidationTests(unittest.TestCase):
     def test_load_published_artifact_schema_resolves_support_artifact_schemas(self):
-        delta_schema = published_schema_validation.load_published_artifact_schema(
-            "delta-summary.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
-        refresh_schema = published_schema_validation.load_published_artifact_schema(
-            "refresh-provenance.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
+        cases = [
+            (
+                "delta-summary.json",
+                "ComfyUI StarChart delta-summary support artifact",
+            ),
+            (
+                "refresh-provenance.json",
+                "ComfyUI StarChart refresh-provenance support artifact",
+            ),
+            ("manifest.json", "ComfyUI StarChart manifest support artifact"),
+        ]
 
-        self.assertIsNotNone(delta_schema)
-        self.assertEqual(delta_schema["title"], "ComfyUI StarChart delta-summary support artifact")
-        self.assertIsNotNone(refresh_schema)
-        self.assertEqual(
-            refresh_schema["title"],
-            "ComfyUI StarChart refresh-provenance support artifact",
-        )
+        for filename, expected_title in cases:
+            with self.subTest(filename=filename):
+                schema = published_schema_validation.load_published_artifact_schema(
+                    filename,
+                    PUBLISHED_SCHEMA_DIR,
+                )
+                self.assertIsNotNone(schema)
+                self.assertEqual(schema["title"], expected_title)
 
-    def test_validate_against_published_artifact_schema_reports_delta_summary_violation(self):
-        payload = valid_delta_summary_payload()
-        payload["artifacts"]["node_api_schema"]["io_types"]["new_count"] = "wrong"
-
-        errors = published_schema_validation.validate_against_published_artifact_schema(
-            payload,
-            "delta-summary.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
-
-        self.assertTrue(
-            any("node_api_schema.io_types.new_count: expected integer" in e for e in errors)
-        )
-
-    def test_validate_against_published_artifact_schema_reports_refresh_provenance_violation(self):
-        errors = published_schema_validation.validate_against_published_artifact_schema(
-            {
-                "backup_location": "references/_refresh_backups/raw_test",
-                "next_steps": {
-                    "publish_reference_artifacts_command": "py -3.11 scripts/generate/publish_reference_artifacts.py",
-                    "verify_artifact_integrity_command": "py -3.11 scripts/verify/verify_artifact_integrity.py",
-                    "delta_summary_command": None,
-                    "run_all_command": "py -3.11 scripts/verify/run_all.py",
-                },
-                "published": {
-                    "manifest_included": False,
-                    "provenance_path": "public/artifacts/refresh-provenance.json",
-                    "canonical_artifacts_updated_by_refresh": False,
-                    "delta_summary_updated_by_refresh": False,
-                },
-                "refresh_date": "2026-05-21",
-                "requested_versions": {
-                    "core": "v0.22.0",
-                    "frontend": "v1.45.12",
-                },
-                "resolved_commits": {
-                    "core": None,
-                    "frontend": 123,
-                },
-                "runtime_object_info": {
-                    "merged_into_node_api_schema": False,
-                    "requested": False,
-                },
+    def test_validate_against_published_artifact_schema_reports_support_violations(self):
+        delta_payload = valid_delta_summary_payload()
+        delta_payload["artifacts"]["node_api_schema"]["io_types"]["new_count"] = "wrong"
+        refresh_payload = {
+            "backup_location": "references/_refresh_backups/raw_test",
+            "next_steps": {
+                "publish_reference_artifacts_command": "py -3.11 scripts/generate/publish_reference_artifacts.py",
+                "verify_artifact_integrity_command": "py -3.11 scripts/verify/verify_artifact_integrity.py",
+                "delta_summary_command": None,
+                "run_all_command": "py -3.11 scripts/verify/run_all.py",
             },
-            "refresh-provenance.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
+            "published": {
+                "manifest_included": False,
+                "provenance_path": "public/artifacts/refresh-provenance.json",
+                "canonical_artifacts_updated_by_refresh": False,
+                "delta_summary_updated_by_refresh": False,
+            },
+            "refresh_date": "2026-05-21",
+            "requested_versions": {
+                "core": "v0.22.0",
+                "frontend": "v1.45.12",
+            },
+            "resolved_commits": {
+                "core": None,
+                "frontend": 123,
+            },
+            "runtime_object_info": {
+                "merged_into_node_api_schema": False,
+                "requested": False,
+            },
+        }
+        cases = [
+            (
+                "delta-summary.json",
+                delta_payload,
+                "node_api_schema.io_types.new_count: expected integer",
+            ),
+            (
+                "refresh-provenance.json",
+                refresh_payload,
+                "resolved_commits.frontend: expected string | null",
+            ),
+        ]
 
-        self.assertTrue(
-            any("resolved_commits.frontend: expected string | null" in e for e in errors)
-        )
+        for filename, payload, expected_error in cases:
+            with self.subTest(filename=filename):
+                errors = published_schema_validation.validate_against_published_artifact_schema(
+                    payload,
+                    filename,
+                    PUBLISHED_SCHEMA_DIR,
+                )
+                self.assertTrue(any(expected_error in e for e in errors))
 
     def test_integer_and_number_do_not_accept_bool(self):
         self.assertFalse(published_schema_validation._instance_matches_json_type(True, "integer"))
         self.assertFalse(published_schema_validation._instance_matches_json_type(True, "number"))
         self.assertTrue(published_schema_validation._instance_matches_json_type(True, "boolean"))
 
-    def test_validate_json_schema_instance_rejects_unexpected_keys(self):
-        schema = {
-            "type": "object",
-            "properties": {"name": {"type": "string"}},
-            "additionalProperties": False,
-        }
+    def test_validate_json_schema_instance_reports_common_rule_violations(self):
+        cases = [
+            (
+                {"name": "ok", "extra": "nope"},
+                {
+                    "type": "object",
+                    "properties": {"name": {"type": "string"}},
+                    "additionalProperties": False,
+                },
+                "docs-index.json",
+                "docs-index.json: unexpected key 'extra'",
+            ),
+            (
+                {"name": 1},
+                {
+                    "$defs": {"name": {"type": "string"}},
+                    "type": "object",
+                    "properties": {"name": {"$ref": "#/$defs/name"}},
+                },
+                "sample.json",
+                "sample.json.name: expected string, got int",
+            ),
+            (
+                {"x-count": "wrong"},
+                {
+                    "type": "object",
+                    "patternProperties": {r"^x-.*": {"type": "integer"}},
+                },
+                "docs-index.json",
+                "docs-index.json.x-count: expected integer, got str",
+            ),
+            (
+                {"version": "3.1"},
+                {"type": "object", "properties": {"version": {"const": "3.0"}}},
+                "node_api_schema.json",
+                "node_api_schema.json.version: expected constant '3.0'",
+            ),
+            (
+                {"path": ""},
+                {"type": "object", "properties": {"path": {"type": "string", "minLength": 1}}},
+                "node_api_schema.json",
+                "node_api_schema.json.path: expected string length >= 1",
+            ),
+        ]
 
-        errors = published_schema_validation._validate_json_schema_instance(
-            {"name": "ok", "extra": "nope"},
-            schema,
-            "docs-index.json",
-        )
-
-        self.assertIn("docs-index.json: unexpected key 'extra'", errors)
-
-    def test_validate_json_schema_instance_resolves_local_defs_ref(self):
-        schema = {
-            "$defs": {"name": {"type": "string"}},
-            "type": "object",
-            "properties": {"name": {"$ref": "#/$defs/name"}},
-        }
-
-        errors = published_schema_validation._validate_json_schema_instance(
-            {"name": 1},
-            schema,
-            "sample.json",
-        )
-
-        self.assertIn("sample.json.name: expected string, got int", errors)
-
-    def test_validate_json_schema_instance_checks_pattern_properties(self):
-        schema = {
-            "type": "object",
-            "patternProperties": {
-                r"^x-.*": {"type": "integer"},
-            },
-        }
-
-        errors = published_schema_validation._validate_json_schema_instance(
-            {"x-count": "wrong"},
-            schema,
-            "docs-index.json",
-        )
-
-        self.assertIn(
-            "docs-index.json.x-count: expected integer, got str",
-            errors,
-        )
-
-    def test_validate_json_schema_instance_enforces_const(self):
-        schema = {"type": "object", "properties": {"version": {"const": "3.0"}}}
-
-        errors = published_schema_validation._validate_json_schema_instance(
-            {"version": "3.1"},
-            schema,
-            "node_api_schema.json",
-        )
-
-        self.assertIn("node_api_schema.json.version: expected constant '3.0'", errors)
-
-    def test_validate_json_schema_instance_enforces_min_length(self):
-        schema = {"type": "object", "properties": {"path": {"type": "string", "minLength": 1}}}
-
-        errors = published_schema_validation._validate_json_schema_instance(
-            {"path": ""},
-            schema,
-            "node_api_schema.json",
-        )
-
-        self.assertIn("node_api_schema.json.path: expected string length >= 1", errors)
+        for instance, schema, path, expected_error in cases:
+            with self.subTest(expected_error=expected_error):
+                errors = published_schema_validation._validate_json_schema_instance(
+                    instance,
+                    schema,
+                    path,
+                )
+                self.assertIn(expected_error, errors)
 
     def test_validate_against_published_artifact_schema_reports_invalid_schema_json(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -246,14 +234,6 @@ class PublishedSchemaValidationTests(unittest.TestCase):
             "manifest.schema.json",
         )
 
-        schema = published_schema_validation.load_published_artifact_schema(
-            "manifest.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
-
-        self.assertIsNotNone(schema)
-        self.assertEqual(schema["title"], "ComfyUI StarChart manifest support artifact")
-
     def test_manifest_json_valid_payload_passes_published_schema(self):
         errors = published_schema_validation.validate_against_published_artifact_schema(
             valid_manifest_payload(),
@@ -263,41 +243,73 @@ class PublishedSchemaValidationTests(unittest.TestCase):
 
         self.assertEqual(errors, [])
 
-    def test_manifest_json_malformed_entry_fails_published_schema(self):
-        payload = valid_manifest_payload()
-        payload["artifacts"]["server_endpoints.json"]["sha256"] = "not-hex"
+    def test_published_artifact_schemas_reject_invalid_closure_and_pattern_cases(self):
+        cases = [
+            (
+                "manifest sha pattern",
+                "manifest.json",
+                valid_manifest_payload,
+                lambda payload: payload["artifacts"]["server_endpoints.json"].__setitem__(
+                    "sha256", "not-hex"
+                ),
+                "does not match pattern",
+            ),
+            (
+                "manifest future artifact",
+                "manifest.json",
+                valid_manifest_payload,
+                lambda payload: payload["artifacts"].__setitem__("future_artifact", {}),
+                "artifacts: unexpected key 'future_artifact'",
+            ),
+            (
+                "delta missing websocket events",
+                "delta-summary.json",
+                valid_delta_summary_payload,
+                lambda payload: payload["artifacts"].__delitem__("websocket_events"),
+                "missing required key 'websocket_events'",
+            ),
+            (
+                "delta extra section",
+                "delta-summary.json",
+                valid_delta_summary_payload,
+                lambda payload: payload["artifacts"].__setitem__("extra_section", {}),
+                "artifacts: unexpected key 'extra_section'",
+            ),
+            (
+                "delta extra node api field",
+                "delta-summary.json",
+                valid_delta_summary_payload,
+                lambda payload: payload["artifacts"]["node_api_schema"].__setitem__(
+                    "totally_new_field", {}
+                ),
+                "node_api_schema: unexpected key 'totally_new_field'",
+            ),
+            (
+                "comparison extra field",
+                "delta-summary.json",
+                valid_delta_summary_payload,
+                lambda payload: payload["comparison"].__setitem__("methodology_version", "1.1"),
+                "comparison: unexpected key 'methodology_version'",
+            ),
+            (
+                "comparison missing methodology",
+                "delta-summary.json",
+                valid_delta_summary_payload,
+                lambda payload: payload["comparison"].__delitem__("methodology"),
+                "comparison: missing required key 'methodology'",
+            ),
+        ]
 
-        errors = published_schema_validation.validate_against_published_artifact_schema(
-            payload,
-            "manifest.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
-
-        self.assertTrue(any("does not match pattern" in e for e in errors))
-
-    def test_manifest_json_artifacts_closure_rejects_future_artifact(self):
-        payload = valid_manifest_payload()
-        payload["artifacts"]["future_artifact"] = {}
-
-        errors = published_schema_validation.validate_against_published_artifact_schema(
-            payload,
-            "manifest.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
-
-        self.assertTrue(any("artifacts: unexpected key 'future_artifact'" in e for e in errors))
-
-    def test_delta_summary_missing_websocket_events_is_rejected(self):
-        payload = valid_delta_summary_payload()
-        del payload["artifacts"]["websocket_events"]
-
-        errors = published_schema_validation.validate_against_published_artifact_schema(
-            payload,
-            "delta-summary.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
-
-        self.assertTrue(any("missing required key 'websocket_events'" in e for e in errors))
+        for name, filename, payload_factory, mutate_payload, expected_error in cases:
+            with self.subTest(name=name):
+                payload = payload_factory()
+                mutate_payload(payload)
+                errors = published_schema_validation.validate_against_published_artifact_schema(
+                    payload,
+                    filename,
+                    PUBLISHED_SCHEMA_DIR,
+                )
+                self.assertTrue(any(expected_error in e for e in errors))
 
     def test_delta_summary_current_emitted_shape_is_accepted(self):
         payload = json.loads(
@@ -313,88 +325,33 @@ class PublishedSchemaValidationTests(unittest.TestCase):
 
         self.assertEqual(errors, [])
 
-    def test_delta_summary_artifacts_closure_rejects_extra_section(self):
-        payload = valid_delta_summary_payload()
-        payload["artifacts"]["extra_section"] = {}
-
-        errors = published_schema_validation.validate_against_published_artifact_schema(
-            payload,
-            "delta-summary.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
-
-        self.assertTrue(any("artifacts: unexpected key 'extra_section'" in e for e in errors))
-
-    def test_delta_summary_node_api_schema_closure_rejects_extra_field(self):
-        payload = valid_delta_summary_payload()
-        payload["artifacts"]["node_api_schema"]["totally_new_field"] = {}
-
-        errors = published_schema_validation.validate_against_published_artifact_schema(
-            payload,
-            "delta-summary.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
-
-        self.assertTrue(
-            any("node_api_schema: unexpected key 'totally_new_field'" in e for e in errors)
-        )
-
 
 class TestComparisonSchemaClosure(unittest.TestCase):
-    def test_comparison_closure_rejects_undeclared_field(self):
-        payload = valid_delta_summary_payload()
-        payload["comparison"]["methodology_version"] = "1.1"
+    def test_comparison_closure_accepts_optional_field_variants(self):
+        cases = [
+            ("optional fields absent", lambda payload: None),
+            (
+                "all fields present",
+                lambda payload: payload["comparison"].update(
+                    {
+                        "source_kind": "pre_refresh_backup_vs_current_raw",
+                        "old_label": "raw backup 2026-06-03T18:36:37Z",
+                        "new_label": "current raw (extracted 2026-06-04)",
+                    }
+                ),
+            ),
+        ]
 
-        errors = published_schema_validation.validate_against_published_artifact_schema(
-            payload,
-            "delta-summary.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
-
-        self.assertTrue(
-            any("comparison: unexpected key 'methodology_version'" in e for e in errors)
-        )
-
-    def test_comparison_closure_rejects_missing_methodology(self):
-        payload = valid_delta_summary_payload()
-        del payload["comparison"]["methodology"]
-
-        errors = published_schema_validation.validate_against_published_artifact_schema(
-            payload,
-            "delta-summary.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
-
-        self.assertTrue(any("comparison: missing required key 'methodology'" in e for e in errors))
-
-    def test_comparison_closure_accepts_optional_fields_absent(self):
-        payload = valid_delta_summary_payload()
-
-        errors = published_schema_validation.validate_against_published_artifact_schema(
-            payload,
-            "delta-summary.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
-
-        self.assertEqual(errors, [])
-
-    def test_comparison_closure_accepts_all_fields_present(self):
-        payload = valid_delta_summary_payload()
-        payload["comparison"].update(
-            {
-                "source_kind": "pre_refresh_backup_vs_current_raw",
-                "old_label": "raw backup 2026-06-03T18:36:37Z",
-                "new_label": "current raw (extracted 2026-06-04)",
-            }
-        )
-
-        errors = published_schema_validation.validate_against_published_artifact_schema(
-            payload,
-            "delta-summary.json",
-            PUBLISHED_SCHEMA_DIR,
-        )
-
-        self.assertEqual(errors, [])
+        for name, mutate_payload in cases:
+            with self.subTest(name=name):
+                payload = valid_delta_summary_payload()
+                mutate_payload(payload)
+                errors = published_schema_validation.validate_against_published_artifact_schema(
+                    payload,
+                    "delta-summary.json",
+                    PUBLISHED_SCHEMA_DIR,
+                )
+                self.assertEqual(errors, [])
 
     def test_validate_against_published_artifact_schema_validates_additional_properties_dict(self):
         with tempfile.TemporaryDirectory() as tmp:

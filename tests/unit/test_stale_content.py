@@ -135,6 +135,7 @@ class StaleContentUnitTests(unittest.TestCase):
 
             with (
                 patch.object(module, "DOCS_DIR", docs_dir),
+                patch.object(module, "ADDITIONAL_DATE_FILES", []),
                 patch.object(module.Path, "cwd", return_value=root),
             ):
                 stale = _normalize_stale(module.find_stale_dates(30))

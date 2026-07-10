@@ -21,6 +21,21 @@ def _load_module():
 class RunAllUnitTests(unittest.TestCase):
     """Unit tests for run_all step ordering and failure propagation."""
 
+    def _run_main_with_failure(self, module, failing_fragment):
+        call_order = []
+
+        def fake_run(cmd, **kwargs):
+            call_order.append(cmd)
+            if failing_fragment in str(cmd):
+                return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="fail")
+            return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
+
+        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
+            with patch("sys.argv", ["run_all.py"]):
+                result = module.main()
+
+        return result, call_order
+
     def test_step_success(self):
         module = _load_module()
         with patch("scripts.common.subprocess_utils.subprocess.run") as mock_run:
@@ -118,45 +133,60 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertLess(astro_check_idx, astro_build_idx)
         self.assertLess(astro_build_idx, rendered_links_idx)
 
-    def test_failure_stops_sequence(self):
+    def test_failure_stops_before_downstream_steps(self):
         module = _load_module()
-        call_order = []
+        cases = [
+            (
+                "python_style.py",
+                ["python_style.py"],
+                ["cross_references.py", "docs_index_freshness.py", "validate_schema.py"],
+            ),
+            (
+                "verify_artifact_integrity.py",
+                ["verify_artifact_integrity.py"],
+                [
+                    "markdown_top_level_spacing.py",
+                    "sidebar_navigation_coverage.py",
+                    "rendered_links.py",
+                ],
+            ),
+            (
+                "sidebar_navigation_coverage.py",
+                ["sidebar_navigation_coverage.py"],
+                [
+                    [module.NPM_EXECUTABLE, "run", "check"],
+                    [module.NPM_EXECUTABLE, "run", "build"],
+                    "rendered_links.py",
+                ],
+            ),
+            (
+                "rendered_links.py",
+                [[module.NPM_EXECUTABLE, "run", "build"], "rendered_links.py"],
+                [],
+            ),
+        ]
 
-        def fake_run(cmd, **kwargs):
-            call_order.append(cmd)
-            if "python_style.py" in str(cmd):
-                return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="style fail")
-            return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
+        for failing_fragment, expected_present, expected_absent in cases:
+            with self.subTest(failing_fragment=failing_fragment):
+                result, call_order = self._run_main_with_failure(module, failing_fragment)
 
-        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
-            with patch("sys.argv", ["run_all.py"]):
-                result = module.main()
-
-        self.assertEqual(result, 1)
-        self.assertTrue(any("python_style.py" in str(c) for c in call_order))
-        self.assertFalse(any("cross_references.py" in str(c) for c in call_order))
-        self.assertFalse(any("docs_index_freshness.py" in str(c) for c in call_order))
-        self.assertFalse(any("validate_schema.py" in str(c) for c in call_order))
-
-    def test_integrity_failure_stops_before_downstream_steps(self):
-        module = _load_module()
-        call_order = []
-
-        def fake_run(cmd, **kwargs):
-            call_order.append(cmd)
-            if "verify_artifact_integrity.py" in str(cmd):
-                return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="integrity fail")
-            return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
-
-        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
-            with patch("sys.argv", ["run_all.py"]):
-                result = module.main()
-
-        self.assertEqual(result, 1)
-        self.assertTrue(any("verify_artifact_integrity.py" in str(c) for c in call_order))
-        self.assertFalse(any("markdown_top_level_spacing.py" in str(c) for c in call_order))
-        self.assertFalse(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
-        self.assertFalse(any("rendered_links.py" in str(c) for c in call_order))
+                self.assertEqual(result, 1)
+                for expected in expected_present:
+                    self.assertTrue(
+                        any(
+                            expected == c if isinstance(expected, list) else expected in str(c)
+                            for c in call_order
+                        )
+                    )
+                for unexpected in expected_absent:
+                    self.assertFalse(
+                        any(
+                            unexpected == c
+                            if isinstance(unexpected, list)
+                            else unexpected in str(c)
+                            for c in call_order
+                        )
+                    )
 
     def test_skip_tests_flag(self):
         module = _load_module()
@@ -179,44 +209,6 @@ class RunAllUnitTests(unittest.TestCase):
         self.assertTrue(any("snapshot_surface_coverage.py" in str(c) for c in call_order))
         self.assertTrue(any("delta_summary_integrity.py" in str(c) for c in call_order))
         self.assertTrue(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
-        self.assertTrue(any("rendered_links.py" in str(c) for c in call_order))
-
-    def test_sidebar_failure_stops_before_astro_steps(self):
-        module = _load_module()
-        call_order = []
-
-        def fake_run(cmd, **kwargs):
-            call_order.append(cmd)
-            if "sidebar_navigation_coverage.py" in str(cmd):
-                return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="sidebar fail")
-            return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
-
-        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
-            with patch("sys.argv", ["run_all.py"]):
-                result = module.main()
-
-        self.assertEqual(result, 1)
-        self.assertTrue(any("sidebar_navigation_coverage.py" in str(c) for c in call_order))
-        self.assertFalse(any(c == [module.NPM_EXECUTABLE, "run", "check"] for c in call_order))
-        self.assertFalse(any(c == [module.NPM_EXECUTABLE, "run", "build"] for c in call_order))
-        self.assertFalse(any("rendered_links.py" in str(c) for c in call_order))
-
-    def test_rendered_links_failure_stops_after_build(self):
-        module = _load_module()
-        call_order = []
-
-        def fake_run(cmd, **kwargs):
-            call_order.append(cmd)
-            if "rendered_links.py" in str(cmd):
-                return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="rendered fail")
-            return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
-
-        with patch("scripts.common.subprocess_utils.subprocess.run", side_effect=fake_run):
-            with patch("sys.argv", ["run_all.py"]):
-                result = module.main()
-
-        self.assertEqual(result, 1)
-        self.assertTrue(any(c == [module.NPM_EXECUTABLE, "run", "build"] for c in call_order))
         self.assertTrue(any("rendered_links.py" in str(c) for c in call_order))
 
 

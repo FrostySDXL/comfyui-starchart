@@ -194,66 +194,62 @@ class ParseNodeApiSchemaTests(unittest.TestCase):
         self.assertIn("display_name", fields)
         self.assertIn("price_badge", fields)
 
-    def test_extract_io_types_boolean(self):
+    def test_extract_io_types_core_cases(self):
         module = _load_parse_node_api_schema()
         with tempfile.TemporaryDirectory() as tmp:
             io_path = Path(tmp) / "_io.py"
             io_path.write_text(_IO_SAMPLE_FULL, encoding="utf-8")
             io_types = module.extract_io_types(_IO_SAMPLE_FULL, str(io_path))
+            by_io_type = {entry["io_type"]: entry for entry in io_types}
 
-            boolean = next(e for e in io_types if e["io_type"] == "BOOLEAN")
-            self.assertEqual(boolean["input_class"], "WidgetInput")
-            self.assertIn("default", boolean["input_parameters"])
-            self.assertEqual(boolean["input_parameter_details"][0]["name"], "default")
-            self.assertEqual(boolean["input_parameter_details"][0]["type_hint"], "bool")
-            self.assertEqual(boolean["type_hint"], "bool")
-            self.assertTrue(boolean["is_widget"])
-            self.assertEqual(boolean["defined_in"], str(io_path).replace("\\", "/"))
+            cases = [
+                (
+                    "boolean input metadata",
+                    "BOOLEAN",
+                    lambda entry: (
+                        self.assertEqual(entry["input_class"], "WidgetInput"),
+                        self.assertIn("default", entry["input_parameters"]),
+                        self.assertEqual(entry["input_parameter_details"][0]["name"], "default"),
+                        self.assertEqual(entry["input_parameter_details"][0]["type_hint"], "bool"),
+                        self.assertEqual(entry["type_hint"], "bool"),
+                        self.assertTrue(entry["is_widget"]),
+                        self.assertEqual(entry["defined_in"], str(io_path).replace("\\", "/")),
+                    ),
+                ),
+                (
+                    "string output metadata",
+                    "STRING",
+                    lambda entry: (
+                        self.assertEqual(entry["type_hint"], "str"),
+                        self.assertEqual(
+                            entry["output_parameters"],
+                            ["display_name", "tooltip", "is_output_list"],
+                        ),
+                    ),
+                ),
+                (
+                    "inherited type hint",
+                    "LOAD_3D_ANIMATION",
+                    lambda entry: self.assertEqual(entry["type_hint"], "Model3DDict"),
+                ),
+                (
+                    "comment-stripped type hint",
+                    "POINT",
+                    lambda entry: self.assertEqual(entry["type_hint"], "Any"),
+                ),
+                (
+                    "no input class",
+                    "HISTOGRAM",
+                    lambda entry: (
+                        self.assertEqual(entry["input_class"], None),
+                        self.assertEqual(entry["input_parameters"], []),
+                    ),
+                ),
+            ]
 
-    def test_extract_io_types_string(self):
-        module = _load_parse_node_api_schema()
-        with tempfile.TemporaryDirectory() as tmp:
-            io_path = Path(tmp) / "_io.py"
-            io_path.write_text(_IO_SAMPLE_FULL, encoding="utf-8")
-            io_types = module.extract_io_types(_IO_SAMPLE_FULL, str(io_path))
-
-            string = next(e for e in io_types if e["io_type"] == "STRING")
-            self.assertEqual(string["type_hint"], "str")
-            self.assertEqual(
-                string["output_parameters"],
-                ["display_name", "tooltip", "is_output_list"],
-            )
-
-    def test_extract_io_types_inheritance(self):
-        module = _load_parse_node_api_schema()
-        with tempfile.TemporaryDirectory() as tmp:
-            io_path = Path(tmp) / "_io.py"
-            io_path.write_text(_IO_SAMPLE_FULL, encoding="utf-8")
-            io_types = module.extract_io_types(_IO_SAMPLE_FULL, str(io_path))
-
-            loader = next(e for e in io_types if e["io_type"] == "LOAD_3D_ANIMATION")
-            self.assertEqual(loader["type_hint"], "Model3DDict")
-
-    def test_extract_io_types_point_comment_stripping(self):
-        module = _load_parse_node_api_schema()
-        with tempfile.TemporaryDirectory() as tmp:
-            io_path = Path(tmp) / "_io.py"
-            io_path.write_text(_IO_SAMPLE_FULL, encoding="utf-8")
-            io_types = module.extract_io_types(_IO_SAMPLE_FULL, str(io_path))
-
-            point = next(e for e in io_types if e["io_type"] == "POINT")
-            self.assertEqual(point["type_hint"], "Any")
-
-    def test_extract_io_types_histogram_no_input(self):
-        module = _load_parse_node_api_schema()
-        with tempfile.TemporaryDirectory() as tmp:
-            io_path = Path(tmp) / "_io.py"
-            io_path.write_text(_IO_SAMPLE_FULL, encoding="utf-8")
-            io_types = module.extract_io_types(_IO_SAMPLE_FULL, str(io_path))
-
-            hist = next(e for e in io_types if e["io_type"] == "HISTOGRAM")
-            self.assertEqual(hist["input_class"], None)
-            self.assertEqual(hist["input_parameters"], [])
+            for name, io_type, assert_entry in cases:
+                with self.subTest(name=name):
+                    assert_entry(by_io_type[io_type])
 
     def test_extract_basic_input_shapes_captures_docstring(self):
         module = _load_parse_node_api_schema()

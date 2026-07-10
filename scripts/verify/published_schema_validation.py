@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, cast
 
@@ -27,6 +28,7 @@ JSON_SCHEMA_TYPE_MAP = {
 }
 
 
+@lru_cache(maxsize=None)
 def load_published_artifact_schema(filename: str, published_schema_dir: Path) -> dict | None:
     schema_name = PUBLISHED_ARTIFACT_SCHEMAS.get(filename)
     if not schema_name:
