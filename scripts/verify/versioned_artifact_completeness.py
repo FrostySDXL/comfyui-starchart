@@ -50,6 +50,12 @@ EXPECTED_RETAINED_COMPLETE_HASHES = {
         "node_api_schema.json": "638ee67eaa5e30f1b29f8797d687cd0d3e9dd35c200fff64dddd405514d4dd29",
         "websocket_events.json": "8e47de995e20eb123fa4fe51edb5c93c602bbf69ebc4cd5b75ccabb3d144d210",
     },
+    "core-v0.26.0_frontend-v1.47.5_2026-06-26": {
+        "server_endpoints.json": "8c8fffa49b767e971d4552bd222bd4fe69db4cd99323cc8e9fd16a9619f4e051",
+        "js_hooks.json": "f1dbe84aef58dfb720278d86a856ec1012d058dc669846e9aac2134da6c75bbe",
+        "node_api_schema.json": "0651c34b8e89829465ee4449666343d5aa0ea4b7f127f8a497e5b79bced99c7b",
+        "websocket_events.json": "d184b00d1253eb49b6bde3531e70928c1705b6cd464dacf13b5d4bc3d162e889",
+    },
 }
 
 

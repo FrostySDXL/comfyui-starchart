@@ -3,7 +3,7 @@ title: "Source Evidence Policy"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-06-26
+**Last Updated:** 2026-07-23
 **Primary Sources:** https://docs.comfy.org/, https://github.com/Comfy-Org/ComfyUI
 
 ## Purpose
@@ -145,7 +145,7 @@ Approved current-baseline prefix. Fill in the current core version, frontend
 version, and snapshot date from [Version Pin Status](version-pin-status.md):
 
 ```markdown
-**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
+**Baseline verification status:** Verified against the current pinned baseline: core v0.28.0, frontend v1.48.4, snapshots 2026-07-23.
 ```
 
 ## When Evidence Is Weak or Incomplete
@@ -180,8 +180,8 @@ If a feature is in `master` but not yet in a pinned snapshot, note it: "Source-b
 
 The active pinned baseline is tracked on
 [Version Pin Status](version-pin-status.md). The current pinned snapshot set now
-lives under `references/snapshots/2026-06-26/`, while older pinned snapshot
-directories such as `2026-06-01/`, `2026-05-21/`, `2026-05-18/`, and
+lives under `references/snapshots/2026-07-23/`, while older pinned snapshot
+directories such as `2026-06-26/`, `2026-06-01/`, `2026-05-21/`, `2026-05-18/`, and
 `2026-04-19/` remain useful historical comparison points.
 
 - official docs are cited across the repo

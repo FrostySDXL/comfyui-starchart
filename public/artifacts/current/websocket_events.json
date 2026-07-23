@@ -1,19 +1,19 @@
 {
   "metadata": {
     "sources": [
-      "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
-      "references/snapshots/2026-06-26/comfyui-core-v0.26.0/main.py",
-      "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
-      "references/snapshots/2026-06-26/comfyui-core-v0.26.0/protocol.py",
-      "references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_execution/progress.py",
-      "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts"
+      "references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py",
+      "references/snapshots/2026-07-23/comfyui-core-v0.28.0/main.py",
+      "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
+      "references/snapshots/2026-07-23/comfyui-core-v0.28.0/protocol.py",
+      "references/snapshots/2026-07-23/comfyui-core-v0.28.0/comfy_execution/progress.py",
+      "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts"
     ],
-    "extracted_date": "2026-06-26",
-    "version": "v0.26.0+v1.47.5",
-    "commit": "f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40",
+    "extracted_date": "2026-07-23",
+    "version": "v0.28.0+v1.48.4",
+    "commit": "700821e1364eaab0e8f21c538a2131719fec57bf",
     "commits": {
-      "core": "f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40",
-      "frontend": "e604c85b88cc3eb5f6c07063aba2cbb536fd8e85"
+      "core": "700821e1364eaab0e8f21c538a2131719fec57bf",
+      "frontend": "f2322b0be4c1b9b58744f0381ba029f479c53c6c"
     }
   },
   "coverage": {
@@ -52,23 +52,23 @@
       "direction": "server_to_client",
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "_send_cached_ui",
-          "line": 431,
+          "line": 434,
           "method": "send_sync"
         },
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "execute",
-          "line": 575,
+          "line": 576,
           "method": "send_sync"
         }
       ],
       "frontend_listeners": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts",
+          "source_file": "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts",
           "source_function": "addApiUpdateHandlers",
-          "line": 777,
+          "line": 791,
           "method": "api.addEventListener"
         }
       ],
@@ -90,29 +90,29 @@
       "direction": "server_to_client",
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py",
           "source_function": "websocket_handler",
-          "line": 287,
+          "line": 290,
           "method": "send"
         },
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/main.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/main.py",
           "source_function": "prompt_worker",
-          "line": 367,
+          "line": 371,
           "method": "send_sync"
         },
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "execute",
-          "line": 493,
+          "line": 494,
           "method": "send_sync"
         }
       ],
       "frontend_listeners": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts",
+          "source_file": "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts",
           "source_function": "addApiUpdateHandlers",
-          "line": 773,
+          "line": 787,
           "method": "api.addEventListener"
         }
       ],
@@ -133,15 +133,15 @@
       "direction": "server_to_client",
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "execute_async",
-          "line": 765,
+          "line": 766,
           "method": "add_message->send_sync"
         },
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "execute_async",
-          "line": 765,
+          "line": 766,
           "method": "add_message"
         }
       ],
@@ -166,29 +166,29 @@
       "direction": "server_to_client",
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "handle_execution_error",
-          "line": 708,
+          "line": 709,
           "method": "add_message->send_sync"
         },
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "handle_execution_error",
-          "line": 708,
+          "line": 709,
           "method": "add_message"
         },
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "execution_block_cb",
-          "line": 533,
+          "line": 534,
           "method": "send_sync"
         }
       ],
       "frontend_listeners": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts",
+          "source_file": "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts",
           "source_function": "addApiUpdateHandlers",
-          "line": 798,
+          "line": 812,
           "method": "api.addEventListener"
         }
       ],
@@ -209,15 +209,15 @@
       "direction": "server_to_client",
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "handle_execution_error",
-          "line": 695,
+          "line": 696,
           "method": "add_message->send_sync"
         },
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "handle_execution_error",
-          "line": 695,
+          "line": 696,
           "method": "add_message"
         }
       ],
@@ -239,23 +239,23 @@
       "direction": "server_to_client",
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "execute_async",
-          "line": 737,
+          "line": 738,
           "method": "add_message"
         },
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "execute_async",
-          "line": 737,
+          "line": 738,
           "method": "add_message->send_sync"
         }
       ],
       "frontend_listeners": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts",
+          "source_file": "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts",
           "source_function": "addApiUpdateHandlers",
-          "line": 794,
+          "line": 808,
           "method": "api.addEventListener"
         }
       ],
@@ -278,15 +278,15 @@
       "direction": "server_to_client",
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "execute_async",
-          "line": 815,
+          "line": 820,
           "method": "add_message->send_sync"
         },
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
           "source_function": "execute_async",
-          "line": 815,
+          "line": 820,
           "method": "add_message"
         }
       ],
@@ -310,17 +310,17 @@
       "direction": "bidirectional",
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py",
           "source_function": "websocket_handler",
-          "line": 305,
+          "line": 308,
           "method": "send"
         }
       ],
       "frontend_listeners": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts",
+          "source_file": "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts",
           "source_function": "addApiUpdateHandlers",
-          "line": 835,
+          "line": 849,
           "method": "api.addEventListener"
         }
       ],
@@ -337,17 +337,17 @@
       "direction": "server_to_client",
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/main.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/main.py",
           "source_function": "hook",
-          "line": 433,
+          "line": 437,
           "method": "send_sync"
         }
       ],
       "frontend_listeners": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts",
+          "source_file": "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts",
           "source_function": "addApiUpdateHandlers",
-          "line": 769,
+          "line": 783,
           "method": "api.addEventListener"
         }
       ],
@@ -369,7 +369,7 @@
       "direction": "server_to_client",
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_execution/progress.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/comfy_execution/progress.py",
           "source_function": "_send_progress_state",
           "line": 183,
           "method": "send_sync"
@@ -392,23 +392,23 @@
       "direction": "server_to_client",
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py",
           "source_function": "queue_updated",
-          "line": 1363,
+          "line": 1387,
           "method": "send_sync"
         },
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py",
           "source_function": "websocket_handler",
-          "line": 284,
+          "line": 287,
           "method": "send"
         }
       ],
       "frontend_listeners": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts",
+          "source_file": "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts",
           "source_function": "addApiUpdateHandlers",
-          "line": 765,
+          "line": 779,
           "method": "api.addEventListener"
         }
       ],
@@ -430,16 +430,16 @@
       "enum_value": 1,
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py",
           "source_function": "send_image",
-          "line": 1299,
+          "line": 1323,
           "method": "send_bytes"
         }
       ],
       "frontend_listeners": [],
       "payload_notes": [],
       "traceability": {
-        "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/protocol.py",
+        "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/protocol.py",
         "source_function": "BinaryEventTypes",
         "strategy": "protocol_enum_literal"
       }
@@ -449,16 +449,16 @@
       "enum_value": 2,
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/main.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/main.py",
           "source_function": "hook",
-          "line": 441,
+          "line": 445,
           "method": "send_sync"
         }
       ],
       "frontend_listeners": [],
       "payload_notes": [],
       "traceability": {
-        "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/protocol.py",
+        "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/protocol.py",
         "source_function": "BinaryEventTypes",
         "strategy": "protocol_enum_literal"
       }
@@ -468,16 +468,16 @@
       "enum_value": 3,
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py",
           "source_function": "send_progress_text",
-          "line": 1445,
+          "line": 1469,
           "method": "send_sync"
         }
       ],
       "frontend_listeners": [],
       "payload_notes": [],
       "traceability": {
-        "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/protocol.py",
+        "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/protocol.py",
         "source_function": "BinaryEventTypes",
         "strategy": "protocol_enum_literal"
       }
@@ -487,13 +487,13 @@
       "enum_value": 4,
       "server_sources": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py",
           "source_function": "send_image_with_metadata",
-          "line": 1336,
+          "line": 1360,
           "method": "send_bytes"
         },
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_execution/progress.py",
+          "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/comfy_execution/progress.py",
           "source_function": "update_handler",
           "line": 224,
           "method": "send_sync"
@@ -501,15 +501,15 @@
       ],
       "frontend_listeners": [
         {
-          "source_file": "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts",
+          "source_file": "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts",
           "source_function": "addApiUpdateHandlers",
-          "line": 815,
+          "line": 829,
           "method": "api.addEventListener"
         }
       ],
       "payload_notes": [],
       "traceability": {
-        "source_file": "references/snapshots/2026-06-26/comfyui-core-v0.26.0/protocol.py",
+        "source_file": "references/snapshots/2026-07-23/comfyui-core-v0.28.0/protocol.py",
         "source_function": "BinaryEventTypes",
         "strategy": "protocol_enum_literal"
       }

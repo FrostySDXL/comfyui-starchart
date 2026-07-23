@@ -1,6 +1,6 @@
 {
   "artifact_schema_version": "1.0.0",
-  "version_key": "core-v0.26.0_frontend-v1.47.5_2026-06-26",
+  "version_key": "core-v0.28.0_frontend-v1.48.4_2026-07-23",
   "schemas": {
     "server_endpoints.json": {
       "schema_url": "artifacts/schemas/server_endpoints.schema.json"
@@ -18,60 +18,60 @@
   "artifacts": {
     "server_endpoints.json": {
       "current_url": "artifacts/current/server_endpoints.json",
-      "versioned_url": "artifacts/versions/core-v0.26.0_frontend-v1.47.5_2026-06-26/server_endpoints.json",
-      "sha256": "8c8fffa49b767e971d4552bd222bd4fe69db4cd99323cc8e9fd16a9619f4e051",
-      "version": "v0.26.0",
-      "commit": "f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40",
-      "extracted_date": "2026-06-26",
+      "versioned_url": "artifacts/versions/core-v0.28.0_frontend-v1.48.4_2026-07-23/server_endpoints.json",
+      "sha256": "c883e00c3f377cdf81fbac69bdcf814d5ece7fb6ea218ed53a2d4c2870ebbb3a",
+      "version": "v0.28.0",
+      "commit": "700821e1364eaab0e8f21c538a2131719fec57bf",
+      "extracted_date": "2026-07-23",
       "sources": [
-        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
-        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py"
+        "references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py",
+        "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py"
       ]
     },
     "js_hooks.json": {
       "current_url": "artifacts/current/js_hooks.json",
-      "versioned_url": "artifacts/versions/core-v0.26.0_frontend-v1.47.5_2026-06-26/js_hooks.json",
-      "sha256": "f1dbe84aef58dfb720278d86a856ec1012d058dc669846e9aac2134da6c75bbe",
-      "version": "v1.47.5",
-      "commit": "e604c85b88cc3eb5f6c07063aba2cbb536fd8e85",
-      "extracted_date": "2026-06-26",
+      "versioned_url": "artifacts/versions/core-v0.28.0_frontend-v1.48.4_2026-07-23/js_hooks.json",
+      "sha256": "cef292a07d960fd273744fd29a295618918cb766883772d755cc1d51d59724a4",
+      "version": "v1.48.4",
+      "commit": "f2322b0be4c1b9b58744f0381ba029f479c53c6c",
+      "extracted_date": "2026-07-23",
       "sources": [
-        "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts",
-        "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/types/comfy.ts",
-        "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/services/litegraphService.ts"
+        "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts",
+        "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/types/comfy.ts",
+        "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/services/litegraphService.ts"
       ]
     },
     "node_api_schema.json": {
       "current_url": "artifacts/current/node_api_schema.json",
-      "versioned_url": "artifacts/versions/core-v0.26.0_frontend-v1.47.5_2026-06-26/node_api_schema.json",
-      "sha256": "0651c34b8e89829465ee4449666343d5aa0ea4b7f127f8a497e5b79bced99c7b",
-      "version": "v0.26.0",
-      "commit": "f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40",
-      "extracted_date": "2026-06-26",
+      "versioned_url": "artifacts/versions/core-v0.28.0_frontend-v1.48.4_2026-07-23/node_api_schema.json",
+      "sha256": "b8662518ad61635f671e4f2de29c9823649e437ce8c3da216459b282fe089615",
+      "version": "v0.28.0",
+      "commit": "700821e1364eaab0e8f21c538a2131719fec57bf",
+      "extracted_date": "2026-07-23",
       "sources": [
-        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
-        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_api/latest/_io.py",
-        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_api/latest/_input/basic_types.py"
+        "references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py",
+        "references/snapshots/2026-07-23/comfyui-core-v0.28.0/comfy_api/latest/_io.py",
+        "references/snapshots/2026-07-23/comfyui-core-v0.28.0/comfy_api/latest/_input/basic_types.py"
       ]
     },
     "websocket_events.json": {
       "current_url": "artifacts/current/websocket_events.json",
-      "versioned_url": "artifacts/versions/core-v0.26.0_frontend-v1.47.5_2026-06-26/websocket_events.json",
-      "sha256": "d184b00d1253eb49b6bde3531e70928c1705b6cd464dacf13b5d4bc3d162e889",
-      "version": "v0.26.0+v1.47.5",
-      "commit": "f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40",
-      "extracted_date": "2026-06-26",
+      "versioned_url": "artifacts/versions/core-v0.28.0_frontend-v1.48.4_2026-07-23/websocket_events.json",
+      "sha256": "4ffac6d8bf4ccf89771b24827afd159a0f33474b3efba178eb1b0e321dbd28d9",
+      "version": "v0.28.0+v1.48.4",
+      "commit": "700821e1364eaab0e8f21c538a2131719fec57bf",
+      "extracted_date": "2026-07-23",
       "sources": [
-        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py",
-        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/main.py",
-        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py",
-        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/protocol.py",
-        "references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_execution/progress.py",
-        "references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts"
+        "references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py",
+        "references/snapshots/2026-07-23/comfyui-core-v0.28.0/main.py",
+        "references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py",
+        "references/snapshots/2026-07-23/comfyui-core-v0.28.0/protocol.py",
+        "references/snapshots/2026-07-23/comfyui-core-v0.28.0/comfy_execution/progress.py",
+        "references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts"
       ],
       "commits": {
-        "core": "f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40",
-        "frontend": "e604c85b88cc3eb5f6c07063aba2cbb536fd8e85"
+        "core": "700821e1364eaab0e8f21c538a2131719fec57bf",
+        "frontend": "f2322b0be4c1b9b58744f0381ba029f479c53c6c"
       }
     }
   }

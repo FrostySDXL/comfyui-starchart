@@ -10,6 +10,31 @@ Maintenance policy for this file lives in `CONTRIBUTING.md` under
 Repo version numbers describe repository and artifact-surface maturity. They do
 not imply npm publication intent; `package.json` remains `private: true`.
 
+## 2026-07-23 - baseline refresh to core v0.28.0 / frontend v1.48.4
+
+### Baseline refresh
+
+- Refresh pinned baseline to core **v0.28.0** (`700821e13`) and frontend
+  **v1.48.4** (`f2322b0be`) with snapshots under `2026-07-23`.
+- Republish the canonical current and versioned artifact surfaces for the active
+  baseline, with `2026-06-26` and `2026-06-13` retained as complete historical
+  baselines.
+
+### Artifact surface changes
+
+- Node IO types expand 78 -> 82, adding `ARRAY`:Array, `BOUNDING_BOXES`:BoundingBoxes,
+  `COLORS`:Colors, and `DICT`:Dict; `TRACKS`:Tracks changes input class and parameters.
+- Server endpoints (27), frontend hooks (19), WebSocket events (11 JSON plus 4 binary),
+  and object-info fields (21) are all structurally unchanged from the prior baseline.
+
+### Docs and metadata
+
+- Update current-baseline Starlight metadata, version-pin status, datatypes inventory,
+  source-evidence-policy template, README, and CONTRIBUTING versioned-artifact
+  completeness decisions to the new baseline.
+- Re-review route, hook, WebSocket, prompt, queue/history, architecture, registration,
+  object-info, and artifact-contract prose; all found substantively unchanged.
+
 ## 2026-07-07 - artifact consumer routing and review hardening
 
 ### Docs and examples

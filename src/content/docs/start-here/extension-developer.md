@@ -3,9 +3,9 @@ title: "Start Here: Extension Developer"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-06-26
-**Primary Sources:** `references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts`, `references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/types/comfy.ts`, `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py`, `references/snapshots/2026-06-26/comfyui-core-v0.26.0/nodes.py`, `references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_api/latest/__init__.py`
-**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
+**Last Updated:** 2026-07-23
+**Primary Sources:** `references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts`, `references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/types/comfy.ts`, `references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py`, `references/snapshots/2026-07-23/comfyui-core-v0.28.0/nodes.py`, `references/snapshots/2026-07-23/comfyui-core-v0.28.0/comfy_api/latest/__init__.py`
+**Baseline verification status:** Verified against the current pinned baseline: core v0.28.0, frontend v1.48.4, snapshots 2026-07-23.
 
 ## Who This Path Is For
 

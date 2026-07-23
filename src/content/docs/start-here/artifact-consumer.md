@@ -3,9 +3,9 @@ title: "Start Here: Artifact Consumer"
 ---
 
 **Evidence:** Operational guidance; Source-backed from pinned snapshots
-**Last Updated:** 2026-06-26
-**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
+**Last Updated:** 2026-07-23
 
+**Baseline verification status:** Verified against the current pinned baseline: core v0.28.0, frontend v1.48.4, snapshots 2026-07-23.
 ## Scope
 
 This page is the shortest start-here route for readers who consume this repo's

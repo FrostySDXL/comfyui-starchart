@@ -1,6 +1,6 @@
 # Contributing
 
-**Last Updated:** 2026-06-04
+**Last Updated:** 2026-07-23
 
 This file is the canonical maintainer workflow guide for ComfyUI StarChart.
 Use `AGENTS.md` for startup-critical orientation. Use this file for deeper
@@ -447,7 +447,8 @@ Current decision table:
 | `core-v0.23.0_frontend-v1.46.6_2026-06-01` | `legacy-pre-websocket-events` | Retain as a documented legacy exception unless source-backed regeneration is needed. |
 | `core-v0.23.0_frontend-v1.46.6_2026-06-03` | `retained-complete` | Retain as a complete historical baseline. |
 | `core-v0.24.0_frontend-v1.46.14_2026-06-13` | `retained-complete` | Retain as a complete historical baseline. |
-| `core-v0.26.0_frontend-v1.47.5_2026-06-26` | `current-required-complete` | Keep as the current canonical versioned artifact set. |
+| `core-v0.26.0_frontend-v1.47.5_2026-06-26` | `retained-complete` | Retain as a complete historical baseline. |
+| `core-v0.28.0_frontend-v1.48.4_2026-07-23` | `current-required-complete` | Keep as the current canonical versioned artifact set. |
 
 The 2026-04 empty legacy placeholders were removed after confirming they had no
 tracked artifact files and no active manifest, docs, or provenance references.

@@ -3,8 +3,8 @@ title: "Machine-Readable Artifacts"
 ---
 
 **Evidence:** Operational guidance
-**Last Updated:** 2026-06-26
-**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
+**Last Updated:** 2026-07-23
+**Baseline verification status:** Verified against the current pinned baseline: core v0.28.0, frontend v1.48.4, snapshots 2026-07-23.
 
 ## Scope
 
@@ -189,8 +189,8 @@ When present, `parameters[]` entries may include:
   access pattern, or another bounded static rule
 
 The runtime contract sections are extracted from the pinned
-`references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py` and
-`references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py` snapshots.
+`references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py` and
+`references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py` snapshots.
 They add source-backed structure without turning the artifact into an OpenAPI
 document:
 
@@ -281,7 +281,7 @@ Source-backed from pinned snapshots: the current `_io.py` snapshot defines
 `STRING` as an I/O type with a `WidgetInput` carrying parameters such as
 `multiline`, `placeholder`, `default`, and `dynamic_prompts`; it also defines
 `CONDITIONING` as an I/O type whose `Type` is `CondList`. See
-`references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_api/latest/_io.py`.
+`references/snapshots/2026-07-23/comfyui-core-v0.28.0/comfy_api/latest/_io.py`.
 
 The same `_io.py` snapshot also defines the V3 `Schema`, `NodeInfoV1`,
 `PriceBadge`, `PriceBadgeDepends`, and `Hidden` surfaces summarized under
@@ -329,12 +329,12 @@ The artifact covers both JSON events (such as `status`, `progress`,
 `PREVIEW_IMAGE_WITH_METADATA`).
 
 Source-backed from pinned snapshots:
-`references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py`,
-`references/snapshots/2026-06-26/comfyui-core-v0.26.0/main.py`,
-`references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`,
-`references/snapshots/2026-06-26/comfyui-core-v0.26.0/protocol.py`,
-`references/snapshots/2026-06-26/comfyui-core-v0.26.0/comfy_execution/progress.py`,
-and `references/snapshots/2026-06-26/comfyui-frontend-v1.47.5/src/scripts/app.ts`.
+`references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py`,
+`references/snapshots/2026-07-23/comfyui-core-v0.28.0/main.py`,
+`references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py`,
+`references/snapshots/2026-07-23/comfyui-core-v0.28.0/protocol.py`,
+`references/snapshots/2026-07-23/comfyui-core-v0.28.0/comfy_execution/progress.py`,
+and `references/snapshots/2026-07-23/comfyui-frontend-v1.48.4/src/scripts/app.ts`.
 
 ### delta-summary.json
 

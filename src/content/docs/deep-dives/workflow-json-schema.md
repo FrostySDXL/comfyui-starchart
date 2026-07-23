@@ -3,9 +3,9 @@ title: "Deep Dive: Workflow JSON as an Interchange Surface"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-06-26
+**Last Updated:** 2026-07-23
 **Primary Source:** https://docs.comfy.org/specs/workflow_json
-**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
+**Baseline verification status:** Verified against the current pinned baseline: core v0.28.0, frontend v1.48.4, snapshots 2026-07-23.
 **Current baseline check:** Rechecked against `public/artifacts/delta-summary.json` and the current `server_endpoints.json` `/prompt` extraction; no source delta changes the workflow-JSON versus prompt-payload boundary described here.
 
 ## Scope

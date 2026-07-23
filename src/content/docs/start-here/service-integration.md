@@ -3,9 +3,9 @@ title: "Start Here: Local API Integration"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-06-26
-**Primary Sources:** `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py`, `references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py`, `references/raw/server_endpoints.json`, `references/raw/websocket_events.json`
-**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
+**Last Updated:** 2026-07-23
+**Primary Sources:** `references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py`, `references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py`, `references/raw/server_endpoints.json`, `references/raw/websocket_events.json`
+**Baseline verification status:** Verified against the current pinned baseline: core v0.28.0, frontend v1.48.4, snapshots 2026-07-23.
 
 ## Who This Path Is For
 

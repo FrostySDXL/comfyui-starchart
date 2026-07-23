@@ -3,14 +3,14 @@ title: "WebSocket"
 ---
 
 **Evidence:** Source-backed from pinned snapshots
-**Last Updated:** 2026-06-26
-**Primary Source:** ComfyUI core v0.26.0 `server.py` (pinned snapshot)
-**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
+**Last Updated:** 2026-07-23
+**Primary Source:** ComfyUI core v0.28.0 `server.py` (pinned snapshot)
+**Baseline verification status:** Verified against the current pinned baseline: core v0.28.0, frontend v1.48.4, snapshots 2026-07-23.
 
 ## Primary Sources
 
-- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py` (v0.26.0, commit f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40)
-- `references/snapshots/2026-06-26/comfyui-core-v0.26.0/execution.py` (v0.26.0, commit f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40)
+- `references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py` (v0.28.0, commit 700821e1364eaab0e8f21c538a2131719fec57bf)
+- `references/snapshots/2026-07-23/comfyui-core-v0.28.0/execution.py` (v0.28.0, commit 700821e1364eaab0e8f21c538a2131719fec57bf)
 
 ## Scope
 
@@ -82,7 +82,7 @@ These are WebSocket message types. They are useful for consumers that need live
 state, but they are not evidence of a Python callback hook for each lifecycle
 transition. `send_json()` wraps each event as `{ "type": event, "data": data }`
 before sending it to connected sockets. Source-backed from pinned snapshots:
-`references/snapshots/2026-06-26/comfyui-core-v0.26.0/server.py`.
+`references/snapshots/2026-07-23/comfyui-core-v0.28.0/server.py`.
 
 The event sequence starts after the prompt has already passed the `/prompt`
 submission boundary and been picked up for execution. Use

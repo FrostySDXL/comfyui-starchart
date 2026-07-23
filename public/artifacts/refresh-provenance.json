@@ -1,12 +1,12 @@
 {
-  "backup_location": "references/_refresh_backups/raw_20260626T225001Z",
+  "backup_location": "references/_refresh_backups/raw_20260723T053557Z",
   "next_steps": {
-    "delta_summary_command": "python scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260626T225001Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
+    "delta_summary_command": "python scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260723T053557Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
     "publish_reference_artifacts_command": "python scripts/generate/publish_reference_artifacts.py",
     "recommended_follow_up_commands": [
       "python scripts/generate/publish_reference_artifacts.py",
       "python scripts/verify/verify_artifact_integrity.py",
-      "python scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260626T225001Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
+      "python scripts/generate/generate_snapshot_delta_summary.py --old \"references/_refresh_backups/raw_20260723T053557Z\" --new \"references/raw\" --output \"public/artifacts/delta-summary.json\"",
       "python scripts/verify/run_all.py"
     ],
     "run_all_command": "python scripts/verify/run_all.py",
@@ -18,14 +18,14 @@
     "manifest_included": true,
     "provenance_path": "public/artifacts/refresh-provenance.json"
   },
-  "refresh_date": "2026-06-26",
+  "refresh_date": "2026-07-23",
   "requested_versions": {
-    "core": "v0.26.0",
-    "frontend": "v1.47.5"
+    "core": "v0.28.0",
+    "frontend": "v1.48.4"
   },
   "resolved_commits": {
-    "core": "f6c162ddcfbd7eefb39c06fe5b8d4c46e8d09f40",
-    "frontend": "e604c85b88cc3eb5f6c07063aba2cbb536fd8e85"
+    "core": "700821e1364eaab0e8f21c538a2131719fec57bf",
+    "frontend": "f2322b0be4c1b9b58744f0381ba029f479c53c6c"
   },
   "runtime_object_info": {
     "merged_into_node_api_schema": false,

@@ -3,9 +3,9 @@ title: "Start Here: Tooling Builder"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org; Source-backed from pinned snapshots; Operational guidance
-**Last Updated:** 2026-06-26
+**Last Updated:** 2026-07-23
 **Primary Sources:** `references/raw/server_endpoints.json`, `references/raw/websocket_events.json`, `references/raw/js_hooks.json`, `references/raw/node_api_schema.json`, `public/artifacts/delta-summary.json`
-**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
+**Baseline verification status:** Verified against the current pinned baseline: core v0.28.0, frontend v1.48.4, snapshots 2026-07-23.
 
 ## Scope
 

@@ -3,9 +3,9 @@ title: "Datatypes"
 ---
 
 **Evidence:** Official docs-backed from docs.comfy.org
-**Last Updated:** 2026-06-26
+**Last Updated:** 2026-07-23
 **Primary Source:** https://docs.comfy.org/custom-nodes/backend/datatypes
-**Baseline verification status:** Verified against the current pinned baseline: core v0.26.0, frontend v1.47.5, snapshots 2026-06-26.
+**Baseline verification status:** Verified against the current pinned baseline: core v0.28.0, frontend v1.48.4, snapshots 2026-07-23.
 
 ## Primary Sources
 
@@ -82,13 +82,14 @@ These are important for advanced sampling nodes, but many node authors
 can avoid them initially and focus on `IMAGE`, `MASK`, `LATENT`, and
 primitive types.
 
-Additional execution types defined in the v0.26.0 IO type registry
+Additional execution types defined in the v0.28.0 IO type registry
 include `HOOKS`, `HOOK_KEYFRAMES`, `TIMESTEPS_RANGE`,
 `LATENT_OPERATION`, `FLOW_CONTROL`, `ACCUMULATION`, `TRACKS`,
-`LOAD_3D`, and `LOAD_3D_ANIMATION`. See the pinned
-`node_api_schema.json` artifact for the full 78-type inventory.
+`LOAD_3D`, `LOAD_3D_ANIMATION`, `ARRAY`, `DICT`, `COLORS`, and
+`BOUNDING_BOXES`. See the pinned
+`node_api_schema.json` artifact for the full 82-type inventory.
 
-### 3D data types (v0.26.0)
+### 3D data types (v0.28.0)
 
 The current baseline includes eight 3D-specific IO types beyond the existing
 generic 3D file family:
@@ -108,6 +109,21 @@ These join the existing 3D file types (`FILE_3D`, `FILE_3D_GLB`,
 `FILE_3D_GLTF`, `FILE_3D_FBX`, `FILE_3D_OBJ`, `FILE_3D_STL`,
 `FILE_3D_USDZ`). Use the narrowest applicable file type for your
 node rather than the generic `FILE_3D` wildcard.
+
+### Widget and passthrough types (new in v0.28.0)
+
+The v0.28.0 IO type registry adds four new types:
+
+- `ARRAY` -> input socket accepting a list of `_ComfyType` values
+- `DICT` -> pass-through type for arbitrary Python `dict` objects
+- `COLORS` -> widget type (`WidgetInput`) holding `list[Color.Type]`
+- `BOUNDING_BOXES` -> widget type (`WidgetInput`) holding `list[BoundingBoxWithMetadata]`
+
+`COLORS` and `BOUNDING_BOXES` are widget-only (no socket) and accept
+`display_name`, `optional`, `tooltip`, `socketless`, `default`, and
+`advanced` parameters. `ARRAY` is a socket input with the standard
+Input parameter set. `DICT` is a bare pass-through type with no
+input or output parameters.
 
 ## Custom Patterns
 
